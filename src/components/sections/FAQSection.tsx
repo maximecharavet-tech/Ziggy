@@ -2,30 +2,34 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, HelpCircle } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
+function FAQItem({ question, answer, index }: { question: string; answer: string; index: number }) {
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="border-b border-border last:border-b-0">
-      <button
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between py-5 text-left"
-      >
-        <span className="font-bold text-text-body pr-4">{question}</span>
-        <ChevronDown
-          size={20}
-          className={`text-text-muted flex-shrink-0 transition-transform duration-200 ${open ? 'rotate-180' : ''}`}
-        />
-      </button>
-      <div
-        className={`overflow-hidden transition-all duration-300 ${open ? 'max-h-96 pb-5' : 'max-h-0'}`}
-      >
-        <p className="text-sm text-text-muted">{answer}</p>
+    <ScrollReveal delay={index * 80} variant="fade-up">
+      <div className="border-b border-border/50 last:border-b-0">
+        <button
+          onClick={() => setOpen(!open)}
+          className="w-full flex items-center justify-between py-5 text-left group"
+        >
+          <span className="font-bold text-text-body pr-4 group-hover:text-green transition-colors">
+            {question}
+          </span>
+          <div className={`w-8 h-8 rounded-full bg-green/10 flex items-center justify-center flex-shrink-0 transition-all duration-300 ${open ? 'bg-green/20 rotate-180' : ''}`}>
+            <ChevronDown size={18} className="text-green" />
+          </div>
+        </button>
+        <div className={`grid transition-all duration-300 ${open ? 'grid-rows-[1fr] pb-5' : 'grid-rows-[0fr]'}`}>
+          <div className="overflow-hidden">
+            <p className="text-sm text-text-muted leading-relaxed">{answer}</p>
+          </div>
+        </div>
       </div>
-    </div>
+    </ScrollReveal>
   );
 }
 
@@ -43,10 +47,17 @@ export function FAQSection() {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
-        <SectionHeading title={t('title')} subtitle="" />
-        <div className="bg-bg-card border border-border rounded-2xl px-6">
-          {faqs.map((faq) => (
-            <FAQItem key={faq.q} question={faq.q} answer={faq.a} />
+        <ScrollReveal>
+          <div className="text-center mb-16">
+            <div className="w-16 h-16 rounded-2xl bg-green/10 flex items-center justify-center mx-auto mb-6">
+              <HelpCircle size={30} className="text-green" />
+            </div>
+            <SectionHeading title={t('title')} subtitle="" />
+          </div>
+        </ScrollReveal>
+        <div className="glass rounded-2xl border border-border/50 px-6 sm:px-8 shadow-lg">
+          {faqs.map((faq, i) => (
+            <FAQItem key={faq.q} question={faq.q} answer={faq.a} index={i} />
           ))}
         </div>
       </div>

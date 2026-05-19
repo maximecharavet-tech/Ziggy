@@ -2,22 +2,39 @@
 
 @theme {
   --color-bg: #FAFBFC;
+  --color-bg-dark: #0A0A1A;
   --color-bg-card: #FFFFFF;
+  --color-bg-card-dark: #12122A;
   --color-border: #E8ECEF;
+  --color-border-dark: #1E1E3A;
   --color-text-body: #1A1A2E;
+  --color-text-body-dark: #E8ECEF;
   --color-text-muted: #6B7280;
+  --color-text-muted-dark: #9CA3AF;
   --color-text-dim: #9CA3AF;
+  --color-text-dim-dark: #6B7280;
   --color-green: #22C55E;
   --color-green-dark: #16A34A;
   --color-green-light: #4ADE80;
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --color-yellow: #FBBF24;
+  --color-pink: #F472B6;
+  --color-purple: #A78BFA;
+  --color-blue: #60A5FA;
+  --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
 }
+
+/* ═══════════════════════════════════════
+   BASE
+   ═══════════════════════════════════════ */
 
 @layer base {
   html {
     scroll-behavior: smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    -webkit-tap-highlight-color: transparent;
+    text-size-adjust: 100%;
+    overflow-x: hidden;
   }
 
   html[dir="rtl"] {
@@ -28,19 +45,84 @@
     background-color: var(--color-bg);
     color: var(--color-text-body);
     font-family: var(--font-sans);
+    min-height: 100dvh;
+    overflow-x: hidden;
   }
 
   ::selection {
     background-color: color-mix(in srgb, var(--color-green) 25%, transparent);
   }
+
+  @media (prefers-color-scheme: dark) {
+    body {
+      background-color: var(--color-bg-dark);
+      color: var(--color-text-body-dark);
+    }
+  }
+
+  /* Safe area for notched devices */
+  @supports (padding: env(safe-area-inset-top)) {
+    body {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+  }
+
+  /* Better focus for accessibility */
+  :focus-visible {
+    outline: 2px solid var(--color-green);
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+
+  /* Smooth scrollbar */
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in srgb, var(--color-green) 30%, transparent);
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-green);
+  }
 }
+
+/* ═══════════════════════════════════════
+   CUSTOM UTILITIES
+   ═══════════════════════════════════════ */
 
 @utility gradient-green-cta {
   background: linear-gradient(135deg, var(--color-green) 0%, var(--color-green-dark) 100%);
 }
 
 @utility gradient-green-soft {
-  background: linear-gradient(180deg, color-mix(in srgb, var(--color-green) 5%, transparent) 0%, transparent 100%);
+  background: linear-gradient(180deg, color-mix(in srgb, var(--color-green) 4%, transparent) 0%, transparent 100%);
+}
+
+@utility gradient-hero {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -20%, color-mix(in srgb, var(--color-green) 8%, transparent), transparent),
+    radial-gradient(ellipse 60% 40% at 80% 60%, color-mix(in srgb, var(--color-purple) 4%, transparent), transparent),
+    radial-gradient(ellipse 50% 50% at 20% 80%, color-mix(in srgb, var(--color-blue) 4%, transparent), transparent),
+    linear-gradient(180deg, var(--color-bg) 0%, color-mix(in srgb, var(--color-green) 2%, var(--color-bg)) 100%);
+}
+
+@utility gradient-mesh {
+  background:
+    radial-gradient(at 40% 20%, color-mix(in srgb, var(--color-green) 6%, transparent) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, color-mix(in srgb, var(--color-purple) 5%, transparent) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, color-mix(in srgb, var(--color-blue) 4%, transparent) 0px, transparent 50%),
+    radial-gradient(at 70% 80%, color-mix(in srgb, var(--color-pink) 3%, transparent) 0px, transparent 50%);
 }
 
 @utility text-gradient-green {
@@ -48,4 +130,139 @@
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+}
+
+@utility text-gradient-rainbow {
+  background: linear-gradient(135deg, var(--color-green) 0%, var(--color-blue) 50%, var(--color-purple) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+@utility glass {
+  background: color-mix(in srgb, var(--color-bg-card) 70%, transparent);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+}
+
+@utility glass-strong {
+  background: color-mix(in srgb, var(--color-bg-card) 85%, transparent);
+  backdrop-filter: blur(30px) saturate(1.8);
+  -webkit-backdrop-filter: blur(30px) saturate(1.8);
+}
+
+@utility touch-action-pan {
+  touch-action: pan-x pan-y;
+}
+
+/* ═══════════════════════════════════════
+   ANIMATIONS
+   ═══════════════════════════════════════ */
+
+@layer base {
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+  }
+
+  @keyframes float-slow {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    33% { transform: translateY(-8px) rotate(1deg); }
+    66% { transform: translateY(-4px) rotate(-1deg); }
+  }
+
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  @keyframes pulse-ring {
+    0% { transform: scale(0.95); opacity: 1; }
+    100% { transform: scale(1.4); opacity: 0; }
+  }
+
+  @keyframes gradient-shift {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+
+  @keyframes wiggle {
+    0%, 100% { transform: rotate(0deg); }
+    25% { transform: rotate(-3deg); }
+    75% { transform: rotate(3deg); }
+  }
+
+  @keyframes slide-up {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scale-in {
+    from { opacity: 0; transform: scale(0.9); }
+    to { opacity: 1; transform: scale(1); }
+  }
+}
+
+@utility animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+
+@utility animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
+
+@utility animate-shimmer {
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+@utility animate-pulse-ring {
+  animation: pulse-ring 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@utility animate-gradient {
+  background-size: 200% 200%;
+  animation: gradient-shift 4s ease infinite;
+}
+
+@utility animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+@utility animate-slide-up {
+  animation: slide-up 0.6s ease-out forwards;
+}
+
+@utility animate-scale-in {
+  animation: scale-in 0.5s ease-out forwards;
+}
+
+/* ═══════════════════════════════════════
+   RESPONSIVE TOUCH
+   ═══════════════════════════════════════ */
+
+@layer base {
+  @media (hover: none) {
+    .hover\:scale-105:active {
+      transform: scale(1.03);
+    }
+  }
+
+  /* Larger touch targets on mobile */
+  @media (pointer: coarse) {
+    button, a, [role="button"] {
+      min-height: 44px;
+      min-width: 44px;
+    }
+  }
+
+  /* Reduce motion */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
 }

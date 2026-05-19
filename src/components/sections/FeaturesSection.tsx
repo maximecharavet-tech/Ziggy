@@ -1,7 +1,19 @@
+'use client';
+
 import { useTranslations } from 'next-intl';
 import { Bot, ShieldCheck, Brain, Globe, Trophy, BookOpen } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
-import { Card } from '@/components/ui/Card';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { GlowCard } from '@/components/ui/GlowCard';
+
+const iconBgs = [
+  'bg-green/10 text-green',
+  'bg-blue/10 text-blue',
+  'bg-purple/10 text-purple',
+  'bg-yellow/10 text-yellow',
+  'bg-pink/10 text-pink',
+  'bg-green/10 text-green',
+];
 
 export function FeaturesSection() {
   const t = useTranslations('features');
@@ -18,16 +30,20 @@ export function FeaturesSection() {
   return (
     <section id="features" className="py-24 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto">
-        <SectionHeading title={t('title')} subtitle={t('subtitle')} />
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((f) => (
-            <Card key={f.title} hover>
-              <div className="w-12 h-12 rounded-xl bg-green/10 flex items-center justify-center mb-4">
-                <f.icon size={24} className="text-green" />
-              </div>
-              <h3 className="text-lg font-bold text-text-body mb-2">{f.title}</h3>
-              <p className="text-sm text-text-muted">{f.desc}</p>
-            </Card>
+        <ScrollReveal>
+          <SectionHeading title={t('title')} subtitle={t('subtitle')} />
+        </ScrollReveal>
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((f, i) => (
+            <ScrollReveal key={f.title} delay={i * 80} variant="fade-up">
+              <GlowCard>
+                <div className={`w-14 h-14 rounded-2xl ${iconBgs[i]} flex items-center justify-center mb-5`}>
+                  <f.icon size={26} />
+                </div>
+                <h3 className="text-lg font-bold text-text-body mb-2">{f.title}</h3>
+                <p className="text-sm text-text-muted leading-relaxed">{f.desc}</p>
+              </GlowCard>
+            </ScrollReveal>
           ))}
         </div>
       </div>

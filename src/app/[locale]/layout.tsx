@@ -48,6 +48,18 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir} className={geist.className}>
+      <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+        <meta name="theme-color" content="#22C55E" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#0A0A1A" media="(prefers-color-scheme: dark)" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+      </head>
       <body className="min-h-screen bg-bg text-text-body antialiased">
         <NextIntlClientProvider locale={locale} messages={messages}>
           <Navbar />

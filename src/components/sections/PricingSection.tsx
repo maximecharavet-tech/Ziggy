@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { Check } from 'lucide-react';
+import { Check, Sparkles } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Button } from '@/components/ui/Button';
 import { Badge } from '@/components/ui/Badge';
 
@@ -48,52 +49,81 @@ export function PricingSection() {
   ];
 
   return (
-    <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8">
+    <section id="pricing" className="py-24 px-4 sm:px-6 lg:px-8 relative">
       <div className="max-w-7xl mx-auto">
-        <SectionHeading title={t('title')} subtitle={t('subtitle')} />
+        <ScrollReveal>
+          <SectionHeading title={t('title')} subtitle={t('subtitle')} />
+        </ScrollReveal>
 
-        <div className="flex items-center justify-center gap-3 mb-12">
-          <span className={`text-sm font-medium ${!yearly ? 'text-text-body' : 'text-text-dim'}`}>{t('monthly')}</span>
-          <button
-            onClick={() => setYearly(!yearly)}
-            className={`relative w-12 h-6 rounded-full transition-colors ${yearly ? 'bg-green' : 'bg-border'}`}
-          >
-            <span className={`absolute top-0.5 w-5 h-5 rounded-full bg-white shadow transition-transform ${yearly ? 'translate-x-6' : 'translate-x-0.5'}`} />
-          </button>
-          <span className={`text-sm font-medium ${yearly ? 'text-text-body' : 'text-text-dim'}`}>{t('yearly')}</span>
-          {yearly && <Badge className="text-xs">{t('save')}</Badge>}
-        </div>
-
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {plans.map((plan) => (
-            <div
-              key={plan.name}
-              className={`relative bg-bg-card rounded-2xl border p-6 flex flex-col ${
-                plan.popular ? 'border-green shadow-[0_4px_20px_rgba(34,197,94,0.15)]' : 'border-border'
+        {/* Toggle */}
+        <ScrollReveal variant="fade" delay={100}>
+          <div className="flex items-center justify-center gap-4 mb-14">
+            <span className={`text-sm font-semibold transition-colors ${!yearly ? 'text-text-body' : 'text-text-dim'}`}>
+              {t('monthly')}
+            </span>
+            <button
+              onClick={() => setYearly(!yearly)}
+              className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
+                yearly ? 'bg-green shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-border'
               }`}
             >
-              {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                  <Badge>{t('popular')}</Badge>
+              <span
+                className={`absolute top-0.5 w-6 h-6 rounded-full bg-white shadow-md transition-transform duration-300 ${
+                  yearly ? 'translate-x-7' : 'translate-x-0.5'
+                }`}
+              />
+            </button>
+            <span className={`text-sm font-semibold transition-colors ${yearly ? 'text-text-body' : 'text-text-dim'}`}>
+              {t('yearly')}
+            </span>
+            {yearly && (
+              <Badge className="text-xs animate-scale-in">
+                <Sparkles size={12} className="mr-1" />
+                {t('save')}
+              </Badge>
+            )}
+          </div>
+        </ScrollReveal>
+
+        {/* Plans grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {plans.map((plan, i) => (
+            <ScrollReveal key={plan.name} delay={i * 100} variant="fade-up">
+              <div
+                className={`relative glass rounded-2xl border p-6 flex flex-col h-full transition-all duration-300 hover:-translate-y-1 ${
+                  plan.popular
+                    ? 'border-green shadow-[0_4px_30px_rgba(34,197,94,0.15)] scale-[1.02]'
+                    : 'border-border/50 hover:border-green/30 hover:shadow-lg'
+                }`}
+              >
+                {plan.popular && (
+                  <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
+                    <Badge className="shadow-lg shadow-green/20">
+                      <Sparkles size={12} className="mr-1" />
+                      {t('popular')}
+                    </Badge>
+                  </div>
+                )}
+                <h3 className="text-lg font-bold text-text-body">{plan.name}</h3>
+                <div className="mt-4 mb-6">
+                  <span className="text-4xl font-extrabold text-text-body">{plan.price}</span>
+                  {plan.period && <span className="text-text-muted text-sm ml-1">{plan.period}</span>}
                 </div>
-              )}
-              <h3 className="text-lg font-bold text-text-body">{plan.name}</h3>
-              <div className="mt-4 mb-6">
-                <span className="text-3xl font-extrabold text-text-body">{plan.price}</span>
-                {plan.period && <span className="text-text-muted text-sm">{plan.period}</span>}
+                <ul className="space-y-3 mb-8 flex-1">
+                  {plan.features.map((f) => (
+                    <li key={f} className="flex items-start gap-2.5 text-sm text-text-muted">
+                      <div className="w-5 h-5 rounded-full bg-green/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                        <Check size={12} className="text-green" />
+                      </div>
+                      {f}
+                    </li>
+                  ))}
+                </ul>
+                <Button variant={plan.variant} size="sm" className="w-full">
+                  {plan.cta}
+                </Button>
               </div>
-              <ul className="space-y-3 mb-8 flex-1">
-                {plan.features.map((f) => (
-                  <li key={f} className="flex items-start gap-2 text-sm text-text-muted">
-                    <Check size={16} className="text-green mt-0.5 flex-shrink-0" />
-                    {f}
-                  </li>
-                ))}
-              </ul>
-              <Button variant={plan.variant} size="sm" className="w-full">
-                {plan.cta}
-              </Button>
-            </div>
+            </ScrollReveal>
           ))}
         </div>
       </div>

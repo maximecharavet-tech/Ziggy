@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import { Heart } from 'lucide-react';
 
 export function Footer() {
   const t = useTranslations('footer');
@@ -21,20 +22,25 @@ export function Footer() {
   ];
 
   return (
-    <footer className="border-t border-border bg-bg-card">
+    <footer className="border-t border-border/50 bg-gradient-to-b from-bg to-bg-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
-            <div className="flex items-center gap-1.5 font-extrabold text-xl text-text-body mb-3">
+            <div className="flex items-center gap-1.5 font-extrabold text-xl text-text-body mb-4">
               Ziggy
-              <span className="w-2 h-2 rounded-full bg-green" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green shadow-[0_0_8px_rgba(34,197,94,0.4)]" />
             </div>
-            <p className="text-sm text-text-muted">{t('tagline')}</p>
+            <p className="text-sm text-text-muted leading-relaxed mb-4">{t('tagline')}</p>
+            <div className="flex items-center gap-1 text-xs text-text-dim">
+              <span>Made with</span>
+              <Heart size={12} className="text-pink fill-pink" />
+              <span>for kids</span>
+            </div>
           </div>
 
           <div>
-            <h4 className="font-bold text-text-body text-sm mb-4">{t('product')}</h4>
-            <ul className="space-y-2">
+            <h4 className="font-bold text-text-body text-sm mb-4 uppercase tracking-wider text-xs">{t('product')}</h4>
+            <ul className="space-y-3">
               {productLinks.map((link) => (
                 <li key={link.label}>
                   <a href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
@@ -46,8 +52,8 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold text-text-body text-sm mb-4">{t('company')}</h4>
-            <ul className="space-y-2">
+            <h4 className="font-bold text-text-body text-sm mb-4 uppercase tracking-wider text-xs">{t('company')}</h4>
+            <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.label}>
                   <a href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
@@ -59,8 +65,8 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold text-text-body text-sm mb-4">{t('legal')}</h4>
-            <ul className="space-y-2">
+            <h4 className="font-bold text-text-body text-sm mb-4 uppercase tracking-wider text-xs">{t('legal')}</h4>
+            <ul className="space-y-3">
               {legalLinks.map((link) => (
                 <li key={link.label}>
                   <a href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
@@ -72,7 +78,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border text-center text-sm text-text-dim">
+        <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-text-dim">
           {t('copyright')}
         </div>
       </div>
