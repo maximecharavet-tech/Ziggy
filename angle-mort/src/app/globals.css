@@ -1,0 +1,217 @@
+@import "tailwindcss";
+
+:root {
+  --obsidian: #05070d;
+  --gold: #c9a96b;
+  --gold-dim: rgba(201, 169, 107, 0.1);
+  --gold-mid: rgba(201, 169, 107, 0.35);
+  --gold-glow: rgba(201, 169, 107, 0.6);
+  --ivory: #f3efe6;
+  --ivory-dim: rgba(243, 239, 230, 0.55);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  cursor: none !important;
+}
+
+html {
+  background-color: #05070d;
+  scroll-behavior: auto;
+}
+
+body {
+  font-family: var(--font-archivo, "Archivo", sans-serif);
+  background-color: #05070d;
+  color: #f3efe6;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* scrollbar */
+::-webkit-scrollbar {
+  width: 1px;
+}
+::-webkit-scrollbar-track {
+  background: #05070d;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(201, 169, 107, 0.3);
+}
+
+::selection {
+  background: rgba(201, 169, 107, 0.2);
+  color: #c9a96b;
+}
+
+.font-display {
+  font-family: var(--font-cormorant, "Cormorant Garamond", serif);
+  font-style: italic;
+}
+
+/* Gold border button with fill animation */
+.btn-gold {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1.125rem 2.75rem;
+  border: 1px solid rgba(201, 169, 107, 0.45);
+  color: #c9a96b;
+  font-family: var(--font-archivo, "Archivo", sans-serif);
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  transition: color 0.45s ease;
+  background: transparent;
+  overflow: hidden;
+}
+
+.btn-gold::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: #c9a96b;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.45s cubic-bezier(0.76, 0, 0.24, 1);
+  z-index: 0;
+}
+
+.btn-gold:hover::before {
+  transform: scaleX(1);
+}
+
+.btn-gold:hover {
+  color: #05070d;
+  border-color: #c9a96b;
+}
+
+.btn-gold span {
+  position: relative;
+  z-index: 1;
+}
+
+/* Aperture animation */
+@keyframes aperture-open {
+  0% {
+    transform: rotate(0deg) scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: rotate(30deg) scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes aperture-breathe {
+  0%,
+  100% {
+    transform: rotate(30deg) scale(1);
+  }
+  50% {
+    transform: rotate(30deg) scale(1.04);
+  }
+}
+
+/* Question breathing animation */
+@keyframes breathe {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.003);
+  }
+}
+
+.breathe-animation {
+  animation: breathe 3s ease-in-out infinite;
+}
+
+.breathe-animation.stopped {
+  animation: none;
+}
+
+/* Depth meter gradient */
+.depth-meter-fill {
+  background: linear-gradient(
+    to top,
+    rgba(201, 169, 107, 0.2),
+    rgba(201, 169, 107, 0.5),
+    rgba(201, 169, 107, 0.9)
+  );
+  transition: height 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Resonance wave canvas */
+.resonance-canvas {
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Typewriter cursor */
+@keyframes blink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+.typewriter-cursor {
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  background: #c9a96b;
+  margin-left: 2px;
+  animation: blink 1s ease infinite;
+  vertical-align: text-bottom;
+}
+
+/* Gold line divider */
+.divider-gold {
+  width: 48px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, #c9a96b, transparent);
+}
+
+/* Frosted report preview */
+.report-preview-blur {
+  filter: blur(6px);
+  user-select: none;
+  pointer-events: none;
+}
+
+/* Glow text effect */
+.text-glow {
+  text-shadow: 0 0 40px rgba(201, 169, 107, 0.3);
+}
+
+/* Cinematic loader */
+@keyframes particle-converge {
+  0% {
+    transform: translate(var(--tx), var(--ty)) scale(0);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(0, 0) scale(1);
+    opacity: 0;
+  }
+}
