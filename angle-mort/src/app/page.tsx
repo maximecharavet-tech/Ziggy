@@ -701,19 +701,25 @@ export default function HomePage() {
             marginTop: "0.5rem",
           }}
         >
-          {["Mentions légales", "CGU", "Contact"].map((link) => (
-            <span
-              key={link}
+          {[
+            { label: "Mentions légales", href: "/mentions-legales" },
+            { label: "CGU", href: "/cgu" },
+            { label: "Contact", href: "mailto:contact@angle-mort.fr" },
+          ].map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
               style={{
                 fontFamily: "var(--font-archivo)",
                 fontSize: "0.65rem",
                 color: "var(--ivory-dim)",
                 letterSpacing: "0.1em",
                 textDecoration: "none",
+                transition: "color 0.2s ease",
               }}
             >
-              {link}
-            </span>
+              {label}
+            </Link>
           ))}
         </div>
       </footer>

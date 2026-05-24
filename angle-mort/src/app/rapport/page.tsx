@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 
 function TypewriterText({
@@ -128,20 +129,6 @@ function LoadingCinematic() {
         ))}
       </div>
 
-      <style>{`
-        @keyframes pulse-ring {
-          0%, 100% { opacity: 0.15; transform: scale(1); }
-          50% { opacity: 0.4; transform: scale(1.05); }
-        }
-        @keyframes pulse-core {
-          0%, 100% { opacity: 0.5; transform: scale(0.9); }
-          50% { opacity: 0.9; transform: scale(1.1); }
-        }
-        @keyframes dot-pulse {
-          0%, 100% { opacity: 0.2; transform: translateY(0); }
-          50% { opacity: 0.9; transform: translateY(-4px); }
-        }
-      `}</style>
     </div>
   );
 }
@@ -529,12 +516,13 @@ function RapportContent() {
           textAlign: "center",
         }}
       >
-        <p
+        <Link
+          href="/"
           className="font-display"
-          style={{ fontSize: "1.25rem", color: "var(--gold)", opacity: 0.7 }}
+          style={{ fontSize: "1.25rem", color: "var(--gold)", opacity: 0.7, textDecoration: "none" }}
         >
           Angle Mort
-        </p>
+        </Link>
         <p
           style={{
             fontFamily: "var(--font-archivo)",
@@ -556,6 +544,26 @@ function RapportContent() {
         >
           Powered by Hyper AI Engine™
         </p>
+        <div style={{ display: "flex", gap: "1.5rem", marginTop: "0.25rem" }}>
+          {[
+            { label: "Mentions légales", href: "/mentions-legales" },
+            { label: "CGU", href: "/cgu" },
+          ].map(({ label, href }) => (
+            <Link
+              key={label}
+              href={href}
+              style={{
+                fontFamily: "var(--font-archivo)",
+                fontSize: "0.6rem",
+                color: "rgba(243,239,230,0.3)",
+                letterSpacing: "0.1em",
+                textDecoration: "none",
+              }}
+            >
+              {label}
+            </Link>
+          ))}
+        </div>
       </footer>
     </main>
   );

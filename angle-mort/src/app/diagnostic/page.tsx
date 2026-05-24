@@ -581,16 +581,6 @@ export default function DiagnosticPage() {
         )}
       </AnimatePresence>
 
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-        textarea::placeholder {
-          color: rgba(243,239,230,0.2);
-          font-style: italic;
-          font-size: 0.875rem;
-        }
-      `}</style>
     </main>
   );
 }
