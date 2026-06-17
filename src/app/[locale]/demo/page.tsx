@@ -1,7 +1,16 @@
 import { setRequestLocale } from 'next-intl/server';
-import { useTranslations } from 'next-intl';
-import { ZiggyChat } from '@/components/ziggy/ZiggyChat';
-import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
+import { getTranslations } from 'next-intl/server';
+import type { Metadata } from 'next';
+import { DemoPageContent } from './DemoPageContent';
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'demo' });
+  return {
+    title: `${t('title')} — Ziggy`,
+    description: t('subtitle'),
+  };
+}
 
 export default async function DemoPage({
   params,
@@ -10,25 +19,5 @@ export default async function DemoPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-
-  return <DemoContent />;
-}
-
-function DemoContent() {
-  const t = useTranslations('demo');
-
-  return (
-    <section id="demo" className="pt-32 pb-24 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="text-center mb-12">
-          <div className="flex justify-center mb-6">
-            <ZiggyRobot size={120} />
-          </div>
-          <h1 className="text-3xl md:text-4xl font-extrabold text-text-body mb-4">{t('title')}</h1>
-          <p className="text-text-muted text-lg">{t('subtitle')}</p>
-        </div>
-        <ZiggyChat />
-      </div>
-    </section>
-  );
+  return <DemoPageContent />;
 }

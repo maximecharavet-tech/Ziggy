@@ -1,12 +1,13 @@
 import { ReactNode } from 'react';
 import { NextIntlClientProvider, hasLocale } from 'next-intl';
-import { getMessages, setRequestLocale } from 'next-intl/server';
+import { getMessages, getTranslations, setRequestLocale } from 'next-intl/server';
 import localFont from 'next/font/local';
 import { notFound } from 'next/navigation';
 import { locales, rtlLocales } from '@/i18n/config';
 import type { Locale } from '@/i18n/config';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
+import { BackToTop } from '@/components/ui/BackToTop';
 import type { Metadata } from 'next';
 import '../globals.css';
 
@@ -19,11 +20,50 @@ const geist = localFont({
   fallback: ['ui-sans-serif', 'system-ui', 'sans-serif'],
 });
 
-export const metadata: Metadata = {
-  title: 'Ziggy — AI Learning for Kids',
-  description: 'The AI-powered educational companion that teaches children aged 5-12 about artificial intelligence, math, logic, and creativity.',
-  icons: { icon: '/favicon.ico' },
-};
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'metadata' });
+
+  return {
+    title: t('title'),
+    description: t('description'),
+    icons: { icon: '/favicon.svg' },
+    metadataBase: new URL('https://ziggy.ai'),
+    openGraph: {
+      title: t('title'),
+      description: t('description'),
+      siteName: 'Ziggy',
+      locale,
+      type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: t('title'),
+      description: t('description'),
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+    alternates: {
+      canonical: '/',
+      languages: {
+        'fr': '/fr',
+        'en': '/en',
+        'es': '/es',
+        'de': '/de',
+        'pt': '/pt',
+        'it': '/it',
+        'nl': '/nl',
+        'tr': '/tr',
+        'ja': '/ja',
+        'ko': '/ko',
+        'zh': '/zh',
+        'ar': '/ar',
+      },
+    },
+  };
+}
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -65,6 +105,7 @@ export default async function LocaleLayout({
           <Navbar />
           <main>{children}</main>
           <Footer />
+          <BackToTop />
         </NextIntlClientProvider>
       </body>
     </html>
