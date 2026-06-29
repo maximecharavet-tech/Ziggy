@@ -9,7 +9,8 @@
     "pricing": "Fiyatlar",
     "demo": "Ziggy'yi Dene",
     "login": "Giriş yap",
-    "signup": "Başla"
+    "signup": "Başla",
+    "agents": "Ajanlar"
   },
   "hero": {
     "badge": "5-12 yaş çocuklar için yapay zeka eğitimi",
@@ -106,7 +107,12 @@
     "subtitle": "Ziggy ile sohbet edin ve yapay zeka öğrenmenin nasıl çalıştığını görün",
     "placeholder": "Ziggy'ye bir mesaj yazın...",
     "send": "Gönder",
-    "suggestions": ["Yapay zeka nedir?", "Bana matematik öğret!", "Bana bir hikaye anlat", "Hadi oyun oynayalım!"]
+    "suggestions": [
+      "Yapay zeka nedir?",
+      "Bana matematik öğret!",
+      "Bana bir hikaye anlat",
+      "Hadi oyun oynayalım!"
+    ]
   },
   "how_it_works": {
     "title": "Ziggy nasıl çalışır?",
@@ -163,5 +169,89 @@
     "cookies": "Çerez politikası",
     "gdpr": "GDPR",
     "copyright": "© 2026 Ziggy Technologies SAS. Tüm hakları saklıdır."
+  },
+  "agents": {
+    "badge": "Ekip",
+    "pageTitle": "Ziggy'nin arkadaşları",
+    "pageSubtitle": "Her karakter sana gerçek bir meslek öğretir. Onlarla sohbet et!",
+    "sectionTitle": "Meslekleri keşfet",
+    "sectionSubtitle": "Ziggy'nin arkadaşlarıyla sohbet et ve profesyonellerin nasıl çalıştığını öğren",
+    "backToAgents": "Ajanlara dön",
+    "footer": "Her ajan çocuklara eğlenceli ve güvenli bir şekilde gerçek meslekleri öğretir.",
+    "sales": {
+      "name": "Scout",
+      "description": "İşletmelerin müşteri bulmasını öğren!",
+      "longDescription": "İşletmelerin müşteri bulmasını öğren!",
+      "chatPlaceholder": "Ekip...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is sales?",
+        "How do you find customers?",
+        "Teach me!",
+        "What makes you good at it?"
+      ]
+    },
+    "marketing": {
+      "name": "Pixel",
+      "description": "Markaların hikayelerini nasıl anlattığını keşfet!",
+      "longDescription": "Markaların hikayelerini nasıl anlattığını keşfet!",
+      "chatPlaceholder": "Ekip...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is marketing?",
+        "How do ads work?",
+        "What's a brand?",
+        "Create a slogan!"
+      ]
+    },
+    "finance": {
+      "name": "Penny",
+      "description": "Parayı ve tasarrufu anla!",
+      "longDescription": "Parayı ve tasarrufu anla!",
+      "chatPlaceholder": "Ekip...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How do I save?",
+        "What is a bank?",
+        "Why is money important?",
+        "Teach me budgeting!"
+      ]
+    },
+    "accounting": {
+      "name": "Tally",
+      "description": "İşletmelerin her şeyi nasıl saydığını öğren!",
+      "longDescription": "İşletmelerin her şeyi nasıl saydığını öğren!",
+      "chatPlaceholder": "Ekip...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is accounting?",
+        "Why count everything?",
+        "How do receipts work?",
+        "Real-life math!"
+      ]
+    },
+    "advertising": {
+      "name": "Spark",
+      "description": "Yaratıcılığını serbest bırak ve reklamcılığı öğren!",
+      "longDescription": "Yaratıcılığını serbest bırak ve reklamcılığı öğren!",
+      "chatPlaceholder": "Ekip...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How are ads made?",
+        "Create a jingle!",
+        "What makes ads catchy?",
+        "Design a poster!"
+      ]
+    }
   }
 }

@@ -7,6 +7,7 @@ import { ModulesSection } from '@/components/sections/ModulesSection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { PricingSection } from '@/components/sections/PricingSection';
 import { ReviewsSection } from '@/components/sections/ReviewsSection';
+import { AgentsSection } from '@/components/sections/AgentsSection';
 import { DemoSection } from '@/components/sections/DemoSection';
 import { FAQSection } from '@/components/sections/FAQSection';
 import { CTAFinalSection } from '@/components/sections/CTAFinalSection';
@@ -25,6 +26,7 @@ export default async function HomePage({
       <TrustBar />
       <FeaturesSection />
       <ModulesSection />
+      <AgentsSection />
       <HowItWorksSection />
       <PricingSection />
       <ReviewsSection />

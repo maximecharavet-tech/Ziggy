@@ -9,7 +9,8 @@
     "pricing": "Precios",
     "demo": "Probar Ziggy",
     "login": "Iniciar sesión",
-    "signup": "Empezar"
+    "signup": "Empezar",
+    "agents": "Agentes"
   },
   "hero": {
     "badge": "Educación en IA para niños de 5 a 12 años",
@@ -106,7 +107,12 @@
     "subtitle": "Chatea con Ziggy y descubre cómo funciona el aprendizaje con IA",
     "placeholder": "Escribe un mensaje a Ziggy...",
     "send": "Enviar",
-    "suggestions": ["¿Qué es la IA?", "¡Enséñame mates!", "Cuéntame un cuento", "¡Juguemos a un juego!"]
+    "suggestions": [
+      "¿Qué es la IA?",
+      "¡Enséñame mates!",
+      "Cuéntame un cuento",
+      "¡Juguemos a un juego!"
+    ]
   },
   "how_it_works": {
     "title": "Cómo funciona Ziggy",
@@ -163,5 +169,89 @@
     "cookies": "Política de cookies",
     "gdpr": "GDPR",
     "copyright": "© 2026 Ziggy Technologies SAS. Todos los derechos reservados."
+  },
+  "agents": {
+    "badge": "El equipo",
+    "pageTitle": "Los amigos de Ziggy",
+    "pageSubtitle": "Cada personaje te enseña una profesión real. ¡Chatea con ellos!",
+    "sectionTitle": "Explora profesiones",
+    "sectionSubtitle": "Chatea con los amigos de Ziggy y aprende cómo trabajan los profesionales",
+    "backToAgents": "Volver a agentes",
+    "footer": "Cada agente enseña a los niños sobre profesiones reales de manera divertida y segura.",
+    "sales": {
+      "name": "Scout",
+      "description": "¡Aprende cómo las empresas encuentran clientes!",
+      "longDescription": "¡Aprende cómo las empresas encuentran clientes!",
+      "chatPlaceholder": "El equipo...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is sales?",
+        "How do you find customers?",
+        "Teach me!",
+        "What makes you good at it?"
+      ]
+    },
+    "marketing": {
+      "name": "Pixel",
+      "description": "¡Descubre cómo las marcas cuentan su historia!",
+      "longDescription": "¡Descubre cómo las marcas cuentan su historia!",
+      "chatPlaceholder": "El equipo...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is marketing?",
+        "How do ads work?",
+        "What's a brand?",
+        "Create a slogan!"
+      ]
+    },
+    "finance": {
+      "name": "Penny",
+      "description": "¡Comprende el dinero y el ahorro!",
+      "longDescription": "¡Comprende el dinero y el ahorro!",
+      "chatPlaceholder": "El equipo...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How do I save?",
+        "What is a bank?",
+        "Why is money important?",
+        "Teach me budgeting!"
+      ]
+    },
+    "accounting": {
+      "name": "Tally",
+      "description": "¡Aprende cómo las empresas cuentan todo!",
+      "longDescription": "¡Aprende cómo las empresas cuentan todo!",
+      "chatPlaceholder": "El equipo...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is accounting?",
+        "Why count everything?",
+        "How do receipts work?",
+        "Real-life math!"
+      ]
+    },
+    "advertising": {
+      "name": "Spark",
+      "description": "¡Libera tu creatividad y aprende publicidad!",
+      "longDescription": "¡Libera tu creatividad y aprende publicidad!",
+      "chatPlaceholder": "El equipo...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How are ads made?",
+        "Create a jingle!",
+        "What makes ads catchy?",
+        "Design a poster!"
+      ]
+    }
   }
 }

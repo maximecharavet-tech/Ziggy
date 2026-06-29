@@ -9,7 +9,8 @@
     "pricing": "الأسعار",
     "demo": "جرّب Ziggy",
     "login": "تسجيل الدخول",
-    "signup": "ابدأ الآن"
+    "signup": "ابدأ الآن",
+    "agents": "الوكلاء"
   },
   "hero": {
     "badge": "تعليم الذكاء الاصطناعي للأطفال من 5 إلى 12 سنة",
@@ -106,7 +107,12 @@
     "subtitle": "تحدث مع Ziggy واكتشف كيف يعمل التعلّم بالذكاء الاصطناعي",
     "placeholder": "اكتب رسالة لـ Ziggy...",
     "send": "إرسال",
-    "suggestions": ["ما هو الذكاء الاصطناعي؟", "علّمني الرياضيات!", "احكِ لي قصة", "هيا نلعب!"]
+    "suggestions": [
+      "ما هو الذكاء الاصطناعي؟",
+      "علّمني الرياضيات!",
+      "احكِ لي قصة",
+      "هيا نلعب!"
+    ]
   },
   "how_it_works": {
     "title": "كيف يعمل Ziggy",
@@ -163,5 +169,89 @@
     "cookies": "سياسة ملفات تعريف الارتباط",
     "gdpr": "GDPR",
     "copyright": "© 2026 Ziggy Technologies SAS. جميع الحقوق محفوظة."
+  },
+  "agents": {
+    "badge": "الفريق",
+    "pageTitle": "أصدقاء زيجي",
+    "pageSubtitle": "كل شخصية تعلمك مهنة حقيقية. تحدث معهم!",
+    "sectionTitle": "اكتشف المهن",
+    "sectionSubtitle": "تحدث مع أصدقاء زيجي وتعلم كيف يعمل المحترفون",
+    "backToAgents": "العودة إلى الوكلاء",
+    "footer": "كل وكيل مصمم لتعليم الأطفال عن المهن الحقيقية بطريقة ممتعة وآمنة.",
+    "sales": {
+      "name": "Scout",
+      "description": "تعلم كيف تجد الشركات عملاءها!",
+      "longDescription": "تعلم كيف تجد الشركات عملاءها!",
+      "chatPlaceholder": "الفريق...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is sales?",
+        "How do you find customers?",
+        "Teach me!",
+        "What makes you good at it?"
+      ]
+    },
+    "marketing": {
+      "name": "Pixel",
+      "description": "اكتشف كيف تحكي العلامات التجارية قصتها!",
+      "longDescription": "اكتشف كيف تحكي العلامات التجارية قصتها!",
+      "chatPlaceholder": "الفريق...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is marketing?",
+        "How do ads work?",
+        "What's a brand?",
+        "Create a slogan!"
+      ]
+    },
+    "finance": {
+      "name": "Penny",
+      "description": "افهم المال والادخار!",
+      "longDescription": "افهم المال والادخار!",
+      "chatPlaceholder": "الفريق...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How do I save?",
+        "What is a bank?",
+        "Why is money important?",
+        "Teach me budgeting!"
+      ]
+    },
+    "accounting": {
+      "name": "Tally",
+      "description": "تعلم كيف تحسب الشركات كل شيء!",
+      "longDescription": "تعلم كيف تحسب الشركات كل شيء!",
+      "chatPlaceholder": "الفريق...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is accounting?",
+        "Why count everything?",
+        "How do receipts work?",
+        "Real-life math!"
+      ]
+    },
+    "advertising": {
+      "name": "Spark",
+      "description": "أطلق إبداعك وتعلم الإعلان!",
+      "longDescription": "أطلق إبداعك وتعلم الإعلان!",
+      "chatPlaceholder": "الفريق...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How are ads made?",
+        "Create a jingle!",
+        "What makes ads catchy?",
+        "Design a poster!"
+      ]
+    }
   }
 }

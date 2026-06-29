@@ -9,7 +9,8 @@
     "pricing": "价格",
     "demo": "试用Ziggy",
     "login": "登录",
-    "signup": "开始使用"
+    "signup": "开始使用",
+    "agents": "代理"
   },
   "hero": {
     "badge": "面向5-12岁儿童的AI教育",
@@ -106,7 +107,12 @@
     "subtitle": "与Ziggy聊天，看看AI学习是如何运作的",
     "placeholder": "给Ziggy发消息...",
     "send": "发送",
-    "suggestions": ["什么是AI？", "教我数学！", "给我讲个故事", "我们来玩游戏吧！"]
+    "suggestions": [
+      "什么是AI？",
+      "教我数学！",
+      "给我讲个故事",
+      "我们来玩游戏吧！"
+    ]
   },
   "how_it_works": {
     "title": "Ziggy如何运作",
@@ -163,5 +169,89 @@
     "cookies": "Cookie政策",
     "gdpr": "GDPR",
     "copyright": "© 2026 Ziggy Technologies SAS. 保留所有权利。"
+  },
+  "agents": {
+    "badge": "团队",
+    "pageTitle": "Ziggy的朋友们",
+    "pageSubtitle": "每个角色都会教你一个真实的职业。和他们聊天吧！",
+    "sectionTitle": "探索职业",
+    "sectionSubtitle": "和Ziggy的朋友们聊天，了解专业人士的工作方式",
+    "backToAgents": "返回代理列表",
+    "footer": "每个代理都以有趣安全的方式教孩子们了解真实的职业。",
+    "sales": {
+      "name": "Scout",
+      "description": "学习企业如何找到客户！",
+      "longDescription": "学习企业如何找到客户！",
+      "chatPlaceholder": "团队...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is sales?",
+        "How do you find customers?",
+        "Teach me!",
+        "What makes you good at it?"
+      ]
+    },
+    "marketing": {
+      "name": "Pixel",
+      "description": "发现品牌如何讲述他们的故事！",
+      "longDescription": "发现品牌如何讲述他们的故事！",
+      "chatPlaceholder": "团队...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is marketing?",
+        "How do ads work?",
+        "What's a brand?",
+        "Create a slogan!"
+      ]
+    },
+    "finance": {
+      "name": "Penny",
+      "description": "了解金钱和储蓄！",
+      "longDescription": "了解金钱和储蓄！",
+      "chatPlaceholder": "团队...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How do I save?",
+        "What is a bank?",
+        "Why is money important?",
+        "Teach me budgeting!"
+      ]
+    },
+    "accounting": {
+      "name": "Tally",
+      "description": "学习企业如何计算一切！",
+      "longDescription": "学习企业如何计算一切！",
+      "chatPlaceholder": "团队...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is accounting?",
+        "Why count everything?",
+        "How do receipts work?",
+        "Real-life math!"
+      ]
+    },
+    "advertising": {
+      "name": "Spark",
+      "description": "释放你的创造力，学习广告！",
+      "longDescription": "释放你的创造力，学习广告！",
+      "chatPlaceholder": "团队...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How are ads made?",
+        "Create a jingle!",
+        "What makes ads catchy?",
+        "Design a poster!"
+      ]
+    }
   }
 }

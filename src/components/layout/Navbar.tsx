@@ -23,6 +23,7 @@ export function Navbar() {
   const navLinks = [
     { href: '#features', label: t('features') },
     { href: '#modules', label: t('modules') },
+    { href: '#agents', label: t('agents') },
     { href: '#pricing', label: t('pricing') },
     { href: '#demo', label: t('demo') },
   ];

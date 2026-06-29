@@ -9,7 +9,8 @@
     "pricing": "Pricing",
     "demo": "Try Ziggy",
     "login": "Log in",
-    "signup": "Get Started"
+    "signup": "Get Started",
+    "agents": "Agents"
   },
   "hero": {
     "badge": "AI Education for Kids Aged 5-12",
@@ -106,7 +107,12 @@
     "subtitle": "Chat with Ziggy and see how AI learning works",
     "placeholder": "Type a message to Ziggy...",
     "send": "Send",
-    "suggestions": ["What is AI?", "Teach me math!", "Tell me a story", "Let's play a game"]
+    "suggestions": [
+      "What is AI?",
+      "Teach me math!",
+      "Tell me a story",
+      "Let's play a game"
+    ]
   },
   "how_it_works": {
     "title": "How Ziggy Works",
@@ -163,5 +169,89 @@
     "cookies": "Cookie Policy",
     "gdpr": "GDPR",
     "copyright": "© 2026 Ziggy Technologies SAS. All rights reserved."
+  },
+  "agents": {
+    "badge": "Meet the Team",
+    "pageTitle": "Meet Ziggy's Friends",
+    "pageSubtitle": "Each character teaches you about a real-world profession. Chat with them and discover what grown-ups do at work!",
+    "sectionTitle": "Explore Real Jobs",
+    "sectionSubtitle": "Chat with Ziggy's friends and learn how real professionals work every day",
+    "backToAgents": "Back to all agents",
+    "footer": "Each agent is designed to teach kids about real-world professions in a fun, safe, and interactive way. More agents coming soon!",
+    "sales": {
+      "name": "Scout",
+      "description": "Learn how businesses find customers and build friendships that last!",
+      "longDescription": "Scout teaches you the art of connecting with people! Learn how businesses find customers, build trust, and help people discover products they need. It's like making friends — but for companies!",
+      "chatPlaceholder": "Ask Scout about sales and customer relationships...",
+      "learn1": "How to present ideas and convince others",
+      "learn2": "The importance of listening and understanding needs",
+      "learn3": "Building trust and long-term relationships",
+      "suggestions": [
+        "What is sales?",
+        "How do you find customers?",
+        "Teach me to pitch!",
+        "What makes a good salesperson?"
+      ]
+    },
+    "marketing": {
+      "name": "Pixel",
+      "description": "Discover how brands tell their story and reach people around the world!",
+      "longDescription": "Pixel shows you the colorful world of marketing! Learn how companies create their brand identity, understand what people like, and share their message with the world through creative campaigns.",
+      "chatPlaceholder": "Ask Pixel about marketing and branding...",
+      "learn1": "How brands create their unique identity",
+      "learn2": "Understanding what customers want and need",
+      "learn3": "Creative ways to share messages with the world",
+      "suggestions": [
+        "What is marketing?",
+        "How do ads work?",
+        "What's a brand?",
+        "Create a slogan!"
+      ]
+    },
+    "finance": {
+      "name": "Penny",
+      "description": "Understand money, saving, and how the world of finance works!",
+      "longDescription": "Penny makes finance fun and easy to understand! Learn about saving, budgeting, how banks work, and why managing money wisely is a superpower everyone needs.",
+      "chatPlaceholder": "Ask Penny about money and finance...",
+      "learn1": "How to save and budget your allowance",
+      "learn2": "What banks do and how money grows",
+      "learn3": "Smart money habits that last a lifetime",
+      "suggestions": [
+        "How do I save money?",
+        "What is a bank?",
+        "Why is money important?",
+        "Teach me budgeting!"
+      ]
+    },
+    "accounting": {
+      "name": "Tally",
+      "description": "Learn how businesses count, organize, and keep track of everything!",
+      "longDescription": "Tally shows you why math matters in real life! Learn how businesses track what they earn and spend, keep everything organized, and make sure the numbers always add up.",
+      "chatPlaceholder": "Ask Tally about numbers and organization...",
+      "learn1": "How businesses track their money in and out",
+      "learn2": "Why organization and precision matter",
+      "learn3": "Real-world math that makes a difference",
+      "suggestions": [
+        "What is accounting?",
+        "Why count everything?",
+        "How do receipts work?",
+        "Math in real life!"
+      ]
+    },
+    "advertising": {
+      "name": "Spark",
+      "description": "Unleash your creativity and learn how eye-catching ads are made!",
+      "longDescription": "Spark ignites your creativity! Learn how advertisements are designed, what makes a poster eye-catching, how jingles and slogans stick in your head, and the magic of the creative process.",
+      "chatPlaceholder": "Ask Spark about creativity and ads...",
+      "learn1": "How to design posters and eye-catching visuals",
+      "learn2": "The secret behind catchy slogans and jingles",
+      "learn3": "Turning creative ideas into real campaigns",
+      "suggestions": [
+        "How are ads made?",
+        "Create a jingle!",
+        "What makes ads catchy?",
+        "Design a poster idea!"
+      ]
+    }
   }
 }

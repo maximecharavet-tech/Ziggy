@@ -9,7 +9,8 @@
     "pricing": "요금",
     "demo": "Ziggy 체험",
     "login": "로그인",
-    "signup": "시작하기"
+    "signup": "시작하기",
+    "agents": "에이전트"
   },
   "hero": {
     "badge": "5~12세 어린이를 위한 AI 교육",
@@ -106,7 +107,12 @@
     "subtitle": "Ziggy와 대화하고 AI 학습이 어떻게 작동하는지 확인하세요",
     "placeholder": "Ziggy에게 메시지를 입력하세요...",
     "send": "보내기",
-    "suggestions": ["AI가 뭐야?", "수학 가르쳐 줘!", "이야기 들려줘", "게임하자!"]
+    "suggestions": [
+      "AI가 뭐야?",
+      "수학 가르쳐 줘!",
+      "이야기 들려줘",
+      "게임하자!"
+    ]
   },
   "how_it_works": {
     "title": "Ziggy 작동 방식",
@@ -163,5 +169,89 @@
     "cookies": "쿠키 정책",
     "gdpr": "GDPR",
     "copyright": "© 2026 Ziggy Technologies SAS. All rights reserved."
+  },
+  "agents": {
+    "badge": "팀",
+    "pageTitle": "지기의 친구들",
+    "pageSubtitle": "각 캐릭터가 실제 직업을 알려줘요. 대화해 보세요!",
+    "sectionTitle": "직업을 탐험해요",
+    "sectionSubtitle": "지기의 친구들과 대화하며 전문가들이 어떻게 일하는지 배워요",
+    "backToAgents": "에이전트 목록으로",
+    "footer": "각 에이전트는 아이들에게 재미있고 안전한 방식으로 실제 직업을 가르칩니다.",
+    "sales": {
+      "name": "Scout",
+      "description": "기업이 어떻게 고객을 찾는지 배워요!",
+      "longDescription": "기업이 어떻게 고객을 찾는지 배워요!",
+      "chatPlaceholder": "팀...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is sales?",
+        "How do you find customers?",
+        "Teach me!",
+        "What makes you good at it?"
+      ]
+    },
+    "marketing": {
+      "name": "Pixel",
+      "description": "브랜드가 어떻게 이야기를 전하는지 알아봐요!",
+      "longDescription": "브랜드가 어떻게 이야기를 전하는지 알아봐요!",
+      "chatPlaceholder": "팀...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is marketing?",
+        "How do ads work?",
+        "What's a brand?",
+        "Create a slogan!"
+      ]
+    },
+    "finance": {
+      "name": "Penny",
+      "description": "돈과 저축에 대해 이해해요!",
+      "longDescription": "돈과 저축에 대해 이해해요!",
+      "chatPlaceholder": "팀...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How do I save?",
+        "What is a bank?",
+        "Why is money important?",
+        "Teach me budgeting!"
+      ]
+    },
+    "accounting": {
+      "name": "Tally",
+      "description": "기업이 모든 것을 세는 방법을 배워요!",
+      "longDescription": "기업이 모든 것을 세는 방법을 배워요!",
+      "chatPlaceholder": "팀...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "What is accounting?",
+        "Why count everything?",
+        "How do receipts work?",
+        "Real-life math!"
+      ]
+    },
+    "advertising": {
+      "name": "Spark",
+      "description": "창의력을 발휘하고 광고를 배워요!",
+      "longDescription": "창의력을 발휘하고 광고를 배워요!",
+      "chatPlaceholder": "팀...",
+      "learn1": "Learn the fundamentals",
+      "learn2": "Practice with fun examples",
+      "learn3": "Build skills for the future",
+      "suggestions": [
+        "How are ads made?",
+        "Create a jingle!",
+        "What makes ads catchy?",
+        "Design a poster!"
+      ]
+    }
   }
 }

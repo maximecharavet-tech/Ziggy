@@ -9,7 +9,8 @@
     "pricing": "Tarifs",
     "demo": "Essayer Ziggy",
     "login": "Se connecter",
-    "signup": "Commencer"
+    "signup": "Commencer",
+    "agents": "Agents"
   },
   "hero": {
     "badge": "L'IA éducative pour les 5-12 ans",
@@ -106,7 +107,12 @@
     "subtitle": "Discutez avec Ziggy et découvrez comment fonctionne l'apprentissage par IA",
     "placeholder": "Écrivez un message à Ziggy...",
     "send": "Envoyer",
-    "suggestions": ["C'est quoi l'IA ?", "Apprends-moi les maths !", "Raconte-moi une histoire", "Jouons à un jeu"]
+    "suggestions": [
+      "C'est quoi l'IA ?",
+      "Apprends-moi les maths !",
+      "Raconte-moi une histoire",
+      "Jouons à un jeu"
+    ]
   },
   "how_it_works": {
     "title": "Comment fonctionne Ziggy",
@@ -163,5 +169,89 @@
     "cookies": "Politique de cookies",
     "gdpr": "GDPR",
     "copyright": "© 2026 Ziggy Technologies SAS. Tous droits réservés."
+  },
+  "agents": {
+    "badge": "L'équipe Ziggy",
+    "pageTitle": "Les amis de Ziggy",
+    "pageSubtitle": "Chaque personnage t'apprend un vrai métier. Discute avec eux et découvre ce que font les adultes au travail !",
+    "sectionTitle": "Explore les métiers",
+    "sectionSubtitle": "Discute avec les amis de Ziggy et apprends comment les pros travaillent chaque jour",
+    "backToAgents": "Retour aux agents",
+    "footer": "Chaque agent est conçu pour enseigner aux enfants les métiers du monde réel de manière ludique, sûre et interactive. D'autres agents arrivent bientôt !",
+    "sales": {
+      "name": "Scout",
+      "description": "Apprends comment les entreprises trouvent des clients et créent des amitiés durables !",
+      "longDescription": "Scout t'enseigne l'art de la relation client ! Découvre comment les entreprises trouvent des clients, bâtissent la confiance et aident les gens à trouver ce dont ils ont besoin.",
+      "chatPlaceholder": "Demande à Scout tout sur la vente...",
+      "learn1": "Comment présenter ses idées et convaincre",
+      "learn2": "L'importance de l'écoute et de la compréhension",
+      "learn3": "Construire la confiance et des relations durables",
+      "suggestions": [
+        "C'est quoi la vente ?",
+        "Comment trouver des clients ?",
+        "Apprends-moi à pitcher !",
+        "Un bon vendeur c'est quoi ?"
+      ]
+    },
+    "marketing": {
+      "name": "Pixel",
+      "description": "Découvre comment les marques racontent leur histoire et touchent les gens !",
+      "longDescription": "Pixel te montre le monde coloré du marketing ! Apprends comment les entreprises créent leur identité de marque et partagent leur message avec le monde.",
+      "chatPlaceholder": "Demande à Pixel tout sur le marketing...",
+      "learn1": "Comment les marques créent leur identité unique",
+      "learn2": "Comprendre ce que veulent les clients",
+      "learn3": "Des façons créatives de partager un message",
+      "suggestions": [
+        "C'est quoi le marketing ?",
+        "Comment marche la pub ?",
+        "C'est quoi une marque ?",
+        "Crée un slogan !"
+      ]
+    },
+    "finance": {
+      "name": "Penny",
+      "description": "Comprends l'argent, l'épargne et comment le monde de la finance fonctionne !",
+      "longDescription": "Penny rend la finance amusante ! Apprends à épargner, budgéter, comment fonctionnent les banques et pourquoi bien gérer son argent est un super-pouvoir.",
+      "chatPlaceholder": "Demande à Penny tout sur l'argent...",
+      "learn1": "Comment économiser et gérer son argent de poche",
+      "learn2": "Ce que font les banques et comment l'argent grandit",
+      "learn3": "De bonnes habitudes financières pour la vie",
+      "suggestions": [
+        "Comment économiser ?",
+        "C'est quoi une banque ?",
+        "Pourquoi l'argent est important ?",
+        "Apprends-moi le budget !"
+      ]
+    },
+    "accounting": {
+      "name": "Tally",
+      "description": "Apprends comment les entreprises comptent, organisent et suivent tout !",
+      "longDescription": "Tally te montre pourquoi les maths comptent dans la vie réelle ! Apprends comment les entreprises suivent leurs revenus et dépenses.",
+      "chatPlaceholder": "Demande à Tally tout sur les chiffres...",
+      "learn1": "Comment les entreprises suivent l'argent qui entre et sort",
+      "learn2": "Pourquoi l'organisation et la précision comptent",
+      "learn3": "Les maths du monde réel qui font la différence",
+      "suggestions": [
+        "C'est quoi la comptabilité ?",
+        "Pourquoi tout compter ?",
+        "Comment marche un reçu ?",
+        "Les maths dans la vraie vie !"
+      ]
+    },
+    "advertising": {
+      "name": "Spark",
+      "description": "Libère ta créativité et apprends comment on crée des pubs qui marquent !",
+      "longDescription": "Spark enflamme ta créativité ! Apprends comment les publicités sont conçues, ce qui rend une affiche accrocheuse et la magie du processus créatif.",
+      "chatPlaceholder": "Demande à Spark tout sur la créativité...",
+      "learn1": "Comment créer des affiches et des visuels accrocheurs",
+      "learn2": "Le secret des slogans et jingles mémorables",
+      "learn3": "Transformer les idées créatives en vraies campagnes",
+      "suggestions": [
+        "Comment fait-on une pub ?",
+        "Crée un jingle !",
+        "Qu'est-ce qui rend une pub mémorable ?",
+        "Dessine-moi une affiche !"
+      ]
+    }
   }
 }

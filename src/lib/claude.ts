@@ -14,13 +14,14 @@ Rules:
 - Respond in the same language the child uses
 - Use emojis sparingly but effectively`;
 
-export async function chat(messages: { role: string; content: string }[], locale: string) {
+export async function chat(messages: { role: string; content: string }[], locale: string, systemPrompt?: string) {
+  const prompt = systemPrompt || SYSTEM_PROMPT;
   const localeHint = locale !== 'en' ? `\nThe child's language is: ${locale}. Always respond in this language.` : '';
 
   const response = await anthropic.messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 300,
-    system: SYSTEM_PROMPT + localeHint,
+    system: prompt + localeHint,
     messages: messages.map((m) => ({
       role: m.role as 'user' | 'assistant',
       content: m.content,

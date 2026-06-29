@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { chat } from '@/lib/claude';
 import { rateLimit } from '@/lib/rate-limit';
+import { getAgent, getAgentSystemPrompt } from '@/lib/agents';
 
 function stripHtml(str: string): string {
   return str.replace(/<[^>]*>/g, '');
@@ -15,7 +16,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { messages, locale } = body;
+    const { messages, locale, agentId } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
@@ -30,7 +31,12 @@ export async function POST(request: NextRequest) {
       content: stripHtml(String(m.content || '').slice(0, 2000).trim()),
     }));
 
-    const message = await chat(sanitized, locale || 'en');
+    let systemPrompt: string | undefined;
+    if (agentId && getAgent(agentId)) {
+      systemPrompt = getAgentSystemPrompt(agentId, locale || 'en');
+    }
+
+    const message = await chat(sanitized, locale || 'en', systemPrompt);
     return NextResponse.json({ message });
   } catch (error) {
     console.error('Chat API error:', error);
