@@ -7,6 +7,7 @@ import { Menu, X } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export function Navbar() {
   const t = useTranslations('nav');
@@ -56,6 +57,7 @@ export function Navbar() {
         </div>
 
         <div className="hidden md:flex items-center gap-3">
+          <ThemeToggle />
           <LanguageSwitcher />
           <Button size="sm">{t('signup')}</Button>
         </div>
@@ -93,6 +95,7 @@ export function Navbar() {
                 </motion.a>
               ))}
               <div className="flex items-center gap-3 pt-4 px-3">
+                <ThemeToggle />
                 <LanguageSwitcher />
                 <Button size="sm" className="flex-1">{t('signup')}</Button>
               </div>

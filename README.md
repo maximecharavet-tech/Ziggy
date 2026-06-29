@@ -1,7 +1,6 @@
-# Ziggy -- AI Learning for Kids
+# Ziggy — AI Learning for Kids
 
-Premium AI-powered educational platform for children aged 5--12.
-Teaches AI, math, logic, and creativity through play.
+Premium AI-powered educational platform for children aged 5-12. Teaches AI, math, logic, and creativity through play.
 
 ## Features
 
@@ -11,6 +10,7 @@ Teaches AI, math, logic, and creativity through play.
 - Gamified learning with badges and rewards
 - GDPR-compliant, kid-safe environment
 - PWA-ready, works on all devices
+- Dark mode support
 
 ## Tech Stack
 
@@ -23,56 +23,21 @@ Teaches AI, math, logic, and creativity through play.
 
 ## Getting Started
 
-1. Clone and install:
-
-   ```bash
-   git clone <repo-url>
-   cd Ziggy
-   npm install
-   ```
-
-2. Set up environment:
-
-   ```bash
-   cp .env.example .env.local
-   # Edit .env.local with your Anthropic API key
-   ```
-
-3. Run development server:
-
-   ```bash
-   npm run dev
-   ```
-
-4. Open [http://localhost:3000](http://localhost:3000)
-
-## Project Structure
-
+```bash
+git clone <repo-url>
+cd Ziggy
+npm install
+cp .env.example .env.local
+# Edit .env.local with your Anthropic API key
+npm run dev
 ```
-src/
-  app/
-    [locale]/       # Locale-based routing (fr, en, es, ...)
-      demo/         # Interactive demo page
-    api/            # API routes (chat endpoint)
-    sitemap.ts      # Dynamic sitemap generation
-  components/
-    layout/         # Header, footer, navigation
-    sections/       # Landing page sections
-    ui/             # Reusable UI primitives
-    ziggy/          # Ziggy character & chat components
-  hooks/            # Custom React hooks
-  i18n/             # Internationalization config & messages
-  lib/              # Utilities and helpers
-public/
-  icons/            # PWA icons (192x192, 512x512)
-  manifest.json     # PWA manifest
-  robots.txt        # Crawler directives
-```
+
+Open [http://localhost:3000](http://localhost:3000)
 
 ## Supported Languages
 
-fr (default), en, es, de, pt, it, nl, tr, ja, ko, zh, ar
+FR (default), EN, ES, DE, PT, IT, NL, TR, JA, KO, ZH, AR
 
 ## License
 
-Proprietary -- Ziggy Technologies SAS
+Proprietary — Ziggy Technologies SAS

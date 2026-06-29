@@ -1,8 +1,3 @@
-interface RateLimitConfig {
-  maxRequests: number;
-  windowMs: number;
-}
-
 interface RateLimitEntry {
   count: number;
   resetTime: number;
@@ -10,27 +5,6 @@ interface RateLimitEntry {
 
 const store = new Map<string, RateLimitEntry>();
 
-export function rateLimit(
-  key: string,
-  config: RateLimitConfig
-): { success: boolean; remaining: number } {
-  const now = Date.now();
-  const entry = store.get(key);
-
-  if (!entry || now > entry.resetTime) {
-    store.set(key, { count: 1, resetTime: now + config.windowMs });
-    return { success: true, remaining: config.maxRequests - 1 };
-  }
-
-  if (entry.count >= config.maxRequests) {
-    return { success: false, remaining: 0 };
-  }
-
-  entry.count += 1;
-  return { success: true, remaining: config.maxRequests - entry.count };
-}
-
-// Cleanup stale entries every 60s
 if (typeof setInterval !== 'undefined') {
   setInterval(() => {
     const now = Date.now();
@@ -38,4 +12,25 @@ if (typeof setInterval !== 'undefined') {
       if (now > value.resetTime) store.delete(key);
     }
   }, 60_000);
+}
+
+export function rateLimit(
+  key: string,
+  maxRequests: number,
+  windowMs: number
+): { success: boolean; remaining: number } {
+  const now = Date.now();
+  const entry = store.get(key);
+
+  if (!entry || now > entry.resetTime) {
+    store.set(key, { count: 1, resetTime: now + windowMs });
+    return { success: true, remaining: maxRequests - 1 };
+  }
+
+  if (entry.count >= maxRequests) {
+    return { success: false, remaining: 0 };
+  }
+
+  entry.count++;
+  return { success: true, remaining: maxRequests - entry.count };
 }

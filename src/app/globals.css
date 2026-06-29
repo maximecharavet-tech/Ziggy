@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --color-bg: #FAFBFC;
   --color-bg-dark: #0A0A1A;
@@ -58,6 +60,18 @@
       background-color: var(--color-bg-dark);
       color: var(--color-text-body-dark);
     }
+  }
+
+  .dark body,
+  .dark {
+    background-color: var(--color-bg-dark);
+    color: var(--color-text-body-dark);
+    --color-bg: #0A0A1A;
+    --color-bg-card: #12122A;
+    --color-border: #1E1E3A;
+    --color-text-body: #E8ECEF;
+    --color-text-muted: #9CA3AF;
+    --color-text-dim: #6B7280;
   }
 
   /* Safe area for notched devices */

@@ -1,5 +1,6 @@
 import { useTranslations } from 'next-intl';
 import { Heart } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
 
 export function Footer() {
   const t = useTranslations('footer');
@@ -15,10 +16,10 @@ export function Footer() {
   ];
 
   const legalLinks = [
-    { label: t('privacy'), href: '#' },
-    { label: t('terms'), href: '#' },
-    { label: t('cookies'), href: '#' },
-    { label: t('gdpr'), href: '#' },
+    { label: t('privacy'), href: '/privacy' as const },
+    { label: t('terms'), href: '/terms' as const },
+    { label: t('cookies'), href: '/cookies' as const },
+    { label: t('gdpr'), href: '/privacy' as const },
   ];
 
   return (
@@ -69,9 +70,9 @@ export function Footer() {
             <ul className="space-y-3">
               {legalLinks.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
+                  <Link href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
                     {link.label}
-                  </a>
+                  </Link>
                 </li>
               ))}
             </ul>

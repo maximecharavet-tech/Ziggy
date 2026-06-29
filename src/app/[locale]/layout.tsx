@@ -8,6 +8,7 @@ import type { Locale } from '@/i18n/config';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { BackToTop } from '@/components/ui/BackToTop';
+import { CookieConsent } from '@/components/ui/CookieConsent';
 import type { Metadata } from 'next';
 import '../globals.css';
 
@@ -87,7 +88,7 @@ export default async function LocaleLayout({
   const dir = rtlLocales.includes(locale as Locale) ? 'rtl' : 'ltr';
 
   return (
-    <html lang={locale} dir={dir} className={geist.className}>
+    <html lang={locale} dir={dir} className={geist.className} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <meta name="theme-color" content="#22C55E" media="(prefers-color-scheme: light)" />
@@ -101,11 +102,16 @@ export default async function LocaleLayout({
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
       </head>
       <body className="min-h-screen bg-bg text-text-body antialiased">
+        <script dangerouslySetInnerHTML={{ __html: `
+  (function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()
+`}} />
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-green focus:text-white focus:rounded-lg">Skip to content</a>
           <Navbar />
-          <main>{children}</main>
+          <main id="main-content">{children}</main>
           <Footer />
           <BackToTop />
+          <CookieConsent />
         </NextIntlClientProvider>
       </body>
     </html>

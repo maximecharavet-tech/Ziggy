@@ -1,39 +1,24 @@
-import type { MetadataRoute } from "next";
+import type { MetadataRoute } from 'next';
 
-const SITE_URL = "https://ziggy.ai";
+const locales = ['fr', 'en', 'es', 'de', 'pt', 'it', 'nl', 'tr', 'ja', 'ko', 'zh', 'ar'];
+const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ziggy.ai';
 
-const locales = [
-  "fr",
-  "en",
-  "es",
-  "de",
-  "pt",
-  "it",
-  "nl",
-  "tr",
-  "ja",
-  "ko",
-  "zh",
-  "ar",
-] as const;
-
-const pages = [
-  { path: "", changeFrequency: "weekly" as const, priority: 1.0 },
-  { path: "/demo", changeFrequency: "monthly" as const, priority: 0.9 },
-  { path: "/privacy", changeFrequency: "yearly" as const, priority: 0.3 },
-  { path: "/terms", changeFrequency: "yearly" as const, priority: 0.3 },
-  { path: "/cookies", changeFrequency: "yearly" as const, priority: 0.3 },
-];
+const routes = ['', '/demo', '/privacy', '/terms', '/cookies'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const lastModified = new Date();
+  const entries: MetadataRoute.Sitemap = [];
 
-  return locales.flatMap((locale) =>
-    pages.map((page) => ({
-      url: `${SITE_URL}/${locale}${page.path}`,
-      lastModified,
-      changeFrequency: page.changeFrequency,
-      priority: page.priority,
-    }))
-  );
+  for (const route of routes) {
+    for (const locale of locales) {
+      const path = locale === 'fr' ? route : `/${locale}${route}`;
+      entries.push({
+        url: `${baseUrl}${path || '/'}`,
+        lastModified: new Date(),
+        changeFrequency: route === '' ? 'weekly' : 'monthly',
+        priority: route === '' ? 1.0 : 0.7,
+      });
+    }
+  }
+
+  return entries;
 }
