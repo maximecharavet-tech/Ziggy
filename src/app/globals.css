@@ -169,6 +169,19 @@
   touch-action: pan-x pan-y;
 }
 
+@utility bg-grid {
+  background-image:
+    linear-gradient(color-mix(in srgb, var(--color-border) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--color-border) 55%, transparent) 1px, transparent 1px);
+  background-size: 44px 44px;
+  mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 70% 60% at 50% 40%, black 30%, transparent 75%);
+}
+
+@utility text-balance {
+  text-wrap: balance;
+}
+
 /* ═══════════════════════════════════════
    ANIMATIONS
    ═══════════════════════════════════════ */

@@ -6,6 +6,7 @@ import { ArrowLeft, Shield, Sparkles, BookOpen } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { getAgent } from '@/lib/agents';
 import { AgentChat } from '@/components/agents/AgentChat';
+import { AgentAvatar } from '@/components/agents/AgentAvatar';
 import { ParticleField } from '@/components/ui/ParticleField';
 
 export function AgentPageContent({ agentId }: { agentId: string }) {
@@ -35,10 +36,10 @@ export function AgentPageContent({ agentId }: { agentId: string }) {
               transition={{ duration: 0.5 }}
             >
               <div
-                className="w-20 h-20 rounded-3xl flex items-center justify-center text-4xl mb-6"
-                style={{ backgroundColor: `${agent.color}15` }}
+                className="w-24 h-24 rounded-3xl flex items-center justify-center mb-6 animate-float"
+                style={{ backgroundColor: `${agent.color}12`, boxShadow: `0 8px 32px ${agent.color}20` }}
               >
-                {agent.icon}
+                <AgentAvatar agentId={agentId} color={agent.color} size={78} />
               </div>
 
               <h1 className="text-3xl sm:text-4xl font-extrabold mb-3" style={{ color: agent.color }}>

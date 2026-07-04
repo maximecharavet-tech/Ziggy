@@ -9,6 +9,7 @@ import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/ui/CookieConsent';
+import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import type { Metadata } from 'next';
 import '../globals.css';
 
@@ -87,6 +88,29 @@ export default async function LocaleLayout({
   const messages = await getMessages();
   const dir = rtlLocales.includes(locale as Locale) ? 'rtl' : 'ltr';
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'WebApplication',
+    name: 'Ziggy',
+    applicationCategory: 'EducationalApplication',
+    operatingSystem: 'Web',
+    description: 'AI-powered learning companion for kids aged 5-12',
+    offers: {
+      '@type': 'Offer',
+      price: '0',
+      priceCurrency: 'EUR',
+    },
+    audience: {
+      '@type': 'EducationalAudience',
+      educationalRole: 'student',
+    },
+    provider: {
+      '@type': 'Organization',
+      name: 'Ziggy Technologies SAS',
+      url: 'https://ziggy.ai',
+    },
+  };
+
   return (
     <html lang={locale} dir={dir} className={geist.className} suppressHydrationWarning>
       <head>
@@ -105,8 +129,13 @@ export default async function LocaleLayout({
         <script dangerouslySetInnerHTML={{ __html: `
   (function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()
 `}} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <NextIntlClientProvider locale={locale} messages={messages}>
           <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-green focus:text-white focus:rounded-lg">Skip to content</a>
+          <ScrollProgress />
           <Navbar />
           <main id="main-content">{children}</main>
           <Footer />

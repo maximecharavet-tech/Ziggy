@@ -10,8 +10,9 @@ export function AgentsSection() {
   const t = useTranslations('agents');
 
   return (
-    <section id="agents" className="py-20 sm:py-28 relative">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section id="agents" className="py-20 sm:py-28 relative overflow-hidden">
+      <div className="absolute inset-0 bg-grid pointer-events-none" aria-hidden="true" />
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative">
         <ScrollReveal>
           <div className="text-center mb-12">
             <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-green/10 mb-4">

@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Send } from 'lucide-react';
+import { AgentAvatar } from './AgentAvatar';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -19,7 +20,7 @@ interface AgentChatProps {
   placeholder: string;
 }
 
-export function AgentChat({ agentId, agentName, agentIcon, color, suggestions, placeholder }: AgentChatProps) {
+export function AgentChat({ agentId, agentName, color, suggestions, placeholder }: AgentChatProps) {
   const locale = useLocale();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState('');
@@ -68,9 +69,15 @@ export function AgentChat({ agentId, agentName, agentIcon, color, suggestions, p
   return (
     <div className="w-full max-w-lg mx-auto">
       <div className="glass-strong border border-border/50 rounded-2xl shadow-lg overflow-hidden">
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50" style={{ backgroundColor: `${color}08` }}>
-          <div className="w-9 h-9 rounded-full flex items-center justify-center text-lg" style={{ background: `linear-gradient(135deg, ${color}, ${color}CC)` }}>
-            {agentIcon}
+        <div
+          className="flex items-center gap-3 px-4 py-3 border-b border-border/50"
+          style={{ backgroundColor: `${color}08` }}
+        >
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center overflow-hidden"
+            style={{ backgroundColor: `${color}15` }}
+          >
+            <AgentAvatar agentId={agentId} color={color} size={34} />
           </div>
           <div>
             <div className="text-sm font-bold text-text-body flex items-center gap-1.5">
@@ -86,16 +93,20 @@ export function AgentChat({ agentId, agentName, agentIcon, color, suggestions, p
         <div className="h-80 sm:h-96 overflow-y-auto p-4 space-y-3 scroll-smooth">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4">
-              <div className="text-4xl">{agentIcon}</div>
+              <div className="animate-float">
+                <AgentAvatar agentId={agentId} color={color} size={72} />
+              </div>
               <p className="text-sm text-text-muted max-w-xs">{placeholder}</p>
-              <div className="flex flex-wrap gap-2 justify-center mt-2">
+              <div className="flex flex-wrap gap-2 justify-center mt-1">
                 {suggestions.map((s) => (
                   <button
                     key={s}
                     onClick={() => sendMessage(s)}
-                    className="px-3 py-1.5 rounded-full glass border border-border/50 text-xs font-medium text-text-body hover:border-opacity-60 hover:bg-opacity-5 transition-all active:scale-95"
-                    style={{ ['--tw-border-opacity' as string]: undefined }}
-                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = color)}
+                    className="px-3.5 py-2 rounded-full glass border border-border/50 text-xs font-semibold text-text-body transition-all duration-200 active:scale-95 hover:shadow-sm"
+                    style={{ ['--hover-border' as string]: color }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = `${color}66`)}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = '')}
+                    onMouseEnter={(e) => (e.currentTarget.style.borderColor = `${color}66`)}
                     onMouseLeave={(e) => (e.currentTarget.style.borderColor = '')}
                   >
                     {s}
@@ -112,8 +123,13 @@ export function AgentChat({ agentId, agentName, agentIcon, color, suggestions, p
                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.25 }}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
+                {msg.role === 'assistant' && (
+                  <div className="flex-shrink-0 mb-1">
+                    <AgentAvatar agentId={agentId} color={color} size={26} />
+                  </div>
+                )}
                 <div
                   className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed max-w-[85%] ${
                     msg.role === 'user'
@@ -129,11 +145,18 @@ export function AgentChat({ agentId, agentName, agentIcon, color, suggestions, p
           </AnimatePresence>
 
           {isLoading && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex justify-start">
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-end gap-2 justify-start">
+              <div className="flex-shrink-0 mb-1">
+                <AgentAvatar agentId={agentId} color={color} size={26} />
+              </div>
               <div className="glass border border-border/50 px-4 py-3 rounded-2xl rounded-bl-md">
                 <div className="flex gap-1">
                   {[0, 150, 300].map((delay) => (
-                    <span key={delay} className="w-2 h-2 rounded-full animate-bounce" style={{ backgroundColor: color, animationDelay: `${delay}ms` }} />
+                    <span
+                      key={delay}
+                      className="w-2 h-2 rounded-full animate-bounce"
+                      style={{ backgroundColor: color, animationDelay: `${delay}ms` }}
+                    />
                   ))}
                 </div>
               </div>
@@ -157,10 +180,11 @@ export function AgentChat({ agentId, agentName, agentIcon, color, suggestions, p
             <button
               type="submit"
               disabled={isLoading || !input.trim()}
+              aria-label="Send message"
               className="w-11 h-11 rounded-full text-white flex items-center justify-center disabled:opacity-40 transition-all hover:shadow-lg active:scale-95"
               style={{ background: `linear-gradient(135deg, ${color}, ${color}CC)` }}
             >
-              <Send size={16} />
+              <Send size={16} className="rtl:rotate-180" />
             </button>
           </form>
         </div>
