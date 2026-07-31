@@ -226,6 +226,7 @@ export function QuizGame({ color }: { color: string }) {
         {phase === 'done' && (
           <GameResultScreen
             key="done"
+            gameId="quiz"
             color={color}
             stars={stars}
             scoreLabel={t('score')}

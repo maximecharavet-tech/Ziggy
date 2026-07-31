@@ -26,6 +26,7 @@ export function CTAFinalSection() {
               {t('subtitle')}
             </p>
             <Button
+              href="/signup"
               variant="secondary"
               size="lg"
               className="bg-white text-green hover:bg-white/90 border-0 shadow-xl shadow-black/10"

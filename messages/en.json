@@ -11,7 +11,9 @@
     "login": "Log in",
     "signup": "Get Started",
     "agents": "Agents",
-    "games": "Games"
+    "games": "Games",
+    "account": "My account",
+    "signin": "Sign in"
   },
   "hero": {
     "badge": "AI Education for Kids Aged 5-12",
@@ -384,5 +386,49 @@
         }
       ]
     }
+  },
+  "account": {
+    "badge": "My account",
+    "signupTitle": "Create your Ziggy profile",
+    "signupSubtitle": "Pick your name and avatar, and off you go!",
+    "nameLabel": "Your first name",
+    "namePlaceholder": "e.g. Mia",
+    "ageLabel": "Your age",
+    "avatarLabel": "Choose your avatar",
+    "emailLabel": "Parent email",
+    "emailPlaceholder": "parent@example.com",
+    "emailHint": "Optional — to receive progress updates",
+    "createButton": "Create my profile",
+    "alreadyHave": "Already have a profile?",
+    "loginLink": "Continue",
+    "errorName": "Type your first name to continue",
+    "errorEmail": "That email doesn't look right",
+    "localOnly": "Your profile stays on this device. Nothing is sent over the internet.",
+    "loginTitle": "Welcome back!",
+    "loginSubtitle": "Pick up right where you left off.",
+    "continueAs": "Continue",
+    "createNew": "Create another profile",
+    "noProfileTitle": "No profile on this device",
+    "noProfileText": "Create your Ziggy profile in thirty seconds.",
+    "dashboardTitle": "Hi",
+    "dashboardSubtitle": "Here is how you are doing with Ziggy",
+    "editName": "Change name",
+    "save": "Save",
+    "signOut": "Sign out",
+    "progressTitle": "Your trophies",
+    "starsEarned": "Stars earned",
+    "gamesPlayed": "Games played",
+    "noProgress": "You haven't played yet. Pick a game and win your first stars!",
+    "playGames": "Go to the games",
+    "bestScore": "Best score",
+    "plays": "plays"
+  },
+  "showcase": {
+    "badge": "Meet Ziggy",
+    "title": "Meet Ziggy, your child's robot friend",
+    "subtitle": "He laughs, he cheers, he never judges. Ziggy turns maths, logic and AI into play — and his heart lights up with every right answer.",
+    "cta": "Try it free",
+    "cta_games": "See the games",
+    "play": "Watch Ziggy"
   }
 }

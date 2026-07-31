@@ -2,7 +2,9 @@
 
 import { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
+import { recordGameResult } from '@/lib/progress';
 import { RotateCcw, Star, Play } from 'lucide-react';
 
 /* ═══════════════════════════════════════
@@ -257,6 +259,7 @@ export function GameResultScreen({
   scoreValue,
   extras = [],
   onRestart,
+  gameId,
 }: {
   color: string;
   stars: number;
@@ -264,9 +267,19 @@ export function GameResultScreen({
   scoreValue: string | number;
   extras?: GameStat[];
   onRestart: () => void;
+  /** When given, the round is saved to the child's local progress. */
+  gameId?: string;
 }) {
   const t = useTranslations('games');
   const title = stars >= 2 ? t('wellDone') : t('tryAgain');
+
+  // Every game funnels through this screen, so recording here keeps the four
+  // of them from each repeating the same call.
+  useEffect(() => {
+    if (!gameId) return;
+    const numeric = typeof scoreValue === 'number' ? scoreValue : Number.parseInt(String(scoreValue), 10);
+    recordGameResult(gameId, Number.isFinite(numeric) ? numeric : 0, stars);
+  }, [gameId, scoreValue, stars]);
 
   return (
     <motion.div

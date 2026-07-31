@@ -93,11 +93,11 @@ export function HeroSection() {
             custom={3}
             className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
           >
-            <Button size="lg" className="group relative overflow-hidden">
+            <Button href="/signup" size="lg" className="group relative overflow-hidden">
               <span className="relative z-10">{t('cta_primary')}</span>
               <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
             </Button>
-            <Button variant="secondary" size="lg">
+            <Button href="/demo" variant="secondary" size="lg">
               {t('cta_secondary')}
             </Button>
           </motion.div>

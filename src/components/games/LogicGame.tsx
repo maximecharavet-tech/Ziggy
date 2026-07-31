@@ -331,6 +331,7 @@ export function LogicGame({ color }: { color: string }) {
         {phase === 'done' && (
           <GameResultScreen
             key="done"
+            gameId="logic"
             color={color}
             stars={stars}
             scoreLabel={t('score')}

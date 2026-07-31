@@ -11,7 +11,9 @@
     "login": "Inloggen",
     "signup": "Aan de slag",
     "agents": "Agenten",
-    "games": "Spelletjes"
+    "games": "Spelletjes",
+    "account": "Mijn account",
+    "signin": "Inloggen"
   },
   "hero": {
     "badge": "AI-onderwijs voor kinderen van 5 tot 12 jaar",
@@ -384,5 +386,49 @@
         }
       ]
     }
+  },
+  "account": {
+    "badge": "Mijn account",
+    "signupTitle": "Maak je Ziggy-profiel",
+    "signupSubtitle": "Kies je naam en avatar en je kunt beginnen!",
+    "nameLabel": "Je voornaam",
+    "namePlaceholder": "Bijv. Sofie",
+    "ageLabel": "Je leeftijd",
+    "avatarLabel": "Kies je avatar",
+    "emailLabel": "E-mail van je ouder",
+    "emailPlaceholder": "ouder@voorbeeld.nl",
+    "emailHint": "Optioneel — voor voortgangsupdates",
+    "createButton": "Mijn profiel maken",
+    "alreadyHave": "Heb je al een profiel?",
+    "loginLink": "Doorgaan",
+    "errorName": "Vul je voornaam in om verder te gaan",
+    "errorEmail": "Dit e-mailadres klopt niet",
+    "localOnly": "Je profiel blijft op dit apparaat. Er wordt niets naar internet gestuurd.",
+    "loginTitle": "Fijn dat je er weer bent!",
+    "loginSubtitle": "Ga verder waar je gebleven was.",
+    "continueAs": "Doorgaan",
+    "createNew": "Nog een profiel maken",
+    "noProfileTitle": "Geen profiel op dit apparaat",
+    "noProfileText": "Maak je Ziggy-profiel in dertig seconden.",
+    "dashboardTitle": "Hoi",
+    "dashboardSubtitle": "Zo doe je het met Ziggy",
+    "editName": "Naam wijzigen",
+    "save": "Opslaan",
+    "signOut": "Afmelden",
+    "progressTitle": "Jouw trofeeën",
+    "starsEarned": "Verdiende sterren",
+    "gamesPlayed": "Gespeelde spellen",
+    "noProgress": "Je hebt nog niet gespeeld. Kies een spel en verdien je eerste sterren!",
+    "playGames": "Naar de spellen",
+    "bestScore": "Beste score",
+    "plays": "spellen"
+  },
+  "showcase": {
+    "badge": "Maak kennis met Ziggy",
+    "title": "Dit is Ziggy, het robotvriendje van je kind",
+    "subtitle": "Hij lacht, moedigt aan en oordeelt nooit. Ziggy maakt van rekenen, logica en AI een spel — en zijn hart licht op bij elk goed antwoord.",
+    "cta": "Gratis proberen",
+    "cta_games": "Bekijk de spellen",
+    "play": "Ziggy bekijken"
   }
 }

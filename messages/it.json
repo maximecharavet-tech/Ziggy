@@ -11,7 +11,9 @@
     "login": "Accedi",
     "signup": "Inizia",
     "agents": "Agenti",
-    "games": "Giochi"
+    "games": "Giochi",
+    "account": "Il mio account",
+    "signin": "Accedi"
   },
   "hero": {
     "badge": "Educazione IA per bambini dai 5 ai 12 anni",
@@ -384,5 +386,49 @@
         }
       ]
     }
+  },
+  "account": {
+    "badge": "Il mio account",
+    "signupTitle": "Crea il tuo profilo Ziggy",
+    "signupSubtitle": "Scegli nome e avatar e si parte!",
+    "nameLabel": "Il tuo nome",
+    "namePlaceholder": "Es. Giulia",
+    "ageLabel": "La tua età",
+    "avatarLabel": "Scegli il tuo avatar",
+    "emailLabel": "Email del genitore",
+    "emailPlaceholder": "genitore@esempio.it",
+    "emailHint": "Facoltativa — per ricevere i progressi",
+    "createButton": "Crea il mio profilo",
+    "alreadyHave": "Hai già un profilo?",
+    "loginLink": "Continua",
+    "errorName": "Scrivi il tuo nome per continuare",
+    "errorEmail": "Questa email non sembra valida",
+    "localOnly": "Il tuo profilo resta su questo dispositivo. Non viene inviato nulla su internet.",
+    "loginTitle": "Bentornato!",
+    "loginSubtitle": "Riprendi da dove avevi lasciato.",
+    "continueAs": "Continua",
+    "createNew": "Crea un altro profilo",
+    "noProfileTitle": "Nessun profilo su questo dispositivo",
+    "noProfileText": "Crea il tuo profilo Ziggy in trenta secondi.",
+    "dashboardTitle": "Ciao",
+    "dashboardSubtitle": "Ecco come stai andando con Ziggy",
+    "editName": "Cambia nome",
+    "save": "Salva",
+    "signOut": "Esci",
+    "progressTitle": "I tuoi trofei",
+    "starsEarned": "Stelle guadagnate",
+    "gamesPlayed": "Partite giocate",
+    "noProgress": "Non hai ancora giocato. Scegli un gioco e conquista le prime stelle!",
+    "playGames": "Vai ai giochi",
+    "bestScore": "Punteggio migliore",
+    "plays": "partite"
+  },
+  "showcase": {
+    "badge": "Incontra Ziggy",
+    "title": "Ecco Ziggy, l’amico robot di tuo figlio",
+    "subtitle": "Ride, incoraggia e non giudica mai. Ziggy trasforma matematica, logica e IA in un gioco — e il suo cuore si illumina a ogni risposta giusta.",
+    "cta": "Prova gratis",
+    "cta_games": "Guarda i giochi",
+    "play": "Guarda Ziggy"
   }
 }

@@ -11,7 +11,9 @@
     "login": "Anmelden",
     "signup": "Loslegen",
     "agents": "Agenten",
-    "games": "Spiele"
+    "games": "Spiele",
+    "account": "Mein Konto",
+    "signin": "Anmelden"
   },
   "hero": {
     "badge": "KI-Bildung für Kinder von 5 bis 12 Jahren",
@@ -384,5 +386,49 @@
         }
       ]
     }
+  },
+  "account": {
+    "badge": "Mein Konto",
+    "signupTitle": "Erstelle dein Ziggy-Profil",
+    "signupSubtitle": "Wähle Namen und Avatar — und los geht’s!",
+    "nameLabel": "Dein Vorname",
+    "namePlaceholder": "z. B. Mia",
+    "ageLabel": "Dein Alter",
+    "avatarLabel": "Wähle deinen Avatar",
+    "emailLabel": "E-Mail der Eltern",
+    "emailPlaceholder": "eltern@beispiel.de",
+    "emailHint": "Optional — für Fortschrittsberichte",
+    "createButton": "Profil erstellen",
+    "alreadyHave": "Schon ein Profil?",
+    "loginLink": "Weiter",
+    "errorName": "Gib deinen Vornamen ein",
+    "errorEmail": "Diese E-Mail sieht nicht richtig aus",
+    "localOnly": "Dein Profil bleibt auf diesem Gerät. Nichts wird ins Internet gesendet.",
+    "loginTitle": "Schön, dich wiederzusehen!",
+    "loginSubtitle": "Mach genau da weiter, wo du aufgehört hast.",
+    "continueAs": "Weiter",
+    "createNew": "Weiteres Profil erstellen",
+    "noProfileTitle": "Kein Profil auf diesem Gerät",
+    "noProfileText": "Erstelle dein Ziggy-Profil in dreißig Sekunden.",
+    "dashboardTitle": "Hallo",
+    "dashboardSubtitle": "So läuft es bei dir mit Ziggy",
+    "editName": "Namen ändern",
+    "save": "Speichern",
+    "signOut": "Abmelden",
+    "progressTitle": "Deine Trophäen",
+    "starsEarned": "Gesammelte Sterne",
+    "gamesPlayed": "Gespielte Runden",
+    "noProgress": "Du hast noch nicht gespielt. Wähle ein Spiel und hol dir deine ersten Sterne!",
+    "playGames": "Zu den Spielen",
+    "bestScore": "Bestleistung",
+    "plays": "Runden"
+  },
+  "showcase": {
+    "badge": "Lerne Ziggy kennen",
+    "title": "Das ist Ziggy, der Roboterfreund deines Kindes",
+    "subtitle": "Er lacht, er feuert an, er urteilt nie. Ziggy macht aus Mathe, Logik und KI ein Spiel — und sein Herz leuchtet bei jeder richtigen Antwort.",
+    "cta": "Kostenlos testen",
+    "cta_games": "Spiele ansehen",
+    "play": "Ziggy ansehen"
   }
 }

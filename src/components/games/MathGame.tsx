@@ -295,6 +295,7 @@ export function MathGame({ color }: { color: string }) {
         {phase === 'done' && (
           <GameResultScreen
             key="done"
+            gameId="math"
             color={color}
             stars={stars}
             scoreLabel={t('score')}

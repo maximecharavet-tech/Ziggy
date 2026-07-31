@@ -11,7 +11,9 @@
     "login": "登录",
     "signup": "开始使用",
     "agents": "代理",
-    "games": "游戏"
+    "games": "游戏",
+    "account": "我的账户",
+    "signin": "登录"
   },
   "hero": {
     "badge": "面向5-12岁儿童的AI教育",
@@ -384,5 +386,49 @@
         }
       ]
     }
+  },
+  "account": {
+    "badge": "我的账户",
+    "signupTitle": "创建你的 Ziggy 档案",
+    "signupSubtitle": "选好名字和头像，马上开始！",
+    "nameLabel": "你的名字",
+    "namePlaceholder": "例如：小雨",
+    "ageLabel": "你的年龄",
+    "avatarLabel": "选择头像",
+    "emailLabel": "家长邮箱",
+    "emailPlaceholder": "parent@example.com",
+    "emailHint": "可选 — 用于接收学习进度",
+    "createButton": "创建我的档案",
+    "alreadyHave": "已经有档案了吗？",
+    "loginLink": "继续",
+    "errorName": "请填写你的名字",
+    "errorEmail": "这个邮箱看起来不对",
+    "localOnly": "你的档案只保存在这台设备上，不会上传到网络。",
+    "loginTitle": "欢迎回来！",
+    "loginSubtitle": "从上次的地方继续。",
+    "continueAs": "继续",
+    "createNew": "创建另一个档案",
+    "noProfileTitle": "这台设备上没有档案",
+    "noProfileText": "三十秒创建你的 Ziggy 档案。",
+    "dashboardTitle": "你好",
+    "dashboardSubtitle": "这是你和 Ziggy 的学习记录",
+    "editName": "修改名字",
+    "save": "保存",
+    "signOut": "退出登录",
+    "progressTitle": "你的奖杯",
+    "starsEarned": "获得的星星",
+    "gamesPlayed": "游戏次数",
+    "noProgress": "你还没玩过。选一个游戏，赢下第一颗星星吧！",
+    "playGames": "去玩游戏",
+    "bestScore": "最高分",
+    "plays": "次"
+  },
+  "showcase": {
+    "badge": "认识 Ziggy",
+    "title": "这是 Ziggy，孩子的机器人朋友",
+    "subtitle": "它会笑、会鼓励，从不评判。Ziggy 把数学、逻辑和人工智能变成游戏——每答对一次，它胸口的爱心就会亮起来。",
+    "cta": "免费试用",
+    "cta_games": "查看游戏",
+    "play": "观看 Ziggy"
   }
 }

@@ -2,6 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { TrustBar } from '@/components/sections/TrustBar';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { HeroSection } from '@/components/sections/HeroSection';
+import { ZiggyShowcase } from '@/components/sections/ZiggyShowcase';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { ModulesSection } from '@/components/sections/ModulesSection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
@@ -25,6 +26,7 @@ export default async function HomePage({
     <PageTransition>
       <HeroSection />
       <TrustBar />
+      <ZiggyShowcase />
       <FeaturesSection />
       <ModulesSection />
       <AgentsSection />

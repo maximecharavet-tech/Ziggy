@@ -119,7 +119,7 @@ export function PricingSection() {
                     </li>
                   ))}
                 </ul>
-                <Button variant={plan.variant} size="sm" className="w-full">
+                <Button href="/signup" variant={plan.variant} size="sm" className="w-full">
                   {plan.cta}
                 </Button>
               </div>

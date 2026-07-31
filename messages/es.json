@@ -11,7 +11,9 @@
     "login": "Iniciar sesión",
     "signup": "Empezar",
     "agents": "Agentes",
-    "games": "Juegos"
+    "games": "Juegos",
+    "account": "Mi cuenta",
+    "signin": "Entrar"
   },
   "hero": {
     "badge": "Educación en IA para niños de 5 a 12 años",
@@ -384,5 +386,49 @@
         }
       ]
     }
+  },
+  "account": {
+    "badge": "Mi cuenta",
+    "signupTitle": "Crea tu perfil de Ziggy",
+    "signupSubtitle": "¡Elige tu nombre y tu avatar y a jugar!",
+    "nameLabel": "Tu nombre",
+    "namePlaceholder": "Ej. Lucía",
+    "ageLabel": "Tu edad",
+    "avatarLabel": "Elige tu avatar",
+    "emailLabel": "Correo del familiar",
+    "emailPlaceholder": "familia@ejemplo.com",
+    "emailHint": "Opcional — para recibir los progresos",
+    "createButton": "Crear mi perfil",
+    "alreadyHave": "¿Ya tienes un perfil?",
+    "loginLink": "Continuar",
+    "errorName": "Escribe tu nombre para continuar",
+    "errorEmail": "Ese correo no parece válido",
+    "localOnly": "Tu perfil se queda en este dispositivo. No se envía nada por internet.",
+    "loginTitle": "¡Qué bien verte de nuevo!",
+    "loginSubtitle": "Sigue donde lo dejaste.",
+    "continueAs": "Continuar",
+    "createNew": "Crear otro perfil",
+    "noProfileTitle": "No hay perfil en este dispositivo",
+    "noProfileText": "Crea tu perfil de Ziggy en treinta segundos.",
+    "dashboardTitle": "Hola",
+    "dashboardSubtitle": "Así vas con Ziggy",
+    "editName": "Cambiar nombre",
+    "save": "Guardar",
+    "signOut": "Cerrar sesión",
+    "progressTitle": "Tus trofeos",
+    "starsEarned": "Estrellas ganadas",
+    "gamesPlayed": "Partidas jugadas",
+    "noProgress": "Aún no has jugado. ¡Elige un juego y gana tus primeras estrellas!",
+    "playGames": "Ir a los juegos",
+    "bestScore": "Mejor puntuación",
+    "plays": "partidas"
+  },
+  "showcase": {
+    "badge": "Conoce a Ziggy",
+    "title": "Este es Ziggy, el amigo robot de tu hijo",
+    "subtitle": "Se ríe, anima y nunca juzga. Ziggy convierte las mates, la lógica y la IA en un juego, y su corazón se ilumina con cada acierto.",
+    "cta": "Probar gratis",
+    "cta_games": "Ver los juegos",
+    "play": "Ver a Ziggy"
   }
 }

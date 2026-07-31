@@ -1,11 +1,17 @@
-import { forwardRef, ButtonHTMLAttributes } from 'react';
+import { forwardRef, ButtonHTMLAttributes, ComponentProps } from 'react';
+import { Link } from '@/i18n/navigation';
 
 type Variant = 'primary' | 'secondary' | 'ghost';
 type Size = 'sm' | 'md' | 'lg';
 
+/** Href accepted by the localized next-intl Link (typed routes). */
+type LinkHref = ComponentProps<typeof Link>['href'];
+
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
   size?: Size;
+  /** When present the button renders as a localized `Link` instead of a `<button>`. */
+  href?: LinkHref;
 }
 
 const variantClasses: Record<Variant, string> = {
@@ -20,15 +26,36 @@ const sizeClasses: Record<Size, string> = {
   lg: 'px-8 py-4 text-lg',
 };
 
+const baseClasses =
+  'inline-flex items-center justify-center rounded-full font-bold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', className = '', children, ...props }, ref) => (
-    <button
-      ref={ref}
-      className={`inline-flex items-center justify-center rounded-full font-bold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed ${variantClasses[variant]} ${sizeClasses[size]} ${className}`}
-      {...props}
-    >
-      {children}
-    </button>
-  )
+  ({ variant = 'primary', size = 'md', className = '', children, href, ...props }, ref) => {
+    const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+
+    if (href !== undefined) {
+      // Only forward props that make sense on an anchor.
+      const { onClick, 'aria-label': ariaLabel, id, title, tabIndex } = props;
+      return (
+        <Link
+          href={href}
+          className={classes}
+          onClick={onClick as ComponentProps<typeof Link>['onClick']}
+          aria-label={ariaLabel}
+          id={id}
+          title={title}
+          tabIndex={tabIndex}
+        >
+          {children}
+        </Link>
+      );
+    }
+
+    return (
+      <button ref={ref} className={classes} {...props}>
+        {children}
+      </button>
+    );
+  }
 );
 Button.displayName = 'Button';

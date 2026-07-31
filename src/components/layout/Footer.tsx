@@ -5,15 +5,18 @@ import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 
 export function Footer() {
   const t = useTranslations('footer');
+  const tn = useTranslations('nav');
 
   const productLinks = [
-    { label: t('about'), href: '#' },
-    { label: t('blog'), href: '#' },
+    { label: tn('features'), href: '#features' },
+    { label: tn('games'), href: '/games' as const },
+    { label: tn('agents'), href: '/agents' as const },
   ];
 
   const companyLinks = [
-    { label: t('careers'), href: '#' },
-    { label: t('contact'), href: '#' },
+    { label: tn('demo'), href: '/demo' as const },
+    { label: tn('pricing'), href: '#pricing' },
+    { label: tn('account'), href: '/account' as const },
   ];
 
   const legalLinks = [
@@ -42,9 +45,15 @@ export function Footer() {
             <ul className="space-y-3">
               {productLinks.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
-                    {link.label}
-                  </a>
+                  {link.href.startsWith('#') ? (
+                    <a href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.href as '/games'} className="text-sm text-text-muted hover:text-green transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>
@@ -55,9 +64,15 @@ export function Footer() {
             <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.label}>
-                  <a href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
-                    {link.label}
-                  </a>
+                  {link.href.startsWith('#') ? (
+                    <a href={link.href} className="text-sm text-text-muted hover:text-green transition-colors">
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link href={link.href as '/games'} className="text-sm text-text-muted hover:text-green transition-colors">
+                      {link.label}
+                    </Link>
+                  )}
                 </li>
               ))}
             </ul>

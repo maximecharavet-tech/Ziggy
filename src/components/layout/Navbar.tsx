@@ -5,11 +5,11 @@ import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { Button } from '@/components/ui/Button';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
+import { AccountButton } from '@/components/account/AccountButton';
 
 export function Navbar() {
   const t = useTranslations('nav');
@@ -63,7 +63,7 @@ export function Navbar() {
         <div className="hidden lg:flex items-center gap-3">
           <ThemeToggle />
           <LanguageSwitcher />
-          <Button size="sm">{t('signup')}</Button>
+          <AccountButton />
         </div>
 
         <button
@@ -101,7 +101,7 @@ export function Navbar() {
               <div className="flex items-center gap-3 pt-4 px-3">
                 <ThemeToggle />
                 <LanguageSwitcher />
-                <Button size="sm" className="flex-1">{t('signup')}</Button>
+                <AccountButton className="flex-1 justify-center" />
               </div>
             </div>
           </motion.div>

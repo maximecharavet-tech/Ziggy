@@ -11,7 +11,9 @@
     "login": "ログイン",
     "signup": "はじめる",
     "agents": "エージェント",
-    "games": "ゲーム"
+    "games": "ゲーム",
+    "account": "マイアカウント",
+    "signin": "ログイン"
   },
   "hero": {
     "badge": "5〜12歳向けAI教育",
@@ -384,5 +386,49 @@
         }
       ]
     }
+  },
+  "account": {
+    "badge": "マイアカウント",
+    "signupTitle": "ジギーのプロフィールをつくろう",
+    "signupSubtitle": "名前とアバターを選んだら、さあ始めよう！",
+    "nameLabel": "なまえ",
+    "namePlaceholder": "例：ゆい",
+    "ageLabel": "ねんれい",
+    "avatarLabel": "アバターを選ぶ",
+    "emailLabel": "保護者のメール",
+    "emailPlaceholder": "oya@example.jp",
+    "emailHint": "任意 — 学習の記録を受け取れます",
+    "createButton": "プロフィールをつくる",
+    "alreadyHave": "すでにプロフィールがありますか？",
+    "loginLink": "つづける",
+    "errorName": "なまえを入力してください",
+    "errorEmail": "このメールアドレスは正しくないようです",
+    "localOnly": "プロフィールはこの端末にだけ保存されます。インターネットには送信されません。",
+    "loginTitle": "おかえりなさい！",
+    "loginSubtitle": "前回のつづきから始めましょう。",
+    "continueAs": "つづける",
+    "createNew": "別のプロフィールをつくる",
+    "noProfileTitle": "この端末にプロフィールがありません",
+    "noProfileText": "30秒でジギーのプロフィールをつくれます。",
+    "dashboardTitle": "こんにちは",
+    "dashboardSubtitle": "ジギーとの記録はこちら",
+    "editName": "なまえを変える",
+    "save": "保存",
+    "signOut": "ログアウト",
+    "progressTitle": "トロフィー",
+    "starsEarned": "あつめた星",
+    "gamesPlayed": "あそんだ回数",
+    "noProgress": "まだあそんでいません。ゲームを選んで最初の星をあつめよう！",
+    "playGames": "ゲームへ",
+    "bestScore": "ベストスコア",
+    "plays": "回"
+  },
+  "showcase": {
+    "badge": "ジギーに会おう",
+    "title": "ジギーは、お子さまのロボットの友だちです",
+    "subtitle": "笑って、応援して、けっして否定しません。ジギーは算数も論理もAIも遊びに変えます。正解するたびに、胸のハートが光ります。",
+    "cta": "無料で試す",
+    "cta_games": "ゲームを見る",
+    "play": "ジギーを見る"
   }
 }

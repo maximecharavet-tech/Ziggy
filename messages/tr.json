@@ -11,7 +11,9 @@
     "login": "Giriş yap",
     "signup": "Başla",
     "agents": "Ajanlar",
-    "games": "Oyunlar"
+    "games": "Oyunlar",
+    "account": "Hesabım",
+    "signin": "Giriş yap"
   },
   "hero": {
     "badge": "5-12 yaş çocuklar için yapay zeka eğitimi",
@@ -384,5 +386,49 @@
         }
       ]
     }
+  },
+  "account": {
+    "badge": "Hesabım",
+    "signupTitle": "Ziggy profilini oluştur",
+    "signupSubtitle": "Adını ve avatarını seç, hemen başlayalım!",
+    "nameLabel": "Adın",
+    "namePlaceholder": "Örn. Elif",
+    "ageLabel": "Yaşın",
+    "avatarLabel": "Avatarını seç",
+    "emailLabel": "Veli e-postası",
+    "emailPlaceholder": "veli@ornek.com",
+    "emailHint": "İsteğe bağlı — gelişim bildirimleri için",
+    "createButton": "Profilimi oluştur",
+    "alreadyHave": "Zaten profilin var mı?",
+    "loginLink": "Devam et",
+    "errorName": "Devam etmek için adını yaz",
+    "errorEmail": "Bu e-posta doğru görünmüyor",
+    "localOnly": "Profilin bu cihazda kalır. İnternete hiçbir şey gönderilmez.",
+    "loginTitle": "Tekrar hoş geldin!",
+    "loginSubtitle": "Kaldığın yerden devam et.",
+    "continueAs": "Devam et",
+    "createNew": "Başka profil oluştur",
+    "noProfileTitle": "Bu cihazda profil yok",
+    "noProfileText": "Ziggy profilini otuz saniyede oluştur.",
+    "dashboardTitle": "Merhaba",
+    "dashboardSubtitle": "Ziggy ile durumun şöyle",
+    "editName": "Adı değiştir",
+    "save": "Kaydet",
+    "signOut": "Çıkış yap",
+    "progressTitle": "Kupaların",
+    "starsEarned": "Kazanılan yıldızlar",
+    "gamesPlayed": "Oynanan oyunlar",
+    "noProgress": "Henüz oynamadın. Bir oyun seç ve ilk yıldızlarını kazan!",
+    "playGames": "Oyunlara git",
+    "bestScore": "En iyi skor",
+    "plays": "oyun"
+  },
+  "showcase": {
+    "badge": "Ziggy ile tanış",
+    "title": "Bu Ziggy, çocuğunuzun robot arkadaşı",
+    "subtitle": "Güler, cesaretlendirir, asla yargılamaz. Ziggy matematiği, mantığı ve yapay zekâyı oyuna dönüştürür — her doğru cevapta kalbi ışıldar.",
+    "cta": "Ücretsiz dene",
+    "cta_games": "Oyunları gör",
+    "play": "Ziggy'yi izle"
   }
 }

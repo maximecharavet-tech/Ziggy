@@ -3,7 +3,7 @@ import type { MetadataRoute } from 'next';
 const locales = ['fr', 'en', 'es', 'de', 'pt', 'it', 'nl', 'tr', 'ja', 'ko', 'zh', 'ar'];
 const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ziggy.ai';
 
-const routes = ['', '/demo', '/agents', '/agents/sales', '/agents/marketing', '/agents/finance', '/agents/accounting', '/agents/advertising', '/games', '/games/memory', '/games/math', '/games/logic', '/games/quiz', '/privacy', '/terms', '/cookies'];
+const routes = ['', '/demo', '/agents', '/agents/sales', '/agents/marketing', '/agents/finance', '/agents/accounting', '/agents/advertising', '/games', '/games/memory', '/games/math', '/games/logic', '/games/quiz', '/signup', '/login', '/account', '/privacy', '/terms', '/cookies'];
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const entries: MetadataRoute.Sitemap = [];

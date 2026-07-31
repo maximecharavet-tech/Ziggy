@@ -236,6 +236,7 @@ export function MemoryGame({ color }: { color: string }) {
         {phase === 'done' && (
           <GameResultScreen
             key="done"
+            gameId="memory"
             color={color}
             stars={stars}
             scoreLabel={t('moves')}
