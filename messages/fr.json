@@ -10,7 +10,8 @@
     "demo": "Essayer Ziggy",
     "login": "Se connecter",
     "signup": "Commencer",
-    "agents": "Agents"
+    "agents": "Agents",
+    "games": "Jeux"
   },
   "hero": {
     "badge": "L'IA éducative pour les 5-12 ans",
@@ -251,6 +252,136 @@
         "Crée un jingle !",
         "Qu'est-ce qui rend une pub mémorable ?",
         "Dessine-moi une affiche !"
+      ]
+    }
+  },
+  "games": {
+    "badge": "Mini-jeux",
+    "pageTitle": "L'arcade de Ziggy",
+    "pageSubtitle": "Quatre mini-jeux rigolos pour muscler ta mémoire, ton calcul et ta logique — et tout comprendre à l'IA !",
+    "sectionTitle": "Jouer et apprendre",
+    "sectionSubtitle": "On retient beaucoup mieux quand on s'amuse. Choisis un jeu et c'est parti !",
+    "backToGames": "Retour aux jeux",
+    "start": "Jouer",
+    "playAgain": "Rejouer",
+    "score": "Score",
+    "time": "Temps",
+    "moves": "Coups",
+    "streak": "Série",
+    "correct": "Bien vu !",
+    "wrong": "Presque !",
+    "wellDone": "Bravo !",
+    "yourScore": "Ton score",
+    "tryAgain": "Bel essai !",
+    "next": "Suivant",
+    "memory": {
+      "name": "Jeu de mémoire",
+      "description": "Retourne les cartes et retrouve les six paires. En combien de coups vas-tu y arriver ?",
+      "howTo": "Touche une carte pour la retourner, puis une deuxième. Si les deux images sont identiques, elles restent ! Trouve les 6 paires."
+    },
+    "math": {
+      "name": "Calcul éclair",
+      "description": "Résous un maximum d'opérations en 60 secondes. Plus ta série est longue, plus ça se corse !",
+      "howTo": "Choisis la bonne réponse parmi quatre. Chaque bonne réponse allonge ta série — et les calculs montent d'un cran avec toi."
+    },
+    "logic": {
+      "name": "Suite logique",
+      "description": "Observe la file de formes, devine la règle cachée et choisis celle qui vient ensuite.",
+      "howTo": "Chaque file suit une règle : une répétition, une alternance ou quelque chose qui grandit. Choisis la forme qui remplit la case vide. 10 manches !"
+    },
+    "quiz": {
+      "name": "Explorateur d'IA",
+      "description": "Huit questions pour devenir un vrai expert de l'intelligence artificielle.",
+      "howTo": "Choisis une réponse, puis lis l'explication pour apprendre quelque chose de nouveau. Il n'y a pas de mauvaise réponse, seulement des découvertes !",
+      "questions": [
+        {
+          "q": "C'est quoi, l'intelligence artificielle (IA) ?",
+          "options": [
+            "Un programme d'ordinateur qui apprend à partir de plein d'exemples",
+            "Un petit robot qui habite dans l'écran",
+            "Une magie que seuls les adultes comprennent",
+            "Une nouvelle console de jeux vidéo"
+          ],
+          "answer": 0,
+          "explanation": "L'IA est un programme qui apprend en regardant des tonnes d'exemples — un peu comme toi qui reconnais les chats après en avoir vu beaucoup !"
+        },
+        {
+          "q": "Comment une IA apprend-elle à reconnaître un chat ?",
+          "options": [
+            "Quelqu'un lui souffle la réponse à l'oreille",
+            "Elle regarde des milliers de photos de chats",
+            "Elle est née en le sachant",
+            "Elle demande au chat"
+          ],
+          "answer": 1,
+          "explanation": "On lui montre des milliers et des milliers d’images. Petit à petit, elle repère ce que les chats ont en commun : les moustaches, les oreilles pointues, la queue !"
+        },
+        {
+          "q": "Est-ce qu’une IA peut se tromper ?",
+          "options": [
+            "Jamais, elle a toujours raison",
+            "Seulement le lundi",
+            "Oui, assez souvent — c’est pour ça qu’on vérifie",
+            "Seulement si on est méchant avec elle"
+          ],
+          "answer": 2,
+          "explanation": "Oui ! Une IA peut avoir l’air très sûre d’elle et se tromper quand même. Vérifie toujours les réponses importantes avec un adulte ou dans un livre."
+        },
+        {
+          "q": "Une IA est-elle vivante, comme un animal ?",
+          "options": [
+            "Oui, elle mange et elle dort",
+            "Non, c’est un programme : elle n’a pas de sentiments",
+            "Oui, elle a un cœur en fils électriques",
+            "Elle est vivante seulement quand l’ordinateur est allumé"
+          ],
+          "answer": 1,
+          "explanation": "Une IA n’est pas vivante. Elle ne ressent ni joie ni tristesse, même quand elle écrit « je suis content ». C’est un programme très malin, rien de plus."
+        },
+        {
+          "q": "Sur Internet, quelqu’un te demande ton adresse. Que fais-tu ?",
+          "options": [
+            "Tu la donnes, pour être poli",
+            "Tu la donnes, mais juste la rue",
+            "Tu ne réponds pas et tu préviens un adulte de confiance",
+            "Tu la publies pour que tout le monde la voie"
+          ],
+          "answer": 2,
+          "explanation": "Ton adresse, ton école et ton numéro de téléphone sont privés. Ne les partage jamais en ligne et parles-en toujours à un adulte de confiance."
+        },
+        {
+          "q": "D’où viennent les réponses d’une IA ?",
+          "options": [
+            "De textes et d’images créés par des humains",
+            "De l’espace",
+            "De l’imagination de l’IA",
+            "D’une bibliothèque secrète que personne ne peut lire"
+          ],
+          "answer": 0,
+          "explanation": "L’IA apprend à partir de textes et d’images faits par des humains. C’est pour ça qu’elle peut aussi répéter leurs erreurs — et que les humains comptent autant."
+        },
+        {
+          "q": "Un copain dit qu’un chatbot est son meilleur ami. Qu’en penses-tu ?",
+          "options": [
+            "C’est un vrai ami qui l’aime",
+            "C’est un outil pratique, mais pas un vrai ami",
+            "C’est mieux qu’un vrai ami",
+            "Il retient son anniversaire parce qu’il tient à lui"
+          ],
+          "answer": 1,
+          "explanation": "Un chatbot peut être amusant et utile, mais il ne ressent pas d’amitié. Les vrais amis sont des personnes (et des animaux !) qui tiennent vraiment à toi."
+        },
+        {
+          "q": "Quelle est la meilleure façon d’utiliser l’IA pour tes devoirs ?",
+          "options": [
+            "Recopier sa réponse mot pour mot",
+            "Lui demander d’expliquer ce que tu ne comprends pas, puis faire le travail toi-même",
+            "Ne jamais s’en servir, c’est interdit",
+            "Lui demander de tout faire pendant que tu regardes la télé"
+          ],
+          "answer": 1,
+          "explanation": "L’IA est un super prof particulier : demande-lui d’expliquer ! Mais c’est en faisant le travail TOI-MÊME que ton cerveau grandit. Et c’est ça le plus chouette."
+        }
       ]
     }
   }

@@ -1,12 +1,35 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-  <rect width="64" height="64" rx="14" fill="#22C55E"/>
-  <circle cx="24" cy="28" r="7" fill="white"/>
-  <circle cx="40" cy="28" r="7" fill="white"/>
-  <circle cx="24" cy="28" r="3.5" fill="#1A1A2E"/>
-  <circle cx="40" cy="28" r="3.5" fill="#1A1A2E"/>
-  <circle cx="23" cy="27" r="1.2" fill="white"/>
-  <circle cx="39" cy="27" r="1.2" fill="white"/>
-  <path d="M 25 42 Q 32 50 39 42" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-  <line x1="32" y1="2" x2="32" y2="10" stroke="white" stroke-width="2.5" stroke-linecap="round"/>
-  <circle cx="32" cy="2" r="3" fill="#4ADE80"/>
+  <defs>
+    <radialGradient id="f" cx="42%" cy="30%" r="78%">
+      <stop offset="0%" stop-color="#A3DE7B"/>
+      <stop offset="50%" stop-color="#7FC85C"/>
+      <stop offset="100%" stop-color="#5AA83E"/>
+    </radialGradient>
+    <radialGradient id="h" cx="50%" cy="45%" r="60%">
+      <stop offset="0%" stop-color="#FFFDF0"/>
+      <stop offset="45%" stop-color="#FFE87A"/>
+      <stop offset="100%" stop-color="#FFB938"/>
+    </radialGradient>
+  </defs>
+  <path d="M22 13 C19 9 17 7 16 5" stroke="#6DBF4C" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="15" cy="4.5" r="3.5" fill="#8FD167"/>
+  <path d="M42 13 C45 9 47 7 48 5" stroke="#6DBF4C" stroke-width="3" stroke-linecap="round" fill="none"/>
+  <circle cx="49" cy="4.5" r="3.5" fill="#8FD167"/>
+  <ellipse cx="7.5" cy="31" rx="5" ry="7.5" fill="#8FD167"/>
+  <ellipse cx="56.5" cy="31" rx="5" ry="7.5" fill="#8FD167"/>
+  <ellipse cx="32" cy="30" rx="25" ry="22" fill="url(#f)"/>
+  <path d="M17 21 C19 18 24 17.5 26 19.5" stroke="#1F2937" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  <path d="M38 19.5 C40 17.5 45 18 47 21" stroke="#1F2937" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  <ellipse cx="22" cy="30" rx="8" ry="8.8" fill="#fff"/>
+  <ellipse cx="42" cy="30" rx="8" ry="8.8" fill="#fff"/>
+  <circle cx="22" cy="30" r="5.4" fill="#4F9E33"/>
+  <circle cx="42" cy="30" r="5.4" fill="#4F9E33"/>
+  <circle cx="22" cy="30" r="3.1" fill="#12100E"/>
+  <circle cx="42" cy="30" r="3.1" fill="#12100E"/>
+  <circle cx="20.4" cy="28.2" r="1.5" fill="#fff"/>
+  <circle cx="40.4" cy="28.2" r="1.5" fill="#fff"/>
+  <ellipse cx="13" cy="38" rx="4.5" ry="3" fill="#F9A8D4" opacity=".45"/>
+  <ellipse cx="51" cy="38" rx="4.5" ry="3" fill="#F9A8D4" opacity=".45"/>
+  <path d="M26 40 Q32 45.5 38 40" stroke="#1F2937" stroke-width="2.4" stroke-linecap="round" fill="none"/>
+  <path d="M32 62 C26 56.5 23 53.5 23 50 C23 47.2 25.3 45.2 28 45.2 C30 45.2 31.4 46.4 32 47.9 C32.6 46.4 34 45.2 36 45.2 C38.7 45.2 41 47.2 41 50 C41 53.5 38 56.5 32 62 Z" fill="url(#h)" stroke="#F59E0B" stroke-width="1.2"/>
 </svg>

@@ -10,7 +10,8 @@
     "demo": "试用Ziggy",
     "login": "登录",
     "signup": "开始使用",
-    "agents": "代理"
+    "agents": "代理",
+    "games": "游戏"
   },
   "hero": {
     "badge": "面向5-12岁儿童的AI教育",
@@ -251,6 +252,136 @@
         "Create a jingle!",
         "What makes ads catchy?",
         "Design a poster!"
+      ]
+    }
+  },
+  "games": {
+    "badge": "小游戏",
+    "pageTitle": "Ziggy 游戏厅",
+    "pageSubtitle": "四款有趣的小游戏，锻炼记忆力、心算和逻辑，还能全面了解人工智能！",
+    "sectionTitle": "边玩边学",
+    "sectionSubtitle": "玩得开心，才记得更牢。选一个游戏开始吧！",
+    "backToGames": "返回游戏列表",
+    "start": "开始玩",
+    "playAgain": "再玩一次",
+    "score": "得分",
+    "time": "时间",
+    "moves": "步数",
+    "streak": "连对",
+    "correct": "答对啦！",
+    "wrong": "差一点！",
+    "wellDone": "太棒了！",
+    "yourScore": "你的得分",
+    "tryAgain": "很不错的尝试！",
+    "next": "下一题",
+    "memory": {
+      "name": "记忆翻牌",
+      "description": "翻开卡片，找出全部六对相同的图案。你能用多少步完成？",
+      "howTo": "点一张卡片翻开，再点另一张。如果两张图案相同，它们就会留在正面！找出全部 6 对。"
+    },
+    "math": {
+      "name": "闪电心算",
+      "description": "在 60 秒内尽量多做对题目。连对越多，题目就越难！",
+      "howTo": "从四个选项中选出正确答案。每答对一题连对数就增加，题目也会跟着升级。"
+    },
+    "logic": {
+      "name": "找规律",
+      "description": "看看这排图形，找出隐藏的规律，再选出接下来应该出现的那一个。",
+      "howTo": "每一排都有规律：重复、交替，或者不断变多。选出填进空格的图形。共 10 轮！"
+    },
+    "quiz": {
+      "name": "AI 小探索家",
+      "description": "八道题，让你成为真正的人工智能小专家。",
+      "howTo": "选好答案后读一读解释，学到新知识。没有答错这回事，只有新发现！",
+      "questions": [
+        {
+          "q": "What is artificial intelligence (AI)?",
+          "options": [
+            "A computer program that learns from lots of examples",
+            "A tiny robot that lives inside the screen",
+            "A kind of magic only grown-ups understand",
+            "A new video game console"
+          ],
+          "answer": 0,
+          "explanation": "AI is a computer program that learns by looking at heaps of examples — a bit like you learn to recognise cats after seeing lots of them!"
+        },
+        {
+          "q": "How does an AI learn to recognise a cat?",
+          "options": [
+            "Someone whispers the answer in its ear",
+            "It looks at thousands of pictures of cats",
+            "It was born already knowing",
+            "It asks the cat"
+          ],
+          "answer": 1,
+          "explanation": "An AI is shown thousands and thousands of images. Little by little it spots what cats have in common: whiskers, pointy ears, a tail!"
+        },
+        {
+          "q": "Can an AI make mistakes?",
+          "options": [
+            "Never, it is always right",
+            "Only on Mondays",
+            "Yes, quite often — that is why we check",
+            "Only if you are mean to it"
+          ],
+          "answer": 2,
+          "explanation": "Yes! An AI can sound very sure of itself and still be wrong. Always double-check important answers with a grown-up or a book."
+        },
+        {
+          "q": "Is an AI alive, like an animal?",
+          "options": [
+            "Yes, it eats and sleeps",
+            "No, it is a program — it has no feelings",
+            "Yes, it has a heart made of wires",
+            "It is alive only while the computer is on"
+          ],
+          "answer": 1,
+          "explanation": "An AI is not alive. It feels neither joy nor sadness, even when it writes \"I am happy\". It is a very clever program, nothing more."
+        },
+        {
+          "q": "Online, somebody asks for your home address. What do you do?",
+          "options": [
+            "Give it, to be polite",
+            "Give it, but only the street name",
+            "Say nothing and tell a grown-up you trust",
+            "Post it so everyone can see"
+          ],
+          "answer": 2,
+          "explanation": "Your address, your school and your phone number are private. Never share them online, and always tell a grown-up you trust."
+        },
+        {
+          "q": "Where do an AI’s answers come from?",
+          "options": [
+            "From texts and images created by people",
+            "From outer space",
+            "From the AI’s own imagination",
+            "From a secret library nobody can read"
+          ],
+          "answer": 0,
+          "explanation": "AI learns from words and pictures made by people. That is also why it can repeat their mistakes — and why humans still matter so much."
+        },
+        {
+          "q": "A friend says a chatbot is their best friend. What is true?",
+          "options": [
+            "It is a real friend who loves them",
+            "It is a useful tool, but not a real friend",
+            "It is better than a real friend",
+            "It remembers their birthday because it cares"
+          ],
+          "answer": 1,
+          "explanation": "A chatbot can be fun and helpful, but it does not feel friendship. Real friends are people (and pets!) who truly care about you."
+        },
+        {
+          "q": "What is the best way to use AI for your homework?",
+          "options": [
+            "Copy its answer word for word",
+            "Ask it to explain what you do not understand, then do the work yourself",
+            "Never use it, it is forbidden",
+            "Ask it to do everything while you watch TV"
+          ],
+          "answer": 1,
+          "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
+        }
       ]
     }
   }

@@ -8,6 +8,8 @@ import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
+import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
 
 export function Navbar() {
   const t = useTranslations('nav');
@@ -24,6 +26,7 @@ export function Navbar() {
     { href: '#features', label: t('features') },
     { href: '#modules', label: t('modules') },
     { href: '#agents', label: t('agents') },
+    { href: '#games', label: t('games') },
     { href: '#pricing', label: t('pricing') },
     { href: '#demo', label: t('demo') },
   ];
@@ -40,12 +43,12 @@ export function Navbar() {
       }`}
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-1.5 font-extrabold text-xl text-text-body group">
-          <span className="tracking-tight">Ziggy</span>
-          <span className="w-2.5 h-2.5 rounded-full bg-green group-hover:animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" />
+        <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="Ziggy — home">
+          <ZiggyRobot size={34} fullBody={false} className="transition-transform duration-300 group-hover:scale-110" />
+          <ZiggyLogo size={96} className="transition-transform duration-300 group-hover:-rotate-1" />
         </Link>
 
-        <div className="hidden md:flex items-center gap-8">
+        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
           {navLinks.map((link) => (
             <a
               key={link.href}
@@ -57,7 +60,7 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden lg:flex items-center gap-3">
           <ThemeToggle />
           <LanguageSwitcher />
           <Button size="sm">{t('signup')}</Button>
@@ -65,7 +68,7 @@ export function Navbar() {
 
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="md:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
+          className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
           aria-label="Toggle menu"
         >
           {isOpen ? <X size={22} /> : <Menu size={22} />}
@@ -79,7 +82,7 @@ export function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="md:hidden border-t border-border/50 glass-strong overflow-hidden"
+            className="lg:hidden border-t border-border/50 glass-strong overflow-hidden"
           >
             <div className="px-4 py-5 space-y-1">
               {navLinks.map((link, i) => (

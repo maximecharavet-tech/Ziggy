@@ -10,7 +10,8 @@
     "demo": "Probeer Ziggy",
     "login": "Inloggen",
     "signup": "Aan de slag",
-    "agents": "Agenten"
+    "agents": "Agenten",
+    "games": "Spelletjes"
   },
   "hero": {
     "badge": "AI-onderwijs voor kinderen van 5 tot 12 jaar",
@@ -251,6 +252,136 @@
         "Create a jingle!",
         "What makes ads catchy?",
         "Design a poster!"
+      ]
+    }
+  },
+  "games": {
+    "badge": "Minispelletjes",
+    "pageTitle": "De speelhal van Ziggy",
+    "pageSubtitle": "Vier leuke minispelletjes om je geheugen, je rekenen en je logica te trainen — en alles over AI te leren!",
+    "sectionTitle": "Spelen en leren",
+    "sectionSubtitle": "Je leert veel beter als het leuk is. Kies een spel en gaan!",
+    "backToGames": "Terug naar de spelletjes",
+    "start": "Spelen",
+    "playAgain": "Opnieuw spelen",
+    "score": "Punten",
+    "time": "Tijd",
+    "moves": "Beurten",
+    "streak": "Reeks",
+    "correct": "Goed gezien!",
+    "wrong": "Bijna!",
+    "wellDone": "Goed gedaan!",
+    "yourScore": "Jouw score",
+    "tryAgain": "Goed geprobeerd!",
+    "next": "Volgende",
+    "memory": {
+      "name": "Geheugenspel",
+      "description": "Draai de kaarten om en vind alle zes de paren. In hoe weinig beurten lukt het jou?",
+      "howTo": "Tik op een kaart om hem om te draaien en dan op nog een. Zijn de twee plaatjes hetzelfde, dan blijven ze liggen! Vind alle 6 de paren."
+    },
+    "math": {
+      "name": "Bliksemrekenen",
+      "description": "Los zoveel mogelijk sommen op in 60 seconden. Hoe langer je reeks, hoe lastiger het wordt!",
+      "howTo": "Kies het juiste antwoord uit vier. Elk goed antwoord maakt je reeks langer — en de sommen groeien met je mee."
+    },
+    "logic": {
+      "name": "Patroonpuzzel",
+      "description": "Bekijk de rij vormen, ontdek de verborgen regel en kies wat er daarna komt.",
+      "howTo": "Elke rij volgt een regel: een herhaling, een afwisseling of iets dat groeit. Kies de vorm die in het lege vakje past. 10 rondes!"
+    },
+    "quiz": {
+      "name": "AI-ontdekker",
+      "description": "Acht vragen om een echte expert in kunstmatige intelligentie te worden.",
+      "howTo": "Kies een antwoord en lees daarna de uitleg om iets nieuws te leren. Er zijn geen foute antwoorden — alleen ontdekkingen!",
+      "questions": [
+        {
+          "q": "What is artificial intelligence (AI)?",
+          "options": [
+            "A computer program that learns from lots of examples",
+            "A tiny robot that lives inside the screen",
+            "A kind of magic only grown-ups understand",
+            "A new video game console"
+          ],
+          "answer": 0,
+          "explanation": "AI is a computer program that learns by looking at heaps of examples — a bit like you learn to recognise cats after seeing lots of them!"
+        },
+        {
+          "q": "How does an AI learn to recognise a cat?",
+          "options": [
+            "Someone whispers the answer in its ear",
+            "It looks at thousands of pictures of cats",
+            "It was born already knowing",
+            "It asks the cat"
+          ],
+          "answer": 1,
+          "explanation": "An AI is shown thousands and thousands of images. Little by little it spots what cats have in common: whiskers, pointy ears, a tail!"
+        },
+        {
+          "q": "Can an AI make mistakes?",
+          "options": [
+            "Never, it is always right",
+            "Only on Mondays",
+            "Yes, quite often — that is why we check",
+            "Only if you are mean to it"
+          ],
+          "answer": 2,
+          "explanation": "Yes! An AI can sound very sure of itself and still be wrong. Always double-check important answers with a grown-up or a book."
+        },
+        {
+          "q": "Is an AI alive, like an animal?",
+          "options": [
+            "Yes, it eats and sleeps",
+            "No, it is a program — it has no feelings",
+            "Yes, it has a heart made of wires",
+            "It is alive only while the computer is on"
+          ],
+          "answer": 1,
+          "explanation": "An AI is not alive. It feels neither joy nor sadness, even when it writes \"I am happy\". It is a very clever program, nothing more."
+        },
+        {
+          "q": "Online, somebody asks for your home address. What do you do?",
+          "options": [
+            "Give it, to be polite",
+            "Give it, but only the street name",
+            "Say nothing and tell a grown-up you trust",
+            "Post it so everyone can see"
+          ],
+          "answer": 2,
+          "explanation": "Your address, your school and your phone number are private. Never share them online, and always tell a grown-up you trust."
+        },
+        {
+          "q": "Where do an AI’s answers come from?",
+          "options": [
+            "From texts and images created by people",
+            "From outer space",
+            "From the AI’s own imagination",
+            "From a secret library nobody can read"
+          ],
+          "answer": 0,
+          "explanation": "AI learns from words and pictures made by people. That is also why it can repeat their mistakes — and why humans still matter so much."
+        },
+        {
+          "q": "A friend says a chatbot is their best friend. What is true?",
+          "options": [
+            "It is a real friend who loves them",
+            "It is a useful tool, but not a real friend",
+            "It is better than a real friend",
+            "It remembers their birthday because it cares"
+          ],
+          "answer": 1,
+          "explanation": "A chatbot can be fun and helpful, but it does not feel friendship. Real friends are people (and pets!) who truly care about you."
+        },
+        {
+          "q": "What is the best way to use AI for your homework?",
+          "options": [
+            "Copy its answer word for word",
+            "Ask it to explain what you do not understand, then do the work yourself",
+            "Never use it, it is forbidden",
+            "Ask it to do everything while you watch TV"
+          ],
+          "answer": 1,
+          "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
+        }
       ]
     }
   }

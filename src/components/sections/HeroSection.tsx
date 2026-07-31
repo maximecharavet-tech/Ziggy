@@ -1,5 +1,7 @@
 'use client';
 
+import { useState } from 'react';
+
 import { motion } from 'framer-motion';
 import { useTranslations } from 'next-intl';
 import { Sparkles } from 'lucide-react';
@@ -9,6 +11,8 @@ import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 import { ParticleField } from '@/components/ui/ParticleField';
 import { FloatingEmoji } from '@/components/ui/FloatingEmoji';
 import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
+import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
+import { StarBurst } from '@/components/ziggy/StarBurst';
 import { STATS } from '@/lib/constants';
 
 const fadeUp = {
@@ -21,6 +25,13 @@ const fadeUp = {
 };
 
 export function HeroSection() {
+  const [happy, setHappy] = useState(false);
+
+  const cheer = () => {
+    setHappy(true);
+    setTimeout(() => setHappy(false), 900);
+  };
+
   const t = useTranslations('hero');
 
   const stats = [
@@ -45,12 +56,22 @@ export function HeroSection() {
             </Badge>
           </motion.div>
 
+          <motion.div
+            variants={fadeUp}
+            initial="hidden"
+            animate="visible"
+            custom={0.5}
+            className="mt-6 flex justify-center lg:justify-start"
+          >
+            <ZiggyLogo size={220} className="w-[170px] sm:w-[220px] h-auto" />
+          </motion.div>
+
           <motion.h1
             variants={fadeUp}
             initial="hidden"
             animate="visible"
             custom={1}
-            className="mt-6 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-text-body leading-[1.1] tracking-tight"
+            className="mt-4 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-text-body leading-[1.1] tracking-tight text-balance"
           >
             {t('title')}
           </motion.h1>
@@ -110,9 +131,18 @@ export function HeroSection() {
         >
           {/* Glow behind Ziggy */}
           <div className="absolute inset-0 bg-green/10 rounded-full blur-3xl scale-125" />
-          <div className="relative animate-float">
-            <ZiggyRobot size={240} className="sm:w-auto w-[180px]" />
-          </div>
+          <motion.button
+            type="button"
+            onClick={cheer}
+            whileTap={{ scale: 0.94 }}
+            animate={happy ? { rotate: [0, -6, 6, -3, 0] } : {}}
+            transition={{ duration: 0.6 }}
+            className="relative animate-float cursor-pointer rounded-full focus-visible:outline-none"
+            aria-label="Say hello to Ziggy"
+          >
+            <ZiggyRobot size={240} excited={happy} className="sm:w-auto w-[180px]" />
+            <StarBurst trigger={happy} x={120} y={90} />
+          </motion.button>
         </motion.div>
       </div>
 
