@@ -23,4 +23,4 @@ jobs:
       - name: Type check & build
         run: npm run build
         env:
-          ANTHROPIC_API_KEY: dummy-key-for-build
+          GEMINI_API_KEY: dummy-key-for-build

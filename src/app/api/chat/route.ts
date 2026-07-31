@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { chat } from '@/lib/claude';
+import { chat, NoProviderError } from '@/lib/ai';
 import { rateLimit } from '@/lib/rate-limit';
 import { getAgent, getAgentSystemPrompt } from '@/lib/agents';
 
@@ -39,6 +39,12 @@ export async function POST(request: NextRequest) {
     const message = await chat(sanitized, locale || 'en', systemPrompt);
     return NextResponse.json({ message });
   } catch (error) {
+    if (error instanceof NoProviderError) {
+      return NextResponse.json(
+        { error: 'Ziggy is not connected to an AI provider yet.' },
+        { status: 503 }
+      );
+    }
     console.error('Chat API error:', error);
     return NextResponse.json({ error: 'Something went wrong' }, { status: 500 });
   }
