@@ -1,6 +1,15 @@
 import Anthropic from '@anthropic-ai/sdk';
 
-const anthropic = new Anthropic();
+let client: Anthropic | null = null;
+
+/** Built on first use so a missing key never breaks the build or module load. */
+function getClient(): Anthropic {
+  if (!process.env.ANTHROPIC_API_KEY) {
+    throw new Error('ANTHROPIC_API_KEY is not configured');
+  }
+  client ??= new Anthropic();
+  return client;
+}
 
 const SYSTEM_PROMPT = `You are Ziggy, a friendly, enthusiastic robot companion for children aged 5-12. Your mission is to teach kids about AI, math, logic, and creativity through play.
 
@@ -18,7 +27,7 @@ export async function chat(messages: { role: string; content: string }[], locale
   const prompt = systemPrompt || SYSTEM_PROMPT;
   const localeHint = locale !== 'en' ? `\nThe child's language is: ${locale}. Always respond in this language.` : '';
 
-  const response = await anthropic.messages.create({
+  const response = await getClient().messages.create({
     model: 'claude-sonnet-4-20250514',
     max_tokens: 300,
     system: prompt + localeHint,
