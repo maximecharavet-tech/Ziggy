@@ -10,6 +10,7 @@ import { Footer } from '@/components/layout/Footer';
 import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
+import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
 import '../globals.css';
 
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     title: t('title'),
     description: t('description'),
     icons: { icon: '/favicon.svg' },
-    metadataBase: new URL('https://ziggy.ai'),
+    metadataBase: new URL(SITE_URL),
     openGraph: {
       title: t('title'),
       description: t('description'),
@@ -107,7 +108,7 @@ export default async function LocaleLayout({
     provider: {
       '@type': 'Organization',
       name: 'Ziggy Technologies SAS',
-      url: 'https://ziggy.ai',
+      url: SITE_URL,
     },
   };
 
