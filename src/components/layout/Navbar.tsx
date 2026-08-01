@@ -7,6 +7,7 @@ import { Menu, X } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { SoundToggle } from '@/components/ui/SoundToggle';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
 import { AccountButton } from '@/components/account/AccountButton';
@@ -61,6 +62,7 @@ export function Navbar() {
         </div>
 
         <div className="hidden lg:flex items-center gap-3">
+          <SoundToggle />
           <ThemeToggle />
           <LanguageSwitcher />
           <AccountButton />
@@ -99,6 +101,7 @@ export function Navbar() {
                 </motion.a>
               ))}
               <div className="flex items-center gap-3 pt-4 px-3">
+                <SoundToggle />
                 <ThemeToggle />
                 <LanguageSwitcher />
                 <AccountButton className="flex-1 justify-center" />

@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { recordGameResult } from '@/lib/progress';
+import { playSound } from '@/lib/sound';
+import { Confetti } from '@/components/ui/Confetti';
 import { RotateCcw, Star, Play } from 'lucide-react';
 
 /* ═══════════════════════════════════════
@@ -281,7 +283,13 @@ export function GameResultScreen({
     recordGameResult(gameId, Number.isFinite(numeric) ? numeric : 0, stars);
   }, [gameId, scoreValue, stars]);
 
+  useEffect(() => {
+    playSound(stars >= 2 ? 'win' : 'star');
+  }, [stars]);
+
   return (
+    <>
+      <Confetti trigger={stars >= 2} />
     <motion.div
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -335,6 +343,7 @@ export function GameResultScreen({
         {t('playAgain')}
       </GameButton>
     </motion.div>
+    </>
   );
 }
 

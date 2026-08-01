@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/Button';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { LocalOnlyNotice } from '@/components/account/LocalOnlyNotice';
 import { avatarColor } from '@/lib/account';
+import { OwnerLoginForm } from '@/components/account/OwnerLoginForm';
 
 export function LoginPageContent() {
   const t = useTranslations('account');
@@ -88,6 +89,8 @@ export function LoginPageContent() {
             </div>
           )}
         </div>
+
+        <OwnerLoginForm />
       </div>
     </div>
   );

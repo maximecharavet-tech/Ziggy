@@ -2,7 +2,18 @@
 
 import { motion } from 'framer-motion';
 import { Link } from '@/i18n/navigation';
-import { ArrowRight, Brain, Calculator, Puzzle, Sparkles, Gamepad2 } from 'lucide-react';
+import {
+  ArrowRight,
+  Brain,
+  Calculator,
+  Puzzle,
+  Sparkles,
+  Gamepad2,
+  Zap,
+  Bot,
+  SearchCheck,
+  Grid3x3,
+} from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
 
 const ICONS: Record<string, LucideIcon> = {
@@ -11,6 +22,10 @@ const ICONS: Record<string, LucideIcon> = {
   Puzzle,
   Sparkles,
   Gamepad2,
+  Zap,
+  Bot,
+  SearchCheck,
+  Grid3x3,
 };
 
 export function getGameIcon(name: string): LucideIcon {

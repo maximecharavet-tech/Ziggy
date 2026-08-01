@@ -260,7 +260,7 @@
   "games": {
     "badge": "Minispelletjes",
     "pageTitle": "De speelhal van Ziggy",
-    "pageSubtitle": "Vier leuke minispelletjes om je geheugen, je rekenen en je logica te trainen — en alles over AI te leren!",
+    "pageSubtitle": "Acht leuke minispelletjes om je geheugen, je rekenen en je logica te trainen — en alles over AI te leren!",
     "sectionTitle": "Spelen en leren",
     "sectionSubtitle": "Je leert veel beter als het leuk is. Kies een spel en gaan!",
     "backToGames": "Terug naar de spelletjes",
@@ -385,6 +385,57 @@
           "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
         }
       ]
+    },
+    "simon": {
+      "name": "Ziggy zegt",
+      "description": "Kijk naar de kleurenreeks en herhaal hem. Elke ronde wordt hij langer!",
+      "howTo": "Onthoud de volgorde van de kleuren en tik ze in dezelfde volgorde aan.",
+      "round": "Ronde",
+      "watch": "Goed kijken…",
+      "yourTurn": "Jouw beurt!"
+    },
+    "coding": {
+      "name": "Robotpad",
+      "description": "Programmeer Ziggy met pijlen zodat hij de ster bereikt.",
+      "howTo": "Zet pijlen op een rij en druk op Start. Pas op voor obstakels!",
+      "level": "Niveau",
+      "run": "Start",
+      "reset": "Wissen",
+      "cleared": "Niveau gehaald!",
+      "crashed": "Oeps! Ziggy botste ergens tegenaan.",
+      "emptyQueue": "Voeg minstens één pijl toe.",
+      "tries": "pogingen"
+    },
+    "oddone": {
+      "name": "Wie hoort er niet bij?",
+      "description": "Drie plaatjes horen bij elkaar, één niet. Vind hem!",
+      "howTo": "Tik op het plaatje dat niet bij de andere hoort.",
+      "reasons": [
+        "De andere zijn dieren.",
+        "De andere zijn fruit.",
+        "De andere zijn voertuigen.",
+        "De andere leven in zee.",
+        "De andere zijn kleren.",
+        "De andere zijn ballen.",
+        "De andere zijn instrumenten.",
+        "De andere komen uit de lucht.",
+        "De andere zijn insecten.",
+        "De andere zijn drankjes.",
+        "De andere horen op school.",
+        "De andere schijnen aan de hemel.",
+        "De andere zijn planten.",
+        "De andere zijn lichaamsdelen.",
+        "De andere zijn om te koken.",
+        "De andere zijn vogels."
+      ]
+    },
+    "puzzle": {
+      "name": "Schuifpuzzel",
+      "description": "Schuif de tegels om de cijfers op volgorde te zetten.",
+      "howTo": "Tik op een tegel naast het gaatje om hem te schuiven.",
+      "moves": "Zetten",
+      "goal": "Zet 1 tot 8 op volgorde",
+      "solved": "Opgelost!"
     }
   },
   "account": {

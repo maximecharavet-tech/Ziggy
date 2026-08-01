@@ -260,7 +260,7 @@
   "games": {
     "badge": "小游戏",
     "pageTitle": "Ziggy 游戏厅",
-    "pageSubtitle": "四款有趣的小游戏，锻炼记忆力、心算和逻辑，还能全面了解人工智能！",
+    "pageSubtitle": "八款有趣的小游戏，锻炼记忆力、心算和逻辑，还能全面了解人工智能！",
     "sectionTitle": "边玩边学",
     "sectionSubtitle": "玩得开心，才记得更牢。选一个游戏开始吧！",
     "backToGames": "返回游戏列表",
@@ -385,6 +385,57 @@
           "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
         }
       ]
+    },
+    "simon": {
+      "name": "Ziggy 说",
+      "description": "看清颜色顺序，然后照着按。每一轮都会变长！",
+      "howTo": "记住颜色的顺序，再按同样的顺序点一遍。",
+      "round": "回合",
+      "watch": "看仔细…",
+      "yourTurn": "该你了！"
+    },
+    "coding": {
+      "name": "机器人路线",
+      "description": "用箭头给 Ziggy 编程，让它走到星星那里。",
+      "howTo": "排好箭头，然后点“运行”。小心障碍物！",
+      "level": "关卡",
+      "run": "运行",
+      "reset": "清空",
+      "cleared": "过关！",
+      "crashed": "哎呀！Ziggy 撞到东西了。",
+      "emptyQueue": "至少加一个箭头。",
+      "tries": "次"
+    },
+    "oddone": {
+      "name": "找不同",
+      "description": "三张图是一类，有一张不是。把它找出来！",
+      "howTo": "点那张和其他不一样的图。",
+      "reasons": [
+        "其他都是动物。",
+        "其他都是水果。",
+        "其他都是交通工具。",
+        "其他都生活在海里。",
+        "其他都是衣服。",
+        "其他都是球。",
+        "其他都是乐器。",
+        "其他都来自天空。",
+        "其他都是昆虫。",
+        "其他都是饮料。",
+        "其他都是学校用品。",
+        "其他都在天上发光。",
+        "其他都是植物。",
+        "其他都是身体部位。",
+        "其他都是厨房用具。",
+        "其他都是鸟。"
+      ]
+    },
+    "puzzle": {
+      "name": "滑块拼图",
+      "description": "滑动方块，把数字按顺序排好。",
+      "howTo": "点空格旁边的方块就能把它滑过去。",
+      "moves": "步数",
+      "goal": "把 1 到 8 排好",
+      "solved": "完成！"
     }
   },
   "account": {

@@ -260,7 +260,7 @@
   "games": {
     "badge": "Minispiele",
     "pageTitle": "Ziggys Spielhalle",
-    "pageSubtitle": "Vier lustige Minispiele für dein Gedächtnis, dein Kopfrechnen und deine Logik — und alles über KI!",
+    "pageSubtitle": "Acht lustige Minispiele für dein Gedächtnis, dein Kopfrechnen und deine Logik — und alles über KI!",
     "sectionTitle": "Spielen und lernen",
     "sectionSubtitle": "Man lernt viel besser, wenn es Spaß macht. Wähl ein Spiel und los geht's!",
     "backToGames": "Zurück zu den Spielen",
@@ -385,6 +385,57 @@
           "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
         }
       ]
+    },
+    "simon": {
+      "name": "Ziggy sagt",
+      "description": "Merk dir die Farbfolge und wiederhole sie. Sie wird jede Runde länger!",
+      "howTo": "Präge dir die Reihenfolge ein und tippe die Farben genauso nach.",
+      "round": "Runde",
+      "watch": "Gut aufpassen…",
+      "yourTurn": "Du bist dran!"
+    },
+    "coding": {
+      "name": "Roboterpfad",
+      "description": "Programmiere Ziggy mit Pfeilen, damit er den Stern erreicht.",
+      "howTo": "Pfeile aneinanderreihen, dann Start drücken. Achtung, Hindernisse!",
+      "level": "Level",
+      "run": "Start",
+      "reset": "Löschen",
+      "cleared": "Level geschafft!",
+      "crashed": "Hoppla! Ziggy ist angestoßen.",
+      "emptyQueue": "Füge mindestens einen Pfeil hinzu.",
+      "tries": "Versuche"
+    },
+    "oddone": {
+      "name": "Was passt nicht?",
+      "description": "Drei Bilder gehören zusammen, eines nicht. Finde es!",
+      "howTo": "Tippe auf das Bild, das nicht zu den anderen passt.",
+      "reasons": [
+        "Die anderen sind Tiere.",
+        "Die anderen sind Obst.",
+        "Die anderen sind Fahrzeuge.",
+        "Die anderen leben im Meer.",
+        "Die anderen sind Kleidung.",
+        "Die anderen sind Bälle.",
+        "Die anderen sind Instrumente.",
+        "Die anderen kommen vom Himmel.",
+        "Die anderen sind Insekten.",
+        "Die anderen sind Getränke.",
+        "Die anderen gehören in die Schule.",
+        "Die anderen leuchten am Himmel.",
+        "Die anderen sind Pflanzen.",
+        "Die anderen sind Körperteile.",
+        "Die anderen sind zum Kochen.",
+        "Die anderen sind Vögel."
+      ]
+    },
+    "puzzle": {
+      "name": "Schiebepuzzle",
+      "description": "Schiebe die Steine, bis die Zahlen in der Reihenfolge liegen.",
+      "howTo": "Tippe auf einen Stein neben der Lücke, um ihn zu schieben.",
+      "moves": "Züge",
+      "goal": "Bringe 1 bis 8 in die Reihe",
+      "solved": "Gelöst!"
     }
   },
   "account": {

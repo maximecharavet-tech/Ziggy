@@ -260,7 +260,7 @@
   "games": {
     "badge": "Mini-giochi",
     "pageTitle": "La sala giochi di Ziggy",
-    "pageSubtitle": "Quattro mini-giochi divertenti per allenare memoria, calcolo e logica — e scoprire tutto sull’IA!",
+    "pageSubtitle": "Otto mini-giochi divertenti per allenare memoria, calcolo e logica — e scoprire tutto sull’IA!",
     "sectionTitle": "Gioca e impara",
     "sectionSubtitle": "Si impara molto meglio quando ci si diverte. Scegli un gioco e via!",
     "backToGames": "Torna ai giochi",
@@ -385,6 +385,57 @@
           "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
         }
       ]
+    },
+    "simon": {
+      "name": "Ziggy dice",
+      "description": "Guarda la sequenza di colori e ripetila. Cresce ogni turno!",
+      "howTo": "Memorizza l’ordine dei colori e toccali nello stesso ordine.",
+      "round": "Turno",
+      "watch": "Guarda bene…",
+      "yourTurn": "Tocca a te!"
+    },
+    "coding": {
+      "name": "Il percorso del robot",
+      "description": "Programma Ziggy con le frecce per farlo arrivare alla stella.",
+      "howTo": "Metti in fila le frecce e premi Avvia. Attento agli ostacoli!",
+      "level": "Livello",
+      "run": "Avvia",
+      "reset": "Cancella",
+      "cleared": "Livello superato!",
+      "crashed": "Ops! Ziggy ha sbattuto.",
+      "emptyQueue": "Aggiungi almeno una freccia.",
+      "tries": "tentativi"
+    },
+    "oddone": {
+      "name": "L’intruso",
+      "description": "Tre immagini stanno insieme, una no. Trovala!",
+      "howTo": "Tocca l’immagine che non c’entra con le altre.",
+      "reasons": [
+        "Gli altri sono animali.",
+        "Gli altri sono frutti.",
+        "Gli altri sono veicoli.",
+        "Gli altri vivono nel mare.",
+        "Gli altri sono vestiti.",
+        "Gli altri sono palloni.",
+        "Gli altri sono strumenti.",
+        "Gli altri vengono dal cielo.",
+        "Gli altri sono insetti.",
+        "Gli altri sono bevande.",
+        "Gli altri servono a scuola.",
+        "Gli altri brillano nel cielo.",
+        "Gli altri sono piante.",
+        "Gli altri sono parti del corpo.",
+        "Gli altri servono per cucinare.",
+        "Gli altri sono uccelli."
+      ]
+    },
+    "puzzle": {
+      "name": "Gioco del quindici",
+      "description": "Fai scorrere le tessere per rimettere i numeri in ordine.",
+      "howTo": "Tocca una tessera vicina allo spazio vuoto per farla scorrere.",
+      "moves": "Mosse",
+      "goal": "Metti da 1 a 8 in ordine",
+      "solved": "Risolto!"
     }
   },
   "account": {

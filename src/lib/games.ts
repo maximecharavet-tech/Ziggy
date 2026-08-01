@@ -34,6 +34,30 @@ export const GAMES: GameConfig[] = [
     colorSoft: '#FEF3C7',
     icon: 'Sparkles',
   },
+  {
+    id: 'simon',
+    color: '#EC4899',
+    colorSoft: '#FCE7F3',
+    icon: 'Zap',
+  },
+  {
+    id: 'coding',
+    color: '#06B6D4',
+    colorSoft: '#CFFAFE',
+    icon: 'Bot',
+  },
+  {
+    id: 'oddone',
+    color: '#8B5CF6',
+    colorSoft: '#EDE9FE',
+    icon: 'SearchCheck',
+  },
+  {
+    id: 'puzzle',
+    color: '#F97316',
+    colorSoft: '#FFEDD5',
+    icon: 'Grid3x3',
+  },
 ];
 
 export function getGame(id: string): GameConfig | undefined {

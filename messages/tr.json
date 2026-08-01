@@ -260,7 +260,7 @@
   "games": {
     "badge": "Mini oyunlar",
     "pageTitle": "Ziggy'nin oyun salonu",
-    "pageSubtitle": "Hafızanı, zihinden işlem becerini ve mantığını güçlendiren dört eğlenceli mini oyun — üstelik yapay zekayı da öğren!",
+    "pageSubtitle": "Hafızanı, zihinden işlem becerini ve mantığını güçlendiren sekiz eğlenceli mini oyun — üstelik yapay zekayı da öğren!",
     "sectionTitle": "Oyna ve öğren",
     "sectionSubtitle": "Eğlenirken çok daha iyi öğrenilir. Bir oyun seç ve başla!",
     "backToGames": "Oyunlara dön",
@@ -385,6 +385,57 @@
           "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
         }
       ]
+    },
+    "simon": {
+      "name": "Ziggy diyor ki",
+      "description": "Renk sırasını izle ve tekrarla. Her turda uzuyor!",
+      "howTo": "Renklerin sırasını ezberle ve aynı sırayla dokun.",
+      "round": "Tur",
+      "watch": "Dikkatle izle…",
+      "yourTurn": "Sıra sende!"
+    },
+    "coding": {
+      "name": "Robotun yolu",
+      "description": "Ziggy'yi oklarla programla ki yıldıza ulaşsın.",
+      "howTo": "Okları sıraya diz ve Çalıştır’a bas. Engellere dikkat!",
+      "level": "Seviye",
+      "run": "Çalıştır",
+      "reset": "Temizle",
+      "cleared": "Seviye tamam!",
+      "crashed": "Eyvah! Ziggy bir yere çarptı.",
+      "emptyQueue": "En az bir ok ekle.",
+      "tries": "deneme"
+    },
+    "oddone": {
+      "name": "Farklı olan",
+      "description": "Üç resim birbirine ait, biri değil. Onu bul!",
+      "howTo": "Diğerlerine ait olmayan resme dokun.",
+      "reasons": [
+        "Diğerleri hayvan.",
+        "Diğerleri meyve.",
+        "Diğerleri taşıt.",
+        "Diğerleri denizde yaşar.",
+        "Diğerleri giysi.",
+        "Diğerleri top.",
+        "Diğerleri müzik aleti.",
+        "Diğerleri gökyüzünden gelir.",
+        "Diğerleri böcek.",
+        "Diğerleri içecek.",
+        "Diğerleri okul eşyası.",
+        "Diğerleri gökyüzünde parlar.",
+        "Diğerleri bitki.",
+        "Diğerleri vücut parçası.",
+        "Diğerleri mutfak eşyası.",
+        "Diğerleri kuş."
+      ]
+    },
+    "puzzle": {
+      "name": "Kaydırmalı bulmaca",
+      "description": "Kareleri kaydırarak sayıları sıraya diz.",
+      "howTo": "Boşluğun yanındaki kareye dokunarak kaydır.",
+      "moves": "Hamle",
+      "goal": "1’den 8’e sırala",
+      "solved": "Çözüldü!"
     }
   },
   "account": {

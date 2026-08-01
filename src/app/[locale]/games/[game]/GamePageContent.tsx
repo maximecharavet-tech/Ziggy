@@ -10,6 +10,10 @@ import { MemoryGame } from '@/components/games/MemoryGame';
 import { MathGame } from '@/components/games/MathGame';
 import { LogicGame } from '@/components/games/LogicGame';
 import { QuizGame } from '@/components/games/QuizGame';
+import { SimonGame } from '@/components/games/SimonGame';
+import { CodingGame } from '@/components/games/CodingGame';
+import { OddOneGame } from '@/components/games/OddOneGame';
+import { PuzzleGame } from '@/components/games/PuzzleGame';
 import { ParticleField } from '@/components/ui/ParticleField';
 
 export function GamePageContent({ gameId }: { gameId: string }) {
@@ -27,6 +31,14 @@ export function GamePageContent({ gameId }: { gameId: string }) {
         return <LogicGame color={game.color} />;
       case 'quiz':
         return <QuizGame color={game.color} />;
+      case 'simon':
+        return <SimonGame color={game.color} />;
+      case 'coding':
+        return <CodingGame color={game.color} />;
+      case 'oddone':
+        return <OddOneGame color={game.color} />;
+      case 'puzzle':
+        return <PuzzleGame color={game.color} />;
       default:
         return null;
     }

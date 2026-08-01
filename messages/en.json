@@ -260,7 +260,7 @@
   "games": {
     "badge": "Mini-games",
     "pageTitle": "The Ziggy Arcade",
-    "pageSubtitle": "Four fun mini-games to train your memory, your maths and your logic — and learn all about AI!",
+    "pageSubtitle": "Eight fun mini-games to train your memory, your maths and your logic — and learn all about AI!",
     "sectionTitle": "Play and learn",
     "sectionSubtitle": "Learning sticks so much better when it feels like playing. Pick a game and go!",
     "backToGames": "Back to games",
@@ -385,6 +385,57 @@
           "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
         }
       ]
+    },
+    "simon": {
+      "name": "Ziggy Says",
+      "description": "Watch the colour sequence, then repeat it. It gets longer every round!",
+      "howTo": "Memorise the order of the colours and tap them back in the same order.",
+      "round": "Round",
+      "watch": "Watch closely…",
+      "yourTurn": "Your turn!"
+    },
+    "coding": {
+      "name": "Robot Path",
+      "description": "Program Ziggy with arrows so he reaches the star.",
+      "howTo": "Queue up arrows, then press Run. Mind the obstacles!",
+      "level": "Level",
+      "run": "Run",
+      "reset": "Clear",
+      "cleared": "Level cleared!",
+      "crashed": "Oops! Ziggy bumped into something.",
+      "emptyQueue": "Add at least one arrow.",
+      "tries": "tries"
+    },
+    "oddone": {
+      "name": "Odd One Out",
+      "description": "Three pictures belong together and one does not. Find it!",
+      "howTo": "Tap the picture that does not belong with the others.",
+      "reasons": [
+        "The others are animals.",
+        "The others are fruit.",
+        "The others are vehicles.",
+        "The others live in the sea.",
+        "The others are clothes.",
+        "The others are balls.",
+        "The others are instruments.",
+        "The others come from the sky.",
+        "The others are insects.",
+        "The others are drinks.",
+        "The others belong at school.",
+        "The others shine in the sky.",
+        "The others are plants.",
+        "The others are body parts.",
+        "The others are for cooking.",
+        "The others are birds."
+      ]
+    },
+    "puzzle": {
+      "name": "Sliding Puzzle",
+      "description": "Slide the tiles to put the numbers back in order.",
+      "howTo": "Tap a tile next to the gap to slide it across.",
+      "moves": "Moves",
+      "goal": "Put 1 to 8 in order",
+      "solved": "Solved!"
     }
   },
   "account": {

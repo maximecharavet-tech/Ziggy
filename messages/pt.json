@@ -260,7 +260,7 @@
   "games": {
     "badge": "Minijogos",
     "pageTitle": "O arcade do Ziggy",
-    "pageSubtitle": "Quatro minijogos divertidos para treinar a memória, o cálculo e a lógica — e descobrir tudo sobre a IA!",
+    "pageSubtitle": "Oito minijogos divertidos para treinar a memória, o cálculo e a lógica — e descobrir tudo sobre a IA!",
     "sectionTitle": "Jogar e aprender",
     "sectionSubtitle": "Aprende-se muito melhor quando é divertido. Escolhe um jogo e vamos lá!",
     "backToGames": "Voltar aos jogos",
@@ -385,6 +385,57 @@
           "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
         }
       ]
+    },
+    "simon": {
+      "name": "O Ziggy diz",
+      "description": "Vê a sequência de cores e repete-a. Cresce a cada ronda!",
+      "howTo": "Memoriza a ordem das cores e toca nelas pela mesma ordem.",
+      "round": "Ronda",
+      "watch": "Presta atenção…",
+      "yourTurn": "É a tua vez!"
+    },
+    "coding": {
+      "name": "Caminho do robô",
+      "description": "Programa o Ziggy com setas para ele chegar à estrela.",
+      "howTo": "Junta setas e carrega em Executar. Cuidado com os obstáculos!",
+      "level": "Nível",
+      "run": "Executar",
+      "reset": "Limpar",
+      "cleared": "Nível concluído!",
+      "crashed": "Ups! O Ziggy bateu em algo.",
+      "emptyQueue": "Adiciona pelo menos uma seta.",
+      "tries": "tentativas"
+    },
+    "oddone": {
+      "name": "O intruso",
+      "description": "Três imagens combinam e uma não. Encontra-a!",
+      "howTo": "Toca na imagem que não pertence ao grupo.",
+      "reasons": [
+        "Os outros são animais.",
+        "Os outros são frutas.",
+        "Os outros são veículos.",
+        "Os outros vivem no mar.",
+        "Os outros são roupas.",
+        "Os outros são bolas.",
+        "Os outros são instrumentos.",
+        "Os outros vêm do céu.",
+        "Os outros são insetos.",
+        "Os outros são bebidas.",
+        "Os outros são da escola.",
+        "Os outros brilham no céu.",
+        "Os outros são plantas.",
+        "Os outros são partes do corpo.",
+        "Os outros servem para cozinhar.",
+        "Os outros são aves."
+      ]
+    },
+    "puzzle": {
+      "name": "Puzzle deslizante",
+      "description": "Desliza as peças para pôr os números por ordem.",
+      "howTo": "Toca numa peça ao lado do espaço vazio para a deslizar.",
+      "moves": "Jogadas",
+      "goal": "Ordena de 1 a 8",
+      "solved": "Resolvido!"
     }
   },
   "account": {

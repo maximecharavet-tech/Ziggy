@@ -260,7 +260,7 @@
   "games": {
     "badge": "Mini-jeux",
     "pageTitle": "L'arcade de Ziggy",
-    "pageSubtitle": "Quatre mini-jeux rigolos pour muscler ta mémoire, ton calcul et ta logique — et tout comprendre à l'IA !",
+    "pageSubtitle": "Huit mini-jeux rigolos pour muscler ta mémoire, ton calcul et ta logique — et tout comprendre à l'IA !",
     "sectionTitle": "Jouer et apprendre",
     "sectionSubtitle": "On retient beaucoup mieux quand on s'amuse. Choisis un jeu et c'est parti !",
     "backToGames": "Retour aux jeux",
@@ -385,6 +385,57 @@
           "explanation": "L’IA est un super prof particulier : demande-lui d’expliquer ! Mais c’est en faisant le travail TOI-MÊME que ton cerveau grandit. Et c’est ça le plus chouette."
         }
       ]
+    },
+    "simon": {
+      "name": "Ziggy dit",
+      "description": "Regarde la suite de couleurs, puis répète-la. Elle s’allonge à chaque tour !",
+      "howTo": "Mémorise l’ordre des couleurs et appuie dessus dans le même ordre.",
+      "round": "Tour",
+      "watch": "Regarde bien…",
+      "yourTurn": "À toi !"
+    },
+    "coding": {
+      "name": "Le chemin du robot",
+      "description": "Programme Ziggy avec des flèches pour qu’il atteigne l’étoile.",
+      "howTo": "Ajoute des flèches, puis appuie sur Lancer. Attention aux obstacles !",
+      "level": "Niveau",
+      "run": "Lancer",
+      "reset": "Effacer",
+      "cleared": "Niveau réussi !",
+      "crashed": "Aïe ! Ziggy a heurté quelque chose.",
+      "emptyQueue": "Ajoute au moins une flèche.",
+      "tries": "essais"
+    },
+    "oddone": {
+      "name": "L’intrus",
+      "description": "Trois images vont ensemble, une seule n’a rien à faire là. Trouve-la !",
+      "howTo": "Appuie sur l’image qui n’appartient pas au groupe.",
+      "reasons": [
+        "Les autres sont des animaux.",
+        "Les autres sont des fruits.",
+        "Les autres roulent ou volent.",
+        "Les autres vivent dans la mer.",
+        "Les autres se portent.",
+        "Les autres sont des ballons.",
+        "Les autres sont des instruments.",
+        "Les autres viennent du ciel.",
+        "Les autres sont des insectes.",
+        "Les autres se boivent.",
+        "Les autres servent à l’école.",
+        "Les autres brillent dans le ciel.",
+        "Les autres sont des plantes.",
+        "Les autres sont des parties du corps.",
+        "Les autres servent à cuisiner.",
+        "Les autres sont des oiseaux."
+      ]
+    },
+    "puzzle": {
+      "name": "Taquin",
+      "description": "Fais glisser les cases pour remettre les nombres dans l’ordre.",
+      "howTo": "Appuie sur une case à côté du trou pour la faire glisser.",
+      "moves": "Coups",
+      "goal": "Remets 1 à 8 dans l’ordre",
+      "solved": "Résolu !"
     }
   },
   "account": {

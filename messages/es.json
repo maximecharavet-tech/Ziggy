@@ -260,7 +260,7 @@
   "games": {
     "badge": "Minijuegos",
     "pageTitle": "El arcade de Ziggy",
-    "pageSubtitle": "¡Cuatro minijuegos divertidos para entrenar tu memoria, tu cálculo y tu lógica, y descubrirlo todo sobre la IA!",
+    "pageSubtitle": "¡Ocho minijuegos divertidos para entrenar tu memoria, tu cálculo y tu lógica, y descubrirlo todo sobre la IA!",
     "sectionTitle": "Juega y aprende",
     "sectionSubtitle": "Se aprende mucho mejor cuando uno se divierte. ¡Elige un juego y a jugar!",
     "backToGames": "Volver a los juegos",
@@ -385,6 +385,57 @@
           "explanation": "AI makes a great tutor: ask it to explain! But your brain only grows when YOU do the work — and that is the best part."
         }
       ]
+    },
+    "simon": {
+      "name": "Ziggy dice",
+      "description": "¡Mira la secuencia de colores y repítela! Crece en cada ronda.",
+      "howTo": "Memoriza el orden de los colores y tócalos en el mismo orden.",
+      "round": "Ronda",
+      "watch": "Mira bien…",
+      "yourTurn": "¡Te toca!"
+    },
+    "coding": {
+      "name": "El camino del robot",
+      "description": "Programa a Ziggy con flechas para que llegue a la estrella.",
+      "howTo": "Añade flechas y pulsa Ejecutar. ¡Cuidado con los obstáculos!",
+      "level": "Nivel",
+      "run": "Ejecutar",
+      "reset": "Borrar",
+      "cleared": "¡Nivel superado!",
+      "crashed": "¡Ups! Ziggy ha chocado.",
+      "emptyQueue": "Añade al menos una flecha.",
+      "tries": "intentos"
+    },
+    "oddone": {
+      "name": "El intruso",
+      "description": "Tres imágenes van juntas y una no. ¡Encuéntrala!",
+      "howTo": "Toca la imagen que no encaja con las demás.",
+      "reasons": [
+        "Los demás son animales.",
+        "Los demás son frutas.",
+        "Los demás son vehículos.",
+        "Los demás viven en el mar.",
+        "Los demás son ropa.",
+        "Los demás son pelotas.",
+        "Los demás son instrumentos.",
+        "Los demás vienen del cielo.",
+        "Los demás son insectos.",
+        "Los demás son bebidas.",
+        "Los demás son del colegio.",
+        "Los demás brillan en el cielo.",
+        "Los demás son plantas.",
+        "Los demás son partes del cuerpo.",
+        "Los demás sirven para cocinar.",
+        "Los demás son aves."
+      ]
+    },
+    "puzzle": {
+      "name": "Puzle deslizante",
+      "description": "Desliza las fichas para ordenar los números.",
+      "howTo": "Toca una ficha junto al hueco para deslizarla.",
+      "moves": "Movimientos",
+      "goal": "Ordena del 1 al 8",
+      "solved": "¡Resuelto!"
     }
   },
   "account": {
