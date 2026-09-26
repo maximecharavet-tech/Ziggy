@@ -8,15 +8,15 @@ import { useProfile } from './ProfileProvider';
 import { avatarColor } from '@/lib/account';
 
 /**
- * Navbar account control: a sign-up call to action until there is a profile,
- * then the child's avatar and name linking to their dashboard.
+ * Navbar account control: a sign-up call to action for visitors, then the
+ * child's avatar and name, linking to their space (or the owner dashboard).
  */
 export function AccountButton({ className = '' }: { className?: string }) {
   const t = useTranslations('nav');
-  const { profile, ready } = useProfile();
+  const { user, profile, ready, isOwner } = useProfile();
 
-  // Render the signed-out state during SSR so markup matches on hydration.
-  if (!ready || !profile) {
+  // Render the signed-out state during SSR so the markup matches on hydration.
+  if (!ready || !user) {
     return (
       <Button href="/signup" size="sm" className={className}>
         {t('signup')}
@@ -24,20 +24,21 @@ export function AccountButton({ className = '' }: { className?: string }) {
     );
   }
 
-  const color = avatarColor(profile.avatar);
+  const avatar = profile?.avatar ?? 'sales';
+  const color = avatarColor(avatar);
 
   return (
     <Link
-      href="/account"
+      href={isOwner ? '/owner' : '/account'}
       className={`inline-flex items-center gap-2 ps-1.5 pe-3.5 py-1.5 rounded-full glass border border-border/50 hover:border-green/40 transition-colors ${className}`}
     >
       <span
         className="w-8 h-8 rounded-full flex items-center justify-center shrink-0"
         style={{ backgroundColor: `${color}20` }}
       >
-        <AgentAvatar agentId={profile.avatar} color={color} size={26} />
+        <AgentAvatar agentId={avatar} color={color} size={26} />
       </span>
-      <span className="text-sm font-bold text-text-body max-w-[7rem] truncate">{profile.name}</span>
+      <span className="text-sm font-bold text-text-body max-w-[7rem] truncate">{profile?.name ?? t('account')}</span>
     </Link>
   );
 }

@@ -14,7 +14,7 @@ import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { StarBurst } from '@/components/ziggy/StarBurst';
 import { useSound } from '@/hooks/useSound';
-import { useSiteConfig } from '@/hooks/useSiteConfig';
+import type { SiteConfig } from '@/lib/site-config';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -25,10 +25,9 @@ const fadeUp = {
   }),
 };
 
-export function HeroSection() {
+export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) {
   const [happy, setHappy] = useState(false);
   const { play } = useSound();
-  const config = useSiteConfig();
 
   const cheer = () => {
     play('pop');
@@ -40,10 +39,10 @@ export function HeroSection() {
 
   // Figures come from the owner dashboard when it has overridden them.
   const stats = [
-    { value: config.stats.children, label: t('stats_children') },
-    { value: config.stats.sessions, label: t('stats_sessions') },
-    { value: config.stats.countries, label: t('stats_countries') },
-    { value: config.stats.rating, label: t('stats_rating') },
+    { value: figures.children, label: t('stats_children') },
+    { value: figures.sessions, label: t('stats_sessions') },
+    { value: figures.countries, label: t('stats_countries') },
+    { value: figures.rating, label: t('stats_rating') },
   ];
 
   return (

@@ -1,77 +1,47 @@
 /**
- * Owner-editable site settings, stored in localStorage.
+ * Owner-editable site settings.
  *
- * These are presentation values the owner can tune without a deploy. They are
- * read by the components that display them, falling back to the defaults in
- * `src/lib/constants.ts` when nothing has been saved.
+ * The single `site_settings` row is publicly readable and only the owner can
+ * change it (enforced by row level security). The landing page reads it on the
+ * server and is regenerated at most a minute later — or immediately, when the
+ * owner dashboard asks /api/revalidate after saving.
  */
-import { STATS } from './constants';
-
-export const SITE_CONFIG_KEY = 'ziggy:site-config';
-export const SITE_CONFIG_EVENT = 'ziggy:site-config';
+import { getServerSupabase } from './supabase';
 
 export interface SiteConfig {
-  stats: {
-    children: string;
-    sessions: string;
-    countries: string;
-    rating: string;
-  };
-  /** Sections the owner can hide from the landing page. */
-  sections: {
-    showcase: boolean;
-    agents: boolean;
-    games: boolean;
-    reviews: boolean;
-    pricing: boolean;
-  };
+  stats: { children: string; sessions: string; countries: string; rating: string };
+  sections: { showcase: boolean; agents: boolean; games: boolean; reviews: boolean; pricing: boolean };
 }
 
 export const DEFAULT_SITE_CONFIG: SiteConfig = {
-  stats: {
-    children: STATS.children,
-    sessions: STATS.sessions,
-    countries: STATS.countries,
-    rating: STATS.rating,
-  },
+  stats: { children: '50K+', sessions: '2M+', countries: '45+', rating: '4.9/5' },
   sections: { showcase: true, agents: true, games: true, reviews: true, pricing: true },
 };
 
-function isBrowser() {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+/** Merge untrusted JSON over the defaults, keeping only known keys of the right type. */
+export function normaliseSiteConfig(raw: { stats?: unknown; sections?: unknown } | null | undefined): SiteConfig {
+  const stats = { ...DEFAULT_SITE_CONFIG.stats };
+  const sections = { ...DEFAULT_SITE_CONFIG.sections };
+  const s = (raw?.stats ?? {}) as Record<string, unknown>;
+  const v = (raw?.sections ?? {}) as Record<string, unknown>;
+  for (const k of Object.keys(stats) as (keyof SiteConfig['stats'])[]) {
+    if (typeof s[k] === 'string' && (s[k] as string).trim()) stats[k] = (s[k] as string).trim().slice(0, 16);
+  }
+  for (const k of Object.keys(sections) as (keyof SiteConfig['sections'])[]) {
+    if (typeof v[k] === 'boolean') sections[k] = v[k] as boolean;
+  }
+  return { stats, sections };
 }
 
-export function getSiteConfig(): SiteConfig {
-  if (!isBrowser()) return DEFAULT_SITE_CONFIG;
+export async function fetchSiteConfig(): Promise<SiteConfig> {
+  const sb = getServerSupabase();
+  if (!sb) return DEFAULT_SITE_CONFIG;
   try {
-    const raw = window.localStorage.getItem(SITE_CONFIG_KEY);
-    if (!raw) return DEFAULT_SITE_CONFIG;
-    const parsed = JSON.parse(raw) as Partial<SiteConfig>;
-    return {
-      stats: { ...DEFAULT_SITE_CONFIG.stats, ...(parsed.stats ?? {}) },
-      sections: { ...DEFAULT_SITE_CONFIG.sections, ...(parsed.sections ?? {}) },
-    };
+    const { data, error } = await sb.from('site_settings').select('stats, sections').eq('id', 1).maybeSingle();
+    if (error || !data) return DEFAULT_SITE_CONFIG;
+    return normaliseSiteConfig(data);
   } catch {
+    // Unreachable database (or a build machine without network): show the defaults.
     return DEFAULT_SITE_CONFIG;
   }
-}
-
-export function saveSiteConfig(config: SiteConfig): void {
-  if (!isBrowser()) return;
-  try {
-    window.localStorage.setItem(SITE_CONFIG_KEY, JSON.stringify(config));
-    window.dispatchEvent(new CustomEvent(SITE_CONFIG_EVENT, { detail: config }));
-  } catch {
-    /* storage full or blocked — keep the in-memory value */
-  }
-}
-
-export function resetSiteConfig(): void {
-  if (!isBrowser()) return;
-  try {
-    window.localStorage.removeItem(SITE_CONFIG_KEY);
-  } catch {
-    /* ignore */
-  }
-  window.dispatchEvent(new CustomEvent(SITE_CONFIG_EVENT, { detail: DEFAULT_SITE_CONFIG }));
 }

@@ -13,6 +13,10 @@ import { GamesSection } from '@/components/sections/GamesSection';
 import { DemoSection } from '@/components/sections/DemoSection';
 import { FAQSection } from '@/components/sections/FAQSection';
 import { CTAFinalSection } from '@/components/sections/CTAFinalSection';
+import { fetchSiteConfig } from '@/lib/site-config';
+
+// Owner edits reach the page within a minute, or at once via /api/revalidate.
+export const revalidate = 60;
 
 export default async function HomePage({
   params,
@@ -21,19 +25,20 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const { stats, sections } = await fetchSiteConfig();
 
   return (
     <PageTransition>
-      <HeroSection />
+      <HeroSection stats={stats} />
       <TrustBar />
-      <ZiggyShowcase />
+      {sections.showcase && <ZiggyShowcase />}
       <FeaturesSection />
       <ModulesSection />
-      <AgentsSection />
-      <GamesSection />
+      {sections.agents && <AgentsSection />}
+      {sections.games && <GamesSection />}
       <HowItWorksSection />
-      <PricingSection />
-      <ReviewsSection />
+      {sections.pricing && <PricingSection />}
+      {sections.reviews && <ReviewsSection />}
       <DemoSection />
       <FAQSection />
       <CTAFinalSection />

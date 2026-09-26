@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useTranslations } from 'next-intl';
 import { recordGameResult } from '@/lib/progress';
 import { playSound } from '@/lib/sound';
@@ -277,8 +277,11 @@ export function GameResultScreen({
 
   // Every game funnels through this screen, so recording here keeps the four
   // of them from each repeating the same call.
+  // One round, one record — even if React re-runs the effect (strict mode, re-mounts).
+  const recordedRef = useRef(false);
   useEffect(() => {
-    if (!gameId) return;
+    if (!gameId || recordedRef.current) return;
+    recordedRef.current = true;
     const numeric = typeof scoreValue === 'number' ? scoreValue : Number.parseInt(String(scoreValue), 10);
     recordGameResult(gameId, Number.isFinite(numeric) ? numeric : 0, stars);
   }, [gameId, scoreValue, stars]);

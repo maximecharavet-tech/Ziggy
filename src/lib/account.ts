@@ -1,14 +1,10 @@
 /**
- * Ziggy local profile.
+ * Ziggy accounts.
  *
- * IMPORTANT — there is no server and no database behind this. The profile is
- * written to this browser's `localStorage` only. Nothing is ever sent anywhere,
- * no password is collected, and clearing the browser data deletes the profile.
- * The UI must say so plainly (see the `account.localOnly` translation).
+ * A parent owns the account (email + password, handled by Supabase Auth); the
+ * profile row describes their child. We only ever store the child's first
+ * name, an avatar and an age range — nothing else about them.
  */
-
-export const PROFILE_KEY = 'ziggy:profile';
-export const PROFILE_EVENT = 'ziggy:profile';
 
 /** The five avatar choices, mirroring the five agent colours. */
 export const AVATAR_CHOICES = [
@@ -23,79 +19,49 @@ export type AvatarId = (typeof AVATAR_CHOICES)[number]['id'];
 
 export type AgeGroup = '5-7' | '8-10' | '11-12';
 
+export const AGE_GROUPS: AgeGroup[] = ['5-7', '8-10', '11-12'];
+
 export interface ZiggyProfile {
   id: string;
+  /** The child's first name. */
   name: string;
-  /** One of the five agent-colour avatars. */
   avatar: AvatarId;
-  email?: string;
-  ageGroup?: AgeGroup;
+  ageGroup: AgeGroup | null;
   createdAt: string;
 }
+
+/** Staff sign in with a short identifier; it maps onto an address on our own domain. */
+export const STAFF_EMAIL_DOMAIN = 'ziggy-ai.fr';
+
+export const MIN_PASSWORD_LENGTH = 8;
 
 export function avatarColor(avatar: string): string {
   return AVATAR_CHOICES.find((a) => a.id === avatar)?.color ?? AVATAR_CHOICES[0].color;
 }
 
-function isBrowser(): boolean {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+export function isValidEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value.trim());
 }
 
-function emitChange(profile: ZiggyProfile | null) {
-  if (!isBrowser()) return;
-  window.dispatchEvent(new CustomEvent<ZiggyProfile | null>(PROFILE_EVENT, { detail: profile }));
+/** "mastermax07" → "mastermax07@ziggy-ai.fr"; a real address is left alone. */
+export function toLoginEmail(identifier: string): string {
+  const id = identifier.trim().toLowerCase();
+  return id.includes('@') ? id : `${id}@${STAFF_EMAIL_DOMAIN}`;
 }
 
-export function createProfileId(): string {
-  return `p_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
-}
-
-export function getProfile(): ZiggyProfile | null {
-  if (!isBrowser()) return null;
-  try {
-    const raw = window.localStorage.getItem(PROFILE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as Partial<ZiggyProfile>;
-    if (!parsed || typeof parsed.name !== 'string' || !parsed.name) return null;
-    return {
-      id: typeof parsed.id === 'string' && parsed.id ? parsed.id : createProfileId(),
-      name: parsed.name,
-      avatar: (AVATAR_CHOICES.some((a) => a.id === parsed.avatar)
-        ? parsed.avatar
-        : AVATAR_CHOICES[0].id) as AvatarId,
-      email: typeof parsed.email === 'string' && parsed.email ? parsed.email : undefined,
-      ageGroup: parsed.ageGroup as AgeGroup | undefined,
-      createdAt:
-        typeof parsed.createdAt === 'string' && parsed.createdAt
-          ? parsed.createdAt
-          : new Date().toISOString(),
-    };
-  } catch {
-    return null;
-  }
-}
-
-export function saveProfile(profile: ZiggyProfile): ZiggyProfile | null {
-  if (!isBrowser()) return null;
-  try {
-    window.localStorage.setItem(PROFILE_KEY, JSON.stringify(profile));
-    emitChange(profile);
-    return profile;
-  } catch {
-    return null;
-  }
-}
-
-export function signOut(): void {
-  if (!isBrowser()) return;
-  try {
-    window.localStorage.removeItem(PROFILE_KEY);
-  } catch {
-    /* ignore */
-  }
-  emitChange(null);
-}
-
-export function isSignedIn(): boolean {
-  return getProfile() !== null;
+/** Map a raw `profiles` row onto the shape the UI uses. */
+export function toProfile(row: {
+  id: string;
+  child_name: string;
+  avatar: string;
+  age_group: string | null;
+  created_at: string;
+}): ZiggyProfile {
+  return {
+    id: row.id,
+    name: row.child_name,
+    avatar: (AVATAR_CHOICES.some((a) => a.id === row.avatar) ? row.avatar : 'sales') as AvatarId,
+    ageGroup: (AGE_GROUPS as string[]).includes(row.age_group ?? '') ? (row.age_group as AgeGroup) : null,
+    createdAt: row.created_at,
+  };
 }

@@ -1,60 +1,26 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useSyncExternalStore } from 'react';
 import {
-  PROFILE_EVENT,
-  PROFILE_KEY,
-  getProfile,
-  saveProfile as persistProfile,
-  signOut as clearProfile,
-  type ZiggyProfile,
-} from '@/lib/account';
-
-interface UseProfileResult {
-  profile: ZiggyProfile | null;
-  /** False until the first client-side read finished (avoids hydration flashes). */
-  ready: boolean;
-  saveProfile: (profile: ZiggyProfile) => void;
-  signOut: () => void;
-}
+  startSession,
+  subscribeSession,
+  getSessionState,
+  getServerSessionState,
+  updateProfile,
+  refreshProfile,
+  signOut,
+} from '@/lib/session';
 
 /**
- * Reactive access to the locally-stored Ziggy profile.
- * Updates live via the `ziggy:profile` CustomEvent and cross-tab `storage` events.
+ * The signed-in parent, their child's profile, and whether they are the owner.
+ * Every caller shares one session store; see `src/lib/session.ts`.
  */
-export function useProfile(): UseProfileResult {
-  const [profile, setProfile] = useState<ZiggyProfile | null>(null);
-  const [ready, setReady] = useState(false);
+export function useProfile() {
+  const session = useSyncExternalStore(subscribeSession, getSessionState, getServerSessionState);
 
   useEffect(() => {
-    setProfile(getProfile());
-    setReady(true);
-
-    const onProfile = (e: Event) => {
-      const detail = (e as CustomEvent<ZiggyProfile | null>).detail;
-      setProfile(detail ?? getProfile());
-    };
-    const onStorage = (e: StorageEvent) => {
-      if (e.key === null || e.key === PROFILE_KEY) setProfile(getProfile());
-    };
-
-    window.addEventListener(PROFILE_EVENT, onProfile);
-    window.addEventListener('storage', onStorage);
-    return () => {
-      window.removeEventListener(PROFILE_EVENT, onProfile);
-      window.removeEventListener('storage', onStorage);
-    };
+    startSession();
   }, []);
 
-  const saveProfile = useCallback((next: ZiggyProfile) => {
-    persistProfile(next);
-    setProfile(next);
-  }, []);
-
-  const signOut = useCallback(() => {
-    clearProfile();
-    setProfile(null);
-  }, []);
-
-  return { profile, ready, saveProfile, signOut };
+  return { ...session, updateProfile, refreshProfile, signOut };
 }
