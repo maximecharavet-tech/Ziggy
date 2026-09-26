@@ -24,15 +24,20 @@
     "stats_children": "Aktive Kinder",
     "stats_sessions": "Lernsitzungen",
     "stats_countries": "Länder",
-    "stats_rating": "Elternbewertung"
+    "stats_rating": "Elternbewertung",
+    "bubble": "Hallo, ich bin Ziggy! 👋",
+    "bubble_happy": "Hihi, das kitzelt! 💚",
+    "trust_1": "Keine Werbung",
+    "trust_2": "Daten in Europa gehostet",
+    "trust_3": "Spielbar ohne Konto"
   },
   "features": {
     "title": "Warum Eltern Ziggy lieben",
     "subtitle": "Entwickelt von Pädagogen und KI-Experten, gestaltet für neugierige junge Köpfe",
     "ai_companion": "KI-Begleiter",
     "ai_companion_desc": "Ziggy passt sich dem Tempo und Lernstil jedes Kindes mit personalisierten KI-Gesprächen an.",
-    "safe_space": "100 % sicher",
-    "safe_space_desc": "GDPR-konform, keine Erhebung persönlicher Daten, integrierte Kindersicherung.",
+    "safe_space": "Ein sicherer Ort",
+    "safe_space_desc": "Keine Werbung, Daten in Europa, ein Konto in Elternhand. Wir speichern nur den Vornamen Ihres Kindes.",
     "cognitive_tracking": "Kognitives Profil",
     "cognitive_tracking_desc": "Verfolge die Entwicklung deines Kindes über 6 kognitive Dimensionen mit interaktiven Dashboards.",
     "multilingual": "12 Sprachen",
@@ -40,7 +45,8 @@
     "gamified": "Spielerisches Lernen",
     "gamified_desc": "Sterne, Abzeichen und Belohnungen machen das Lernen zum Spiel. Kein Druck, nur Spaß.",
     "curriculum": "Experten-Lehrplan",
-    "curriculum_desc": "5 spezialisierte Module zu KI, Mathematik, Logik, Kreativität und saisonalen Aktivitäten."
+    "curriculum_desc": "5 spezialisierte Module zu KI, Mathematik, Logik, Kreativität und saisonalen Aktivitäten.",
+    "eyebrow": "Warum Ziggy"
   },
   "modules": {
     "title": "Lernmodule",
@@ -125,7 +131,8 @@
     "step2_title": "Ziggy kennenlernen",
     "step2_desc": "Dein Kind trifft seinen KI-Begleiter und beginnt die Module zu erkunden.",
     "step3_title": "Beim Wachsen zusehen",
-    "step3_desc": "Verfolge die kognitive Entwicklung mit unserem Eltern-Dashboard."
+    "step3_desc": "Verfolge die kognitive Entwicklung mit unserem Eltern-Dashboard.",
+    "eyebrow": "In 3 Schritten"
   },
   "reviews": {
     "title": "Was Eltern sagen",
@@ -143,7 +150,7 @@
   "faq": {
     "title": "Häufig gestellte Fragen",
     "q1": "Ist Ziggy sicher für mein Kind?",
-    "a1": "Absolut. Ziggy ist GDPR-konform, speichert alle Daten in der EU, nutzt Ende-zu-Ende-Verschlüsselung und sammelt niemals persönliche Daten von Kindern. Elterliche Zustimmung ist für alle Konten erforderlich.",
+    "a1": "Ziggy ist für Kinder gemacht: keine Werbung, kein Kontakt zu Fremden, und das Konto wird von einem Elternteil angelegt und verwaltet. Wir speichern nur den Vornamen, die Altersgruppe und die Spielergebnisse – in Europa. Das Konto lässt sich jederzeit im Elternbereich löschen.",
     "q2": "Für welche Altersgruppe ist Ziggy gedacht?",
     "a2": "Ziggy ist für Kinder von 5 bis 12 Jahren konzipiert. Die KI passt Sprache, Schwierigkeitsgrad und Inhalte an das Alter und Lerntempo des Kindes an.",
     "q3": "Kann ich mein Abonnement jederzeit kündigen?",
@@ -503,7 +510,14 @@
     "guestText": "Ohne Konto bleiben deine Sterne auf diesem Gerät. Mit Konto begleiten sie dich überall.",
     "notPlayed": "Noch nicht gespielt",
     "bestMoves": "Rekord (Züge)",
-    "ownerDashboard": "Dashboard"
+    "ownerDashboard": "Dashboard",
+    "deleteTitle": "Konto löschen",
+    "deleteText": "Löscht das Konto, das Profil des Kindes und alle Ergebnisse endgültig. Das kann nicht rückgängig gemacht werden.",
+    "deleteButton": "Endgültig löschen",
+    "deleteConfirm": "Zur Bestätigung LÖSCHEN eingeben",
+    "deleteWord": "LÖSCHEN",
+    "deleting": "Wird gelöscht…",
+    "deleteError": "Löschen fehlgeschlagen. Bitte erneut versuchen oder uns kontaktieren."
   },
   "showcase": {
     "badge": "Lerne Ziggy kennen",
@@ -512,5 +526,42 @@
     "cta": "Kostenlos testen",
     "cta_games": "Spiele ansehen",
     "play": "Ziggy ansehen"
+  },
+  "trial": {
+    "eyebrow": "Schnelltest",
+    "section_title": "Teste Ziggy in einer Minute",
+    "section_subtitle": "Drei kleine Fragen, keine Anmeldung. Genug für die ersten Sterne.",
+    "badge": "Schnelltest · 1 Minute",
+    "title": "Sollen wir gleich spielen?",
+    "subtitle": "3 Fragen, keine Anmeldung. Hol dir deine ersten Sterne!",
+    "start": "Los geht’s!",
+    "step": "Frage {n} von 3",
+    "q1": "Welche Farbe kommt als Nächstes?",
+    "q2": "Wie viele Äpfel sind es zusammen?",
+    "q3": "Wie lernt eine KI?",
+    "q3_a": "Mit ganz vielen Beispielen",
+    "q3_b": "Durch Zauberei ✨",
+    "q3_c": "Indem sie Kekse isst 🍪",
+    "explain1": "Rot, blau, rot, blau … das Muster wiederholt sich!",
+    "explain2": "3 Äpfel + 2 Äpfel = 5 Äpfel.",
+    "explain3": "Eine KI schaut sich Tausende Beispiele an, um Muster zu finden – ein bisschen wie du beim Üben!",
+    "correct": "Super!",
+    "wrong": "Fast!",
+    "next": "Weiter",
+    "finish": "Mein Ergebnis",
+    "result_title": "{stars, plural, one {Du hast # Stern gewonnen!} other {Du hast # Sterne gewonnen!}}",
+    "result_text": "Erstelle dein Profil, um deine Sterne zu behalten und alle 8 Ziggy-Spiele freizuschalten.",
+    "result_text_member": "Deine Sterne sind in deinem Konto gespeichert.",
+    "keep": "Sterne behalten",
+    "trophies": "Meine Trophäen",
+    "more": "Spiele entdecken",
+    "again": "Nochmal spielen",
+    "chat_eyebrow": "Und jetzt: plaudern"
+  },
+  "trust": {
+    "eu_storage": "Daten in Europa gespeichert",
+    "encrypted": "Verschlüsselte Verbindung",
+    "no_ads": "Keine Werbung",
+    "parent_account": "Von Eltern verwaltetes Konto"
   }
 }

@@ -1,51 +1,61 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { UserPlus, Bot, TrendingUp } from 'lucide-react';
+import { UserPlus, Bot, TrendingUp, Route } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 
-const stepIcons = [UserPlus, Bot, TrendingUp];
-const stepColors = ['from-green to-green-dark', 'from-blue to-purple', 'from-pink to-purple'];
+const STEPS = [
+  { icon: UserPlus, color: '#7FC85C' },
+  { icon: Bot, color: '#5FB6EA' },
+  { icon: TrendingUp, color: '#F2647B' },
+];
 
 export function HowItWorksSection() {
   const t = useTranslations('how_it_works');
 
-  const steps = [
-    { num: '01', title: t('step1_title'), desc: t('step1_desc') },
-    { num: '02', title: t('step2_title'), desc: t('step2_desc') },
-    { num: '03', title: t('step3_title'), desc: t('step3_desc') },
-  ];
-
   return (
-    <section className="py-24 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-24 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+      <div className="max-w-6xl mx-auto">
         <ScrollReveal>
-          <SectionHeading title={t('title')} subtitle={t('subtitle')} />
+          <SectionHeading
+            eyebrow={<><Route size={14} /> {t('eyebrow')}</>}
+            title={t('title')}
+            subtitle={t('subtitle')}
+          />
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto relative">
-          {/* Connection line */}
-          <div className="hidden md:block absolute top-12 left-[20%] right-[20%] h-[2px] bg-gradient-to-r from-green/20 via-green/40 to-green/20" />
+        <ol className="grid md:grid-cols-3 gap-5 relative">
+          {/* Dotted path joining the steps */}
+          <div
+            className="hidden md:block absolute top-[4.25rem] inset-x-[18%] border-t-[3px] border-dashed border-border"
+            aria-hidden="true"
+          />
 
-          {steps.map((step, i) => {
-            const Icon = stepIcons[i];
-            return (
-              <ScrollReveal key={step.num} delay={i * 150} variant="fade-up">
-                <div className="text-center relative">
-                  <div className={`w-20 h-20 rounded-3xl bg-gradient-to-br ${stepColors[i]} text-white flex items-center justify-center mx-auto mb-6 shadow-lg shadow-green/20 group`}>
-                    <Icon size={32} />
+          {STEPS.map(({ icon: Icon, color }, i) => (
+            <ScrollReveal key={i} delay={i * 140} variant="fade-up">
+              <li className="relative h-full rounded-3xl border border-border/60 bg-bg-card p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(26,26,46,0.25)]">
+                <div className="relative mx-auto mb-6 w-[5.5rem] h-[5.5rem]">
+                  <div className="absolute inset-0 rounded-[1.75rem] rotate-6" style={{ backgroundColor: `${color}33` }} />
+                  <div
+                    className="relative w-full h-full rounded-[1.75rem] flex items-center justify-center"
+                    style={{ backgroundColor: color, boxShadow: `0 14px 28px -10px ${color}` }}
+                  >
+                    <Icon size={34} className="text-white" strokeWidth={2.2} />
                   </div>
-                  <div className="text-xs font-bold text-green mb-2 tracking-wider uppercase">
-                    {step.num}
-                  </div>
-                  <h3 className="text-xl font-bold text-text-body mb-3">{step.title}</h3>
-                  <p className="text-sm text-text-muted leading-relaxed">{step.desc}</p>
+                  <span
+                    className="absolute -top-3 -end-3 w-9 h-9 rounded-full bg-bg-card border-2 flex items-center justify-center font-display text-lg font-bold"
+                    style={{ borderColor: color, color }}
+                  >
+                    {i + 1}
+                  </span>
                 </div>
-              </ScrollReveal>
-            );
-          })}
-        </div>
+                <h3 className="text-xl font-bold text-text-body mb-3">{t(`step${i + 1}_title`)}</h3>
+                <p className="text-text-muted leading-relaxed">{t(`step${i + 1}_desc`)}</p>
+              </li>
+            </ScrollReveal>
+          ))}
+        </ol>
       </div>
     </section>
   );

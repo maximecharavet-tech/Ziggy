@@ -28,8 +28,12 @@ export function AgentChat({ agentId, agentName, color, suggestions, placeholder 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  // Scroll the message list itself. scrollIntoView() would also scroll the
+  // page, which made every page holding a chat jump down to it on load.
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    const list = messagesEndRef.current?.parentElement;
+    if (!list || messages.length === 0) return;
+    list.scrollTo({ top: list.scrollHeight, behavior: 'smooth' });
   }, [messages]);
 
   const sendMessage = async (text?: string) => {

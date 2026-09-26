@@ -24,15 +24,20 @@
     "stats_children": "Aktif çocuk",
     "stats_sessions": "Öğrenme oturumu",
     "stats_countries": "Ülke",
-    "stats_rating": "Ebeveyn puanı"
+    "stats_rating": "Ebeveyn puanı",
+    "bubble": "Merhaba, ben Ziggy! 👋",
+    "bubble_happy": "Hihi, gıdıklanıyorum! 💚",
+    "trust_1": "Reklamsız",
+    "trust_2": "Veriler Avrupa’da",
+    "trust_3": "Hesapsız oynanır"
   },
   "features": {
     "title": "Ebeveynler Ziggy'yi neden seviyor?",
     "subtitle": "Eğitimciler ve yapay zeka uzmanları tarafından geliştirildi, meraklı genç zihinler için tasarlandı",
     "ai_companion": "Yapay zeka arkadaşı",
     "ai_companion_desc": "Ziggy, kişiselleştirilmiş yapay zeka sohbetleriyle her çocuğun hızına ve öğrenme tarzına uyum sağlar.",
-    "safe_space": "% 100 güvenli",
-    "safe_space_desc": "GDPR uyumlu, kişisel veri toplanmaz, yerleşik ebeveyn kontrolleri.",
+    "safe_space": "Güvenli bir alan",
+    "safe_space_desc": "Reklam yok, veriler Avrupa’da, hesap bir veli tarafından yönetilir. Yalnızca çocuğunuzun adını saklarız.",
     "cognitive_tracking": "Bilişsel profil",
     "cognitive_tracking_desc": "Çocuğunuzun 6 bilişsel boyuttaki gelişimini interaktif panolarla takip edin.",
     "multilingual": "12 dil",
@@ -40,7 +45,8 @@
     "gamified": "Oyunlaştırılmış öğrenme",
     "gamified_desc": "Yıldızlar, rozetler ve ödüller öğrenmeyi oyuna dönüştürür. Sıfır baskı, saf eğlence.",
     "curriculum": "Uzman müfredatı",
-    "curriculum_desc": "Yapay zeka, matematik, mantık, yaratıcılık ve mevsimsel etkinlikleri kapsayan 5 özel modül."
+    "curriculum_desc": "Yapay zeka, matematik, mantık, yaratıcılık ve mevsimsel etkinlikleri kapsayan 5 özel modül.",
+    "eyebrow": "Neden Ziggy"
   },
   "modules": {
     "title": "Öğrenme modülleri",
@@ -125,7 +131,8 @@
     "step2_title": "Ziggy ile tanışın",
     "step2_desc": "Çocuğunuz yapay zeka arkadaşıyla tanışır ve modülleri keşfetmeye başlar.",
     "step3_title": "Büyümelerini izleyin",
-    "step3_desc": "Ebeveyn panomuz ile bilişsel gelişimi takip edin."
+    "step3_desc": "Ebeveyn panomuz ile bilişsel gelişimi takip edin.",
+    "eyebrow": "3 adımda"
   },
   "reviews": {
     "title": "Ebeveynler ne diyor?",
@@ -143,7 +150,7 @@
   "faq": {
     "title": "Sıkça sorulan sorular",
     "q1": "Ziggy çocuğum için güvenli mi?",
-    "a1": "Kesinlikle. Ziggy GDPR uyumludur, tüm verileri AB'de saklar, uçtan uca şifreleme kullanır ve çocuklardan asla kişisel bilgi toplamaz. Tüm hesaplar için ebeveyn onayı gereklidir.",
+    "a1": "Ziggy çocuklar için tasarlandı: reklam yok, yabancılarla iletişim yok ve hesabı bir veli oluşturur ve yönetir. Yalnızca çocuğun adını, yaş grubunu ve oyun sonuçlarını Avrupa’da saklarız. Hesap, veli alanından istenildiği zaman silinebilir.",
     "q2": "Ziggy hangi yaşlar için tasarlanmıştır?",
     "a2": "Ziggy 5-12 yaş arası çocuklar için tasarlanmıştır. Yapay zeka, dili, zorluğu ve içeriği çocuğun yaşına ve öğrenme hızına göre uyarlar.",
     "q3": "Aboneliğimi istediğim zaman iptal edebilir miyim?",
@@ -503,7 +510,14 @@
     "guestText": "Hesap olmadan yıldızların bu cihazda kalır. Hesabınla her yerde seninle olur.",
     "notPlayed": "Henüz oynanmadı",
     "bestMoves": "Rekor (hamle)",
-    "ownerDashboard": "Panel"
+    "ownerDashboard": "Panel",
+    "deleteTitle": "Hesabı sil",
+    "deleteText": "Hesabı, çocuğun profilini ve tüm sonuçlarını kalıcı olarak siler. Geri alınamaz.",
+    "deleteButton": "Kalıcı olarak sil",
+    "deleteConfirm": "Onaylamak için SİL yazın",
+    "deleteWord": "SİL",
+    "deleting": "Siliniyor…",
+    "deleteError": "Silme başarısız oldu. Tekrar deneyin veya bize ulaşın."
   },
   "showcase": {
     "badge": "Ziggy ile tanış",
@@ -512,5 +526,42 @@
     "cta": "Ücretsiz dene",
     "cta_games": "Oyunları gör",
     "play": "Ziggy'yi izle"
+  },
+  "trial": {
+    "eyebrow": "Hızlı deneme",
+    "section_title": "Ziggy’yi bir dakikada dene",
+    "section_subtitle": "Üç küçük soru, kayıt yok. İlk yıldızlarını kazanmaya yeter.",
+    "badge": "Hızlı deneme · 1 dakika",
+    "title": "Hemen oynayalım mı?",
+    "subtitle": "3 soru, sıfır kayıt. İlk yıldızlarını kazan!",
+    "start": "Hadi başlayalım!",
+    "step": "Soru {n} / 3",
+    "q1": "Sırada hangi renk var?",
+    "q2": "Toplam kaç elma var?",
+    "q3": "Yapay zekâ nasıl öğrenir?",
+    "q3_a": "Çok sayıda örnekle",
+    "q3_b": "Sihirle ✨",
+    "q3_c": "Kurabiye yiyerek 🍪",
+    "explain1": "Kırmızı, mavi, kırmızı, mavi… desen tekrar ediyor!",
+    "explain2": "3 elma + 2 elma = 5 elma.",
+    "explain3": "Yapay zekâ desenleri bulmak için binlerce örneğe bakar — tıpkı senin alıştırma yapman gibi!",
+    "correct": "Harika!",
+    "wrong": "Az kaldı!",
+    "next": "Sonraki",
+    "finish": "Puanımı gör",
+    "result_title": "{stars, plural, one {# yıldız kazandın!} other {# yıldız kazandın!}}",
+    "result_text": "Yıldızlarını saklamak ve Ziggy’nin 8 oyununu açmak için profilini oluştur.",
+    "result_text_member": "Yıldızların hesabına kaydedildi.",
+    "keep": "Yıldızlarımı sakla",
+    "trophies": "Kupalarımı gör",
+    "more": "Oyunları keşfet",
+    "again": "Tekrar oyna",
+    "chat_eyebrow": "Şimdi sohbet zamanı"
+  },
+  "trust": {
+    "eu_storage": "Veriler Avrupa’da saklanır",
+    "encrypted": "Şifreli bağlantı",
+    "no_ads": "Sıfır reklam",
+    "parent_account": "Veli tarafından yönetilen hesap"
   }
 }

@@ -2,96 +2,56 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
-import { Sparkles, Shield, Zap } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { ZiggyChat } from '@/components/ziggy/ZiggyChat';
-import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
-import { ParticleField } from '@/components/ui/ParticleField';
-import { FloatingEmoji } from '@/components/ui/FloatingEmoji';
-import { Badge } from '@/components/ui/Badge';
+import { ExpressTrial } from '@/components/trial/ExpressTrial';
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.1, duration: 0.6 },
-  }),
-};
+const ease = [0.22, 1, 0.36, 1] as const;
 
 export function DemoPageContent() {
-  const t = useTranslations('demo');
+  const t = useTranslations('trial');
+  const td = useTranslations('demo');
 
   return (
-    <section className="relative min-h-[calc(100dvh-4rem)] pt-28 pb-24 px-4 sm:px-6 lg:px-8 gradient-hero overflow-hidden">
-      <ParticleField count={35} className="opacity-50" />
-      <FloatingEmoji count={5} />
+    <div className="relative overflow-hidden pt-28 pb-24 px-4 sm:px-6 lg:px-8">
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -top-40 -start-32 w-[34rem] h-[34rem] rounded-full bg-leaf/15 blur-3xl" />
+        <div className="absolute top-40 -end-40 w-[30rem] h-[30rem] rounded-full bg-peach/40 blur-3xl dark:bg-peach/10" />
+      </div>
 
-      <div className="relative z-10 max-w-5xl mx-auto">
-        {/* Header */}
-        <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0} className="text-center mb-10">
-          <Badge className="gap-1.5 mb-4">
-            <Sparkles size={14} />
-            {t('title')}
-          </Badge>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-text-body leading-tight tracking-tight">
-            {t('title')}
-          </h1>
-          <p className="mt-4 text-text-muted text-base sm:text-lg max-w-xl mx-auto leading-relaxed">
-            {t('subtitle')}
-          </p>
+      <div className="relative max-w-3xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease }}
+          className="text-center mb-10"
+        >
+          <h1 className="text-4xl sm:text-5xl font-bold text-text-body text-balance">{t('section_title')}</h1>
+          <p className="mt-4 text-lg text-text-muted max-w-xl mx-auto leading-relaxed">{t('section_subtitle')}</p>
         </motion.div>
 
-        {/* Main content */}
-        <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12">
-          {/* Ziggy sidebar */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={1}
-            className="hidden lg:flex flex-col items-center gap-6"
-          >
-            <div className="relative">
-              <div className="absolute inset-0 bg-green/10 rounded-full blur-3xl scale-150" />
-              <div className="relative animate-float">
-                <ZiggyRobot size={200} />
-              </div>
-            </div>
+        <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15, duration: 0.7, ease }}>
+          <ExpressTrial />
+        </motion.div>
 
-            {/* Trust badges */}
-            <div className="glass rounded-2xl border border-border/50 p-4 space-y-3 w-52">
-              <div className="flex items-center gap-2 text-xs text-text-muted">
-                <Shield size={14} className="text-green flex-shrink-0" />
-                <span>GDPR & COPPA Safe</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-text-muted">
-                <Zap size={14} className="text-yellow flex-shrink-0" />
-                <span>Powered by Claude AI</span>
-              </div>
-              <div className="flex items-center gap-2 text-xs text-text-muted">
-                <Sparkles size={14} className="text-purple flex-shrink-0" />
-                <span>Adaptive Learning</span>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Chat */}
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={2}
-            className="w-full max-w-lg mx-auto lg:mx-0 flex-1"
-          >
-            <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-green/5 via-blue/5 to-purple/5 rounded-3xl blur-xl" />
-              <div className="relative">
-                <ZiggyChat />
-              </div>
-            </div>
-          </motion.div>
-        </div>
+        {/* Then, a real conversation */}
+        <motion.section
+          initial={{ opacity: 0, y: 24 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+          transition={{ duration: 0.7, ease }}
+          className="mt-20"
+        >
+          <div className="text-center mb-8">
+            <span className="eyebrow text-green justify-center">
+              <MessageCircle size={14} /> {t('chat_eyebrow')}
+            </span>
+            <h2 className="mt-3 text-3xl sm:text-4xl font-bold text-text-body">{td('title')}</h2>
+            <p className="mt-3 text-text-muted max-w-lg mx-auto">{td('subtitle')}</p>
+          </div>
+          <ZiggyChat />
+        </motion.section>
       </div>
-    </section>
+    </div>
   );
 }

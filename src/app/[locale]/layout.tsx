@@ -23,6 +23,15 @@ const geist = localFont({
   fallback: ['ui-sans-serif', 'system-ui', 'sans-serif'],
 });
 
+const fredoka = localFont({
+  src: [
+    { path: '../fonts/Fredoka-Latin.woff2', weight: '300 700', style: 'normal' },
+    { path: '../fonts/Fredoka-LatinExt.woff2', weight: '300 700', style: 'normal' },
+  ],
+  variable: '--font-fredoka',
+  display: 'swap',
+});
+
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'metadata' });
@@ -113,7 +122,7 @@ export default async function LocaleLayout({
   };
 
   return (
-    <html lang={locale} dir={dir} className={geist.className} suppressHydrationWarning>
+    <html lang={locale} dir={dir} className={`${geist.className} ${fredoka.variable}`} suppressHydrationWarning>
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <meta name="theme-color" content="#22C55E" media="(prefers-color-scheme: light)" />

@@ -24,15 +24,20 @@
     "stats_children": "Niños activos",
     "stats_sessions": "Sesiones de aprendizaje",
     "stats_countries": "Países",
-    "stats_rating": "Valoración de padres"
+    "stats_rating": "Valoración de padres",
+    "bubble": "¡Hola, soy Ziggy! 👋",
+    "bubble_happy": "¡Jiji, me haces cosquillas! 💚",
+    "trust_1": "Sin anuncios",
+    "trust_2": "Datos alojados en Europa",
+    "trust_3": "Se juega sin cuenta"
   },
   "features": {
     "title": "Por qué los padres adoran Ziggy",
     "subtitle": "Creado por educadores y expertos en IA, diseñado para mentes jóvenes curiosas",
     "ai_companion": "Compañero IA",
     "ai_companion_desc": "Ziggy se adapta al ritmo y estilo de aprendizaje de cada niño con conversaciones de IA personalizadas.",
-    "safe_space": "100 % seguro",
-    "safe_space_desc": "Cumple con GDPR, no recopila datos personales, controles parentales integrados.",
+    "safe_space": "Un espacio seguro",
+    "safe_space_desc": "Sin anuncios, datos guardados en Europa y una cuenta gestionada por un adulto. Solo guardamos el nombre del niño.",
     "cognitive_tracking": "Perfil cognitivo",
     "cognitive_tracking_desc": "Sigue el desarrollo de tu hijo en 6 dimensiones cognitivas con paneles interactivos.",
     "multilingual": "12 idiomas",
@@ -40,7 +45,8 @@
     "gamified": "Aprendizaje gamificado",
     "gamified_desc": "Estrellas, insignias y recompensas convierten el aprendizaje en un juego. Sin presión, pura diversión.",
     "curriculum": "Programa experto",
-    "curriculum_desc": "5 módulos especializados que cubren IA, matemáticas, lógica, creatividad y actividades estacionales."
+    "curriculum_desc": "5 módulos especializados que cubren IA, matemáticas, lógica, creatividad y actividades estacionales.",
+    "eyebrow": "Por qué Ziggy"
   },
   "modules": {
     "title": "Módulos de aprendizaje",
@@ -125,7 +131,8 @@
     "step2_title": "Conoce a Ziggy",
     "step2_desc": "Tu hijo conoce a su compañero IA y empieza a explorar los módulos.",
     "step3_title": "Mira cómo crece",
-    "step3_desc": "Sigue el desarrollo cognitivo con nuestro panel para padres."
+    "step3_desc": "Sigue el desarrollo cognitivo con nuestro panel para padres.",
+    "eyebrow": "En 3 pasos"
   },
   "reviews": {
     "title": "Lo que dicen los padres",
@@ -143,7 +150,7 @@
   "faq": {
     "title": "Preguntas frecuentes",
     "q1": "¿Es Ziggy seguro para mi hijo?",
-    "a1": "Totalmente. Ziggy cumple con GDPR, almacena todos los datos en la UE, utiliza cifrado de extremo a extremo y nunca recopila información personal de los niños. Se requiere el consentimiento parental para todas las cuentas.",
+    "a1": "Ziggy está pensado para niños: sin anuncios, sin contacto con desconocidos, y la cuenta la crea y gestiona un adulto. Solo guardamos el nombre del niño, su franja de edad y sus resultados, almacenados en Europa. La cuenta se puede borrar en cualquier momento desde el espacio de la familia.",
     "q2": "¿Para qué edades está diseñado Ziggy?",
     "a2": "Ziggy está diseñado para niños de 5 a 12 años. La IA adapta el lenguaje, la dificultad y el contenido según la edad y el ritmo de aprendizaje del niño.",
     "q3": "¿Puedo cancelar mi suscripción en cualquier momento?",
@@ -503,7 +510,14 @@
     "guestText": "Sin cuenta, tus estrellas se quedan en este dispositivo. Con una, te siguen a todas partes.",
     "notPlayed": "Aún sin jugar",
     "bestMoves": "Récord (movimientos)",
-    "ownerDashboard": "Panel"
+    "ownerDashboard": "Panel",
+    "deleteTitle": "Eliminar la cuenta",
+    "deleteText": "Borra para siempre la cuenta, el perfil del niño y todos sus resultados. No se puede deshacer.",
+    "deleteButton": "Eliminar definitivamente",
+    "deleteConfirm": "Escribe ELIMINAR para confirmar",
+    "deleteWord": "ELIMINAR",
+    "deleting": "Eliminando…",
+    "deleteError": "No se ha podido eliminar. Inténtalo de nuevo o contáctanos."
   },
   "showcase": {
     "badge": "Conoce a Ziggy",
@@ -512,5 +526,42 @@
     "cta": "Probar gratis",
     "cta_games": "Ver los juegos",
     "play": "Ver a Ziggy"
+  },
+  "trial": {
+    "eyebrow": "Prueba exprés",
+    "section_title": "Prueba Ziggy en un minuto",
+    "section_subtitle": "Tres preguntitas, sin registro. Lo justo para ganar tus primeras estrellas.",
+    "badge": "Prueba exprés · 1 minuto",
+    "title": "¿Jugamos ahora mismo?",
+    "subtitle": "3 preguntas, cero registro. ¡Gana tus primeras estrellas!",
+    "start": "¡Vamos!",
+    "step": "Pregunta {n} de 3",
+    "q1": "¿Qué color va después?",
+    "q2": "¿Cuántas manzanas hay en total?",
+    "q3": "¿Cómo aprende una IA?",
+    "q3_a": "Con muchísimos ejemplos",
+    "q3_b": "Por arte de magia ✨",
+    "q3_c": "Comiendo galletas 🍪",
+    "explain1": "Rojo, azul, rojo, azul… ¡el patrón se repite!",
+    "explain2": "3 manzanas + 2 manzanas = 5 manzanas.",
+    "explain3": "Una IA mira miles de ejemplos para encontrar patrones, ¡un poco como tú cuando practicas!",
+    "correct": "¡Bravo!",
+    "wrong": "¡Casi!",
+    "next": "Siguiente",
+    "finish": "Ver mi puntuación",
+    "result_title": "{stars, plural, one {¡Has ganado # estrella!} other {¡Has ganado # estrellas!}}",
+    "result_text": "Crea tu perfil para guardar tus estrellas y desbloquear los 8 juegos de Ziggy.",
+    "result_text_member": "Tus estrellas se guardan en tu cuenta.",
+    "keep": "Guardar mis estrellas",
+    "trophies": "Ver mis trofeos",
+    "more": "Descubrir los juegos",
+    "again": "Jugar otra vez",
+    "chat_eyebrow": "Y ahora, charla"
+  },
+  "trust": {
+    "eu_storage": "Datos guardados en Europa",
+    "encrypted": "Conexión cifrada",
+    "no_ads": "Cero anuncios",
+    "parent_account": "Cuenta gestionada por la familia"
   }
 }

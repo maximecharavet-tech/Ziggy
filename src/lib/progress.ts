@@ -5,7 +5,7 @@
  * When a parent account is signed in, the round is also saved to the database,
  * and guest trophies are carried over the first time they sign in.
  */
-import { getSupabase } from './supabase';
+import { loadSupabase } from './supabase';
 
 export const PROGRESS_KEY = 'ziggy:progress';
 export const PROGRESS_EVENT = 'ziggy:progress';
@@ -68,8 +68,8 @@ export function recordGameResult(gameId: string, rawScore: number, rawStars: num
   const score = Number.isFinite(rawScore) ? Math.max(0, Math.round(rawScore)) : 0;
   const stars = Number.isFinite(rawStars) ? Math.min(3, Math.max(0, Math.round(rawStars))) : 0;
 
-  const sb = getSupabase();
   void (async () => {
+    const sb = await loadSupabase();
     const session = sb ? (await sb.auth.getSession()).data.session : null;
     if (session && sb) {
       const { error } = await sb.from('game_results').insert({ game_id: gameId, score, stars });
@@ -89,7 +89,7 @@ export function recordGameResult(gameId: string, rawScore: number, rawStars: num
 
 /** Aggregate a signed-in child's rounds into the same shape as local progress. */
 export async function fetchAccountProgress(): Promise<ProgressMap | null> {
-  const sb = getSupabase();
+  const sb = await loadSupabase();
   if (!sb) return null;
   const { data, error } = await sb
     .from('game_results')
@@ -118,7 +118,7 @@ export async function fetchAccountProgress(): Promise<ProgressMap | null> {
  */
 export async function syncGuestProgress(userId: string): Promise<void> {
   if (!isBrowser()) return;
-  const sb = getSupabase();
+  const sb = await loadSupabase();
   if (!sb) return;
   const flag = `${SYNCED_KEY}:${userId}`;
   if (window.localStorage.getItem(flag)) return;

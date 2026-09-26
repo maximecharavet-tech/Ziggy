@@ -24,15 +24,20 @@
     "stats_children": "Actieve kinderen",
     "stats_sessions": "Leersessies",
     "stats_countries": "Landen",
-    "stats_rating": "Ouderbeoordeling"
+    "stats_rating": "Ouderbeoordeling",
+    "bubble": "Hoi, ik ben Ziggy! 👋",
+    "bubble_happy": "Hihi, dat kietelt! 💚",
+    "trust_1": "Zonder reclame",
+    "trust_2": "Gegevens in Europa",
+    "trust_3": "Spelen zonder account"
   },
   "features": {
     "title": "Waarom ouders van Ziggy houden",
     "subtitle": "Gebouwd door onderwijzers en AI-experts, ontworpen voor nieuwsgierige jonge geesten",
     "ai_companion": "AI-maatje",
     "ai_companion_desc": "Ziggy past zich aan het tempo en de leerstijl van elk kind aan met gepersonaliseerde AI-gesprekken.",
-    "safe_space": "100 % veilig",
-    "safe_space_desc": "GDPR-conform, geen persoonlijke gegevens verzameld, ingebouwde ouderlijk toezicht.",
+    "safe_space": "Een veilige plek",
+    "safe_space_desc": "Geen reclame, gegevens in Europa, een account in handen van een ouder. We bewaren alleen de voornaam van je kind.",
     "cognitive_tracking": "Cognitief profiel",
     "cognitive_tracking_desc": "Volg de groei van je kind over 6 cognitieve dimensies met interactieve dashboards.",
     "multilingual": "12 talen",
@@ -40,7 +45,8 @@
     "gamified": "Spelend leren",
     "gamified_desc": "Sterren, badges en beloningen maken leren een spel. Geen druk, puur plezier.",
     "curriculum": "Expertprogramma",
-    "curriculum_desc": "5 gespecialiseerde modules over AI, wiskunde, logica, creativiteit en seizoensactiviteiten."
+    "curriculum_desc": "5 gespecialiseerde modules over AI, wiskunde, logica, creativiteit en seizoensactiviteiten.",
+    "eyebrow": "Waarom Ziggy"
   },
   "modules": {
     "title": "Leermodules",
@@ -125,7 +131,8 @@
     "step2_title": "Ontmoet Ziggy",
     "step2_desc": "Je kind ontmoet zijn AI-maatje en begint de modules te verkennen.",
     "step3_title": "Kijk hoe ze groeien",
-    "step3_desc": "Volg de cognitieve ontwikkeling met ons ouderdashboard."
+    "step3_desc": "Volg de cognitieve ontwikkeling met ons ouderdashboard.",
+    "eyebrow": "In 3 stappen"
   },
   "reviews": {
     "title": "Wat ouders zeggen",
@@ -143,7 +150,7 @@
   "faq": {
     "title": "Veelgestelde vragen",
     "q1": "Is Ziggy veilig voor mijn kind?",
-    "a1": "Absoluut. Ziggy is GDPR-conform, slaat alle gegevens op in de EU, gebruikt end-to-end encryptie en verzamelt nooit persoonlijke informatie van kinderen. Ouderlijke toestemming is vereist voor alle accounts.",
+    "a1": "Ziggy is gemaakt voor kinderen: geen reclame, geen contact met onbekenden, en het account wordt aangemaakt en beheerd door een ouder. We bewaren alleen de voornaam, de leeftijdsgroep en de spelresultaten, in Europa. Het account kan op elk moment worden verwijderd in de ouderomgeving.",
     "q2": "Voor welke leeftijden is Ziggy ontworpen?",
     "a2": "Ziggy is ontworpen voor kinderen van 5 tot 12 jaar. De AI past taal, moeilijkheidsgraad en inhoud aan op basis van de leeftijd en het leertempo van het kind.",
     "q3": "Kan ik mijn abonnement op elk moment opzeggen?",
@@ -503,7 +510,14 @@
     "guestText": "Zonder account blijven je sterren op dit apparaat. Met een account gaan ze overal mee.",
     "notPlayed": "Nog niet gespeeld",
     "bestMoves": "Record (zetten)",
-    "ownerDashboard": "Dashboard"
+    "ownerDashboard": "Dashboard",
+    "deleteTitle": "Account verwijderen",
+    "deleteText": "Verwijdert het account, het profiel van het kind en alle resultaten definitief. Dit kan niet ongedaan worden gemaakt.",
+    "deleteButton": "Definitief verwijderen",
+    "deleteConfirm": "Typ VERWIJDEREN om te bevestigen",
+    "deleteWord": "VERWIJDEREN",
+    "deleting": "Verwijderen…",
+    "deleteError": "Verwijderen mislukt. Probeer opnieuw of neem contact op."
   },
   "showcase": {
     "badge": "Maak kennis met Ziggy",
@@ -512,5 +526,42 @@
     "cta": "Gratis proberen",
     "cta_games": "Bekijk de spellen",
     "play": "Ziggy bekijken"
+  },
+  "trial": {
+    "eyebrow": "Snelle test",
+    "section_title": "Probeer Ziggy in één minuut",
+    "section_subtitle": "Drie kleine vragen, geen aanmelding. Genoeg voor je eerste sterren.",
+    "badge": "Snelle test · 1 minuut",
+    "title": "Zullen we meteen spelen?",
+    "subtitle": "3 vragen, nul aanmelding. Verdien je eerste sterren!",
+    "start": "Daar gaan we!",
+    "step": "Vraag {n} van 3",
+    "q1": "Welke kleur komt hierna?",
+    "q2": "Hoeveel appels samen?",
+    "q3": "Hoe leert een AI?",
+    "q3_a": "Met heel veel voorbeelden",
+    "q3_b": "Door toverkracht ✨",
+    "q3_c": "Door koekjes te eten 🍪",
+    "explain1": "Rood, blauw, rood, blauw… het patroon herhaalt zich!",
+    "explain2": "3 appels + 2 appels = 5 appels.",
+    "explain3": "Een AI bekijkt duizenden voorbeelden om patronen te vinden — een beetje zoals jij als je oefent!",
+    "correct": "Goed zo!",
+    "wrong": "Bijna!",
+    "next": "Volgende",
+    "finish": "Mijn score",
+    "result_title": "{stars, plural, one {Je hebt # ster gewonnen!} other {Je hebt # sterren gewonnen!}}",
+    "result_text": "Maak je profiel om je sterren te bewaren en alle 8 Ziggy-spellen te ontgrendelen.",
+    "result_text_member": "Je sterren staan in je account.",
+    "keep": "Mijn sterren bewaren",
+    "trophies": "Mijn trofeeën",
+    "more": "Ontdek de spellen",
+    "again": "Opnieuw spelen",
+    "chat_eyebrow": "En nu: kletsen"
+  },
+  "trust": {
+    "eu_storage": "Gegevens in Europa opgeslagen",
+    "encrypted": "Versleutelde verbinding",
+    "no_ads": "Nul reclame",
+    "parent_account": "Account beheerd door ouder"
   }
 }

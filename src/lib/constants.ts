@@ -1,6 +1,6 @@
 export const SITE = {
   name: 'Ziggy',
-  url: 'https://ziggy.ai',
+  url: 'https://ziggy-ai.fr',
   tagline: 'AI Learning for Kids',
 } as const;
 

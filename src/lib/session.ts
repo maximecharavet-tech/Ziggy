@@ -6,7 +6,7 @@
  * all read this store through `useProfile()`.
  */
 import type { Session, User } from '@supabase/supabase-js';
-import { getSupabase } from './supabase';
+import { loadSupabase } from './supabase';
 import { toProfile, type ZiggyProfile } from './account';
 import { syncGuestProgress } from './progress';
 
@@ -43,7 +43,7 @@ export function subscribeSession(listener: () => void): () => void {
 }
 
 async function loadProfile(userId: string): Promise<ZiggyProfile | null> {
-  const sb = getSupabase();
+  const sb = await loadSupabase();
   if (!sb) return null;
   const { data, error } = await sb
     .from('profiles')
@@ -72,20 +72,23 @@ export function startSession() {
   if (started) return;
   started = true;
 
-  const sb = getSupabase();
-  if (!sb) {
-    setState({ ready: true });
-    return;
-  }
+  void (async () => {
+    const sb = await loadSupabase();
+    if (!sb) {
+      setState({ ready: true });
+      return;
+    }
 
-  void sb.auth.getSession().then(({ data }) => applySession(data.session));
+    const { data } = await sb.auth.getSession();
+    await applySession(data.session);
 
-  // supabase-js warns against awaiting its own calls inside this callback, so
-  // defer the profile fetch to the next tick.
-  sb.auth.onAuthStateChange((event, session) => {
-    if (event === 'INITIAL_SESSION') return; // handled by getSession above
-    setTimeout(() => void applySession(session), 0);
-  });
+    // supabase-js warns against awaiting its own calls inside this callback, so
+    // defer the profile fetch to the next tick.
+    sb.auth.onAuthStateChange((event, session) => {
+      if (event === 'INITIAL_SESSION') return; // handled by getSession above
+      setTimeout(() => void applySession(session), 0);
+    });
+  })();
 }
 
 export async function refreshProfile() {
@@ -95,7 +98,7 @@ export async function refreshProfile() {
 }
 
 export async function updateProfile(patch: { name?: string; avatar?: string; ageGroup?: string | null }) {
-  const sb = getSupabase();
+  const sb = await loadSupabase();
   if (!sb || !state.user) return { error: 'not-signed-in' as const };
 
   const row: Record<string, unknown> = {};
@@ -116,7 +119,7 @@ export async function updateProfile(patch: { name?: string; avatar?: string; age
 }
 
 export async function signOut() {
-  const sb = getSupabase();
+  const sb = await loadSupabase();
   await sb?.auth.signOut();
   setState({ ready: true, user: null, profile: null, isOwner: false });
 }

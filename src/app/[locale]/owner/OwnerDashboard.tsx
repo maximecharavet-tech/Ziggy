@@ -11,7 +11,7 @@ import { useRouter, Link } from '@/i18n/navigation';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { ChangePasswordForm } from '@/components/account/ChangePasswordForm';
 import { AgentAvatar } from '@/components/agents/AgentAvatar';
-import { getSupabase } from '@/lib/supabase';
+import { loadSupabase } from '@/lib/supabase';
 import { avatarColor } from '@/lib/account';
 import { GAMES } from '@/lib/games';
 import { DEFAULT_SITE_CONFIG, normaliseSiteConfig, type SiteConfig } from '@/lib/site-config';
@@ -76,7 +76,7 @@ export function OwnerDashboard() {
   }, [ready, isOwner, router]);
 
   const load = useCallback(async () => {
-    const sb = getSupabase();
+    const sb = await loadSupabase();
     if (!sb) return;
     setLoading(true);
     const [acc, res, stats, profs, recent, ageRows, settings] = await Promise.all([
@@ -120,7 +120,7 @@ export function OwnerDashboard() {
   const maxPlays = Math.max(1, ...gameStats.map((g) => Number(g.plays)));
 
   async function saveConfig() {
-    const sb = getSupabase();
+    const sb = await loadSupabase();
     if (!sb) return;
     setSaving(true);
     const { error } = await sb.from('site_settings').update({ stats: config.stats, sections: config.sections }).eq('id', 1);

@@ -24,15 +24,20 @@
     "stats_children": "活跃儿童",
     "stats_sessions": "学习课程",
     "stats_countries": "覆盖国家",
-    "stats_rating": "家长评分"
+    "stats_rating": "家长评分",
+    "bubble": "你好，我是 Ziggy！👋",
+    "bubble_happy": "嘻嘻，好痒！💚",
+    "trust_1": "无广告",
+    "trust_2": "数据存放在欧洲",
+    "trust_3": "无需账户即可玩"
   },
   "features": {
     "title": "家长为什么喜爱Ziggy",
     "subtitle": "由教育专家和AI专家打造，专为好奇心旺盛的孩子设计",
     "ai_companion": "AI伙伴",
     "ai_companion_desc": "Ziggy通过个性化AI对话，适应每个孩子的节奏和学习方式。",
-    "safe_space": "100%安全",
-    "safe_space_desc": "符合GDPR标准，不收集个人数据，内置家长控制。",
+    "safe_space": "安全的空间",
+    "safe_space_desc": "无广告，数据存储在欧洲，账户由家长管理。我们只保存孩子的名字。",
     "cognitive_tracking": "认知档案",
     "cognitive_tracking_desc": "通过互动仪表盘，追踪孩子在6个认知维度的成长。",
     "multilingual": "12种语言",
@@ -40,7 +45,8 @@
     "gamified": "游戏化学习",
     "gamified_desc": "星星、徽章和奖励让学习变成游戏。零压力，纯乐趣。",
     "curriculum": "专家课程",
-    "curriculum_desc": "5个专业模块，涵盖AI、数学、逻辑、创造力和季节性活动。"
+    "curriculum_desc": "5个专业模块，涵盖AI、数学、逻辑、创造力和季节性活动。",
+    "eyebrow": "为什么选 Ziggy"
   },
   "modules": {
     "title": "学习模块",
@@ -125,7 +131,8 @@
     "step2_title": "认识Ziggy",
     "step2_desc": "您的孩子将认识自己的AI伙伴，并开始探索各个模块。",
     "step3_title": "见证成长",
-    "step3_desc": "通过家长仪表盘追踪认知发展。"
+    "step3_desc": "通过家长仪表盘追踪认知发展。",
+    "eyebrow": "只需 3 步"
   },
   "reviews": {
     "title": "家长们怎么说",
@@ -143,7 +150,7 @@
   "faq": {
     "title": "常见问题",
     "q1": "Ziggy对我的孩子安全吗？",
-    "a1": "当然安全。Ziggy符合GDPR标准，所有数据存储在欧盟，使用端到端加密，绝不收集儿童个人信息。所有账户都需要家长同意。",
+    "a1": "Ziggy 专为孩子设计：没有广告，不与陌生人交流，账户由家长创建和管理。我们只保存孩子的名字、年龄段和游戏成绩，存储在欧洲。家长可以随时在家长专区删除账户。",
     "q2": "Ziggy适合几岁的孩子？",
     "a2": "Ziggy专为5至12岁儿童设计。AI会根据孩子的年龄和学习节奏调整语言、难度和内容。",
     "q3": "我可以随时取消订阅吗？",
@@ -503,7 +510,14 @@
     "guestText": "没有账户时，星星只保存在这台设备上。有了账户，它们会一直跟着你。",
     "notPlayed": "还没玩过",
     "bestMoves": "最佳纪录（步数）",
-    "ownerDashboard": "管理面板"
+    "ownerDashboard": "管理面板",
+    "deleteTitle": "删除账户",
+    "deleteText": "永久删除账户、孩子的档案和全部成绩。此操作无法撤销。",
+    "deleteButton": "永久删除",
+    "deleteConfirm": "输入“删除”以确认",
+    "deleteWord": "删除",
+    "deleting": "正在删除…",
+    "deleteError": "删除失败，请重试或联系我们。"
   },
   "showcase": {
     "badge": "认识 Ziggy",
@@ -512,5 +526,42 @@
     "cta": "免费试用",
     "cta_games": "查看游戏",
     "play": "观看 Ziggy"
+  },
+  "trial": {
+    "eyebrow": "快速体验",
+    "section_title": "一分钟体验 Ziggy",
+    "section_subtitle": "三个小问题，无需注册，足够赢得第一颗星星。",
+    "badge": "快速体验 · 1 分钟",
+    "title": "现在就来玩吧？",
+    "subtitle": "3 个问题，无需注册。赢得你的第一颗星星！",
+    "start": "出发！",
+    "step": "第 {n} 题 / 共 3 题",
+    "q1": "下一个是什么颜色？",
+    "q2": "一共有几个苹果？",
+    "q3": "人工智能是怎么学习的？",
+    "q3_a": "通过大量的例子",
+    "q3_b": "靠魔法 ✨",
+    "q3_c": "靠吃饼干 🍪",
+    "explain1": "红、蓝、红、蓝……规律在重复！",
+    "explain2": "3 个苹果 + 2 个苹果 = 5 个苹果。",
+    "explain3": "人工智能会看成千上万个例子来发现规律——有点像你练习的时候！",
+    "correct": "太棒了！",
+    "wrong": "差一点！",
+    "next": "下一题",
+    "finish": "查看得分",
+    "result_title": "{stars, plural, other {你赢得了 # 颗星星！}}",
+    "result_text": "创建档案，保存你的星星，并解锁 Ziggy 的全部 8 个游戏。",
+    "result_text_member": "你的星星已保存到账户。",
+    "keep": "保存我的星星",
+    "trophies": "查看我的奖杯",
+    "more": "探索游戏",
+    "again": "再玩一次",
+    "chat_eyebrow": "现在，聊聊天吧"
+  },
+  "trust": {
+    "eu_storage": "数据存储在欧洲",
+    "encrypted": "加密连接",
+    "no_ads": "零广告",
+    "parent_account": "由家长管理的账户"
   }
 }

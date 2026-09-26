@@ -10,6 +10,7 @@ import { AgentAvatar } from '@/components/agents/AgentAvatar';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { useProgressMap } from '@/components/account/useProgressMap';
 import { ChangePasswordForm } from '@/components/account/ChangePasswordForm';
+import { DeleteAccount } from '@/components/account/DeleteAccount';
 import { AVATAR_CHOICES, avatarColor } from '@/lib/account';
 import { totalStars, totalPlays, LOWER_IS_BETTER } from '@/lib/progress';
 import { GAMES } from '@/lib/games';
@@ -280,6 +281,11 @@ export function AccountPageContent() {
                 errorGeneric: t('errorGeneric'),
               }}
             />
+          </div>
+        )}
+        {!isOwner && (
+          <div className="mt-6">
+            <DeleteAccount />
           </div>
         )}
       </div>

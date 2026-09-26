@@ -24,15 +24,20 @@
     "stats_children": "활동 중인 어린이",
     "stats_sessions": "학습 세션",
     "stats_countries": "지원 국가",
-    "stats_rating": "학부모 평점"
+    "stats_rating": "학부모 평점",
+    "bubble": "안녕, 나는 지기야! 👋",
+    "bubble_happy": "히히, 간지러워! 💚",
+    "trust_1": "광고 없음",
+    "trust_2": "데이터는 유럽에 보관",
+    "trust_3": "계정 없이 플레이"
   },
   "features": {
     "title": "부모님들이 Ziggy를 사랑하는 이유",
     "subtitle": "교육자와 AI 전문가가 개발하고, 호기심 많은 어린이를 위해 설계했습니다",
     "ai_companion": "AI 동반자",
     "ai_companion_desc": "Ziggy는 개인화된 AI 대화로 각 아이의 속도와 학습 스타일에 맞춰줍니다.",
-    "safe_space": "100% 안전",
-    "safe_space_desc": "GDPR 준수, 개인 정보 수집 없음, 부모 제어 기능 내장.",
+    "safe_space": "안전한 공간",
+    "safe_space_desc": "광고 없음, 데이터는 유럽에 보관, 계정은 보호자가 관리해요. 아이의 이름만 저장해요.",
     "cognitive_tracking": "인지 프로파일링",
     "cognitive_tracking_desc": "대화형 대시보드로 6가지 인지 영역에서 자녀의 성장을 추적하세요.",
     "multilingual": "12개 언어",
@@ -40,7 +45,8 @@
     "gamified": "게임형 학습",
     "gamified_desc": "별, 배지, 보상으로 학습을 게임처럼. 부담 제로, 순수한 재미.",
     "curriculum": "전문가 커리큘럼",
-    "curriculum_desc": "AI, 수학, 논리, 창의력, 시즌 활동을 다루는 5개 전문 모듈."
+    "curriculum_desc": "AI, 수학, 논리, 창의력, 시즌 활동을 다루는 5개 전문 모듈.",
+    "eyebrow": "왜 지기일까요"
   },
   "modules": {
     "title": "학습 모듈",
@@ -125,7 +131,8 @@
     "step2_title": "Ziggy 만나기",
     "step2_desc": "자녀가 AI 동반자를 만나고 모듈 탐색을 시작합니다.",
     "step3_title": "성장을 지켜보세요",
-    "step3_desc": "부모 대시보드로 인지 발달을 추적하세요."
+    "step3_desc": "부모 대시보드로 인지 발달을 추적하세요.",
+    "eyebrow": "3단계로"
   },
   "reviews": {
     "title": "부모님들의 이야기",
@@ -143,7 +150,7 @@
   "faq": {
     "title": "자주 묻는 질문",
     "q1": "Ziggy는 아이에게 안전한가요?",
-    "a1": "물론입니다. Ziggy는 GDPR을 준수하고, 모든 데이터를 EU에 저장하며, 종단간 암호화를 사용하고, 어린이의 개인 정보를 수집하지 않습니다. 모든 계정에 부모 동의가 필요합니다.",
+    "a1": "지기는 아이들을 위해 만들어졌어요. 광고도, 모르는 사람과의 대화도 없고, 계정은 보호자가 만들고 관리합니다. 아이의 이름, 연령대, 게임 결과만 유럽에 보관해요. 계정은 보호자 페이지에서 언제든 삭제할 수 있어요.",
     "q2": "Ziggy는 몇 세용인가요?",
     "a2": "Ziggy는 5~12세 어린이를 위해 설계되었습니다. AI가 아이의 나이와 학습 속도에 맞춰 언어, 난이도, 콘텐츠를 조절합니다.",
     "q3": "구독을 언제든 취소할 수 있나요?",
@@ -503,7 +510,14 @@
     "guestText": "계정이 없으면 별은 이 기기에만 남아요. 계정이 있으면 어디서든 함께해요.",
     "notPlayed": "아직 안 했어요",
     "bestMoves": "최고 기록(이동)",
-    "ownerDashboard": "대시보드"
+    "ownerDashboard": "대시보드",
+    "deleteTitle": "계정 삭제",
+    "deleteText": "계정, 아이의 프로필, 모든 결과를 영구적으로 삭제해요. 되돌릴 수 없어요.",
+    "deleteButton": "영구 삭제",
+    "deleteConfirm": "확인하려면 삭제 라고 입력하세요",
+    "deleteWord": "삭제",
+    "deleting": "삭제 중…",
+    "deleteError": "삭제하지 못했어요. 다시 시도하거나 문의해 주세요."
   },
   "showcase": {
     "badge": "지기를 만나보세요",
@@ -512,5 +526,42 @@
     "cta": "무료로 시작하기",
     "cta_games": "게임 보기",
     "play": "지기 보기"
+  },
+  "trial": {
+    "eyebrow": "빠른 체험",
+    "section_title": "1분 만에 지기 체험하기",
+    "section_subtitle": "짧은 질문 세 개, 가입 없이. 첫 별을 모으기에 딱 좋아요.",
+    "badge": "빠른 체험 · 1분",
+    "title": "지금 바로 놀아 볼까?",
+    "subtitle": "질문 3개, 가입 없이. 첫 별을 모아 봐!",
+    "start": "시작!",
+    "step": "질문 {n} / 3",
+    "q1": "다음에 올 색깔은?",
+    "q2": "사과는 모두 몇 개일까?",
+    "q3": "AI는 어떻게 배울까?",
+    "q3_a": "아주 많은 예시로",
+    "q3_b": "마법으로 ✨",
+    "q3_c": "쿠키를 먹어서 🍪",
+    "explain1": "빨강, 파랑, 빨강, 파랑… 규칙이 반복돼!",
+    "explain2": "사과 3개 + 2개 = 5개.",
+    "explain3": "AI는 수천 개의 예시를 보고 규칙을 찾아. 네가 연습할 때랑 비슷하지!",
+    "correct": "잘했어!",
+    "wrong": "아깝다!",
+    "next": "다음",
+    "finish": "점수 보기",
+    "result_title": "{stars, plural, other {별 #개를 모았어!}}",
+    "result_text": "프로필을 만들면 별을 간직하고 지기의 게임 8개를 모두 열 수 있어.",
+    "result_text_member": "별이 계정에 저장됐어.",
+    "keep": "별 간직하기",
+    "trophies": "트로피 보기",
+    "more": "게임 둘러보기",
+    "again": "다시 하기",
+    "chat_eyebrow": "이제 대화해 봐"
+  },
+  "trust": {
+    "eu_storage": "데이터는 유럽에 보관",
+    "encrypted": "암호화된 연결",
+    "no_ads": "광고 없음",
+    "parent_account": "보호자가 관리하는 계정"
   }
 }

@@ -22,7 +22,19 @@
   --color-pink: #F472B6;
   --color-purple: #A78BFA;
   --color-blue: #60A5FA;
+
+  /* Clay palette — lifted from the ZIGGY modelling-clay wordmark */
+  --color-leaf: #7FC85C;
+  --color-coral: #F2647B;
+  --color-sky: #5FB6EA;
+  --color-teal: #4FC9C0;
+  --color-peach: #FFD9A0;
+  --color-apricot: #F9BE7C;
+  --color-blush: #FBC9C4;
+
   --font-sans: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  /* Rounded display face for headings — playful, still legible at a glance */
+  --font-display: var(--font-fredoka), ui-rounded, "Geist", system-ui, sans-serif;
 }
 
 /* ═══════════════════════════════════════
@@ -49,6 +61,11 @@
     font-family: var(--font-sans);
     min-height: 100dvh;
     overflow-x: hidden;
+  }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.01em;
   }
 
   ::selection {
@@ -224,6 +241,11 @@
     to { opacity: 1; transform: translateY(0); }
   }
 
+  @keyframes twinkle {
+    0%, 100% { opacity: 0.35; transform: scale(0.75) rotate(0deg); }
+    50% { opacity: 1; transform: scale(1.1) rotate(20deg); }
+  }
+
   @keyframes scale-in {
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
@@ -292,4 +314,45 @@
       scroll-behavior: auto !important;
     }
   }
+}
+
+/* ═══════════════════════════════════════
+   BRAND STAGE — the peach blob and blush disc the mascot stands on,
+   taken from the Ziggy artwork
+   ═══════════════════════════════════════ */
+
+@utility stage-blob {
+  background:
+    radial-gradient(circle at 42% 38%, #FFE7C2 0%, var(--color-peach) 45%, var(--color-apricot) 100%);
+  border-radius: 58% 42% 55% 45% / 52% 48% 52% 48%;
+}
+
+@utility stage-disc {
+  background: radial-gradient(circle at 50% 40%, #FDDAD5 0%, var(--color-blush) 70%, #F6B3AB 100%);
+  border-radius: 9999px;
+}
+
+@utility clay-shadow {
+  box-shadow:
+    0 1px 0 rgba(255, 255, 255, 0.6) inset,
+    0 18px 40px -18px rgba(138, 90, 43, 0.35);
+}
+
+@utility eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.dark .stage-blob,
+:root:not(.light) .dark .stage-blob {
+  filter: saturate(0.85) brightness(0.9);
+}
+
+@utility animate-twinkle {
+  animation: twinkle 2.6s ease-in-out infinite;
 }

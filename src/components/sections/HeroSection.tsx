@@ -1,161 +1,200 @@
 'use client';
 
 import { useState } from 'react';
-
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useTranslations } from 'next-intl';
-import { Sparkles } from 'lucide-react';
+import { Sparkles, ArrowRight, Play, Check } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
-import { Badge } from '@/components/ui/Badge';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
-import { ParticleField } from '@/components/ui/ParticleField';
-import { FloatingEmoji } from '@/components/ui/FloatingEmoji';
 import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { StarBurst } from '@/components/ziggy/StarBurst';
 import { useSound } from '@/hooks/useSound';
 import type { SiteConfig } from '@/lib/site-config';
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 30 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { delay: i * 0.12, duration: 0.7, ease: [0.25, 0.46, 0.45, 0.94] as const },
-  }),
+const ease = [0.22, 1, 0.36, 1] as const;
+
+const rise = {
+  hidden: { opacity: 0, y: 28 },
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: 0.1 + i * 0.1, duration: 0.8, ease } }),
 };
 
+/** Four-point sparkle, as in the mascot artwork. */
+function Sparkle({ className = '', color = '#FBBF24', delay = 0 }: { className?: string; color?: string; delay?: number }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      className={`absolute animate-twinkle ${className}`}
+      style={{ animationDelay: `${delay}s` }}
+      aria-hidden="true"
+    >
+      <path d="M12 0C13 7 17 11 24 12C17 13 13 17 12 24C11 17 7 13 0 12C7 11 11 7 12 0Z" fill={color} />
+    </svg>
+  );
+}
+
 export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) {
-  const [happy, setHappy] = useState(false);
+  const t = useTranslations('hero');
   const { play } = useSound();
+  const [happy, setHappy] = useState(false);
 
   const cheer = () => {
     play('pop');
     setHappy(true);
-    setTimeout(() => setHappy(false), 900);
+    setTimeout(() => setHappy(false), 1800);
   };
 
-  const t = useTranslations('hero');
-
-  // Figures come from the owner dashboard when it has overridden them.
   const stats = [
-    { value: figures.children, label: t('stats_children') },
-    { value: figures.sessions, label: t('stats_sessions') },
-    { value: figures.countries, label: t('stats_countries') },
-    { value: figures.rating, label: t('stats_rating') },
+    { value: figures.children, label: t('stats_children'), tint: 'text-leaf' },
+    { value: figures.sessions, label: t('stats_sessions'), tint: 'text-sky' },
+    { value: figures.countries, label: t('stats_countries'), tint: 'text-coral' },
+    { value: figures.rating, label: t('stats_rating'), tint: 'text-apricot' },
   ];
 
   return (
-    <section className="relative min-h-[90dvh] flex items-center pt-24 pb-16 px-4 sm:px-6 lg:px-8 gradient-hero overflow-hidden">
-      <ParticleField className="z-0" count={50} />
-      <FloatingEmoji count={8} className="z-0" />
+    <section className="relative overflow-hidden pt-24 sm:pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+      {/* Soft clay-coloured light, no clutter */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <div className="absolute -top-40 -start-32 w-[36rem] h-[36rem] rounded-full bg-leaf/15 blur-3xl" />
+        <div className="absolute top-20 -end-40 w-[32rem] h-[32rem] rounded-full bg-peach/40 blur-3xl dark:bg-peach/10" />
+        <div className="absolute bottom-0 start-1/3 w-[28rem] h-[28rem] rounded-full bg-sky/10 blur-3xl" />
+      </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto w-full flex flex-col lg:flex-row items-center gap-8 lg:gap-16">
-        {/* Text content */}
-        <div className="flex-1 text-center lg:text-left">
-          <motion.div variants={fadeUp} initial="hidden" animate="visible" custom={0}>
-            <Badge className="gap-1.5">
-              <Sparkles size={14} />
+      <div className="relative max-w-7xl mx-auto grid lg:grid-cols-[1.05fr_1fr] items-center gap-6 lg:gap-8">
+        {/* ── Copy ── */}
+        <div className="text-center lg:text-start">
+          <motion.div variants={rise} initial="hidden" animate="visible" custom={0}>
+            <span className="inline-flex items-center gap-2 rounded-full border border-green/25 bg-green/10 px-4 py-1.5 text-sm font-bold text-green">
+              <Sparkles size={15} />
               {t('badge')}
-            </Badge>
-          </motion.div>
-
-          <motion.div
-            variants={fadeUp}
-            initial="hidden"
-            animate="visible"
-            custom={0.5}
-            className="mt-6 flex justify-center lg:justify-start"
-          >
-            <ZiggyLogo size={220} className="w-[170px] sm:w-[220px] h-auto" />
+            </span>
           </motion.div>
 
           <motion.h1
-            variants={fadeUp}
+            variants={rise}
             initial="hidden"
             animate="visible"
             custom={1}
-            className="mt-4 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-text-body leading-[1.1] tracking-tight text-balance"
+            className="mt-6 text-[2.6rem] leading-[1.02] sm:text-6xl xl:text-7xl font-bold text-text-body text-balance"
           >
             {t('title')}
           </motion.h1>
 
           <motion.p
-            variants={fadeUp}
+            variants={rise}
             initial="hidden"
             animate="visible"
             custom={2}
-            className="mt-6 text-base sm:text-lg text-text-muted max-w-xl mx-auto lg:mx-0 leading-relaxed"
+            className="mt-6 text-lg sm:text-xl text-text-muted max-w-xl mx-auto lg:mx-0 leading-relaxed"
           >
             {t('subtitle')}
           </motion.p>
 
           <motion.div
-            variants={fadeUp}
+            variants={rise}
             initial="hidden"
             animate="visible"
             custom={3}
-            className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
+            className="mt-9 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
           >
-            <Button href="/signup" size="lg" className="group relative overflow-hidden">
-              <span className="relative z-10">{t('cta_primary')}</span>
-              <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <Button href="/signup" size="lg" className="group gap-2 shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
+              {t('cta_primary')}
+              <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
             </Button>
-            <Button href="/demo" variant="secondary" size="lg">
+            <Button href="/demo" variant="secondary" size="lg" className="gap-2">
+              <span className="w-7 h-7 rounded-full bg-green/10 text-green flex items-center justify-center">
+                <Play size={13} className="fill-current rtl:rotate-180" />
+              </span>
               {t('cta_secondary')}
             </Button>
           </motion.div>
 
-          {/* Stats */}
-          <motion.div
-            variants={fadeUp}
+          <motion.ul
+            variants={rise}
             initial="hidden"
             animate="visible"
             custom={4}
-            className="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6 sm:gap-8"
+            className="mt-7 flex flex-wrap gap-x-5 gap-y-2 justify-center lg:justify-start text-sm font-semibold text-text-muted"
           >
-            {stats.map((stat) => (
-              <div key={stat.label} className="text-center lg:text-left">
-                <AnimatedCounter
-                  value={stat.value}
-                  className="text-2xl sm:text-3xl font-extrabold text-gradient-green"
-                />
-                <div className="text-xs text-text-dim mt-1 font-medium">{stat.label}</div>
-              </div>
+            {[t('trust_1'), t('trust_2'), t('trust_3')].map((item) => (
+              <li key={item} className="inline-flex items-center gap-1.5">
+                <Check size={16} className="text-green" strokeWidth={3} />
+                {item}
+              </li>
             ))}
-          </motion.div>
+          </motion.ul>
         </div>
 
-        {/* Ziggy Robot */}
+        {/* ── Stage: the mascot artwork, rebuilt ── */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.6, rotate: -5 }}
-          animate={{ opacity: 1, scale: 1, rotate: 0 }}
-          transition={{ delay: 0.4, duration: 1, type: 'spring', stiffness: 100 }}
-          className="flex-shrink-0 relative"
+          initial={{ opacity: 0, scale: 0.92 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.25, duration: 0.9, ease }}
+          className="relative mx-auto w-full max-w-[290px] sm:max-w-[420px] lg:max-w-[540px] aspect-square order-first lg:order-none -mt-2 lg:mt-0"
         >
-          {/* Glow behind Ziggy */}
-          <div className="absolute inset-0 bg-green/10 rounded-full blur-3xl scale-125" />
+          <div className="absolute inset-x-[4%] bottom-[2%] top-[18%] stage-disc opacity-90" />
+          <motion.div
+            initial={{ rotate: -8, y: -20, opacity: 0 }}
+            animate={{ rotate: -4, y: 0, opacity: 1 }}
+            transition={{ delay: 0.45, duration: 0.9, ease }}
+            className="absolute inset-x-[6%] top-[3%] h-[46%] stage-blob clay-shadow flex items-start justify-center pt-[7%]"
+          >
+            <ZiggyLogo size={300} className="w-[74%] h-auto drop-shadow-[0_3px_0_rgba(138,90,43,0.12)]" />
+          </motion.div>
+
+          <Sparkle className="w-6 top-[8%] end-[6%]" color="#FFFFFF" delay={0} />
+          <Sparkle className="w-4 top-[40%] start-[4%]" color="#FBBF24" delay={0.7} />
+          <Sparkle className="w-5 bottom-[22%] end-[3%]" color="#5FB6EA" delay={1.3} />
+          <Sparkle className="w-3 top-[30%] end-[18%]" color="#F2647B" delay={1.9} />
+
           <motion.button
             type="button"
             onClick={cheer}
-            whileTap={{ scale: 0.94 }}
-            animate={happy ? { rotate: [0, -6, 6, -3, 0] } : {}}
-            transition={{ duration: 0.6 }}
-            className="relative animate-float cursor-pointer rounded-full focus-visible:outline-none"
-            aria-label="Say hello to Ziggy"
+            whileTap={{ scale: 0.95 }}
+            animate={happy ? { rotate: [0, -7, 7, -4, 0], y: [0, -14, 0] } : {}}
+            transition={{ duration: 0.7 }}
+            className="absolute start-1/2 -translate-x-1/2 rtl:translate-x-1/2 bottom-[1%] w-[53%] cursor-pointer focus-visible:outline-none"
+            aria-label={t('bubble')}
           >
-            <ZiggyRobot size={240} excited={happy} className="sm:w-auto w-[180px]" />
-            <StarBurst trigger={happy} x={120} y={90} />
+            <div className="animate-float">
+              <ZiggyRobot size={320} excited={happy} className="w-full h-auto drop-shadow-[0_22px_30px_rgba(47,107,28,0.25)]" />
+            </div>
+            <StarBurst trigger={happy} x={130} y={110} />
           </motion.button>
+
+          {/* Speech bubble */}
+          <div className="absolute end-[-7%] top-[66%] sm:end-[-6%] sm:top-[40%] z-10">
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={happy ? 'happy' : 'hi'}
+                initial={{ opacity: 0, scale: 0.6, y: 8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ type: 'spring', stiffness: 380, damping: 22, delay: happy ? 0 : 1.1 }}
+                className="relative max-w-[8.5rem] sm:max-w-[11rem] rounded-2xl rounded-es-md bg-bg-card border border-border/60 px-3 py-2 sm:px-4 sm:py-2.5 text-xs sm:text-sm font-bold text-text-body shadow-xl"
+              >
+                {happy ? t('bubble_happy') : t('bubble')}
+              </motion.div>
+            </AnimatePresence>
+          </div>
         </motion.div>
       </div>
 
-      {/* Bottom wave divider */}
-      <div className="absolute bottom-0 left-0 right-0">
-        <svg viewBox="0 0 1440 60" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-auto" preserveAspectRatio="none">
-          <path d="M0 60V20C240 45 480 5 720 25C960 45 1200 5 1440 20V60H0Z" fill="var(--color-bg)" />
-        </svg>
-      </div>
+      {/* ── Figures ── */}
+      <motion.div
+        variants={rise}
+        initial="hidden"
+        animate="visible"
+        custom={5}
+        className="relative max-w-5xl mx-auto mt-16 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+      >
+        {stats.map((s) => (
+          <div key={s.label} className="glass-strong rounded-2xl border border-border/60 px-5 py-5 text-center">
+            <AnimatedCounter value={s.value} className={`font-display text-3xl sm:text-4xl font-bold ${s.tint}`} />
+            <div className="mt-1 text-xs sm:text-sm font-semibold text-text-dim">{s.label}</div>
+          </div>
+        ))}
+      </motion.div>
     </section>
   );
 }

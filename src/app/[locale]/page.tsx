@@ -13,7 +13,7 @@ import { GamesSection } from '@/components/sections/GamesSection';
 import { DemoSection } from '@/components/sections/DemoSection';
 import { FAQSection } from '@/components/sections/FAQSection';
 import { CTAFinalSection } from '@/components/sections/CTAFinalSection';
-import { fetchSiteConfig } from '@/lib/site-config';
+import { fetchSiteConfig } from '@/lib/site-config.server';
 
 // Owner edits reach the page within a minute, or at once via /api/revalidate.
 export const revalidate = 60;

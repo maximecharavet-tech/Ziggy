@@ -9,7 +9,7 @@ import { AgentAvatar } from '@/components/agents/AgentAvatar';
 import { ParticleField } from '@/components/ui/ParticleField';
 import { SecureNotice } from '@/components/account/SecureNotice';
 import { authErrorKey } from '@/components/account/authErrors';
-import { getSupabase } from '@/lib/supabase';
+import { loadSupabase } from '@/lib/supabase';
 import {
   AVATAR_CHOICES,
   AGE_GROUPS,
@@ -47,7 +47,7 @@ export function SignupPageContent() {
     if (!isValidEmail(mail)) return setError(t('errorEmail'));
     if (password.length < MIN_PASSWORD_LENGTH) return setError(t('errorPassword'));
 
-    const sb = getSupabase();
+    const sb = await loadSupabase();
     if (!sb) return setError(t('errorUnavailable'));
 
     setError(null);

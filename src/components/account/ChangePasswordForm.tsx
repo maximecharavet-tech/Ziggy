@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { KeyRound, Loader2, Check } from 'lucide-react';
-import { getSupabase } from '@/lib/supabase';
+import { loadSupabase } from '@/lib/supabase';
 import { MIN_PASSWORD_LENGTH } from '@/lib/account';
 
 export interface ChangePasswordLabels {
@@ -32,7 +32,7 @@ export function ChangePasswordForm({ labels, highlight = false }: { labels: Chan
     setDone(false);
     if (password.length < MIN_PASSWORD_LENGTH) return setError(labels.errorLength);
     if (password !== confirm) return setError(labels.errorMismatch);
-    const sb = getSupabase();
+    const sb = await loadSupabase();
     if (!sb) return setError(labels.errorGeneric);
 
     setError(null);

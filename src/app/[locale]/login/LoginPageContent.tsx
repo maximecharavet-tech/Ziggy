@@ -10,7 +10,7 @@ import { AgentAvatar } from '@/components/agents/AgentAvatar';
 import { SecureNotice } from '@/components/account/SecureNotice';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { authErrorKey } from '@/components/account/authErrors';
-import { getSupabase } from '@/lib/supabase';
+import { loadSupabase } from '@/lib/supabase';
 import { avatarColor, isValidEmail, toLoginEmail } from '@/lib/account';
 
 const inputClasses =
@@ -41,7 +41,7 @@ export function LoginPageContent() {
     e.preventDefault();
     if (!identifier.trim() || !password) return setError(t('errorCredentials'));
 
-    const sb = getSupabase();
+    const sb = await loadSupabase();
     if (!sb) return setError(t('errorUnavailable'));
 
     setError(null);
@@ -60,7 +60,7 @@ export function LoginPageContent() {
     e.preventDefault();
     const mail = resetEmail.trim().toLowerCase();
     if (!isValidEmail(mail)) return setError(t('errorEmail'));
-    const sb = getSupabase();
+    const sb = await loadSupabase();
     if (!sb) return setError(t('errorUnavailable'));
 
     setError(null);
