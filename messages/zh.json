@@ -525,7 +525,16 @@
     "subtitle": "它会笑、会鼓励，从不评判。Ziggy 把数学、逻辑和人工智能变成游戏——每答对一次，它胸口的爱心就会亮起来。",
     "cta": "免费试用",
     "cta_games": "查看游戏",
-    "play": "观看 Ziggy"
+    "play": "观看 Ziggy",
+    "moods_hint": "Ziggy 的心情",
+    "moods": {
+      "cheer": "耶！",
+      "wave": "你好！",
+      "heart": "满满的爱",
+      "closeup": "哇！",
+      "stand": "准备好玩了",
+      "film": "短片"
+    }
   },
   "trial": {
     "eyebrow": "快速体验",
@@ -563,5 +572,17 @@
     "encrypted": "加密连接",
     "no_ads": "零广告",
     "parent_account": "由家长管理的账户"
+  },
+  "ribbon": {
+    "learn": "学习",
+    "understand": "理解",
+    "create": "创造",
+    "tagline": "让好奇心和自信一起成长的教育 AI"
+  },
+  "cookies_banner": {
+    "title": "Ziggy 与 Cookie",
+    "text": "没有广告，也没有追踪。Ziggy 只保存运行所需的内容：你的登录、你的设置（声音、主题）和学习进度。",
+    "ok": "知道了",
+    "more": "了解更多"
   }
 }

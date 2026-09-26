@@ -525,7 +525,16 @@
     "subtitle": "Güler, cesaretlendirir, asla yargılamaz. Ziggy matematiği, mantığı ve yapay zekâyı oyuna dönüştürür — her doğru cevapta kalbi ışıldar.",
     "cta": "Ücretsiz dene",
     "cta_games": "Oyunları gör",
-    "play": "Ziggy'yi izle"
+    "play": "Ziggy'yi izle",
+    "moods_hint": "Ziggy’nin halleri",
+    "moods": {
+      "cheer": "Yaşasın!",
+      "wave": "Merhaba!",
+      "heart": "Sevgi dolu",
+      "closeup": "Vay!",
+      "stand": "Oynamaya hazır",
+      "film": "Film"
+    }
   },
   "trial": {
     "eyebrow": "Hızlı deneme",
@@ -563,5 +572,17 @@
     "encrypted": "Şifreli bağlantı",
     "no_ads": "Sıfır reklam",
     "parent_account": "Veli tarafından yönetilen hesap"
+  },
+  "ribbon": {
+    "learn": "Öğren",
+    "understand": "Anla",
+    "create": "Yarat",
+    "tagline": "Merakı ve özgüveni büyüten eğitici yapay zekâ"
+  },
+  "cookies_banner": {
+    "title": "Ziggy ve çerezler",
+    "text": "Reklam yok, takip yok. Ziggy yalnızca çalışması için gerekenleri saklar: oturumun, ayarların (ses, tema) ve ilerlemen.",
+    "ok": "Tamam",
+    "more": "Daha fazla bilgi"
   }
 }

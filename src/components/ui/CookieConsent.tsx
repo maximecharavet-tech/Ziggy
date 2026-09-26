@@ -1,31 +1,36 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Cookie } from 'lucide-react';
+import { Link } from '@/i18n/navigation';
+import { ZiggyAvatar } from '@/components/ziggy/Mascot';
 
-// TODO: Replace hardcoded English text with next-intl translations
-// using the 'cookies_banner' namespace once messages/*.json files are updated.
+const KEY = 'cookie-consent';
 
+/**
+ * Ziggy has no analytics and no advertising, so there is nothing to opt into:
+ * this is a notice about the storage the site needs to work, dismissed once.
+ */
 export function CookieConsent() {
+  const t = useTranslations('cookies_banner');
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    const consent = localStorage.getItem('cookie-consent');
-    if (!consent) {
-      // Small delay so the banner doesn't appear instantly on page load
-      const timer = setTimeout(() => setVisible(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    let seen: string | null = null;
+    try {
+      seen = localStorage.getItem(KEY);
+    } catch {}
+    if (seen) return;
+    // A moment's delay so it doesn't jump in on first paint.
+    const timer = setTimeout(() => setVisible(true), 1500);
+    return () => clearTimeout(timer);
   }, []);
 
-  const handleAccept = () => {
-    localStorage.setItem('cookie-consent', 'accepted');
-    setVisible(false);
-  };
-
-  const handleDecline = () => {
-    localStorage.setItem('cookie-consent', 'declined');
+  const dismiss = () => {
+    try {
+      localStorage.setItem(KEY, 'seen');
+    } catch {}
     setVisible(false);
   };
 
@@ -33,36 +38,30 @@ export function CookieConsent() {
     <AnimatePresence>
       {visible && (
         <motion.div
+          role="region"
+          aria-label={t('title')}
           initial={{ y: 100, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
-          transition={{ duration: 0.3, ease: 'easeOut' }}
-          className="fixed bottom-4 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 sm:max-w-md z-50 glass-strong rounded-2xl border border-border/50 p-5 shadow-lg"
+          transition={{ type: 'spring', stiffness: 260, damping: 26 }}
+          className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:end-6 sm:bottom-6 sm:max-w-sm z-50 glass-strong rounded-2xl border border-border/50 p-4 shadow-xl"
         >
           <div className="flex items-start gap-3">
-            <div className="w-9 h-9 rounded-xl bg-green/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <Cookie size={18} className="text-green" />
-            </div>
+            <ZiggyAvatar size={40} />
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-text-body mb-1">
-                We use cookies
-              </p>
-              <p className="text-xs text-text-muted leading-relaxed mb-4">
-                We use cookies to enhance your experience, analyze site traffic, and personalize content. By clicking &quot;Accept&quot;, you consent to our use of cookies.
-              </p>
-              <div className="flex items-center gap-2">
+              <p className="text-sm font-bold text-text-body mb-1">{t('title')}</p>
+              <p className="text-xs text-text-muted leading-relaxed mb-3">{t('text')}</p>
+              <div className="flex items-center gap-3">
                 <button
-                  onClick={handleAccept}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl gradient-green-cta text-white shadow-sm shadow-green/20 hover:shadow-md hover:shadow-green/30 transition-shadow"
+                  type="button"
+                  onClick={dismiss}
+                  className="px-4 py-2 text-xs font-bold rounded-xl gradient-green-cta text-white shadow-sm shadow-green/20 hover:shadow-md hover:shadow-green/30 transition-shadow"
                 >
-                  Accept
+                  {t('ok')}
                 </button>
-                <button
-                  onClick={handleDecline}
-                  className="px-4 py-2 text-xs font-semibold rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
-                >
-                  Decline
-                </button>
+                <Link href="/cookies" className="text-xs font-semibold text-text-muted hover:text-green transition-colors">
+                  {t('more')}
+                </Link>
               </div>
             </div>
           </div>

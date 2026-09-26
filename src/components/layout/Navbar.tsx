@@ -9,7 +9,7 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { SoundToggle } from '@/components/ui/SoundToggle';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
-import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
+import { ZiggyAvatar } from '@/components/ziggy/Mascot';
 import { AccountButton } from '@/components/account/AccountButton';
 
 export function Navbar() {
@@ -45,7 +45,7 @@ export function Navbar() {
     >
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="Ziggy — home">
-          <ZiggyRobot size={34} fullBody={false} className="transition-transform duration-300 group-hover:scale-110" />
+          <ZiggyAvatar size={36} className="transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
           <ZiggyLogo size={96} className="transition-transform duration-300 group-hover:-rotate-1" />
         </Link>
 

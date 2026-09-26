@@ -525,7 +525,16 @@
     "subtitle": "Ele ri, incentiva e nunca julga. O Ziggy transforma matemática, lógica e IA em brincadeira — e o seu coração acende a cada resposta certa.",
     "cta": "Experimentar grátis",
     "cta_games": "Ver os jogos",
-    "play": "Ver o Ziggy"
+    "play": "Ver o Ziggy",
+    "moods_hint": "Os humores do Ziggy",
+    "moods": {
+      "cheer": "Oba!",
+      "wave": "Olá!",
+      "heart": "Cheio de amor",
+      "closeup": "Uau!",
+      "stand": "Pronto para brincar",
+      "film": "O filme"
+    }
   },
   "trial": {
     "eyebrow": "Teste rápido",
@@ -563,5 +572,17 @@
     "encrypted": "Ligação cifrada",
     "no_ads": "Zero anúncios",
     "parent_account": "Conta gerida por um adulto"
+  },
+  "ribbon": {
+    "learn": "Aprender",
+    "understand": "Compreender",
+    "create": "Criar",
+    "tagline": "A IA educativa que faz crescer a curiosidade e a confiança"
+  },
+  "cookies_banner": {
+    "title": "O Ziggy e os cookies",
+    "text": "Sem publicidade nem rastreamento. O Ziggy só guarda o necessário para funcionar: a tua sessão, as tuas definições (som, tema) e o teu progresso.",
+    "ok": "Entendi",
+    "more": "Saber mais"
   }
 }

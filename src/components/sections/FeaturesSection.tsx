@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { Bot, ShieldCheck, Brain, Globe, Trophy, BookOpen, Heart, type LucideIcon } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
+import { MascotCutout } from '@/components/ziggy/Mascot';
 
 interface Feature {
   icon: LucideIcon;
@@ -65,10 +65,10 @@ export function FeaturesSection() {
 
                   {hero && (
                     <div
-                      className="pointer-events-none absolute -bottom-6 end-2 w-40 sm:w-48 opacity-90 transition-transform duration-500 group-hover:-translate-y-2 group-hover:rotate-3 hidden sm:block"
+                      className="pointer-events-none absolute -bottom-16 end-4 w-40 sm:w-48 lg:w-52 transition-transform duration-500 group-hover:-translate-y-3 group-hover:-rotate-3 hidden sm:block"
                       aria-hidden="true"
                     >
-                      <ZiggyRobot size={200} excited className="w-full h-auto" />
+                      <MascotCutout pose="wave" width={208} />
                     </div>
                   )}
                 </article>

@@ -525,7 +525,16 @@
     "subtitle": "Hij lacht, moedigt aan en oordeelt nooit. Ziggy maakt van rekenen, logica en AI een spel — en zijn hart licht op bij elk goed antwoord.",
     "cta": "Gratis proberen",
     "cta_games": "Bekijk de spellen",
-    "play": "Ziggy bekijken"
+    "play": "Ziggy bekijken",
+    "moods_hint": "Ziggy’s buien",
+    "moods": {
+      "cheer": "Hoera!",
+      "wave": "Hoi!",
+      "heart": "Vol liefde",
+      "closeup": "Wauw!",
+      "stand": "Klaar om te spelen",
+      "film": "De film"
+    }
   },
   "trial": {
     "eyebrow": "Snelle test",
@@ -563,5 +572,17 @@
     "encrypted": "Versleutelde verbinding",
     "no_ads": "Nul reclame",
     "parent_account": "Account beheerd door ouder"
+  },
+  "ribbon": {
+    "learn": "Leren",
+    "understand": "Begrijpen",
+    "create": "Creëren",
+    "tagline": "De leer-AI die nieuwsgierigheid en zelfvertrouwen laat groeien"
+  },
+  "cookies_banner": {
+    "title": "Ziggy en cookies",
+    "text": "Geen reclame, geen tracking. Ziggy bewaart alleen wat nodig is om te werken: je aanmelding, je instellingen (geluid, thema) en je voortgang.",
+    "ok": "Oké",
+    "more": "Meer weten"
   }
 }

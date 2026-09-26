@@ -525,7 +525,16 @@
     "subtitle": "He laughs, he cheers, he never judges. Ziggy turns maths, logic and AI into play — and his heart lights up with every right answer.",
     "cta": "Try it free",
     "cta_games": "See the games",
-    "play": "Watch Ziggy"
+    "play": "Watch Ziggy",
+    "moods_hint": "Ziggy’s moods",
+    "moods": {
+      "cheer": "Hooray!",
+      "wave": "Hi there!",
+      "heart": "Full of love",
+      "closeup": "Wow!",
+      "stand": "Ready to play",
+      "film": "The film"
+    }
   },
   "trial": {
     "eyebrow": "Express trial",
@@ -563,5 +572,17 @@
     "encrypted": "Encrypted connection",
     "no_ads": "Zero ads",
     "parent_account": "Parent-managed account"
+  },
+  "ribbon": {
+    "learn": "Learn",
+    "understand": "Understand",
+    "create": "Create",
+    "tagline": "The learning AI that grows curiosity and confidence"
+  },
+  "cookies_banner": {
+    "title": "Ziggy and cookies",
+    "text": "No ads, no tracking. Ziggy only keeps what it needs to work: your sign-in, your settings (sound, theme) and your progress.",
+    "ok": "Got it",
+    "more": "Learn more"
   }
 }

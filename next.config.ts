@@ -20,8 +20,21 @@ const nextConfig: NextConfig = {
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion'],
   },
+  // The share image reads the mascot from disk at request time.
+  outputFileTracingIncludes: {
+    '/[locale]/opengraph-image': ['./public/mascot/og-ziggy.png'],
+  },
+  images: {
+    formats: ['image/avif', 'image/webp'],
+  },
   async headers() {
-    return [{ source: '/(.*)', headers: securityHeaders }];
+    return [
+      { source: '/(.*)', headers: securityHeaders },
+      {
+        source: '/(mascot|media)/:path*',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],
+      },
+    ];
   },
 };
 

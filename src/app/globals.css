@@ -250,6 +250,56 @@
     from { opacity: 0; transform: scale(0.9); }
     to { opacity: 1; transform: scale(1); }
   }
+
+  /* Ziggy's heart: two quick beats, then a rest */
+  @keyframes heartbeat {
+    0%, 100% { transform: translate(-50%, -50%) scale(0.85); opacity: 0.55; }
+    14% { transform: translate(-50%, -50%) scale(1.12); opacity: 1; }
+    28% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.7; }
+    42% { transform: translate(-50%, -50%) scale(1.08); opacity: 0.95; }
+    70% { transform: translate(-50%, -50%) scale(0.88); opacity: 0.6; }
+  }
+
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+
+  @keyframes orbit {
+    from { transform: rotate(0deg) translateX(var(--orbit-r, 140px)) rotate(0deg); }
+    to { transform: rotate(360deg) translateX(var(--orbit-r, 140px)) rotate(-360deg); }
+  }
+
+  @keyframes sheen {
+    0% { transform: translateX(-120%) skewX(-18deg); }
+    60%, 100% { transform: translateX(260%) skewX(-18deg); }
+  }
+
+  @keyframes bob {
+    0%, 100% { transform: translateY(0) rotate(-2deg); }
+    50% { transform: translateY(-10px) rotate(2deg); }
+  }
+}
+
+@utility animate-heartbeat {
+  transform: translate(-50%, -50%);
+  animation: heartbeat 1.6s ease-in-out infinite;
+}
+
+@utility animate-marquee {
+  animation: marquee var(--marquee-duration, 38s) linear infinite;
+}
+
+@utility animate-orbit {
+  animation: orbit var(--orbit-duration, 14s) linear infinite;
+}
+
+@utility animate-sheen {
+  animation: sheen 5.5s ease-in-out infinite;
+}
+
+@utility animate-bob {
+  animation: bob 5s ease-in-out infinite;
 }
 
 @utility animate-float {

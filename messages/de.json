@@ -525,7 +525,16 @@
     "subtitle": "Er lacht, er feuert an, er urteilt nie. Ziggy macht aus Mathe, Logik und KI ein Spiel — und sein Herz leuchtet bei jeder richtigen Antwort.",
     "cta": "Kostenlos testen",
     "cta_games": "Spiele ansehen",
-    "play": "Ziggy ansehen"
+    "play": "Ziggy ansehen",
+    "moods_hint": "Ziggys Launen",
+    "moods": {
+      "cheer": "Juhu!",
+      "wave": "Hallo!",
+      "heart": "Voller Liebe",
+      "closeup": "Wow!",
+      "stand": "Bereit zum Spielen",
+      "film": "Der Film"
+    }
   },
   "trial": {
     "eyebrow": "Schnelltest",
@@ -563,5 +572,17 @@
     "encrypted": "Verschlüsselte Verbindung",
     "no_ads": "Keine Werbung",
     "parent_account": "Von Eltern verwaltetes Konto"
+  },
+  "ribbon": {
+    "learn": "Lernen",
+    "understand": "Verstehen",
+    "create": "Erschaffen",
+    "tagline": "Die Lern-KI, die Neugier und Selbstvertrauen wachsen lässt"
+  },
+  "cookies_banner": {
+    "title": "Ziggy und Cookies",
+    "text": "Keine Werbung, kein Tracking. Ziggy speichert nur, was zum Funktionieren nötig ist: deine Anmeldung, deine Einstellungen (Ton, Design) und deinen Fortschritt.",
+    "ok": "Alles klar",
+    "more": "Mehr erfahren"
   }
 }

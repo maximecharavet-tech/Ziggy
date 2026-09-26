@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ArrowRight, RotateCcw, Sparkles, Gamepad2, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Confetti } from '@/components/ui/Confetti';
-import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
+import { MascotCutout } from '@/components/ziggy/Mascot';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { playSound } from '@/lib/sound';
 import { recordGameResult } from '@/lib/progress';
@@ -118,7 +118,7 @@ export function ExpressTrial({ compact = false }: { compact?: boolean }) {
             className="relative grid sm:grid-cols-[auto_1fr] items-center gap-6 text-center sm:text-start"
           >
             <div className="mx-auto w-36 sm:w-44 animate-float">
-              <ZiggyRobot size={180} excited className="w-full h-auto" />
+              <MascotCutout pose="wave" width={176} />
             </div>
             <div>
               <span className="inline-flex items-center gap-1.5 rounded-full bg-green/10 text-green px-3 py-1 text-xs font-bold">
@@ -239,7 +239,7 @@ export function ExpressTrial({ compact = false }: { compact?: boolean }) {
           >
             <Confetti trigger />
             <div className="mx-auto w-32 animate-float">
-              <ZiggyRobot size={140} excited className="w-full h-auto" />
+              <MascotCutout pose="heart" width={128} />
             </div>
             <div className="mt-4 flex justify-center gap-2">
               {[0, 1, 2].map((i) => (

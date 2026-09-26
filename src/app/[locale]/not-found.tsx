@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Home, Sparkles } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
-import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
+import { MascotCutout } from '@/components/ziggy/Mascot';
 
 export default function NotFound() {
   return (
@@ -19,7 +19,7 @@ export default function NotFound() {
           transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
           className="flex justify-center mb-6"
         >
-          <ZiggyRobot size={140} />
+          <MascotCutout pose="stand" width={150} className="w-[150px]" />
         </motion.div>
 
         <div className="glass-strong rounded-2xl border border-border/50 p-8 shadow-lg">

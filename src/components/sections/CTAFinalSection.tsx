@@ -4,7 +4,7 @@ import { useTranslations } from 'next-intl';
 import { ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
+import { MascotCutout, Sparkle } from '@/components/ziggy/Mascot';
 
 export function CTAFinalSection() {
   const t = useTranslations('cta_final');
@@ -16,8 +16,8 @@ export function CTAFinalSection() {
           <div className="absolute inset-0 bg-gradient-to-br from-[#FFE7C2] via-peach to-apricot dark:from-[#3a2a17] dark:via-[#4a3218] dark:to-[#5a3a1a]" />
           <div className="absolute -bottom-24 -end-16 w-[26rem] h-[26rem] stage-disc opacity-80" aria-hidden="true" />
 
-          <div className="relative grid md:grid-cols-[1.3fr_1fr] items-center gap-6 p-10 sm:p-14">
-            <div className="text-center md:text-start">
+          <div className="relative grid md:grid-cols-[1.3fr_1fr] items-center gap-6 px-8 pt-10 pb-0 sm:px-14 sm:pt-14 md:pb-0">
+            <div className="text-center md:text-start md:pb-14">
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-[#3B2410] dark:text-[#FFE7C2] mb-4 leading-[1.08] text-balance">
                 {t('title')}
               </h2>
@@ -29,9 +29,13 @@ export function CTAFinalSection() {
                 <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 rtl:rotate-180" />
               </Button>
             </div>
-            <div className="relative mx-auto w-48 sm:w-64" aria-hidden="true">
+            <div className="relative mx-auto w-52 sm:w-72 -mb-10 sm:-mb-14" aria-hidden="true">
+              <div className="absolute inset-[12%] rounded-full bg-[#FFF3C4] blur-3xl opacity-70 animate-pulse" />
+              <Sparkle className="w-6 top-[6%] start-[4%] z-10" color="#FFFFFF" delay={0} />
+              <Sparkle className="w-5 top-[30%] end-[2%] z-10" color="#F2647B" delay={0.9} />
+              <Sparkle className="w-4 top-[58%] start-0 z-10" color="#5FB6EA" delay={1.6} />
               <div className="animate-float">
-                <ZiggyRobot size={260} excited className="w-full h-auto drop-shadow-[0_24px_30px_rgba(107,74,43,0.35)]" />
+                <MascotCutout pose="heart" width={288} />
               </div>
             </div>
           </div>

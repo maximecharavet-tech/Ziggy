@@ -3,8 +3,9 @@
 import { useState, useRef, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, Sparkles, Bot } from 'lucide-react';
+import { Send } from 'lucide-react';
 import { StarBurst } from './StarBurst';
+import { MascotCutout, ZiggyAvatar } from './Mascot';
 
 interface ChatMessage {
   role: 'user' | 'assistant';
@@ -77,9 +78,7 @@ export function ZiggyChat() {
       <div className="glass-strong border border-border/50 rounded-2xl shadow-[0_8px_30px_rgba(0,0,0,0.06)] overflow-hidden">
         {/* Chat header */}
         <div className="flex items-center gap-3 px-4 py-3 border-b border-border/50 bg-green/5">
-          <div className="w-9 h-9 rounded-full gradient-green-cta flex items-center justify-center">
-            <Bot size={18} className="text-white" />
-          </div>
+          <ZiggyAvatar size={40} className={isLoading ? 'animate-wiggle' : ''} />
           <div>
             <div className="text-sm font-bold text-text-body flex items-center gap-1.5">
               Ziggy
@@ -95,8 +94,8 @@ export function ZiggyChat() {
         <div className="h-80 sm:h-96 overflow-y-auto p-4 space-y-4 scroll-smooth">
           {messages.length === 0 && (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4">
-              <div className="w-16 h-16 rounded-2xl bg-green/10 flex items-center justify-center animate-float">
-                <Sparkles size={28} className="text-green" />
+              <div className="w-24 animate-float">
+                <MascotCutout pose="wave" width={96} />
               </div>
               <p className="text-sm text-text-muted max-w-xs">{t('subtitle')}</p>
               <div className="flex flex-wrap gap-2 justify-center mt-2">
@@ -120,8 +119,9 @@ export function ZiggyChat() {
                 initial={{ opacity: 0, y: 12, scale: 0.95 }}
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 transition={{ duration: 0.3, ease: 'easeOut' }}
-                className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                className={`flex items-end gap-2 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
               >
+                {msg.role === 'assistant' && <ZiggyAvatar size={28} ring={false} className="mb-5" />}
                 <div className="flex flex-col gap-1 max-w-[85%]">
                   <div
                     className={`px-4 py-2.5 rounded-2xl text-sm leading-relaxed ${
@@ -144,8 +144,9 @@ export function ZiggyChat() {
             <motion.div
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex justify-start"
+              className="flex items-end gap-2 justify-start"
             >
+              <ZiggyAvatar size={28} ring={false} className="animate-bounce" />
               <div className="glass border border-border/50 px-4 py-3 rounded-2xl rounded-bl-md">
                 <div className="flex items-center gap-2">
                   <div className="flex gap-1">

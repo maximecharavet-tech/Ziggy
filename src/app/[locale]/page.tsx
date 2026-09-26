@@ -1,5 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import { TrustBar } from '@/components/sections/TrustBar';
+import { TaglineRibbon } from '@/components/sections/TaglineRibbon';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { ZiggyShowcase } from '@/components/sections/ZiggyShowcase';
@@ -30,6 +31,7 @@ export default async function HomePage({
   return (
     <PageTransition>
       <HeroSection stats={stats} />
+      <TaglineRibbon />
       <TrustBar />
       {sections.showcase && <ZiggyShowcase />}
       <FeaturesSection />

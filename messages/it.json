@@ -525,7 +525,16 @@
     "subtitle": "Ride, incoraggia e non giudica mai. Ziggy trasforma matematica, logica e IA in un gioco — e il suo cuore si illumina a ogni risposta giusta.",
     "cta": "Prova gratis",
     "cta_games": "Guarda i giochi",
-    "play": "Guarda Ziggy"
+    "play": "Guarda Ziggy",
+    "moods_hint": "Gli umori di Ziggy",
+    "moods": {
+      "cheer": "Evviva!",
+      "wave": "Ciao!",
+      "heart": "Pieno d’amore",
+      "closeup": "Wow!",
+      "stand": "Pronto a giocare",
+      "film": "Il film"
+    }
   },
   "trial": {
     "eyebrow": "Prova lampo",
@@ -563,5 +572,17 @@
     "encrypted": "Connessione cifrata",
     "no_ads": "Zero pubblicità",
     "parent_account": "Account gestito dal genitore"
+  },
+  "ribbon": {
+    "learn": "Imparare",
+    "understand": "Capire",
+    "create": "Creare",
+    "tagline": "L’IA educativa che fa crescere curiosità e fiducia"
+  },
+  "cookies_banner": {
+    "title": "Ziggy e i cookie",
+    "text": "Niente pubblicità, niente tracciamento. Ziggy conserva solo ciò che serve per funzionare: il tuo accesso, le tue impostazioni (audio, tema) e i tuoi progressi.",
+    "ok": "Va bene",
+    "more": "Scopri di più"
   }
 }

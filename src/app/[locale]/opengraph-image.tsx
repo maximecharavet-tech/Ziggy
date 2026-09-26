@@ -1,3 +1,5 @@
+import { readFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import { ImageResponse } from 'next/og';
 import { getTranslations } from 'next-intl/server';
 
@@ -8,6 +10,8 @@ export const alt = 'Ziggy — AI Learning for Kids';
 export default async function OpengraphImage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'metadata' });
+  const mascot = await readFile(join(process.cwd(), 'public/mascot/og-ziggy.png'));
+  const mascotSrc = `data:image/png;base64,${mascot.toString('base64')}`;
 
   return new ImageResponse(
     (
@@ -16,10 +20,11 @@ export default async function OpengraphImage({ params }: { params: Promise<{ loc
           width: '100%',
           height: '100%',
           display: 'flex',
-          flexDirection: 'column',
+          flexDirection: 'row',
           alignItems: 'center',
-          justifyContent: 'center',
-          background: 'linear-gradient(135deg, #0A0A1A 0%, #12122A 60%, #0F2318 100%)',
+          justifyContent: 'space-between',
+          padding: '0 70px 0 80px',
+          background: 'linear-gradient(135deg, #FFF4E2 0%, #FFD9A0 55%, #FBC9C4 100%)',
           position: 'relative',
         }}
       >
@@ -48,82 +53,30 @@ export default async function OpengraphImage({ params }: { params: Promise<{ loc
           }}
         />
 
-        {/* Ziggy's plush head, as on the site */}
-        <div
-          style={{
-            width: 170,
-            height: 150,
-            borderRadius: 80,
-            background: 'radial-gradient(circle at 42% 30%, #A3DE7B 0%, #7FC85C 50%, #5AA83E 100%)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            gap: 22,
-            marginBottom: 40,
-            boxShadow: '0 0 90px rgba(127,200,92,0.45)',
-          }}
-        >
-          {[0, 1].map((i) => (
-            <div
-              key={i}
-              style={{
-                width: 50,
-                height: 56,
-                borderRadius: 50,
-                background: '#FFFFFF',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <div style={{ width: 30, height: 30, borderRadius: 30, background: '#4F9E33', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <div style={{ width: 16, height: 16, borderRadius: 16, background: '#12100E', display: 'flex' }} />
-              </div>
-            </div>
-          ))}
+        <div style={{ display: 'flex', flexDirection: 'column', maxWidth: 640 }}>
+          <span style={{ fontSize: 110, fontWeight: 800, color: '#3B2410', letterSpacing: -3, lineHeight: 1 }}>Ziggy</span>
+          <div style={{ marginTop: 22, fontSize: 32, color: '#6B4A2B', lineHeight: 1.3, display: 'flex' }}>{t('description')}</div>
+          <div
+            style={{
+              marginTop: 36,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '12px 26px',
+              borderRadius: 999,
+              border: '2px solid rgba(233,196,106,0.7)',
+              background: 'linear-gradient(160deg, #2B2208 0%, #3D300D 55%, #1E1805 100%)',
+              fontSize: 26,
+              fontWeight: 700,
+              alignSelf: 'flex-start',
+            }}
+          >
+            <span style={{ color: 'rgba(232,214,160,0.85)' }}>Powered by</span>
+            <span style={{ color: '#F3D27A' }}>Hyper™ AI Engine</span>
+          </div>
         </div>
-
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 16,
-            marginBottom: 24,
-          }}
-        >
-          <span style={{ fontSize: 72, fontWeight: 800, color: '#FFFFFF', letterSpacing: -2 }}>Ziggy</span>
-          <div style={{ width: 20, height: 20, borderRadius: 20, background: '#22C55E', display: 'flex' }} />
-        </div>
-
-        <div
-          style={{
-            fontSize: 30,
-            color: '#9CA3AF',
-            maxWidth: 850,
-            textAlign: 'center',
-            display: 'flex',
-          }}
-        >
-          {t('description')}
-        </div>
-
-        <div
-          style={{
-            marginTop: 36,
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            padding: '12px 26px',
-            borderRadius: 999,
-            border: '2px solid rgba(233,196,106,0.55)',
-            background: 'linear-gradient(160deg, #2B2208 0%, #3D300D 55%, #1E1805 100%)',
-            fontSize: 26,
-            fontWeight: 700,
-          }}
-        >
-          <span style={{ color: 'rgba(232,214,160,0.8)' }}>Powered by</span>
-          <span style={{ color: '#F3D27A' }}>Hyper™ AI Engine</span>
-        </div>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={mascotSrc} width={417} height={560} alt="" style={{ marginTop: 40 }} />
       </div>
     ),
     size
