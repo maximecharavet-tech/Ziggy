@@ -89,7 +89,7 @@ export function AgentChat({ agentId, agentName, color, suggestions, placeholder 
               <span className="w-2 h-2 rounded-full animate-pulse" style={{ backgroundColor: color }} />
             </div>
             <div className="text-xs text-text-muted">
-              {isLoading ? 'Typing...' : 'Online'}
+              {isLoading ? <span className="inline-flex gap-0.5" aria-label="…">{[0, 1, 2].map((i) => <span key={i} className="w-1 h-1 rounded-full bg-current animate-bounce" style={{ animationDelay: `${i * 120}ms` }} />)}</span> : <>Hyper™ AI Engine</>}
             </div>
           </div>
         </div>

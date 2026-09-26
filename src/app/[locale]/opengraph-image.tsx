@@ -48,23 +48,39 @@ export default async function OpengraphImage({ params }: { params: Promise<{ loc
           }}
         />
 
-        {/* Robot face */}
+        {/* Ziggy's plush head, as on the site */}
         <div
           style={{
-            width: 150,
-            height: 130,
-            borderRadius: 40,
-            background: '#F5F7FA',
+            width: 170,
+            height: 150,
+            borderRadius: 80,
+            background: 'radial-gradient(circle at 42% 30%, #A3DE7B 0%, #7FC85C 50%, #5AA83E 100%)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            gap: 24,
+            gap: 22,
             marginBottom: 40,
-            boxShadow: '0 0 80px rgba(34,197,94,0.4)',
+            boxShadow: '0 0 90px rgba(127,200,92,0.45)',
           }}
         >
-          <div style={{ width: 30, height: 30, borderRadius: 30, background: '#22C55E', display: 'flex' }} />
-          <div style={{ width: 30, height: 30, borderRadius: 30, background: '#22C55E', display: 'flex' }} />
+          {[0, 1].map((i) => (
+            <div
+              key={i}
+              style={{
+                width: 50,
+                height: 56,
+                borderRadius: 50,
+                background: '#FFFFFF',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <div style={{ width: 30, height: 30, borderRadius: 30, background: '#4F9E33', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ width: 16, height: 16, borderRadius: 16, background: '#12100E', display: 'flex' }} />
+              </div>
+            </div>
+          ))}
         </div>
 
         <div
@@ -89,6 +105,24 @@ export default async function OpengraphImage({ params }: { params: Promise<{ loc
           }}
         >
           {t('description')}
+        </div>
+
+        <div
+          style={{
+            marginTop: 36,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 10,
+            padding: '12px 26px',
+            borderRadius: 999,
+            border: '2px solid rgba(233,196,106,0.55)',
+            background: 'linear-gradient(160deg, #2B2208 0%, #3D300D 55%, #1E1805 100%)',
+            fontSize: 26,
+            fontWeight: 700,
+          }}
+        >
+          <span style={{ color: 'rgba(232,214,160,0.8)' }}>Powered by</span>
+          <span style={{ color: '#F3D27A' }}>Hyper™ AI Engine</span>
         </div>
       </div>
     ),

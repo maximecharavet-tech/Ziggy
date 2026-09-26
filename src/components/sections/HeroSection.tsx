@@ -9,6 +9,7 @@ import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 import { ZiggyRobot } from '@/components/ziggy/ZiggyRobot';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { StarBurst } from '@/components/ziggy/StarBurst';
+import { HyperBadge } from '@/components/ziggy/HyperBadge';
 import { useSound } from '@/hooks/useSound';
 import type { SiteConfig } from '@/lib/site-config';
 
@@ -126,11 +127,12 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
         </div>
 
         {/* ── Stage: the mascot artwork, rebuilt ── */}
+        <div className="flex flex-col items-center gap-4 sm:gap-5 order-first lg:order-none -mt-2 lg:mt-0">
         <motion.div
           initial={{ opacity: 0, scale: 0.92 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.25, duration: 0.9, ease }}
-          className="relative mx-auto w-full max-w-[290px] sm:max-w-[420px] lg:max-w-[540px] aspect-square order-first lg:order-none -mt-2 lg:mt-0"
+          className="relative mx-auto w-full max-w-[290px] sm:max-w-[420px] lg:max-w-[540px] aspect-square"
         >
           <div className="absolute inset-x-[4%] bottom-[2%] top-[18%] stage-disc opacity-90" />
           <motion.div
@@ -178,6 +180,16 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
             </AnimatePresence>
           </div>
         </motion.div>
+
+        {/* The emblem's signature, as a nameplate under Ziggy */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 1.2, duration: 0.6, ease }}
+        >
+          <HyperBadge />
+        </motion.div>
+        </div>
       </div>
 
       {/* ── Figures ── */}

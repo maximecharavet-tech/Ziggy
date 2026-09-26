@@ -2,6 +2,7 @@ import { useTranslations } from 'next-intl';
 import { Heart } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
+import { HyperBadge } from '@/components/ziggy/HyperBadge';
 
 export function Footer() {
   const t = useTranslations('footer');
@@ -31,7 +32,8 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
-            <ZiggyLogo size={132} className="mb-4" />
+            <ZiggyLogo size={132} className="mb-2" />
+            <HyperBadge variant="inline" className="mb-4" />
             <p className="text-sm text-text-muted leading-relaxed mb-4">{t('tagline')}</p>
             <div className="flex items-center gap-1 text-xs text-text-dim">
               <span>Made with</span>

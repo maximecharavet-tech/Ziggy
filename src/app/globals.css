@@ -356,3 +356,26 @@
 @utility animate-twinkle {
   animation: twinkle 2.6s ease-in-out infinite;
 }
+
+/* ═══════════════════════════════════════
+   HYPER™ AI ENGINE — gold, after the Ziggy emblem
+   ═══════════════════════════════════════ */
+
+@utility text-gold {
+  background: linear-gradient(135deg, #9A7414 0%, #F7DD8A 38%, #C9971C 62%, #F3D27A 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@utility gold-plate {
+  background:
+    linear-gradient(110deg, transparent 30%, rgba(255, 240, 190, 0.35) 45%, transparent 60%) 0 0 / 250% 100%,
+    linear-gradient(160deg, #2B2208 0%, #3D300D 55%, #1E1805 100%);
+  animation: gold-sheen 5s ease-in-out infinite;
+}
+
+@keyframes gold-sheen {
+  0%, 60% { background-position: 150% 0, 0 0; }
+  100% { background-position: -100% 0, 0 0; }
+}
