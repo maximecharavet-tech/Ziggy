@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { AgentAvatar } from '@/components/agents/AgentAvatar';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { useProgressMap } from '@/components/account/useProgressMap';
+import { RewardsPanel } from '@/components/rewards/RewardsPanel';
 import { ChangePasswordForm } from '@/components/account/ChangePasswordForm';
 import { DeleteAccount } from '@/components/account/DeleteAccount';
 import { AVATAR_CHOICES, avatarColor } from '@/lib/account';
@@ -55,6 +56,7 @@ export function AccountPageContent() {
 
   const trophies = (
     <>
+      {!loading && plays > 0 && <RewardsPanel progress={progress} />}
       <h2 className="font-display text-xl font-bold text-text-body mt-10 mb-4">{t('progressTitle')}</h2>
       {!loading && plays === 0 ? (
         <div className="glass rounded-2xl border border-border/50 p-8 text-center">

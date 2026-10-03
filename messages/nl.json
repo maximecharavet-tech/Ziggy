@@ -178,7 +178,9 @@
     "terms": "Algemene voorwaarden",
     "cookies": "Cookiebeleid",
     "gdpr": "GDPR",
-    "copyright": "© 2026 Ziggy Technologies SAS. Alle rechten voorbehouden."
+    "copyright": "© 2026 Ziggy Technologies SAS. Alle rechten voorbehouden.",
+    "made_with": "Gemaakt met",
+    "for_kids": "voor kinderen"
   },
   "agents": {
     "badge": "Het team",
@@ -584,5 +586,103 @@
     "text": "Geen reclame, geen tracking. Ziggy bewaart alleen wat nodig is om te werken: je aanmelding, je instellingen (geluid, thema) en je voortgang.",
     "ok": "Oké",
     "more": "Meer weten"
+  },
+  "chat": {
+    "nap": "{name} doet een dutje… Probeer het zo nog eens! ⭐",
+    "thinking": "{name} denkt na",
+    "safety": "Beschermd bericht",
+    "send": "Versturen",
+    "ask": "Schrijf naar {name}…"
+  },
+  "voice": {
+    "listen": "Luisteren",
+    "stop": "Stoppen",
+    "auto_on": "Stem: aan",
+    "auto_off": "Stem: uit",
+    "mic_start": "Praat met Ziggy",
+    "mic_stop": "Klaar"
+  },
+  "rewards": {
+    "level_up": "Level {level} bereikt",
+    "level_short": "Level {level}",
+    "new_badge": "Nieuwe badge",
+    "level_desc": "Je leert razendsnel. Ziggy is supertrots op je!",
+    "next": "Volgende",
+    "ok": "Super!",
+    "max_level": "Hoogste level: je bent een legende!",
+    "to_next": "Nog {xp} XP tot het volgende level",
+    "badges_title": "Mijn badges",
+    "levels": {
+      "curious": "Kleine nieuwsgierige",
+      "explorer": "Ontdekker",
+      "inventor": "Uitvinder",
+      "coder": "Programmeur",
+      "genius": "Klein genie",
+      "legend": "Hyper-legende"
+    },
+    "badges": {
+      "first_game": {
+        "name": "Lancering",
+        "desc": "Je eerste spel spelen"
+      },
+      "three_stars": {
+        "name": "Drie sterren",
+        "desc": "Een spel winnen met 3 sterren"
+      },
+      "explorer": {
+        "name": "Ontdekker",
+        "desc": "4 verschillende spellen proberen"
+      },
+      "star_collector": {
+        "name": "Verzamelaar",
+        "desc": "15 sterren verzamelen"
+      },
+      "brave": {
+        "name": "Doorzetter",
+        "desc": "Hetzelfde spel 5 keer spelen"
+      },
+      "marathon": {
+        "name": "Marathon",
+        "desc": "25 spellen spelen"
+      },
+      "all_games": {
+        "name": "Wereldreiziger",
+        "desc": "Alle spellen spelen"
+      },
+      "perfectionist": {
+        "name": "Perfectie",
+        "desc": "Overal 3 sterren (minstens 4 spellen)"
+      }
+    }
+  },
+  "hyper": {
+    "eyebrow": "Aangedreven door",
+    "title": "Hyper™ AI Engine",
+    "subtitle": "De motor die Ziggy zijn stem, zijn brein en zijn beschermingen geeft. Dit brengt hij concreet voor uw kind.",
+    "pillars": {
+      "voice": {
+        "title": "Ziggy praat en luistert",
+        "desc": "Zijn antwoorden worden met een warme stem voorgelezen, en kinderen kunnen via de microfoon met hem praten: ideaal voor de jongsten die nog weinig lezen."
+      },
+      "safety": {
+        "title": "Een filter voor kinderen",
+        "desc": "Adressen, telefoonnummers, e-mails en wachtwoorden worden geblokkeerd voordat ze de AI bereiken, links worden uit antwoorden gehaald en gevoelige onderwerpen verwijzen naar een vertrouwde volwassene."
+      },
+      "brain": {
+        "title": "Een brein dat nooit slaapt",
+        "desc": "Meerdere AI-motoren nemen het van elkaar over: valt er één uit, dan antwoordt Ziggy toch."
+      },
+      "motion": {
+        "title": "Verzorgde animaties",
+        "desc": "Korte, precieze bewegingen die de instelling „beweging verminderen” volgen en pauzeren buiten beeld."
+      },
+      "privacy": {
+        "title": "Data in Europa, nul reclame",
+        "desc": "Accounts staan in Europa, niets wordt verkocht, geen reclame en geen tracking."
+      }
+    },
+    "ziggy_title": "Dit alles, voor één vriendje",
+    "ziggy_text": "De motor blijft achter de schermen. Op het podium staan alleen Ziggy en uw kind.",
+    "cta": "Praat met Ziggy"
   }
 }

@@ -1,3 +1,4 @@
+import { useId } from 'react';
 interface ZiggyLogoProps {
   size?: number;
   className?: string;
@@ -18,6 +19,9 @@ const LETTERS = [
  * The ZIGGY wordmark — puffy modelling-clay letters, each in its own colour.
  */
 export function ZiggyLogo({ size = 160, className = '', withBlob = false }: ZiggyLogoProps) {
+  // Unique per instance: the intro curtain renders a second logo, and a hidden
+  // copy of shared ids would take the gradients and filter down with it.
+  const uid = `zl${useId().replace(/[^a-zA-Z0-9]/g, '')}`;
   const height = size * (withBlob ? 0.565 : 0.37);
 
   return (
@@ -30,11 +34,11 @@ export function ZiggyLogo({ size = 160, className = '', withBlob = false }: Zigg
       aria-label="Ziggy"
     >
       <defs>
-        <radialGradient id="zl-blob" cx="50%" cy="45%" r="60%">
+        <radialGradient id={`${uid}-blob`} cx="50%" cy="45%" r="60%">
           <stop offset="0%" stopColor="#FFD9A0" />
           <stop offset="100%" stopColor="#F9BE7C" />
         </radialGradient>
-        <filter id="zl-soft" x="-20%" y="-20%" width="140%" height="140%">
+        <filter id={`${uid}-soft`} x="-20%" y="-20%" width="140%" height="140%">
           <feDropShadow dx="0" dy="2" stdDeviation="2.5" floodColor="#8A5A2B" floodOpacity="0.18" />
         </filter>
       </defs>
@@ -42,7 +46,7 @@ export function ZiggyLogo({ size = 160, className = '', withBlob = false }: Zigg
       {withBlob && (
         <>
           <ellipse cx="138" cy="80" rx="134" ry="72" fill="#FBC9C4" opacity="0.55" />
-          <ellipse cx="138" cy="70" rx="122" ry="60" fill="url(#zl-blob)" />
+          <ellipse cx="138" cy="70" rx="122" ry="60" fill={`url(#${uid}-blob)`} />
         </>
       )}
 
@@ -51,7 +55,7 @@ export function ZiggyLogo({ size = 160, className = '', withBlob = false }: Zigg
         fontSize="76"
         fontWeight="900"
         textAnchor="middle"
-        filter="url(#zl-soft)"
+        filter={`url(#${uid}-soft)`}
       >
         {LETTERS.map((l, i) => {
           const x = l.x;

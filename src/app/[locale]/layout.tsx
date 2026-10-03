@@ -10,6 +10,9 @@ import { Footer } from '@/components/layout/Footer';
 import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
+import { MotionProvider } from '@/components/ui/MotionProvider';
+import { RewardCeremony } from '@/components/rewards/RewardCeremony';
+import { ZiggyIntro } from '@/components/ziggy/ZiggyIntro';
 import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
 import '../globals.css';
@@ -137,20 +140,24 @@ export default async function LocaleLayout({
       </head>
       <body className="min-h-screen bg-bg text-text-body antialiased">
         <script dangerouslySetInnerHTML={{ __html: `
-  (function(){try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()
+  (function(){var d=document.documentElement;d.classList.add('js');try{if(!sessionStorage.getItem('ziggy:intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.dataset.intro='1'}}catch(e){}try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()
 `}} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <MotionProvider>
           <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-green focus:text-white focus:rounded-lg">Skip to content</a>
+          <ZiggyIntro />
           <ScrollProgress />
           <Navbar />
           <main id="main-content">{children}</main>
           <Footer />
           <BackToTop />
           <CookieConsent />
+          <RewardCeremony />
+          </MotionProvider>
         </NextIntlClientProvider>
       </body>
     </html>

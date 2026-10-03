@@ -5,6 +5,7 @@ import { Bot, ShieldCheck, Brain, Globe, Trophy, BookOpen, Heart, type LucideIco
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { MascotCutout } from '@/components/ziggy/Mascot';
+import { Spotlight } from '@/components/ui/motion-primitives';
 
 interface Feature {
   icon: LucideIcon;
@@ -43,8 +44,9 @@ export function FeaturesSection() {
             const wide = i === features.length - 1;
             return (
               <ScrollReveal key={f.title} delay={i * 70} variant="fade-up" className={`${f.span} ${hero || wide ? 'sm:col-span-2' : ''}`}>
-                <article
-                  className={`group relative h-full overflow-hidden rounded-3xl border p-7 sm:p-8 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(26,26,46,0.25)] ${
+                <Spotlight
+                  color={f.color}
+                  className={`group h-full overflow-hidden rounded-3xl border p-7 sm:p-8 lift hover:shadow-[0_24px_50px_-24px_rgba(26,26,46,0.25)] ${
                     wide ? 'flex flex-col sm:flex-row sm:items-center gap-6' : ''
                   }`}
                   style={{
@@ -71,7 +73,7 @@ export function FeaturesSection() {
                       <MascotCutout pose="wave" width={208} />
                     </div>
                   )}
-                </article>
+                </Spotlight>
               </ScrollReveal>
             );
           })}

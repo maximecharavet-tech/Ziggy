@@ -178,7 +178,9 @@
     "terms": "利用規約",
     "cookies": "Cookieポリシー",
     "gdpr": "GDPR",
-    "copyright": "© 2026 Ziggy Technologies SAS. All rights reserved."
+    "copyright": "© 2026 Ziggy Technologies SAS. All rights reserved.",
+    "made_with": "子どもたちへ",
+    "for_kids": "をこめて"
   },
   "agents": {
     "badge": "チーム",
@@ -584,5 +586,103 @@
     "text": "広告も追跡もありません。ジギーが保存するのは動作に必要なものだけ：ログイン、設定（音・テーマ）、学習の進み具合です。",
     "ok": "OK",
     "more": "くわしく見る"
+  },
+  "chat": {
+    "nap": "{name}はちょっとお昼寝中…すぐにもう一度ためしてね！⭐",
+    "thinking": "{name}がかんがえ中",
+    "safety": "保護されたメッセージ",
+    "send": "送る",
+    "ask": "{name}にメッセージ…"
+  },
+  "voice": {
+    "listen": "きく",
+    "stop": "とめる",
+    "auto_on": "声：オン",
+    "auto_off": "声：オフ",
+    "mic_start": "ジギーと話す",
+    "mic_stop": "おわり"
+  },
+  "rewards": {
+    "level_up": "レベル{level}になったよ",
+    "level_short": "レベル{level}",
+    "new_badge": "あたらしいバッジ",
+    "level_desc": "すごいスピードで成長してるね。ジギーはとってもほこらしいよ！",
+    "next": "つぎへ",
+    "ok": "やったー！",
+    "max_level": "最高レベル：きみはレジェンドだ！",
+    "to_next": "つぎのレベルまであと{xp} XP",
+    "badges_title": "わたしのバッジ",
+    "levels": {
+      "curious": "ちいさな好奇心",
+      "explorer": "探検家",
+      "inventor": "発明家",
+      "coder": "プログラマー",
+      "genius": "ちいさな天才",
+      "legend": "ハイパーレジェンド"
+    },
+    "badges": {
+      "first_game": {
+        "name": "発進",
+        "desc": "はじめてゲームをあそぶ"
+      },
+      "three_stars": {
+        "name": "三つ星",
+        "desc": "星3つでゲームをクリア"
+      },
+      "explorer": {
+        "name": "探検家",
+        "desc": "4つのちがうゲームをためす"
+      },
+      "star_collector": {
+        "name": "コレクター",
+        "desc": "星を15こあつめる"
+      },
+      "brave": {
+        "name": "がんばりや",
+        "desc": "おなじゲームを5回あそぶ"
+      },
+      "marathon": {
+        "name": "マラソン",
+        "desc": "25回あそぶ"
+      },
+      "all_games": {
+        "name": "旅人",
+        "desc": "ぜんぶのゲームをあそぶ"
+      },
+      "perfectionist": {
+        "name": "パーフェクト",
+        "desc": "ぜんぶ星3つ（4ゲーム以上）"
+      }
+    }
+  },
+  "hyper": {
+    "eyebrow": "Powered by",
+    "title": "Hyper™ AI Engine",
+    "subtitle": "ジギーに声と頭脳と安全を与えるエンジン。お子さまにもたらすものを具体的にご紹介します。",
+    "pillars": {
+      "voice": {
+        "title": "ジギーは話して、きく",
+        "desc": "答えをあたたかい声で読み上げ、お子さまはマイクで話しかけられます。まだ文字をあまり読めない小さな子にぴったりです。"
+      },
+      "safety": {
+        "title": "子どものためのフィルター",
+        "desc": "住所・電話番号・メール・パスワードはAIに届く前にブロック。答えからリンクを取り除き、デリケートな話題は信頼できる大人につなぎます。"
+      },
+      "brain": {
+        "title": "眠らない頭脳",
+        "desc": "複数のAIエンジンが交代でこたえるので、ひとつが止まってもジギーは答えます。"
+      },
+      "motion": {
+        "title": "ていねいなアニメーション",
+        "desc": "短く正確な動き。端末の「視差効果を減らす」設定にしたがい、画面外では止まります。"
+      },
+      "privacy": {
+        "title": "データはヨーロッパ、広告ゼロ",
+        "desc": "アカウントはヨーロッパで管理。データ販売・広告・トラッキングは一切ありません。"
+      }
+    },
+    "ziggy_title": "すべては、ひとりの友だちのために",
+    "ziggy_text": "エンジンは舞台裏に。ステージにいるのは、ジギーとお子さまだけです。",
+    "cta": "ジギーと話す"
   }
 }

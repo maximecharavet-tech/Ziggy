@@ -1,68 +1,64 @@
 'use client';
 
-import { useRef, useEffect, useState, ReactNode } from 'react';
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 
 type Variant = 'fade-up' | 'fade-left' | 'fade-right' | 'zoom' | 'fade';
 
 interface ScrollRevealProps {
   children: ReactNode;
   variant?: Variant;
+  /** Delay in milliseconds. */
   delay?: number;
   className?: string;
 }
 
-const variantStyles: Record<Variant, { hidden: string; visible: string }> = {
-  'fade-up': {
-    hidden: 'opacity-0 translate-y-8',
-    visible: 'opacity-100 translate-y-0',
-  },
-  'fade-left': {
-    hidden: 'opacity-0 -translate-x-8',
-    visible: 'opacity-100 translate-x-0',
-  },
-  'fade-right': {
-    hidden: 'opacity-0 translate-x-8',
-    visible: 'opacity-100 translate-x-0',
-  },
-  zoom: {
-    hidden: 'opacity-0 scale-90',
-    visible: 'opacity-100 scale-100',
-  },
-  fade: {
-    hidden: 'opacity-0',
-    visible: 'opacity-100',
-  },
-};
+/*
+ * One IntersectionObserver for the whole page and a CSS transition per block,
+ * instead of a React state and an observer per block: same look, a fraction of
+ * the main-thread work on a long page. A block reveals once it is 10 % in.
+ */
+let observer: IntersectionObserver | null = null;
+
+function shared(): IntersectionObserver | null {
+  if (typeof IntersectionObserver === 'undefined') return null;
+  if (observer) return observer;
+  observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (!entry.isIntersecting) continue;
+        const el = entry.target as HTMLElement;
+        el.classList.add('is-in');
+        observer?.unobserve(el);
+        // Hand the layer back to the compositor once the move is done.
+        window.setTimeout(() => el.classList.add('is-settled'), 900);
+      }
+    },
+    { rootMargin: '0px 0px -10% 0px', threshold: 0.01 }
+  );
+  return observer;
+}
 
 export function ScrollReveal({ children, variant = 'fade-up', delay = 0, className = '' }: ScrollRevealProps) {
   const ref = useRef<HTMLDivElement>(null);
-  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setVisible(true);
-          observer.unobserve(el);
-        }
-      },
-      { threshold: 0.15, rootMargin: '0px 0px -40px 0px' }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
+    const io = shared();
+    if (!io) {
+      el.classList.add('is-in', 'is-settled');
+      return;
+    }
+    io.observe(el);
+    return () => io.unobserve(el);
   }, []);
-
-  const styles = variantStyles[variant];
 
   return (
     <div
       ref={ref}
-      className={`transition-all duration-700 ease-out ${visible ? styles.visible : styles.hidden} ${className}`}
-      style={{ transitionDelay: `${delay}ms` }}
+      data-reveal={variant}
+      className={`reveal ${className}`}
+      style={{ '--reveal-delay': `${delay}ms` } as CSSProperties}
     >
       {children}
     </div>

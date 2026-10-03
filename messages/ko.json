@@ -178,7 +178,9 @@
     "terms": "이용약관",
     "cookies": "쿠키 정책",
     "gdpr": "GDPR",
-    "copyright": "© 2026 Ziggy Technologies SAS. All rights reserved."
+    "copyright": "© 2026 Ziggy Technologies SAS. All rights reserved.",
+    "made_with": "아이들을 위해",
+    "for_kids": "정성껏 만들었어요"
   },
   "agents": {
     "badge": "팀",
@@ -584,5 +586,103 @@
     "text": "광고도, 추적도 없어요. 지기는 작동에 꼭 필요한 것만 저장해요: 로그인, 설정(소리, 테마), 학습 진행 상황.",
     "ok": "알겠어요",
     "more": "자세히 보기"
+  },
+  "chat": {
+    "nap": "{name}가 잠깐 낮잠 중이에요… 조금 있다가 다시 해 봐요! ⭐",
+    "thinking": "{name}가 생각 중",
+    "safety": "보호된 메시지",
+    "send": "보내기",
+    "ask": "{name}에게 쓰기…"
+  },
+  "voice": {
+    "listen": "듣기",
+    "stop": "멈추기",
+    "auto_on": "목소리: 켜짐",
+    "auto_off": "목소리: 꺼짐",
+    "mic_start": "지기와 말하기",
+    "mic_stop": "다 했어요"
+  },
+  "rewards": {
+    "level_up": "레벨 {level} 달성",
+    "level_short": "레벨 {level}",
+    "new_badge": "새 배지",
+    "level_desc": "정말 빨리 배우고 있어요. 지기가 아주 자랑스러워해요!",
+    "next": "다음",
+    "ok": "최고!",
+    "max_level": "최고 레벨: 너는 전설이야!",
+    "to_next": "다음 레벨까지 {xp} XP",
+    "badges_title": "내 배지",
+    "levels": {
+      "curious": "꼬마 호기심쟁이",
+      "explorer": "탐험가",
+      "inventor": "발명가",
+      "coder": "코더",
+      "genius": "꼬마 천재",
+      "legend": "하이퍼 전설"
+    },
+    "badges": {
+      "first_game": {
+        "name": "이륙",
+        "desc": "첫 게임 하기"
+      },
+      "three_stars": {
+        "name": "별 세 개",
+        "desc": "별 3개로 게임 깨기"
+      },
+      "explorer": {
+        "name": "탐험가",
+        "desc": "다른 게임 4개 해 보기"
+      },
+      "star_collector": {
+        "name": "수집가",
+        "desc": "별 15개 모으기"
+      },
+      "brave": {
+        "name": "끈기왕",
+        "desc": "같은 게임 5번 하기"
+      },
+      "marathon": {
+        "name": "마라톤",
+        "desc": "게임 25판 하기"
+      },
+      "all_games": {
+        "name": "여행가",
+        "desc": "모든 게임 해 보기"
+      },
+      "perfectionist": {
+        "name": "완벽",
+        "desc": "모두 별 3개 (게임 4개 이상)"
+      }
+    }
+  },
+  "hyper": {
+    "eyebrow": "Powered by",
+    "title": "Hyper™ AI Engine",
+    "subtitle": "지기에게 목소리와 두뇌, 안전장치를 주는 엔진. 아이에게 실제로 무엇을 주는지 소개합니다.",
+    "pillars": {
+      "voice": {
+        "title": "지기는 말하고 들어요",
+        "desc": "대답을 따뜻한 목소리로 읽어 주고, 아이는 마이크로 말을 걸 수 있어요. 아직 글을 잘 못 읽는 어린아이에게 딱이에요."
+      },
+      "safety": {
+        "title": "아이를 위한 필터",
+        "desc": "주소, 전화번호, 이메일, 비밀번호는 AI에 닿기 전에 차단되고, 답변의 링크는 지워지며, 민감한 주제는 믿을 수 있는 어른에게 안내해요."
+      },
+      "brain": {
+        "title": "잠들지 않는 두뇌",
+        "desc": "여러 AI 엔진이 서로를 대신해요. 하나가 멈춰도 지기는 대답해요."
+      },
+      "motion": {
+        "title": "정성 들인 애니메이션",
+        "desc": "기기의 ‘동작 줄이기’ 설정을 따르고 화면 밖에서는 멈추는, 짧고 정확한 움직임."
+      },
+      "privacy": {
+        "title": "데이터는 유럽에, 광고는 0",
+        "desc": "계정은 유럽에 보관되고, 판매·광고·추적은 전혀 없어요."
+      }
+    },
+    "ziggy_title": "이 모든 것은 단 한 친구를 위해",
+    "ziggy_text": "엔진은 무대 뒤에 있어요. 무대 위에는 지기와 아이뿐이에요.",
+    "cta": "지기와 말하기"
   }
 }

@@ -178,7 +178,9 @@
     "terms": "Condiciones de uso",
     "cookies": "Política de cookies",
     "gdpr": "GDPR",
-    "copyright": "© 2026 Ziggy Technologies SAS. Todos los derechos reservados."
+    "copyright": "© 2026 Ziggy Technologies SAS. Todos los derechos reservados.",
+    "made_with": "Hecho con",
+    "for_kids": "para los niños"
   },
   "agents": {
     "badge": "El equipo",
@@ -584,5 +586,103 @@
     "text": "Sin publicidad ni rastreo. Ziggy solo guarda lo necesario para funcionar: tu sesión, tus ajustes (sonido, tema) y tu progreso.",
     "ok": "De acuerdo",
     "more": "Saber más"
+  },
+  "chat": {
+    "nap": "{name} está echando una siestecita… ¡Inténtalo enseguida! ⭐",
+    "thinking": "{name} está pensando",
+    "safety": "Mensaje protegido",
+    "send": "Enviar",
+    "ask": "Escribe a {name}…"
+  },
+  "voice": {
+    "listen": "Escuchar",
+    "stop": "Parar",
+    "auto_on": "Voz: sí",
+    "auto_off": "Voz: no",
+    "mic_start": "Hablar con Ziggy",
+    "mic_stop": "Ya terminé"
+  },
+  "rewards": {
+    "level_up": "Nivel {level} alcanzado",
+    "level_short": "Nivel {level}",
+    "new_badge": "Nueva insignia",
+    "level_desc": "Aprendes a toda velocidad. ¡Ziggy está muy orgulloso de ti!",
+    "next": "Siguiente",
+    "ok": "¡Genial!",
+    "max_level": "Nivel máximo: ¡eres una leyenda!",
+    "to_next": "Faltan {xp} XP para el siguiente nivel",
+    "badges_title": "Mis insignias",
+    "levels": {
+      "curious": "Pequeño curioso",
+      "explorer": "Explorador",
+      "inventor": "Inventor",
+      "coder": "Programador",
+      "genius": "Pequeño genio",
+      "legend": "Leyenda Hyper"
+    },
+    "badges": {
+      "first_game": {
+        "name": "Despegue",
+        "desc": "Jugar tu primera partida"
+      },
+      "three_stars": {
+        "name": "Tres estrellas",
+        "desc": "Ganar un juego con 3 estrellas"
+      },
+      "explorer": {
+        "name": "Explorador",
+        "desc": "Probar 4 juegos distintos"
+      },
+      "star_collector": {
+        "name": "Coleccionista",
+        "desc": "Reunir 15 estrellas"
+      },
+      "brave": {
+        "name": "Constante",
+        "desc": "Jugar 5 veces al mismo juego"
+      },
+      "marathon": {
+        "name": "Maratón",
+        "desc": "Jugar 25 partidas"
+      },
+      "all_games": {
+        "name": "Gran viajero",
+        "desc": "Jugar a todos los juegos"
+      },
+      "perfectionist": {
+        "name": "Perfección",
+        "desc": "3 estrellas en todo (al menos 4 juegos)"
+      }
+    }
+  },
+  "hyper": {
+    "eyebrow": "Impulsado por",
+    "title": "Hyper™ AI Engine",
+    "subtitle": "El motor que da a Ziggy su voz, su cerebro y sus protecciones. Esto es, en concreto, lo que aporta a tu hijo.",
+    "pillars": {
+      "voice": {
+        "title": "Ziggy habla y escucha",
+        "desc": "Sus respuestas se leen en voz alta con una voz cálida, y el niño puede hablarle por el micrófono: ideal para los más pequeños, que aún leen poco."
+      },
+      "safety": {
+        "title": "Un filtro pensado para niños",
+        "desc": "Direcciones, teléfonos, correos y contraseñas se bloquean antes de llegar a la IA, los enlaces se quitan de las respuestas y los temas delicados remiten a un adulto de confianza."
+      },
+      "brain": {
+        "title": "Un cerebro que no se duerme",
+        "desc": "Varios motores de IA se relevan: si uno no está disponible, Ziggy responde igualmente."
+      },
+      "motion": {
+        "title": "Animaciones cuidadas",
+        "desc": "Movimientos breves y precisos que respetan el ajuste «reducir movimiento» del dispositivo y se pausan fuera de pantalla."
+      },
+      "privacy": {
+        "title": "Datos en Europa, cero anuncios",
+        "desc": "Las cuentas se alojan en Europa, no se vende nada, sin publicidad ni rastreo."
+      }
+    },
+    "ziggy_title": "Todo esto, para un solo amigo",
+    "ziggy_text": "El motor se queda entre bastidores. En el escenario solo están Ziggy y tu hijo.",
+    "cta": "Hablar con Ziggy"
   }
 }

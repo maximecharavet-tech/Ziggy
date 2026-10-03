@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
+import { SpeakButton } from '@/components/ziggy/VoiceControls';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Star, ArrowRight, RotateCcw, Sparkles, Gamepad2, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -56,6 +57,7 @@ type Phase = 'intro' | 'play' | 'result';
 
 export function ExpressTrial({ compact = false }: { compact?: boolean }) {
   const t = useTranslations('trial');
+  const locale = useLocale();
   const { user } = useProfile();
 
   const [phase, setPhase] = useState<Phase>('intro');
@@ -165,7 +167,12 @@ export function ExpressTrial({ compact = false }: { compact?: boolean }) {
               </div>
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-bold text-text-body text-center text-balance">{t(q.promptKey)}</h3>
+            <h3 className="text-2xl sm:text-3xl font-bold text-text-body text-center text-balance">
+              {t(q.promptKey)}
+              <span className="ms-2 inline-flex align-middle">
+                <SpeakButton id={`trial-${q.promptKey}`} text={t(q.promptKey)} locale={locale} color={q.color} />
+              </span>
+            </h3>
             <div
               className="mt-5 mb-7 mx-auto rounded-2xl py-5 px-4 text-center text-4xl sm:text-5xl tracking-wide"
               style={{ backgroundColor: `color-mix(in srgb, ${q.color} 10%, transparent)` }}

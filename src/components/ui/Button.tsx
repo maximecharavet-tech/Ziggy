@@ -1,5 +1,6 @@
-import { forwardRef, ButtonHTMLAttributes, ComponentProps } from 'react';
+import { forwardRef, ButtonHTMLAttributes, ComponentProps, type ReactNode } from 'react';
 import { Link } from '@/i18n/navigation';
+import { Magnetic } from './motion-primitives';
 
 type Variant = 'primary' | 'secondary' | 'ghost';
 type Size = 'sm' | 'md' | 'lg';
@@ -12,6 +13,8 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   size?: Size;
   /** When present the button renders as a localized `Link` instead of a `<button>`. */
   href?: LinkHref;
+  /** Pulled toward the cursor (fine pointers only). For the few big calls to action. */
+  magnetic?: boolean;
 }
 
 const variantClasses: Record<Variant, string> = {
@@ -27,16 +30,17 @@ const sizeClasses: Record<Size, string> = {
 };
 
 const baseClasses =
-  'inline-flex items-center justify-center rounded-full font-bold transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
+  'inline-flex items-center justify-center rounded-full font-bold transition-[box-shadow,background-color,border-color,color,transform] duration-200 ease-[cubic-bezier(0.23,1,0.32,1)] active:scale-[0.97] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed';
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ variant = 'primary', size = 'md', className = '', children, href, ...props }, ref) => {
+  ({ variant = 'primary', size = 'md', className = '', children, href, magnetic = false, ...props }, ref) => {
     const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${className}`;
+    const wrap = (node: ReactNode) => (magnetic ? <Magnetic>{node}</Magnetic> : node);
 
     if (href !== undefined) {
       // Only forward props that make sense on an anchor.
       const { onClick, 'aria-label': ariaLabel, id, title, tabIndex } = props;
-      return (
+      return wrap(
         <Link
           href={href}
           className={classes}
@@ -51,7 +55,7 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
       );
     }
 
-    return (
+    return wrap(
       <button ref={ref} className={classes} {...props}>
         {children}
       </button>

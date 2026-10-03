@@ -178,7 +178,9 @@
     "terms": "Conditions d'utilisation",
     "cookies": "Politique de cookies",
     "gdpr": "GDPR",
-    "copyright": "© 2026 Ziggy Technologies SAS. Tous droits réservés."
+    "copyright": "© 2026 Ziggy Technologies SAS. Tous droits réservés.",
+    "made_with": "Fait avec",
+    "for_kids": "pour les enfants"
   },
   "agents": {
     "badge": "L'équipe Ziggy",
@@ -584,5 +586,103 @@
     "text": "Aucune publicité, aucun traçage. Ziggy garde seulement ce qui sert à fonctionner : ta connexion, tes réglages (son, thème) et ta progression.",
     "ok": "D’accord",
     "more": "En savoir plus"
+  },
+  "chat": {
+    "nap": "{name} fait une petite sieste… Réessaie dans un instant ! ⭐",
+    "thinking": "{name} réfléchit",
+    "safety": "Message protégé",
+    "send": "Envoyer",
+    "ask": "Écris à {name}…"
+  },
+  "voice": {
+    "listen": "Écouter",
+    "stop": "Arrêter",
+    "auto_on": "Voix : oui",
+    "auto_off": "Voix : non",
+    "mic_start": "Parler à Ziggy",
+    "mic_stop": "J’ai fini"
+  },
+  "rewards": {
+    "level_up": "Niveau {level} atteint",
+    "level_short": "Niveau {level}",
+    "new_badge": "Nouveau badge",
+    "level_desc": "Tu progresses à toute vitesse. Ziggy est super fier de toi !",
+    "next": "Suivant",
+    "ok": "Super !",
+    "max_level": "Niveau maximum : tu es une légende !",
+    "to_next": "Encore {xp} XP pour le niveau suivant",
+    "badges_title": "Mes badges",
+    "levels": {
+      "curious": "Petit curieux",
+      "explorer": "Explorateur",
+      "inventor": "Inventeur",
+      "coder": "Codeur",
+      "genius": "Petit génie",
+      "legend": "Légende Hyper"
+    },
+    "badges": {
+      "first_game": {
+        "name": "Décollage",
+        "desc": "Jouer une première partie"
+      },
+      "three_stars": {
+        "name": "Trois étoiles",
+        "desc": "Réussir un jeu avec 3 étoiles"
+      },
+      "explorer": {
+        "name": "Explorateur",
+        "desc": "Essayer 4 jeux différents"
+      },
+      "star_collector": {
+        "name": "Collectionneur",
+        "desc": "Réunir 15 étoiles"
+      },
+      "brave": {
+        "name": "Persévérant",
+        "desc": "Rejouer 5 fois au même jeu"
+      },
+      "marathon": {
+        "name": "Marathon",
+        "desc": "Jouer 25 parties"
+      },
+      "all_games": {
+        "name": "Grand voyageur",
+        "desc": "Jouer à tous les jeux"
+      },
+      "perfectionist": {
+        "name": "Perfection",
+        "desc": "3 étoiles partout (au moins 4 jeux)"
+      }
+    }
+  },
+  "hyper": {
+    "eyebrow": "Propulsé par",
+    "title": "Hyper™ AI Engine",
+    "subtitle": "Le moteur qui donne à Ziggy sa voix, son cerveau et ses garde-fous. Voici, concrètement, ce qu’il apporte à votre enfant.",
+    "pillars": {
+      "voice": {
+        "title": "Ziggy parle et écoute",
+        "desc": "Ses réponses sont lues à voix haute avec une voix chaleureuse, et l’enfant peut lui parler au micro : idéal pour les plus jeunes qui lisent encore peu."
+      },
+      "safety": {
+        "title": "Un filtre pensé pour les enfants",
+        "desc": "Adresses, téléphones, e-mails et mots de passe sont bloqués avant d’atteindre l’IA, les liens retirés des réponses, et les sujets sensibles renvoient vers un adulte de confiance."
+      },
+      "brain": {
+        "title": "Un cerveau qui ne s’endort pas",
+        "desc": "Plusieurs moteurs d’IA prennent le relais l’un de l’autre : si l’un est indisponible, Ziggy répond quand même."
+      },
+      "motion": {
+        "title": "Des animations soignées",
+        "desc": "Des mouvements courts et précis, qui suivent le réglage « réduire les animations » de l’appareil et se mettent en pause hors de l’écran."
+      },
+      "privacy": {
+        "title": "Données en Europe, zéro pub",
+        "desc": "Les comptes sont hébergés en Europe, rien n’est revendu, aucune publicité et aucun traçage."
+      }
+    },
+    "ziggy_title": "Tout ça, au service d’un seul copain",
+    "ziggy_text": "Le moteur reste en coulisses. Sur scène, il n’y a que Ziggy et votre enfant.",
+    "cta": "Parler à Ziggy"
   }
 }

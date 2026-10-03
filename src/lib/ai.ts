@@ -49,27 +49,54 @@ function normalise(messages: ChatMessage[]) {
   return out;
 }
 
+/** Newest first; an unknown or retired model (404) falls through to the next. */
+const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite', 'gemini-2.0-flash'];
+
+/** Google's own filters, at their strictest: this is a children's product. */
+const GEMINI_SAFETY = [
+  'HARM_CATEGORY_HARASSMENT',
+  'HARM_CATEGORY_HATE_SPEECH',
+  'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+  'HARM_CATEGORY_DANGEROUS_CONTENT',
+].map((category) => ({ category, threshold: 'BLOCK_LOW_AND_ABOVE' }));
+
 async function callGemini(key: string, system: string, messages: ChatMessage[]) {
-  const res = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
-    {
+  let last = '';
+  for (const model of GEMINI_MODELS) {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'x-goog-api-key': key },
       body: JSON.stringify({
         system_instruction: { parts: [{ text: system }] },
         contents: messages.map((m) => ({
           role: m.role === 'assistant' ? 'model' : 'user',
           parts: [{ text: m.content }],
         })),
-        generationConfig: { maxOutputTokens: MAX_TOKENS, temperature: 0.8 },
+        safetySettings: GEMINI_SAFETY,
+        generationConfig: {
+          maxOutputTokens: MAX_TOKENS,
+          temperature: 0.8,
+          // Short, chatty answers: no hidden reasoning tokens on 2.5 models.
+          ...(model.startsWith('gemini-2.5') ? { thinkingConfig: { thinkingBudget: 0 } } : {}),
+        },
       }),
+      signal: AbortSignal.timeout(20_000),
+    });
+    if (res.status === 404 || res.status === 400) {
+      last = `Gemini ${model} ${res.status}`;
+      continue;
     }
-  );
-
-  if (!res.ok) throw new Error(`Gemini ${res.status}: ${await res.text()}`);
-  const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text ?? '';
+    if (!res.ok) throw new Error(`Gemini ${res.status}: ${await res.text()}`);
+    const data = await res.json();
+    const candidate = data.candidates?.[0];
+    if (candidate?.finishReason === 'SAFETY' || data.promptFeedback?.blockReason) return BLOCKED;
+    return candidate?.content?.parts?.map((p: { text?: string }) => p.text ?? '').join('') ?? '';
+  }
+  throw new Error(last || 'Gemini: no model answered');
 }
+
+/** Returned when a provider's own safety filter stops the answer. */
+export const BLOCKED = '\u0000blocked';
 
 async function callOpenAICompatible(
   url: string,
@@ -106,7 +133,7 @@ async function callAnthropic(key: string, system: string, messages: ChatMessage[
       'anthropic-version': '2023-06-01',
     },
     body: JSON.stringify({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-haiku-4-5-20251001',
       max_tokens: MAX_TOKENS,
       system,
       messages,
@@ -119,27 +146,23 @@ async function callAnthropic(key: string, system: string, messages: ChatMessage[
   return block?.type === 'text' ? block.text : '';
 }
 
-/** Which provider is configured, for logging and the health check. */
-export function activeProvider(): 'gemini' | 'groq' | 'anthropic' | null {
-  if (process.env.GEMINI_API_KEY) return 'gemini';
-  if (process.env.GROQ_API_KEY) return 'groq';
-  if (process.env.ANTHROPIC_API_KEY) return 'anthropic';
-  return null;
+type Provider = 'gemini' | 'groq' | 'anthropic';
+
+/** Every configured provider, in order of preference. */
+export function configuredProviders(): Provider[] {
+  const out: Provider[] = [];
+  if (process.env.GEMINI_API_KEY) out.push('gemini');
+  if (process.env.GROQ_API_KEY) out.push('groq');
+  if (process.env.ANTHROPIC_API_KEY) out.push('anthropic');
+  return out;
 }
 
-export async function chat(
-  messages: ChatMessage[],
-  locale: string,
-  systemPrompt?: string
-): Promise<string> {
-  const provider = activeProvider();
-  if (!provider) throw new NoProviderError();
+/** Which provider answers first, for logging and the health check. */
+export function activeProvider(): Provider | null {
+  return configuredProviders()[0] ?? null;
+}
 
-  const localeHint =
-    locale !== 'en' ? `\nThe child's language is: ${locale}. Always respond in this language.` : '';
-  const system = (systemPrompt || SYSTEM_PROMPT) + localeHint;
-  const history = normalise(messages);
-
+function callProvider(provider: Provider, system: string, history: ChatMessage[]) {
   switch (provider) {
     case 'gemini':
       return callGemini(process.env.GEMINI_API_KEY!, system, history);
@@ -154,4 +177,30 @@ export async function chat(
     case 'anthropic':
       return callAnthropic(process.env.ANTHROPIC_API_KEY!, system, history);
   }
+}
+
+/**
+ * Ask each configured provider in turn: a quota or an outage on one of them
+ * should not put Ziggy to sleep when another key is there.
+ */
+export async function chat(messages: ChatMessage[], locale: string, systemPrompt?: string): Promise<string> {
+  const providers = configuredProviders();
+  if (!providers.length) throw new NoProviderError();
+
+  const localeHint =
+    locale !== 'en' ? `\nThe child's language is: ${locale}. Always respond in this language.` : '';
+  const system = (systemPrompt || SYSTEM_PROMPT) + localeHint;
+  const history = normalise(messages);
+
+  let lastError: unknown;
+  for (const provider of providers) {
+    try {
+      const text = (await callProvider(provider, system, history)).trim();
+      if (text) return text;
+    } catch (error) {
+      lastError = error;
+      console.warn(`[chat] ${provider} failed:`, error instanceof Error ? error.message.slice(0, 200) : error);
+    }
+  }
+  throw lastError ?? new Error('No provider answered');
 }

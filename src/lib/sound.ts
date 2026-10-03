@@ -38,6 +38,21 @@ const VOICES: Record<string, Note[]> = {
     { freq: 784, start: 0.24, dur: 0.13 },
     { freq: 1047, start: 0.36, dur: 0.3 },
   ],
+  // Reward ceremony: a quick rising sweep, then a struck bell (inharmonic
+  // partials, as in AuthenticSeal's seal), then a bright sparkle on top.
+  reward: [
+    { freq: 392, start: 0, dur: 0.07, gain: 0.08, type: 'triangle' },
+    { freq: 523, start: 0.06, dur: 0.07, gain: 0.09, type: 'triangle' },
+    { freq: 659, start: 0.12, dur: 0.07, gain: 0.1, type: 'triangle' },
+    { freq: 784, start: 0.18, dur: 0.08, gain: 0.11, type: 'triangle' },
+    { freq: 523, start: 0.3, dur: 1.6, gain: 0.2 },
+    { freq: 1051, start: 0.3, dur: 1.2, gain: 0.08 },
+    { freq: 1454, start: 0.3, dur: 0.9, gain: 0.05 },
+    { freq: 2181, start: 0.3, dur: 0.6, gain: 0.035 },
+    { freq: 2845, start: 0.3, dur: 0.45, gain: 0.02 },
+    { freq: 1568, start: 0.62, dur: 0.12, gain: 0.07 },
+    { freq: 2093, start: 0.7, dur: 0.22, gain: 0.06 },
+  ],
   // Ziggy's hello
   pop: [
     { freq: 440, start: 0, dur: 0.09, type: 'triangle' },

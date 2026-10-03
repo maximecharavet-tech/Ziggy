@@ -178,7 +178,9 @@
     "terms": "Nutzungsbedingungen",
     "cookies": "Cookie-Richtlinie",
     "gdpr": "GDPR",
-    "copyright": "© 2026 Ziggy Technologies SAS. Alle Rechte vorbehalten."
+    "copyright": "© 2026 Ziggy Technologies SAS. Alle Rechte vorbehalten.",
+    "made_with": "Gemacht mit",
+    "for_kids": "für Kinder"
   },
   "agents": {
     "badge": "Das Team",
@@ -584,5 +586,103 @@
     "text": "Keine Werbung, kein Tracking. Ziggy speichert nur, was zum Funktionieren nötig ist: deine Anmeldung, deine Einstellungen (Ton, Design) und deinen Fortschritt.",
     "ok": "Alles klar",
     "more": "Mehr erfahren"
+  },
+  "chat": {
+    "nap": "{name} macht ein kleines Nickerchen… Versuch es gleich noch mal! ⭐",
+    "thinking": "{name} denkt nach",
+    "safety": "Geschützte Nachricht",
+    "send": "Senden",
+    "ask": "Schreib {name}…"
+  },
+  "voice": {
+    "listen": "Anhören",
+    "stop": "Stopp",
+    "auto_on": "Stimme: an",
+    "auto_off": "Stimme: aus",
+    "mic_start": "Mit Ziggy sprechen",
+    "mic_stop": "Fertig"
+  },
+  "rewards": {
+    "level_up": "Level {level} erreicht",
+    "level_short": "Level {level}",
+    "new_badge": "Neues Abzeichen",
+    "level_desc": "Du lernst superschnell. Ziggy ist mächtig stolz auf dich!",
+    "next": "Weiter",
+    "ok": "Super!",
+    "max_level": "Höchstes Level: Du bist eine Legende!",
+    "to_next": "Noch {xp} XP bis zum nächsten Level",
+    "badges_title": "Meine Abzeichen",
+    "levels": {
+      "curious": "Kleiner Neugieriger",
+      "explorer": "Entdecker",
+      "inventor": "Erfinder",
+      "coder": "Programmierer",
+      "genius": "Kleines Genie",
+      "legend": "Hyper-Legende"
+    },
+    "badges": {
+      "first_game": {
+        "name": "Abheben",
+        "desc": "Dein erstes Spiel spielen"
+      },
+      "three_stars": {
+        "name": "Drei Sterne",
+        "desc": "Ein Spiel mit 3 Sternen schaffen"
+      },
+      "explorer": {
+        "name": "Entdecker",
+        "desc": "4 verschiedene Spiele ausprobieren"
+      },
+      "star_collector": {
+        "name": "Sammler",
+        "desc": "15 Sterne sammeln"
+      },
+      "brave": {
+        "name": "Dranbleiber",
+        "desc": "Dasselbe Spiel 5-mal spielen"
+      },
+      "marathon": {
+        "name": "Marathon",
+        "desc": "25 Spiele spielen"
+      },
+      "all_games": {
+        "name": "Weltenbummler",
+        "desc": "Alle Spiele spielen"
+      },
+      "perfectionist": {
+        "name": "Perfekt",
+        "desc": "Überall 3 Sterne (mindestens 4 Spiele)"
+      }
+    }
+  },
+  "hyper": {
+    "eyebrow": "Angetrieben von",
+    "title": "Hyper™ AI Engine",
+    "subtitle": "Der Motor, der Ziggy Stimme, Verstand und Schutzschilde gibt. Das bringt er Ihrem Kind ganz konkret.",
+    "pillars": {
+      "voice": {
+        "title": "Ziggy spricht und hört zu",
+        "desc": "Seine Antworten werden mit warmer Stimme vorgelesen, und Kinder können per Mikrofon mit ihm reden – ideal für die Kleinsten, die noch wenig lesen."
+      },
+      "safety": {
+        "title": "Ein Filter für Kinder",
+        "desc": "Adressen, Telefonnummern, E-Mails und Passwörter werden blockiert, bevor sie die KI erreichen, Links werden aus Antworten entfernt, und heikle Themen verweisen an einen vertrauten Erwachsenen."
+      },
+      "brain": {
+        "title": "Ein Gehirn, das nie schläft",
+        "desc": "Mehrere KI-Motoren springen füreinander ein: Ist einer nicht erreichbar, antwortet Ziggy trotzdem."
+      },
+      "motion": {
+        "title": "Durchdachte Animationen",
+        "desc": "Kurze, präzise Bewegungen, die die Einstellung „Bewegung reduzieren“ beachten und außerhalb des Bildschirms pausieren."
+      },
+      "privacy": {
+        "title": "Daten in Europa, null Werbung",
+        "desc": "Konten liegen in Europa, nichts wird verkauft, keine Werbung, kein Tracking."
+      }
+    },
+    "ziggy_title": "All das für einen einzigen Freund",
+    "ziggy_text": "Der Motor bleibt hinter den Kulissen. Auf der Bühne stehen nur Ziggy und Ihr Kind.",
+    "cta": "Mit Ziggy sprechen"
   }
 }

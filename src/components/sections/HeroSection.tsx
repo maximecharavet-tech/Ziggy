@@ -12,12 +12,14 @@ import {
 import { useTranslations } from 'next-intl';
 import { ArrowRight, Play, Check, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
+import { Link } from '@/i18n/navigation';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
 import { StarBurst } from '@/components/ziggy/StarBurst';
 import { HyperBadge } from '@/components/ziggy/HyperBadge';
 import { ZiggyVideo } from '@/components/ziggy/ZiggyVideo';
 import { Sparkle, ZiggyAvatar } from '@/components/ziggy/Mascot';
 import { useSound } from '@/hooks/useSound';
+import { SplitWords } from '@/components/ui/motion-primitives';
 import { FILMS, FILM_ASPECT } from '@/lib/mascot';
 import type { SiteConfig } from '@/lib/site-config';
 
@@ -107,15 +109,9 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
             </span>
           </motion.div>
 
-          <motion.h1
-            variants={rise}
-            initial="hidden"
-            animate="visible"
-            custom={1}
-            className="mt-6 text-[2.6rem] leading-[1.02] sm:text-6xl xl:text-7xl font-bold text-text-body text-balance"
-          >
-            {t('title')}
-          </motion.h1>
+          <h1 className="mt-6 text-[2.6rem] leading-[1.04] sm:text-6xl xl:text-7xl font-bold text-text-body text-balance">
+            <SplitWords text={t('title')} delay={0.12} />
+          </h1>
 
           <motion.p
             variants={rise}
@@ -134,11 +130,11 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
             custom={3}
             className="mt-9 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
           >
-            <Button href="/signup" size="lg" className="group gap-2 shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
+            <Button href="/signup" size="lg" magnetic className="group gap-2 shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
               {t('cta_primary')}
               <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
             </Button>
-            <Button href="/demo" variant="secondary" size="lg" className="gap-2">
+            <Button href="/demo" variant="secondary" size="lg" magnetic className="gap-2">
               <span className="w-7 h-7 rounded-full bg-green/10 text-green flex items-center justify-center">
                 <Play size={13} className="fill-current rtl:rotate-180" />
               </span>
@@ -267,7 +263,9 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1, duration: 0.6, ease }}
           >
-            <HyperBadge />
+            <Link href="/hyper" className="press inline-flex rounded-full focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#E9C46A]/50">
+              <HyperBadge />
+            </Link>
           </motion.div>
         </div>
       </div>

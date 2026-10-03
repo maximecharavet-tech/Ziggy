@@ -1,4 +1,5 @@
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import { Heart } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
@@ -33,12 +34,15 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
             <ZiggyLogo size={132} className="mb-2" />
-            <HyperBadge variant="inline" className="mb-4" />
+            <Link href="/hyper" className="group inline-flex items-center gap-2 mb-4" aria-label="Hyper™ AI Engine">
+              <Image src="/hyper/hyper-mark.webp" alt="" width={28} height={28} className="hyper-mark rounded-md" />
+              <HyperBadge variant="inline" />
+            </Link>
             <p className="text-sm text-text-muted leading-relaxed mb-4">{t('tagline')}</p>
             <div className="flex items-center gap-1 text-xs text-text-dim">
-              <span>Made with</span>
-              <Heart size={12} className="text-pink fill-pink" />
-              <span>for kids</span>
+              <span>{t('made_with')}</span>
+              <Heart size={12} className="text-pink fill-pink animate-pulse" />
+              <span>{t('for_kids')}</span>
             </div>
           </div>
 

@@ -8,7 +8,7 @@ import type { Metadata } from 'next';
  */
 
 const CONTACT = 'contact@ziggy-ai.fr';
-const UPDATED = { fr: '26 septembre 2026', en: '26 September 2026' };
+const UPDATED = { fr: '3 octobre 2026', en: '3 October 2026' };
 
 type Section = { title: string; body: (string | string[])[] };
 
@@ -40,6 +40,8 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         title: '3. Les conversations avec Ziggy',
         body: [
           'Quand l’enfant écrit à Ziggy, son message est transmis à un fournisseur d’intelligence artificielle (actuellement Google Gemini) uniquement pour produire la réponse. Nous n’enregistrons pas ces conversations. Nous conseillons de rappeler aux enfants de ne jamais écrire d’informations personnelles dans le chat.',
+          'Un filtre de sécurité vérifie chaque message avant tout envoi : une adresse, un numéro de téléphone, un e-mail ou un mot de passe ne sont jamais transmis à l’IA, et Ziggy rappelle gentiment de ne pas les partager. Les liens, e-mails et numéros sont aussi retirés des réponses.',
+          'La voix de Ziggy : quand une réponse est lue à voix haute, son texte est envoyé à Google (Gemini) pour produire le son ; rien n’est conservé. Le micro, si l’enfant l’utilise, passe par la reconnaissance vocale du navigateur (chez Google pour Chrome, chez Apple pour Safari) ; Ziggy ne reçoit que le texte. La lecture automatique se coupe d’un clic dans le chat.',
         ],
       },
       {
@@ -48,7 +50,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
           [
             'Comptes et résultats : Supabase, serveurs situés à Paris (Union européenne).',
             'Hébergement du site : Vercel.',
-            'Réponses du chat : Google (Gemini API).',
+            'Réponses du chat et voix de Ziggy : Google (Gemini API).',
           ],
           'Ces prestataires traitent les données pour notre compte uniquement. Les échanges avec le site sont chiffrés (HTTPS).',
         ],
@@ -102,6 +104,8 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         title: '3. Conversations with Ziggy',
         body: [
           'When a child writes to Ziggy, the message is sent to an AI provider (currently Google Gemini) solely to produce the reply. We do not store these conversations. Please remind children never to type personal information in the chat.',
+          'A safety filter checks every message before it is sent: an address, phone number, email or password is never passed to the AI, and Ziggy gently reminds the child not to share it. Links, emails and numbers are also removed from replies.',
+          'Ziggy’s voice: when a reply is read aloud, its text is sent to Google (Gemini) to produce the audio; nothing is kept. The microphone, if the child uses it, goes through the browser’s own speech recognition (Google for Chrome, Apple for Safari); Ziggy only receives the text. Auto-read can be switched off with one tap in the chat.',
         ],
       },
       {
@@ -110,7 +114,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
           [
             'Accounts and results: Supabase, servers in Paris (European Union).',
             'Website hosting: Vercel.',
-            'Chat replies: Google (Gemini API).',
+            'Chat replies and Ziggy’s voice: Google (Gemini API).',
           ],
           'These providers process data on our behalf only. Traffic to the site is encrypted (HTTPS).',
         ],

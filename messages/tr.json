@@ -178,7 +178,9 @@
     "terms": "Kullanım koşulları",
     "cookies": "Çerez politikası",
     "gdpr": "GDPR",
-    "copyright": "© 2026 Ziggy Technologies SAS. Tüm hakları saklıdır."
+    "copyright": "© 2026 Ziggy Technologies SAS. Tüm hakları saklıdır.",
+    "made_with": "Çocuklar için",
+    "for_kids": "ile yapıldı"
   },
   "agents": {
     "badge": "Ekip",
@@ -584,5 +586,103 @@
     "text": "Reklam yok, takip yok. Ziggy yalnızca çalışması için gerekenleri saklar: oturumun, ayarların (ses, tema) ve ilerlemen.",
     "ok": "Tamam",
     "more": "Daha fazla bilgi"
+  },
+  "chat": {
+    "nap": "{name} biraz kestiriyor… Birazdan tekrar dene! ⭐",
+    "thinking": "{name} düşünüyor",
+    "safety": "Korunan mesaj",
+    "send": "Gönder",
+    "ask": "{name} için yaz…"
+  },
+  "voice": {
+    "listen": "Dinle",
+    "stop": "Durdur",
+    "auto_on": "Ses: açık",
+    "auto_off": "Ses: kapalı",
+    "mic_start": "Ziggy ile konuş",
+    "mic_stop": "Bitirdim"
+  },
+  "rewards": {
+    "level_up": "Seviye {level} oldu",
+    "level_short": "Seviye {level}",
+    "new_badge": "Yeni rozet",
+    "level_desc": "Çok hızlı öğreniyorsun. Ziggy seninle gurur duyuyor!",
+    "next": "Sonraki",
+    "ok": "Harika!",
+    "max_level": "En üst seviye: sen bir efsanesin!",
+    "to_next": "Sonraki seviyeye {xp} XP kaldı",
+    "badges_title": "Rozetlerim",
+    "levels": {
+      "curious": "Minik meraklı",
+      "explorer": "Kâşif",
+      "inventor": "Mucit",
+      "coder": "Kodlayıcı",
+      "genius": "Minik dâhi",
+      "legend": "Hyper efsanesi"
+    },
+    "badges": {
+      "first_game": {
+        "name": "Kalkış",
+        "desc": "İlk oyununu oyna"
+      },
+      "three_stars": {
+        "name": "Üç yıldız",
+        "desc": "Bir oyunu 3 yıldızla kazan"
+      },
+      "explorer": {
+        "name": "Kâşif",
+        "desc": "4 farklı oyun dene"
+      },
+      "star_collector": {
+        "name": "Koleksiyoncu",
+        "desc": "15 yıldız topla"
+      },
+      "brave": {
+        "name": "Pes etmeyen",
+        "desc": "Aynı oyunu 5 kez oyna"
+      },
+      "marathon": {
+        "name": "Maraton",
+        "desc": "25 oyun oyna"
+      },
+      "all_games": {
+        "name": "Gezgin",
+        "desc": "Bütün oyunları oyna"
+      },
+      "perfectionist": {
+        "name": "Mükemmel",
+        "desc": "Her yerde 3 yıldız (en az 4 oyun)"
+      }
+    }
+  },
+  "hyper": {
+    "eyebrow": "Güç kaynağı",
+    "title": "Hyper™ AI Engine",
+    "subtitle": "Ziggy’ye sesini, beynini ve korumalarını veren motor. Çocuğunuza somut olarak getirdikleri şunlar.",
+    "pillars": {
+      "voice": {
+        "title": "Ziggy konuşur ve dinler",
+        "desc": "Cevapları sıcak bir sesle sesli okunur, çocuk da mikrofonla onunla konuşabilir: henüz az okuyan küçükler için ideal."
+      },
+      "safety": {
+        "title": "Çocuklar için bir filtre",
+        "desc": "Adres, telefon, e-posta ve şifreler yapay zekâya ulaşmadan engellenir, cevaplardan bağlantılar çıkarılır ve hassas konular güvenilir bir yetişkine yönlendirilir."
+      },
+      "brain": {
+        "title": "Hiç uyumayan bir beyin",
+        "desc": "Birkaç yapay zekâ motoru birbirinin yerine geçer: biri çalışmazsa Ziggy yine cevap verir."
+      },
+      "motion": {
+        "title": "Özenli animasyonlar",
+        "desc": "Cihazın “hareketi azalt” ayarına uyan, ekran dışındayken duran kısa ve net hareketler."
+      },
+      "privacy": {
+        "title": "Veriler Avrupa’da, sıfır reklam",
+        "desc": "Hesaplar Avrupa’da barındırılır, hiçbir şey satılmaz, reklam ve takip yoktur."
+      }
+    },
+    "ziggy_title": "Hepsi tek bir arkadaş için",
+    "ziggy_text": "Motor perde arkasında kalır. Sahnede yalnızca Ziggy ve çocuğunuz var.",
+    "cta": "Ziggy ile konuş"
   }
 }

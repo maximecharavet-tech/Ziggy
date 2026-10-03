@@ -24,7 +24,7 @@ export function CTAFinalSection() {
               <p className="text-[#6B4A2B] dark:text-[#F3D3A8] text-lg mb-8 max-w-xl mx-auto md:mx-0 leading-relaxed">
                 {t('subtitle')}
               </p>
-              <Button href="/signup" size="lg" className="group gap-2 shadow-[0_14px_30px_-10px_rgba(22,163,74,0.7)]">
+              <Button href="/signup" size="lg" magnetic className="group gap-2 shadow-[0_14px_30px_-10px_rgba(22,163,74,0.7)]">
                 {t('cta')}
                 <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 rtl:rotate-180" />
               </Button>

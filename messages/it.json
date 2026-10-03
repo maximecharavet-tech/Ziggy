@@ -178,7 +178,9 @@
     "terms": "Condizioni d'uso",
     "cookies": "Politica sui cookie",
     "gdpr": "GDPR",
-    "copyright": "© 2026 Ziggy Technologies SAS. Tutti i diritti riservati."
+    "copyright": "© 2026 Ziggy Technologies SAS. Tutti i diritti riservati.",
+    "made_with": "Fatto con",
+    "for_kids": "per i bambini"
   },
   "agents": {
     "badge": "Il team",
@@ -584,5 +586,103 @@
     "text": "Niente pubblicità, niente tracciamento. Ziggy conserva solo ciò che serve per funzionare: il tuo accesso, le tue impostazioni (audio, tema) e i tuoi progressi.",
     "ok": "Va bene",
     "more": "Scopri di più"
+  },
+  "chat": {
+    "nap": "{name} sta facendo un pisolino… Riprova tra un attimo! ⭐",
+    "thinking": "{name} sta pensando",
+    "safety": "Messaggio protetto",
+    "send": "Invia",
+    "ask": "Scrivi a {name}…"
+  },
+  "voice": {
+    "listen": "Ascolta",
+    "stop": "Ferma",
+    "auto_on": "Voce: sì",
+    "auto_off": "Voce: no",
+    "mic_start": "Parla con Ziggy",
+    "mic_stop": "Ho finito"
+  },
+  "rewards": {
+    "level_up": "Livello {level} raggiunto",
+    "level_short": "Livello {level}",
+    "new_badge": "Nuovo distintivo",
+    "level_desc": "Impari a tutta velocità. Ziggy è fierissimo di te!",
+    "next": "Avanti",
+    "ok": "Forte!",
+    "max_level": "Livello massimo: sei una leggenda!",
+    "to_next": "Ancora {xp} XP per il prossimo livello",
+    "badges_title": "I miei distintivi",
+    "levels": {
+      "curious": "Piccolo curioso",
+      "explorer": "Esploratore",
+      "inventor": "Inventore",
+      "coder": "Programmatore",
+      "genius": "Piccolo genio",
+      "legend": "Leggenda Hyper"
+    },
+    "badges": {
+      "first_game": {
+        "name": "Decollo",
+        "desc": "Giocare la prima partita"
+      },
+      "three_stars": {
+        "name": "Tre stelle",
+        "desc": "Vincere un gioco con 3 stelle"
+      },
+      "explorer": {
+        "name": "Esploratore",
+        "desc": "Provare 4 giochi diversi"
+      },
+      "star_collector": {
+        "name": "Collezionista",
+        "desc": "Raccogliere 15 stelle"
+      },
+      "brave": {
+        "name": "Tenace",
+        "desc": "Giocare 5 volte allo stesso gioco"
+      },
+      "marathon": {
+        "name": "Maratona",
+        "desc": "Giocare 25 partite"
+      },
+      "all_games": {
+        "name": "Gran viaggiatore",
+        "desc": "Giocare a tutti i giochi"
+      },
+      "perfectionist": {
+        "name": "Perfezione",
+        "desc": "3 stelle ovunque (almeno 4 giochi)"
+      }
+    }
+  },
+  "hyper": {
+    "eyebrow": "Alimentato da",
+    "title": "Hyper™ AI Engine",
+    "subtitle": "Il motore che dà a Ziggy la voce, il cervello e le protezioni. Ecco, concretamente, cosa porta a tuo figlio.",
+    "pillars": {
+      "voice": {
+        "title": "Ziggy parla e ascolta",
+        "desc": "Le risposte vengono lette ad alta voce con una voce calda, e il bambino può parlargli al microfono: ideale per i più piccoli che leggono ancora poco."
+      },
+      "safety": {
+        "title": "Un filtro pensato per i bambini",
+        "desc": "Indirizzi, telefoni, e-mail e password vengono bloccati prima di arrivare all’IA, i link vengono tolti dalle risposte e i temi delicati rimandano a un adulto di fiducia."
+      },
+      "brain": {
+        "title": "Un cervello che non dorme mai",
+        "desc": "Più motori di IA si danno il cambio: se uno non è disponibile, Ziggy risponde lo stesso."
+      },
+      "motion": {
+        "title": "Animazioni curate",
+        "desc": "Movimenti brevi e precisi che rispettano l’opzione «riduci movimento» del dispositivo e si fermano fuori schermo."
+      },
+      "privacy": {
+        "title": "Dati in Europa, zero pubblicità",
+        "desc": "Gli account sono ospitati in Europa, niente viene venduto, nessuna pubblicità e nessun tracciamento."
+      }
+    },
+    "ziggy_title": "Tutto questo, per un solo amico",
+    "ziggy_text": "Il motore resta dietro le quinte. Sul palco ci sono solo Ziggy e tuo figlio.",
+    "cta": "Parla con Ziggy"
   }
 }

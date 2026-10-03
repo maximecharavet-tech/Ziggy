@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
-import { Link } from '@/i18n/navigation';
+import { Link, usePathname } from '@/i18n/navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { SoundToggle } from '@/components/ui/SoundToggle';
@@ -16,6 +16,10 @@ export function Navbar() {
   const t = useTranslations('nav');
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [hovered, setHovered] = useState<string | null>(null);
+  // Pages on a dark stage keep the glass pill on, so the links stay readable.
+  const pathname = usePathname();
+  const pill = scrolled || pathname.startsWith('/hyper');
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -23,13 +27,14 @@ export function Navbar() {
     return () => window.removeEventListener('scroll', handler);
   }, []);
 
+  // Section anchors live on the home page, so they point there from any page.
   const navLinks = [
-    { href: '#features', label: t('features') },
-    { href: '#modules', label: t('modules') },
-    { href: '#agents', label: t('agents') },
-    { href: '#games', label: t('games') },
-    { href: '#pricing', label: t('pricing') },
-    { href: '#demo', label: t('demo') },
+    { hash: 'features', label: t('features') },
+    { hash: 'modules', label: t('modules') },
+    { hash: 'agents', label: t('agents') },
+    { hash: 'games', label: t('games') },
+    { hash: 'pricing', label: t('pricing') },
+    { hash: 'demo', label: t('demo') },
   ];
 
   return (
@@ -37,31 +42,41 @@ export function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'glass-strong border-b border-border/50 shadow-[0_1px_3px_rgba(0,0,0,0.04)]'
-          : 'bg-transparent'
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${scrolled ? 'pt-2 sm:pt-3' : 'pt-0'}`}
     >
-      <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2 group shrink-0" aria-label="Ziggy — home">
+      <nav
+        data-scrolled={pill}
+        className={`liquid-nav mx-auto flex items-center justify-between transition-all duration-300 ${
+          scrolled ? 'max-w-6xl h-14 sm:h-16 px-3 sm:px-5 mx-3 sm:mx-auto' : 'max-w-7xl h-16 sm:h-18 px-4 sm:px-6 lg:px-8'
+        }`}
+      >
+        <Link href="/" className="relative z-10 flex items-center gap-2 group shrink-0" aria-label="Ziggy — home">
           <ZiggyAvatar size={36} className="transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
           <ZiggyLogo size={96} className="transition-transform duration-300 group-hover:-rotate-1" />
         </Link>
 
-        <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+        <div className="relative z-10 hidden lg:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
           {navLinks.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="relative text-sm font-medium text-text-muted hover:text-green transition-colors py-1 after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-green after:rounded-full after:transition-all hover:after:w-full"
+            <Link
+              key={link.hash}
+              href={{ pathname: '/', hash: link.hash }}
+              onMouseEnter={() => setHovered(link.hash)}
+              onFocus={() => setHovered(link.hash)}
+              className="relative px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
             >
+              {hovered === link.hash && (
+                <motion.span
+                  layoutId="nav-hover"
+                  className="absolute inset-0 -z-10 rounded-full bg-green/10 ring-1 ring-green/15"
+                  transition={{ type: 'spring', duration: 0.35, bounce: 0.18 }}
+                />
+              )}
               {link.label}
-            </a>
+            </Link>
           ))}
         </div>
 
-        <div className="hidden lg:flex items-center gap-3">
+        <div className="relative z-10 hidden lg:flex items-center gap-3">
           <SoundToggle />
           <ThemeToggle />
           <LanguageSwitcher />
@@ -70,7 +85,7 @@ export function Navbar() {
 
         <button
           onClick={() => setIsOpen(!isOpen)}
-          className="lg:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
+          className="relative z-10 lg:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
           aria-label="Toggle menu"
         >
           {isOpen ? <X size={22} /> : <Menu size={22} />}
@@ -84,21 +99,24 @@ export function Navbar() {
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="lg:hidden border-t border-border/50 glass-strong overflow-hidden"
+            className="lg:hidden mx-3 mt-2 rounded-3xl border border-border/50 glass-strong overflow-hidden shadow-xl"
           >
             <div className="px-4 py-5 space-y-1">
               {navLinks.map((link, i) => (
-                <motion.a
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
+                <motion.div
+                  key={link.hash}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  className="block text-base font-medium text-text-muted hover:text-green transition-colors py-3 px-3 rounded-xl hover:bg-green/5"
+                  transition={{ delay: i * 0.04, duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
                 >
-                  {link.label}
-                </motion.a>
+                  <Link
+                    href={{ pathname: '/', hash: link.hash }}
+                    onClick={() => setIsOpen(false)}
+                    className="block text-base font-semibold text-text-muted hover:text-green transition-colors py-3 px-3 rounded-xl hover:bg-green/5"
+                  >
+                    {link.label}
+                  </Link>
+                </motion.div>
               ))}
               <div className="flex items-center gap-3 pt-4 px-3">
                 <SoundToggle />

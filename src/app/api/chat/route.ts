@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { chat, NoProviderError } from '@/lib/ai';
+import { chat, NoProviderError, BLOCKED } from '@/lib/ai';
+import { screenChildInput, screenAiOutput, blockedReply } from '@/lib/child-safety';
 import { rateLimit } from '@/lib/rate-limit';
 import { getAgent, getAgentSystemPrompt } from '@/lib/agents';
 
@@ -31,13 +32,25 @@ export async function POST(request: NextRequest) {
       content: stripHtml(String(m.content || '').slice(0, 2000).trim()),
     }));
 
+    const lang = typeof locale === 'string' ? locale : 'en';
+
+    // The child's latest message is screened before any AI sees it.
+    const lastUser = [...sanitized].reverse().find((m) => m.role === 'user');
+    if (lastUser) {
+      const screen = screenChildInput(lastUser.content, lang);
+      if (screen.verdict !== 'ok') {
+        return NextResponse.json({ message: screen.reply, safety: screen.verdict });
+      }
+    }
+
     let systemPrompt: string | undefined;
     if (agentId && getAgent(agentId)) {
       systemPrompt = getAgentSystemPrompt(agentId, locale || 'en');
     }
 
-    const message = await chat(sanitized, locale || 'en', systemPrompt);
-    return NextResponse.json({ message });
+    const raw = await chat(sanitized, lang, systemPrompt);
+    if (raw === BLOCKED) return NextResponse.json({ message: blockedReply(lang), safety: 'unsafe' });
+    return NextResponse.json({ message: screenAiOutput(raw) || blockedReply(lang) });
   } catch (error) {
     if (error instanceof NoProviderError) {
       return NextResponse.json(

@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Tilt } from '@/components/ui/motion-primitives';
 import { Link } from '@/i18n/navigation';
 import {
   ArrowRight,
@@ -53,7 +54,8 @@ export function GameCard({ id, name, description, icon, color, index, cta }: Gam
       transition={{ delay: index * 0.08, duration: 0.45, ease: 'easeOut' }}
       className="h-full"
     >
-      <Link href={`/games/${id}` as '/games/memory'} className="block h-full group">
+      <Link href={`/games/${id}` as '/games/memory'} className="block h-full group press">
+        <Tilt max={6} className="h-full">
         <div
           className="relative h-full rounded-2xl p-[1.5px] transition-all duration-300 group-hover:-translate-y-1.5"
           style={{
@@ -95,6 +97,7 @@ export function GameCard({ id, name, description, icon, color, index, cta }: Gam
             </div>
           </div>
         </div>
+        </Tilt>
       </Link>
     </motion.div>
   );
