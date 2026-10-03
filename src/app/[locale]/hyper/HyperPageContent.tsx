@@ -26,7 +26,7 @@ export function HyperPageContent() {
   const t = useTranslations('hyper');
 
   return (
-    <div className="relative overflow-hidden bg-[#02040b] text-white">
+    <div className="relative overflow-clip bg-[#02040b] text-white">
       {/* Engine light */}
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute left-1/2 top-24 h-[42rem] w-[42rem] -translate-x-1/2 rounded-full bg-[#1e9bff]/20 blur-[120px]" />

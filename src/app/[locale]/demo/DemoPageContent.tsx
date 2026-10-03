@@ -13,7 +13,7 @@ export function DemoPageContent() {
   const td = useTranslations('demo');
 
   return (
-    <div className="relative overflow-hidden pt-28 pb-24 px-4 sm:px-6 lg:px-8">
+    <div className="relative overflow-clip pt-28 pb-24 px-4 sm:px-6 lg:px-8">
       <div className="pointer-events-none absolute inset-0" aria-hidden="true">
         <div className="absolute -top-40 -start-32 w-[34rem] h-[34rem] rounded-full bg-leaf/15 blur-3xl" />
         <div className="absolute top-40 -end-40 w-[30rem] h-[30rem] rounded-full bg-peach/40 blur-3xl dark:bg-peach/10" />

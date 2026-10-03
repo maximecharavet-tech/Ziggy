@@ -1,5 +1,6 @@
 'use client';
 
+import { MissionCard } from '@/components/rewards/MissionCard';
 import { useTranslations } from 'next-intl';
 import { motion } from 'framer-motion';
 import { Gamepad2 } from 'lucide-react';
@@ -12,7 +13,7 @@ export function GamesPageContent() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-clip">
         <ParticleField count={30} />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center relative z-10">
           <motion.div
@@ -33,6 +34,9 @@ export function GamesPageContent() {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <MissionCard />
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
           {GAMES.map((game, i) => (
             <GameCard

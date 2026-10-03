@@ -28,14 +28,15 @@ export function Navbar() {
   }, []);
 
   // Section anchors live on the home page, so they point there from any page.
-  const navLinks = [
-    { hash: 'features', label: t('features') },
-    { hash: 'modules', label: t('modules') },
-    { hash: 'agents', label: t('agents') },
-    { hash: 'games', label: t('games') },
-    { hash: 'pricing', label: t('pricing') },
-    { hash: 'demo', label: t('demo') },
+  const navLinks: { hash?: string; path?: '/lab'; label: string; key: string }[] = [
+    { key: 'lab', path: '/lab', label: t('lab') },
+    { key: 'features', hash: 'features', label: t('features') },
+    { key: 'agents', hash: 'agents', label: t('agents') },
+    { key: 'games', hash: 'games', label: t('games') },
+    { key: 'pricing', hash: 'pricing', label: t('pricing') },
+    { key: 'demo', hash: 'demo', label: t('demo') },
   ];
+  const hrefOf = (l: (typeof navLinks)[number]) => (l.path ? l.path : { pathname: '/' as const, hash: l.hash });
 
   return (
     <motion.header
@@ -58,13 +59,13 @@ export function Navbar() {
         <div className="relative z-10 hidden lg:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
           {navLinks.map((link) => (
             <Link
-              key={link.hash}
-              href={{ pathname: '/', hash: link.hash }}
-              onMouseEnter={() => setHovered(link.hash)}
-              onFocus={() => setHovered(link.hash)}
+              key={link.key}
+              href={hrefOf(link)}
+              onMouseEnter={() => setHovered(link.key)}
+              onFocus={() => setHovered(link.key)}
               className="relative px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
             >
-              {hovered === link.hash && (
+              {hovered === link.key && (
                 <motion.span
                   layoutId="nav-hover"
                   className="absolute inset-0 -z-10 rounded-full bg-green/10 ring-1 ring-green/15"
@@ -72,6 +73,7 @@ export function Navbar() {
                 />
               )}
               {link.label}
+              {link.path && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
             </Link>
           ))}
         </div>
@@ -104,13 +106,13 @@ export function Navbar() {
             <div className="px-4 py-5 space-y-1">
               {navLinks.map((link, i) => (
                 <motion.div
-                  key={link.hash}
+                  key={link.key}
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: i * 0.04, duration: 0.22, ease: [0.23, 1, 0.32, 1] }}
                 >
                   <Link
-                    href={{ pathname: '/', hash: link.hash }}
+                    href={hrefOf(link)}
                     onClick={() => setIsOpen(false)}
                     className="block text-base font-semibold text-text-muted hover:text-green transition-colors py-3 px-3 rounded-xl hover:bg-green/5"
                   >

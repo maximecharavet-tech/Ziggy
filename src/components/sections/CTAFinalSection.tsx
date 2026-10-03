@@ -12,7 +12,7 @@ export function CTAFinalSection() {
   return (
     <section className="py-24 px-4 sm:px-6 lg:px-8">
       <ScrollReveal variant="zoom">
-        <div className="relative max-w-5xl mx-auto overflow-hidden rounded-[2.5rem] clay-shadow">
+        <div className="relative max-w-5xl mx-auto overflow-hidden rounded-[2.5rem] clay-shadow settle">
           <div className="absolute inset-0 bg-gradient-to-br from-[#FFE7C2] via-peach to-apricot dark:from-[#3a2a17] dark:via-[#4a3218] dark:to-[#5a3a1a]" />
           <div className="absolute -bottom-24 -end-16 w-[26rem] h-[26rem] stage-disc opacity-80" aria-hidden="true" />
 

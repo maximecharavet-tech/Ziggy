@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Send, ShieldCheck } from 'lucide-react';
+import { Send, ShieldCheck, Phone } from 'lucide-react';
+import { VoiceCall } from './VoiceCall';
 import { StarBurst } from '@/components/ziggy/StarBurst';
 import { SpeakButton, AutoReadToggle, MicButton, TalkingHalo } from '@/components/ziggy/VoiceControls';
 import { speak, unlockAudio, voiceStore } from '@/lib/voice';
@@ -25,6 +26,8 @@ export interface ChatIdentity {
   avatar: (size: number) => ReactNode;
   /** What fills the empty conversation. */
   welcome: ReactNode;
+  /** Big round portrait for the voice call. */
+  portrait: ReactNode;
 }
 
 interface ChatWindowProps {
@@ -52,6 +55,7 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [burst, setBurst] = useState(false);
+  const [calling, setCalling] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { color } = identity;
@@ -134,6 +138,16 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
             </div>
           </div>
           <AutoReadToggle color={color} />
+          <button
+            type="button"
+            onClick={() => setCalling(true)}
+            className="press inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-white shadow-md"
+            style={{ background: `linear-gradient(135deg, ${color}, color-mix(in srgb, ${color} 75%, #000))` }}
+            aria-label={t('call', { name: identity.name })}
+          >
+            <Phone size={13} className="fill-current" />
+            <span className="hidden sm:inline">{t('call_short')}</span>
+          </button>
         </div>
 
         {/* Messages */}
@@ -248,6 +262,24 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
       </div>
 
       <StarBurst trigger={burst} x={200} y={100} />
+
+      <VoiceCall
+        open={calling}
+        name={identity.name}
+        color={color}
+        portrait={identity.portrait}
+        agentId={agentId}
+        onClose={(turns) => {
+          setCalling(false);
+          // What was said in the call joins the written conversation.
+          if (turns.length) {
+            setMessages((prev) => [
+              ...prev,
+              ...turns.map((tr) => ({ id: nextId(), role: tr.role, content: tr.content, at: new Date() })),
+            ]);
+          }
+        }}
+      />
     </div>
   );
 }

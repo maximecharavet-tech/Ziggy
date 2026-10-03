@@ -6,6 +6,7 @@
  * and guest trophies are carried over the first time they sign in.
  */
 import { loadSupabase } from './supabase';
+import { logRound } from './mission';
 
 export const PROGRESS_KEY = 'ziggy:progress';
 export const PROGRESS_EVENT = 'ziggy:progress';
@@ -67,6 +68,7 @@ export function recordGameResult(gameId: string, rawScore: number, rawStars: num
   if (!isBrowser()) return;
   const score = Number.isFinite(rawScore) ? Math.max(0, Math.round(rawScore)) : 0;
   const stars = Number.isFinite(rawStars) ? Math.min(3, Math.max(0, Math.round(rawStars))) : 0;
+  logRound(gameId, stars); // mission of the day and streak, on this device
 
   void (async () => {
     const sb = await loadSupabase();

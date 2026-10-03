@@ -13,7 +13,11 @@
     "agents": "Agents",
     "games": "Games",
     "account": "My account",
-    "signin": "Sign in"
+    "signin": "Sign in",
+    "lab": "AI Lab",
+    "new": "NEW",
+    "theme_light": "Switch to light mode",
+    "theme_dark": "Switch to dark mode"
   },
   "hero": {
     "badge": "AI Education for Kids Aged 5-12",
@@ -592,7 +596,9 @@
     "thinking": "{name} is thinking",
     "safety": "Protected message",
     "send": "Send",
-    "ask": "Write to {name}…"
+    "ask": "Write to {name}…",
+    "call": "Call {name}",
+    "call_short": "Call"
   },
   "voice": {
     "listen": "Listen",
@@ -684,5 +690,130 @@
     "ziggy_title": "All of it, for one single friend",
     "ziggy_text": "The engine stays backstage. On stage, there is only Ziggy and your child.",
     "cta": "Talk to Ziggy"
+  },
+  "call": {
+    "title": "Call with {name}",
+    "ready": "Ready to talk?",
+    "no_mic": "Microphone unavailable",
+    "no_mic_text": "This browser can’t listen. Try Chrome, Edge or Safari, or write to Ziggy in the chat.",
+    "listening": "Listening",
+    "thinking": "Thinking",
+    "speaking": "Talking",
+    "paused": "Paused",
+    "interrupt": "Tap me to talk",
+    "speak_now": "Go ahead, I’m listening…",
+    "start": "Start the call",
+    "resume": "Resume",
+    "hang_up": "Hang up",
+    "hello": "Hello! It’s {name}. I’m listening: what would you like to learn today?",
+    "trouble": "Oops, I didn’t quite hear that. Can you say it again?"
+  },
+  "lab": {
+    "eyebrow": "AI Lab",
+    "title": "Teach Ziggy to recognise things",
+    "subtitle": "Draw examples, train a real artificial intelligence and watch how it thinks. Everything happens on your device.",
+    "presets": {
+      "sun_moon": "Sun or moon?",
+      "shapes": "Circle or triangle?",
+      "faces": "Happy or sad?",
+      "digits": "Numbers 1, 2, 3"
+    },
+    "preset_hint": "{count} categories to teach Ziggy",
+    "labels": {
+      "sun": "a sun",
+      "moon": "a moon",
+      "circle": "a circle",
+      "triangle": "a triangle",
+      "happy": "a happy face",
+      "sad": "a sad face",
+      "one": "a 1",
+      "two": "a 2",
+      "three": "a 3"
+    },
+    "pad_label": "Drawing slate",
+    "clear": "Clear",
+    "back": "Change challenge",
+    "steps": {
+      "teach": "Show",
+      "train": "Train",
+      "test": "Test"
+    },
+    "teach_hint": "Draw an example on the slate, then put it in the right box. Mix it up: big, small, tilted!",
+    "add_to": "It’s {label}",
+    "enough": "{count} examples, perfect!",
+    "need_more": "{count, plural, one {# more example} other {# more examples}}",
+    "bias": "There are very few examples of “{label}”. An AI recognises badly what it has rarely seen — that’s called a bias. Add some more!",
+    "train_button": "Ziggy, learn!",
+    "training": "Ziggy is memorising your {count} examples…",
+    "test_hint": "Draw something new: Ziggy will guess!",
+    "guess": "I think it’s {label}!",
+    "unsure": "Hmm… I’m not sure.",
+    "sees": "What Ziggy sees",
+    "alike": "It looks like",
+    "right": "Yes, well done Ziggy!",
+    "wrong_was": "No, it was {label}",
+    "learned": "Thanks, I’ll remember! This drawing becomes a new example.",
+    "waiting": "Ziggy is waiting for your drawing…",
+    "done_title": "You trained an AI!",
+    "score": "Ziggy was right {correct} times out of {total}",
+    "lessons": {
+      "data": "An AI learns from examples: they are its data. With no examples, it knows nothing.",
+      "more": "The more varied examples it has, the better it recognises new drawings.",
+      "mistakes": "An AI can be wrong. When you correct it, it gets better — it’s up to you to check!"
+    },
+    "again": "Test again",
+    "new_challenge": "New challenge",
+    "how_title": "How Ziggy learns",
+    "how": {
+      "data": {
+        "title": "You give him examples",
+        "desc": "Every drawing filed in a box is an example. Together they are his training data."
+      },
+      "see": {
+        "title": "He looks at little squares",
+        "desc": "Ziggy shrinks your drawing to a 16 × 16 grid: that’s all he sees, without knowing what a sun is."
+      },
+      "vote": {
+        "title": "His neighbours vote",
+        "desc": "He compares your drawing with all his examples, keeps the three most alike and lets them vote. It’s called “nearest neighbours”."
+      }
+    },
+    "private": "Your drawings stay on your device: nothing is sent over the internet.",
+    "teaser_title": "Become an AI’s teacher",
+    "teaser_text": "In the AI Lab, your child draws examples, trains a real artificial intelligence and discovers how it “sees”, compares and makes mistakes.",
+    "teaser_cta": "Open the lab"
+  },
+  "skills": {
+    "title": "Skills profile",
+    "subtitle": "Worked out from the games: every round grows a skill.",
+    "names": {
+      "memory": "Memory",
+      "logic": "Logic",
+      "math": "Maths",
+      "knowledge": "Knowledge",
+      "code_ai": "Code & AI",
+      "spatial": "Space"
+    },
+    "strength": "Strength",
+    "next": "Next challenge",
+    "tips": {
+      "memory": "Play Memory or Ziggy Says to train your memory.",
+      "logic": "Try Logic or Odd One Out to train your reasoning.",
+      "math": "A round of Maths to boost your sums.",
+      "knowledge": "The Quiz is waiting with lots to discover.",
+      "code_ai": "Program the robot or train Ziggy in the AI Lab.",
+      "spatial": "The Sliding Puzzle trains your sense of space."
+    }
+  },
+  "mission": {
+    "title": "Mission of the day",
+    "goal": "{stars, plural, one {Win # star} other {Win # stars}} in {game}",
+    "done": "Mission complete!",
+    "come_back": "Come back tomorrow for the next one.",
+    "hint": "A new mission every day.",
+    "streak": "{count, plural, =0 {0 days} one {# day} other {# days}}",
+    "streak_hint": "Days in a row with the mission done",
+    "go": "Let’s go",
+    "lab": "AI Lab"
   }
 }

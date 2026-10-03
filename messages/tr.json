@@ -13,7 +13,11 @@
     "agents": "Ajanlar",
     "games": "Oyunlar",
     "account": "Hesabım",
-    "signin": "Giriş yap"
+    "signin": "Giriş yap",
+    "lab": "Yapay Zekâ Lab",
+    "new": "YENİ",
+    "theme_light": "Açık mod",
+    "theme_dark": "Koyu mod"
   },
   "hero": {
     "badge": "5-12 yaş çocuklar için yapay zeka eğitimi",
@@ -592,7 +596,9 @@
     "thinking": "{name} düşünüyor",
     "safety": "Korunan mesaj",
     "send": "Gönder",
-    "ask": "{name} için yaz…"
+    "ask": "{name} için yaz…",
+    "call": "{name} ile ara",
+    "call_short": "Ara"
   },
   "voice": {
     "listen": "Dinle",
@@ -684,5 +690,130 @@
     "ziggy_title": "Hepsi tek bir arkadaş için",
     "ziggy_text": "Motor perde arkasında kalır. Sahnede yalnızca Ziggy ve çocuğunuz var.",
     "cta": "Ziggy ile konuş"
+  },
+  "call": {
+    "title": "{name} ile görüşme",
+    "ready": "Konuşmaya hazır mısın?",
+    "no_mic": "Mikrofon kullanılamıyor",
+    "no_mic_text": "Bu tarayıcı dinleyemiyor. Chrome, Edge veya Safari dene ya da sohbette Ziggy’ye yaz.",
+    "listening": "Dinliyorum",
+    "thinking": "Düşünüyorum",
+    "speaking": "Konuşuyorum",
+    "paused": "Duraklatıldı",
+    "interrupt": "Konuşmak için bana dokun",
+    "speak_now": "Konuş, dinliyorum…",
+    "start": "Görüşmeyi başlat",
+    "resume": "Devam et",
+    "hang_up": "Kapat",
+    "hello": "Merhaba! Ben {name}. Dinliyorum: bugün ne öğrenmek istersin?",
+    "trouble": "Hay aksi, iyi duyamadım. Tekrar söyler misin?"
+  },
+  "lab": {
+    "eyebrow": "Yapay Zekâ Lab",
+    "title": "Ziggy’ye tanımayı öğret",
+    "subtitle": "Örnekler çiz, gerçek bir yapay zekâyı eğit ve nasıl düşündüğünü izle. Her şey kendi cihazında olur.",
+    "presets": {
+      "sun_moon": "Güneş mi ay mı?",
+      "shapes": "Daire mi üçgen mi?",
+      "faces": "Mutlu mu üzgün mü?",
+      "digits": "1, 2, 3 rakamları"
+    },
+    "preset_hint": "Ziggy’ye öğretilecek {count} kategori",
+    "labels": {
+      "sun": "güneş",
+      "moon": "ay",
+      "circle": "daire",
+      "triangle": "üçgen",
+      "happy": "mutlu",
+      "sad": "üzgün",
+      "one": "bir",
+      "two": "iki",
+      "three": "üç"
+    },
+    "pad_label": "Çizim tahtası",
+    "clear": "Sil",
+    "back": "Görevi değiştir",
+    "steps": {
+      "teach": "Göster",
+      "train": "Eğit",
+      "test": "Dene"
+    },
+    "teach_hint": "Tahtaya bir örnek çiz, sonra doğru kutuya koy. Çeşitlendir: büyük, küçük, eğik!",
+    "add_to": "Bu bir {label}",
+    "enough": "{count} örnek, harika!",
+    "need_more": "{count, plural, other {# örnek daha}}",
+    "bias": "{label} için çok az örnek var. Yapay zekâ az gördüğünü iyi tanıyamaz: buna önyargı (bias) denir. Biraz daha ekle!",
+    "train_button": "Ziggy, öğren!",
+    "training": "Ziggy {count} örneğini ezberliyor…",
+    "test_hint": "Yeni bir şey çiz: Ziggy tahmin edecek!",
+    "guess": "Bence bu bir {label}!",
+    "unsure": "Hmm… emin değilim.",
+    "sees": "Ziggy ne görüyor",
+    "alike": "Şuna benziyor",
+    "right": "Evet, aferin Ziggy!",
+    "wrong_was": "Hayır, bu bir {label}",
+    "learned": "Teşekkürler, aklımda tutacağım! Bu çizim yeni bir örnek oldu.",
+    "waiting": "Ziggy çizimini bekliyor…",
+    "done_title": "Bir yapay zekâ eğittin!",
+    "score": "Ziggy {total} denemede {correct} kez bildi",
+    "lessons": {
+      "data": "Yapay zekâ örneklerle öğrenir: bunlar onun verileridir. Örnek olmadan hiçbir şey bilmez.",
+      "more": "Ne kadar çok ve çeşitli örneği olursa yeni çizimleri o kadar iyi tanır.",
+      "mistakes": "Yapay zekâ yanılabilir. Onu düzelttiğinde gelişir: kontrol etmek sana düşer!"
+    },
+    "again": "Tekrar dene",
+    "new_challenge": "Yeni görev",
+    "how_title": "Ziggy nasıl öğrenir",
+    "how": {
+      "data": {
+        "title": "Ona örnekler verirsin",
+        "desc": "Kutuya konan her çizim bir örnektir. Hepsi birlikte eğitim verilerini oluşturur."
+      },
+      "see": {
+        "title": "Küçük karelere bakar",
+        "desc": "Ziggy çizimini 16 × 16 karelik bir ızgaraya indirger: gördüğü tek şey budur, güneşin ne olduğunu bilmez."
+      },
+      "vote": {
+        "title": "Komşuları oy verir",
+        "desc": "Çizimini tüm örnekleriyle karşılaştırır, en çok benzeyen üçünü seçer ve oy vermelerini ister. Buna “en yakın komşular” denir."
+      }
+    },
+    "private": "Çizimlerin cihazında kalır: internete hiçbir şey gönderilmez.",
+    "teaser_title": "Bir yapay zekânın öğretmeni ol",
+    "teaser_text": "Yapay Zekâ Lab’de çocuğunuz örnekler çizer, gerçek bir yapay zekâyı eğitir ve onun nasıl “gördüğünü”, karşılaştırdığını ve yanıldığını keşfeder.",
+    "teaser_cta": "Lab’i aç"
+  },
+  "skills": {
+    "title": "Beceri profili",
+    "subtitle": "Oyunlardan hesaplanır: her oyun bir beceriyi büyütür.",
+    "names": {
+      "memory": "Hafıza",
+      "logic": "Mantık",
+      "math": "Hesap",
+      "knowledge": "Genel kültür",
+      "code_ai": "Kod ve YZ",
+      "spatial": "Uzam"
+    },
+    "strength": "Güçlü yön",
+    "next": "Sıradaki hedef",
+    "tips": {
+      "memory": "Hafızanı çalıştırmak için Hafıza ya da Ziggy diyor oyna.",
+      "logic": "Düşünmeyi çalıştırmak için Mantık ya da Farklı olan’ı dene.",
+      "math": "Hesabını geliştirmek için bir tur Matematik.",
+      "knowledge": "Bilgi yarışması keşfedecek pek çok şeyle seni bekliyor.",
+      "code_ai": "Robotu programla ya da Yapay Zekâ Lab’de Ziggy’yi eğit.",
+      "spatial": "Kaydırmalı bulmaca uzam algını geliştirir."
+    }
+  },
+  "mission": {
+    "title": "Günün görevi",
+    "goal": "{game} oyununda {stars, plural, other {# yıldız kazan}}",
+    "done": "Görev tamam!",
+    "come_back": "Sıradaki için yarın gel.",
+    "hint": "Her gün yeni bir görev.",
+    "streak": "{count, plural, other {# gün}}",
+    "streak_hint": "Görevin üst üste tamamlandığı günler",
+    "go": "Hadi",
+    "lab": "Yapay Zekâ Lab"
   }
 }

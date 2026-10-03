@@ -30,6 +30,11 @@ export function AgentChat({ agentId, agentName, color, suggestions, placeholder 
             <AgentAvatar agentId={agentId} color={color} size={Math.round(size * 0.86)} />
           </span>
         ),
+        portrait: (
+          <span className="flex w-full h-full items-center justify-center" style={{ backgroundColor: `${color}22` }}>
+            <AgentAvatar agentId={agentId} color={color} size={200} />
+          </span>
+        ),
         welcome: (
           <div className="animate-float">
             <AgentAvatar agentId={agentId} color={color} size={80} />

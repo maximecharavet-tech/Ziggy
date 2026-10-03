@@ -13,7 +13,11 @@
     "agents": "代理",
     "games": "游戏",
     "account": "我的账户",
-    "signin": "登录"
+    "signin": "登录",
+    "lab": "AI 实验室",
+    "new": "新",
+    "theme_light": "浅色模式",
+    "theme_dark": "深色模式"
   },
   "hero": {
     "badge": "面向5-12岁儿童的AI教育",
@@ -592,7 +596,9 @@
     "thinking": "{name}正在思考",
     "safety": "受保护的消息",
     "send": "发送",
-    "ask": "写给{name}…"
+    "ask": "写给{name}…",
+    "call": "给{name}打电话",
+    "call_short": "通话"
   },
   "voice": {
     "listen": "听一听",
@@ -684,5 +690,130 @@
     "ziggy_title": "这一切，只为一个好朋友",
     "ziggy_text": "引擎留在幕后。舞台上只有 Ziggy 和您的孩子。",
     "cta": "和 Ziggy 说话"
+  },
+  "call": {
+    "title": "和{name}通话",
+    "ready": "准备好聊天了吗？",
+    "no_mic": "麦克风不可用",
+    "no_mic_text": "这个浏览器不能听声音。试试 Chrome、Edge 或 Safari，或者在聊天里给 Ziggy 写字吧。",
+    "listening": "我在听",
+    "thinking": "我在想",
+    "speaking": "我在说",
+    "paused": "已暂停",
+    "interrupt": "点我就能说话",
+    "speak_now": "说吧，我在听……",
+    "start": "开始通话",
+    "resume": "继续",
+    "hang_up": "挂断",
+    "hello": "你好！我是{name}。我在听：今天你想学什么呢？",
+    "trouble": "哎呀，我没听清。你能再说一遍吗？"
+  },
+  "lab": {
+    "eyebrow": "AI 实验室",
+    "title": "教 Ziggy 认东西",
+    "subtitle": "画出例子，训练一个真正的人工智能，看看它是怎么思考的。一切都在你的设备上进行。",
+    "presets": {
+      "sun_moon": "太阳还是月亮？",
+      "shapes": "圆形还是三角形？",
+      "faces": "开心还是难过？",
+      "digits": "数字 1、2、3"
+    },
+    "preset_hint": "要教给 Ziggy 的 {count} 种类别",
+    "labels": {
+      "sun": "太阳",
+      "moon": "月亮",
+      "circle": "圆形",
+      "triangle": "三角形",
+      "happy": "开心",
+      "sad": "难过",
+      "one": "一",
+      "two": "二",
+      "three": "三"
+    },
+    "pad_label": "画板",
+    "clear": "擦掉",
+    "back": "换个挑战",
+    "steps": {
+      "teach": "展示",
+      "train": "训练",
+      "test": "测试"
+    },
+    "teach_hint": "在画板上画一个例子，然后放进正确的盒子。多变化一下：大的、小的、斜的！",
+    "add_to": "这是{label}",
+    "enough": "{count} 个例子，太好了！",
+    "need_more": "{count, plural, other {还差 # 个例子}}",
+    "bias": "{label}的例子太少了。AI 很难认出它很少见过的东西，这叫“偏差”。再多加一些吧！",
+    "train_button": "Ziggy，学起来！",
+    "training": "Ziggy 正在记住你的 {count} 个例子……",
+    "test_hint": "画个新的东西：Ziggy 来猜！",
+    "guess": "我觉得这是{label}！",
+    "unsure": "嗯……我不太确定。",
+    "sees": "Ziggy 看到的",
+    "alike": "很像",
+    "right": "对啦，Ziggy 真棒！",
+    "wrong_was": "不对，这是{label}",
+    "learned": "谢谢，我记住了！这幅画变成了一个新例子。",
+    "waiting": "Ziggy 在等你的画……",
+    "done_title": "你训练了一个 AI！",
+    "score": "Ziggy 在 {total} 次里猜对了 {correct} 次",
+    "lessons": {
+      "data": "AI 从例子中学习：这些例子就是它的数据。没有例子，它什么都不懂。",
+      "more": "例子越多、越多样，它就越能认出新的画。",
+      "mistakes": "AI 也会出错。你纠正它，它就会进步——检查的任务交给你！"
+    },
+    "again": "再测一次",
+    "new_challenge": "新挑战",
+    "how_title": "Ziggy 是怎么学习的",
+    "how": {
+      "data": {
+        "title": "你给它例子",
+        "desc": "放进盒子里的每幅画都是一个例子，合在一起就是它的训练数据。"
+      },
+      "see": {
+        "title": "它看小方格",
+        "desc": "Ziggy 把你的画缩成 16 × 16 的方格：这就是它看到的全部，它并不知道太阳是什么。"
+      },
+      "vote": {
+        "title": "邻居来投票",
+        "desc": "它把你的画和所有例子比较，挑出最像的三个让它们投票。这叫“最近邻”。"
+      }
+    },
+    "private": "你的画只留在你的设备上，不会发送到网上。",
+    "teaser_title": "当一回 AI 的老师",
+    "teaser_text": "在 AI 实验室里，孩子画出例子、训练真正的人工智能，发现它如何“看”、比较和犯错。",
+    "teaser_cta": "打开实验室"
+  },
+  "skills": {
+    "title": "能力档案",
+    "subtitle": "根据游戏结果计算：每玩一局，能力就成长一点。",
+    "names": {
+      "memory": "记忆",
+      "logic": "逻辑",
+      "math": "计算",
+      "knowledge": "常识",
+      "code_ai": "编程与AI",
+      "spatial": "空间"
+    },
+    "strength": "强项",
+    "next": "下一个挑战",
+    "tips": {
+      "memory": "玩记忆翻牌或 Ziggy 说来锻炼记忆。",
+      "logic": "试试逻辑或找不同来锻炼思维。",
+      "math": "来一局数学，提高计算力。",
+      "knowledge": "知识问答等你来发现新东西。",
+      "code_ai": "给机器人编程，或在 AI 实验室训练 Ziggy。",
+      "spatial": "滑块拼图能锻炼空间感。"
+    }
+  },
+  "mission": {
+    "title": "今日任务",
+    "goal": "在{game}中获得 {stars} 颗星",
+    "done": "任务完成！",
+    "come_back": "明天再来领下一个任务。",
+    "hint": "每天一个新任务。",
+    "streak": "{count} 天",
+    "streak_hint": "连续完成任务的天数",
+    "go": "出发",
+    "lab": "AI 实验室"
   }
 }

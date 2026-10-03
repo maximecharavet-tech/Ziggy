@@ -120,33 +120,58 @@ async function serverClip(text: string): Promise<string | null> {
   }
 }
 
-/** Speak a line as Ziggy. Resolves when he has finished (or was interrupted). */
-export async function speak(id: string, text: string, locale: string): Promise<void> {
-  if (typeof window === 'undefined' || isMuted() || !text.trim()) return;
+async function playClip(url: string): Promise<boolean> {
+  audio ??= new Audio();
+  audio.src = url;
+  const done = new Promise<void>((resolve) => {
+    audio!.onended = audio!.onerror = () => resolve();
+  });
+  try {
+    await audio.play();
+  } catch {
+    return false;
+  }
+  await done;
+  return true;
+}
+
+/**
+ * Speak several sentences as Ziggy, one after the other. The next clip is
+ * fetched while the current one plays, so the first words come quickly even
+ * for a long answer. `onSentence(i)` fires as each sentence starts (captions).
+ * Resolves true when everything was said, false if interrupted.
+ */
+export async function speakSequence(
+  id: string,
+  sentences: string[],
+  locale: string,
+  onSentence?: (index: number) => void
+): Promise<boolean> {
+  if (typeof window === 'undefined' || isMuted() || !sentences.length) return false;
   stopSpeaking();
   const mine = ++token;
   emit({ loadingId: id });
 
-  const url = await serverClip(text);
-  if (mine !== token) return;
-
-  if (url) {
-    audio ??= new Audio();
-    audio.src = url;
-    const done = new Promise<void>((resolve) => {
-      audio!.onended = audio!.onerror = () => resolve();
-    });
-    try {
-      await audio.play();
-      emit({ speakingId: id, loadingId: null });
-      await done;
-    } catch {
-      await browserVoice(text, locale, id, mine);
-    }
-  } else {
-    await browserVoice(text, locale, id, mine);
+  let next: Promise<string | null> | null = serverClip(sentences[0]);
+  for (let i = 0; i < sentences.length; i++) {
+    const url = await next;
+    if (mine !== token) return false;
+    next = i + 1 < sentences.length ? serverClip(sentences[i + 1]) : null;
+    onSentence?.(i);
+    emit({ speakingId: id, loadingId: null });
+    const played = url ? await playClip(url) : false;
+    if (mine !== token) return false;
+    if (!played) await browserVoice(sentences[i], locale, id, mine);
+    if (mine !== token) return false;
   }
-  if (mine === token) emit({ speakingId: null, loadingId: null });
+  emit({ speakingId: null, loadingId: null });
+  return true;
+}
+
+/** Speak a line as Ziggy. Resolves when he has finished (or was interrupted). */
+export async function speak(id: string, text: string, locale: string): Promise<void> {
+  if (!text.trim()) return;
+  await speakSequence(id, [text], locale);
 }
 
 /* ── Listening: the child talks instead of typing ── */
@@ -173,6 +198,15 @@ export function micSupported(): boolean {
  * Start listening. `onText` gets the transcript as it forms; `onDone` the
  * final sentence (empty when nothing was heard). Returns a stop function.
  */
+/** Listen for one sentence; resolves with what was heard ('' for silence or no microphone). */
+export function listenOnce(locale: string, onText?: (t: string) => void): { result: Promise<string>; stop: () => void } {
+  let stop = () => {};
+  const result = new Promise<string>((resolve) => {
+    stop = listen(locale, (t) => onText?.(t), resolve);
+  });
+  return { result, stop: () => stop() };
+}
+
 export function listen(locale: string, onText: (t: string) => void, onDone: (t: string) => void): () => void {
   const w = window as unknown as { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
   const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;

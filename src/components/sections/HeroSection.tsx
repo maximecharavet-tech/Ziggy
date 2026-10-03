@@ -90,9 +90,9 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
   ];
 
   return (
-    <section className="relative overflow-hidden pt-24 sm:pt-32 pb-20 px-4 sm:px-6 lg:px-8">
+    <section className="relative overflow-clip pt-24 sm:pt-32 pb-20 px-4 sm:px-6 lg:px-8">
       {/* Clay-coloured light taken from the emblem */}
-      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+      <div className="pointer-events-none absolute inset-0 drift" aria-hidden="true">
         <div className="absolute -top-40 -start-32 w-[36rem] h-[36rem] rounded-full bg-leaf/15 blur-3xl" />
         <div className="absolute top-10 -end-40 w-[34rem] h-[34rem] rounded-full bg-peach/45 blur-3xl dark:bg-peach/10" />
         <div className="absolute top-1/3 end-1/4 w-[22rem] h-[22rem] rounded-full bg-blush/40 blur-3xl dark:bg-blush/10" />

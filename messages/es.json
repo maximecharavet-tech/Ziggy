@@ -13,7 +13,11 @@
     "agents": "Agentes",
     "games": "Juegos",
     "account": "Mi cuenta",
-    "signin": "Entrar"
+    "signin": "Entrar",
+    "lab": "Laboratorio IA",
+    "new": "NUEVO",
+    "theme_light": "Modo claro",
+    "theme_dark": "Modo oscuro"
   },
   "hero": {
     "badge": "Educación en IA para niños de 5 a 12 años",
@@ -592,7 +596,9 @@
     "thinking": "{name} está pensando",
     "safety": "Mensaje protegido",
     "send": "Enviar",
-    "ask": "Escribe a {name}…"
+    "ask": "Escribe a {name}…",
+    "call": "Llamar a {name}",
+    "call_short": "Llamar"
   },
   "voice": {
     "listen": "Escuchar",
@@ -684,5 +690,130 @@
     "ziggy_title": "Todo esto, para un solo amigo",
     "ziggy_text": "El motor se queda entre bastidores. En el escenario solo están Ziggy y tu hijo.",
     "cta": "Hablar con Ziggy"
+  },
+  "call": {
+    "title": "Llamada con {name}",
+    "ready": "¿Listo para hablar?",
+    "no_mic": "Micrófono no disponible",
+    "no_mic_text": "Este navegador no puede escuchar. Prueba con Chrome, Edge o Safari, o escribe a Ziggy en el chat.",
+    "listening": "Te escucho",
+    "thinking": "Pensando",
+    "speaking": "Hablando",
+    "paused": "En pausa",
+    "interrupt": "Tócame para hablar",
+    "speak_now": "Habla, te escucho…",
+    "start": "Empezar la llamada",
+    "resume": "Continuar",
+    "hang_up": "Colgar",
+    "hello": "¡Hola! Soy {name}. Te escucho: ¿qué quieres aprender hoy?",
+    "trouble": "Uy, no te he oído bien. ¿Puedes repetirlo?"
+  },
+  "lab": {
+    "eyebrow": "Laboratorio IA",
+    "title": "Enseña a Ziggy a reconocer",
+    "subtitle": "Dibuja ejemplos, entrena una inteligencia artificial de verdad y mira cómo piensa. Todo ocurre en tu dispositivo.",
+    "presets": {
+      "sun_moon": "¿Sol o luna?",
+      "shapes": "¿Círculo o triángulo?",
+      "faces": "¿Contento o triste?",
+      "digits": "Los números 1, 2, 3"
+    },
+    "preset_hint": "{count} categorías que enseñar a Ziggy",
+    "labels": {
+      "sun": "un sol",
+      "moon": "una luna",
+      "circle": "un círculo",
+      "triangle": "un triángulo",
+      "happy": "una cara contenta",
+      "sad": "una cara triste",
+      "one": "un 1",
+      "two": "un 2",
+      "three": "un 3"
+    },
+    "pad_label": "Pizarra de dibujo",
+    "clear": "Borrar",
+    "back": "Cambiar de reto",
+    "steps": {
+      "teach": "Mostrar",
+      "train": "Entrenar",
+      "test": "Probar"
+    },
+    "teach_hint": "Dibuja un ejemplo en la pizarra y guárdalo en la caja correcta. ¡Varía: grande, pequeño, inclinado!",
+    "add_to": "Es {label}",
+    "enough": "¡{count} ejemplos, perfecto!",
+    "need_more": "{count, plural, one {Falta # ejemplo} other {Faltan # ejemplos}}",
+    "bias": "Hay muy pocos ejemplos de «{label}». Una IA reconoce mal lo que ha visto poco: eso se llama sesgo. ¡Añade más!",
+    "train_button": "¡Ziggy, aprende!",
+    "training": "Ziggy memoriza tus {count} ejemplos…",
+    "test_hint": "Dibuja algo nuevo: ¡Ziggy lo adivinará!",
+    "guess": "¡Creo que es {label}!",
+    "unsure": "Mmm… no estoy seguro.",
+    "sees": "Lo que ve Ziggy",
+    "alike": "Se parece a",
+    "right": "¡Sí, bravo Ziggy!",
+    "wrong_was": "No, era {label}",
+    "learned": "¡Gracias, lo recordaré! Este dibujo es un nuevo ejemplo.",
+    "waiting": "Ziggy espera tu dibujo…",
+    "done_title": "¡Has entrenado una IA!",
+    "score": "Ziggy acertó {correct} de {total} veces",
+    "lessons": {
+      "data": "Una IA aprende con ejemplos: son sus datos. Sin ejemplos, no sabe nada.",
+      "more": "Cuantos más ejemplos variados tenga, mejor reconoce los dibujos nuevos.",
+      "mistakes": "Una IA puede equivocarse. Cuando la corriges, mejora: ¡te toca comprobar!"
+    },
+    "again": "Probar otra vez",
+    "new_challenge": "Nuevo reto",
+    "how_title": "Cómo aprende Ziggy",
+    "how": {
+      "data": {
+        "title": "Le das ejemplos",
+        "desc": "Cada dibujo guardado en una caja es un ejemplo. Juntos forman sus datos de entrenamiento."
+      },
+      "see": {
+        "title": "Mira cuadraditos",
+        "desc": "Ziggy reduce tu dibujo a una cuadrícula de 16 × 16: es todo lo que ve, sin saber qué es un sol."
+      },
+      "vote": {
+        "title": "Sus vecinos votan",
+        "desc": "Compara tu dibujo con todos sus ejemplos, se queda con los tres más parecidos y los deja votar. Se llama «vecinos más cercanos»."
+      }
+    },
+    "private": "Tus dibujos se quedan en tu dispositivo: nada se envía por internet.",
+    "teaser_title": "Conviértete en profe de una IA",
+    "teaser_text": "En el Laboratorio IA, tu hijo dibuja ejemplos, entrena una inteligencia artificial de verdad y descubre cómo «ve», compara y se equivoca.",
+    "teaser_cta": "Abrir el laboratorio"
+  },
+  "skills": {
+    "title": "Perfil de habilidades",
+    "subtitle": "Calculado a partir de los juegos: cada partida hace crecer una habilidad.",
+    "names": {
+      "memory": "Memoria",
+      "logic": "Lógica",
+      "math": "Cálculo",
+      "knowledge": "Cultura",
+      "code_ai": "Código e IA",
+      "spatial": "Espacio"
+    },
+    "strength": "Punto fuerte",
+    "next": "Próximo reto",
+    "tips": {
+      "memory": "Juega a Memoria o Ziggy dice para entrenar la memoria.",
+      "logic": "Prueba Lógica o El intruso para entrenar el razonamiento.",
+      "math": "Una ronda de Mates para subir el cálculo.",
+      "knowledge": "El Quiz te espera con mucho que descubrir.",
+      "code_ai": "Programa el robot o entrena a Ziggy en el Laboratorio IA.",
+      "spatial": "El Rompecabezas deslizante entrena tu sentido del espacio."
+    }
+  },
+  "mission": {
+    "title": "Misión del día",
+    "goal": "{stars, plural, one {Gana # estrella} other {Gana # estrellas}} en {game}",
+    "done": "¡Misión cumplida!",
+    "come_back": "Vuelve mañana para la siguiente.",
+    "hint": "Una misión nueva cada día.",
+    "streak": "{count, plural, =0 {0 días} one {# día} other {# días}}",
+    "streak_hint": "Días seguidos con la misión cumplida",
+    "go": "¡Vamos!",
+    "lab": "Laboratorio IA"
   }
 }

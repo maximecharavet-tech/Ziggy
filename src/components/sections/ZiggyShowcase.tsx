@@ -56,7 +56,7 @@ export function ZiggyShowcase() {
   const scene = mood === 'film' ? null : SCENES[mood];
 
   return (
-    <section id="meet-ziggy" className="relative py-20 sm:py-28 overflow-hidden">
+    <section id="meet-ziggy" className="relative py-20 sm:py-28 overflow-clip">
       <div className="absolute inset-0 gradient-mesh pointer-events-none" aria-hidden="true" />
       <div className="pointer-events-none absolute -end-40 top-10 w-[34rem] h-[34rem] rounded-full bg-peach/35 blur-3xl dark:bg-peach/10" aria-hidden="true" />
 
@@ -144,7 +144,7 @@ export function ZiggyShowcase() {
             whileInView={{ opacity: 1, scale: 1, rotate: 0 }}
             viewport={{ once: true, margin: '-80px' }}
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="relative mx-auto w-full max-w-[300px] sm:max-w-[360px]"
+            className="relative mx-auto w-full max-w-[300px] sm:max-w-[360px] settle"
             onMouseEnter={() => setHovered(true)}
             onMouseLeave={() => setHovered(false)}
           >

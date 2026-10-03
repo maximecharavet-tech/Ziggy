@@ -4,6 +4,8 @@ import { TaglineRibbon } from '@/components/sections/TaglineRibbon';
 import { PageTransition } from '@/components/ui/PageTransition';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { ZiggyShowcase } from '@/components/sections/ZiggyShowcase';
+import { LabTeaser } from '@/components/sections/LabTeaser';
+import { MissionCard } from '@/components/rewards/MissionCard';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { ModulesSection } from '@/components/sections/ModulesSection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
@@ -32,8 +34,12 @@ export default async function HomePage({
     <PageTransition>
       <HeroSection stats={stats} />
       <TaglineRibbon />
+      <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-4">
+        <MissionCard />
+      </div>
       <TrustBar />
       {sections.showcase && <ZiggyShowcase />}
+      <LabTeaser />
       <FeaturesSection />
       <ModulesSection />
       {sections.agents && <AgentsSection />}

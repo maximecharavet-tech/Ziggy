@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { chat, NoProviderError, BLOCKED } from '@/lib/ai';
+import { chat, NoProviderError, BLOCKED, SYSTEM_PROMPT } from '@/lib/ai';
+import { SPOKEN_STYLE } from '@/lib/speech-text';
 import { screenChildInput, screenAiOutput, blockedReply } from '@/lib/child-safety';
 import { rateLimit } from '@/lib/rate-limit';
 import { getAgent, getAgentSystemPrompt } from '@/lib/agents';
@@ -17,7 +18,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const body = await request.json();
-    const { messages, locale, agentId } = body;
+    const { messages, locale, agentId, mode } = body;
 
     if (!messages || !Array.isArray(messages)) {
       return NextResponse.json({ error: 'Invalid messages' }, { status: 400 });
@@ -47,6 +48,9 @@ export async function POST(request: NextRequest) {
     if (agentId && getAgent(agentId)) {
       systemPrompt = getAgentSystemPrompt(agentId, locale || 'en');
     }
+
+    // In a voice call the answer is heard, not read: short, oral, no emoji.
+    if (mode === 'voice') systemPrompt = `${systemPrompt ?? SYSTEM_PROMPT}\n\n${SPOKEN_STYLE}`;
 
     const raw = await chat(sanitized, lang, systemPrompt);
     if (raw === BLOCKED) return NextResponse.json({ message: blockedReply(lang), safety: 'unsafe' });

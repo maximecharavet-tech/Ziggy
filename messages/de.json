@@ -13,7 +13,11 @@
     "agents": "Agenten",
     "games": "Spiele",
     "account": "Mein Konto",
-    "signin": "Anmelden"
+    "signin": "Anmelden",
+    "lab": "KI-Labor",
+    "new": "NEU",
+    "theme_light": "Heller Modus",
+    "theme_dark": "Dunkler Modus"
   },
   "hero": {
     "badge": "KI-Bildung für Kinder von 5 bis 12 Jahren",
@@ -592,7 +596,9 @@
     "thinking": "{name} denkt nach",
     "safety": "Geschützte Nachricht",
     "send": "Senden",
-    "ask": "Schreib {name}…"
+    "ask": "Schreib {name}…",
+    "call": "{name} anrufen",
+    "call_short": "Anrufen"
   },
   "voice": {
     "listen": "Anhören",
@@ -684,5 +690,130 @@
     "ziggy_title": "All das für einen einzigen Freund",
     "ziggy_text": "Der Motor bleibt hinter den Kulissen. Auf der Bühne stehen nur Ziggy und Ihr Kind.",
     "cta": "Mit Ziggy sprechen"
+  },
+  "call": {
+    "title": "Anruf mit {name}",
+    "ready": "Bereit zum Reden?",
+    "no_mic": "Mikrofon nicht verfügbar",
+    "no_mic_text": "Dieser Browser kann nicht zuhören. Versuch es mit Chrome, Edge oder Safari oder schreib Ziggy im Chat.",
+    "listening": "Ich höre zu",
+    "thinking": "Ich denke nach",
+    "speaking": "Ich spreche",
+    "paused": "Pause",
+    "interrupt": "Tipp mich an, um zu reden",
+    "speak_now": "Sprich, ich höre zu…",
+    "start": "Anruf starten",
+    "resume": "Weiter",
+    "hang_up": "Auflegen",
+    "hello": "Hallo! Hier ist {name}. Ich höre zu: Was möchtest du heute lernen?",
+    "trouble": "Hoppla, das habe ich nicht gut verstanden. Sagst du es noch mal?"
+  },
+  "lab": {
+    "eyebrow": "KI-Labor",
+    "title": "Bring Ziggy das Erkennen bei",
+    "subtitle": "Zeichne Beispiele, trainiere eine echte künstliche Intelligenz und sieh zu, wie sie denkt. Alles passiert auf deinem Gerät.",
+    "presets": {
+      "sun_moon": "Sonne oder Mond?",
+      "shapes": "Kreis oder Dreieck?",
+      "faces": "Fröhlich oder traurig?",
+      "digits": "Die Zahlen 1, 2, 3"
+    },
+    "preset_hint": "{count} Kategorien für Ziggy",
+    "labels": {
+      "sun": "eine Sonne",
+      "moon": "ein Mond",
+      "circle": "ein Kreis",
+      "triangle": "ein Dreieck",
+      "happy": "ein fröhliches Gesicht",
+      "sad": "ein trauriges Gesicht",
+      "one": "eine 1",
+      "two": "eine 2",
+      "three": "eine 3"
+    },
+    "pad_label": "Zeichentafel",
+    "clear": "Löschen",
+    "back": "Aufgabe wechseln",
+    "steps": {
+      "teach": "Zeigen",
+      "train": "Trainieren",
+      "test": "Testen"
+    },
+    "teach_hint": "Zeichne ein Beispiel auf die Tafel und leg es in die richtige Kiste. Abwechslung: groß, klein, schief!",
+    "add_to": "Das ist {label}",
+    "enough": "{count} Beispiele, perfekt!",
+    "need_more": "{count, plural, one {Noch # Beispiel} other {Noch # Beispiele}}",
+    "bias": "Für „{label}“ gibt es sehr wenige Beispiele. Eine KI erkennt schlecht, was sie selten gesehen hat – das nennt man Verzerrung (Bias). Füg mehr hinzu!",
+    "train_button": "Ziggy, lerne!",
+    "training": "Ziggy merkt sich deine {count} Beispiele…",
+    "test_hint": "Zeichne etwas Neues: Ziggy rät!",
+    "guess": "Ich glaube, das ist {label}!",
+    "unsure": "Hmm… ich bin nicht sicher.",
+    "sees": "Was Ziggy sieht",
+    "alike": "Ähnelt",
+    "right": "Ja, toll Ziggy!",
+    "wrong_was": "Nein, es war {label}",
+    "learned": "Danke, ich merke es mir! Diese Zeichnung wird ein neues Beispiel.",
+    "waiting": "Ziggy wartet auf deine Zeichnung…",
+    "done_title": "Du hast eine KI trainiert!",
+    "score": "Ziggy lag {correct}-mal von {total} richtig",
+    "lessons": {
+      "data": "Eine KI lernt aus Beispielen: Das sind ihre Daten. Ohne Beispiele weiß sie nichts.",
+      "more": "Je mehr unterschiedliche Beispiele sie hat, desto besser erkennt sie neue Zeichnungen.",
+      "mistakes": "Eine KI kann sich irren. Wenn du sie korrigierst, wird sie besser – prüfen musst du!"
+    },
+    "again": "Weiter testen",
+    "new_challenge": "Neue Aufgabe",
+    "how_title": "Wie Ziggy lernt",
+    "how": {
+      "data": {
+        "title": "Du gibst ihm Beispiele",
+        "desc": "Jede Zeichnung in einer Kiste ist ein Beispiel. Zusammen sind sie seine Trainingsdaten."
+      },
+      "see": {
+        "title": "Er sieht kleine Kästchen",
+        "desc": "Ziggy verkleinert deine Zeichnung auf ein Raster aus 16 × 16 Kästchen: Mehr sieht er nicht – er weiß nicht, was eine Sonne ist."
+      },
+      "vote": {
+        "title": "Seine Nachbarn stimmen ab",
+        "desc": "Er vergleicht deine Zeichnung mit allen Beispielen, nimmt die drei ähnlichsten und lässt sie abstimmen. Das heißt „nächste Nachbarn“."
+      }
+    },
+    "private": "Deine Zeichnungen bleiben auf deinem Gerät: Nichts wird ins Internet geschickt.",
+    "teaser_title": "Werde Lehrer einer KI",
+    "teaser_text": "Im KI-Labor zeichnet dein Kind Beispiele, trainiert eine echte künstliche Intelligenz und entdeckt, wie sie „sieht“, vergleicht und sich irrt.",
+    "teaser_cta": "Labor öffnen"
+  },
+  "skills": {
+    "title": "Fähigkeitsprofil",
+    "subtitle": "Aus den Spielen berechnet: Jede Runde lässt eine Fähigkeit wachsen.",
+    "names": {
+      "memory": "Gedächtnis",
+      "logic": "Logik",
+      "math": "Rechnen",
+      "knowledge": "Wissen",
+      "code_ai": "Code & KI",
+      "spatial": "Raum"
+    },
+    "strength": "Stärke",
+    "next": "Nächste Herausforderung",
+    "tips": {
+      "memory": "Spiel Memory oder Ziggy sagt, um dein Gedächtnis zu trainieren.",
+      "logic": "Probier Logik oder Was passt nicht?, um dein Denken zu trainieren.",
+      "math": "Eine Runde Mathe für dein Rechnen.",
+      "knowledge": "Das Quiz wartet mit viel Neuem.",
+      "code_ai": "Programmiere den Roboter oder trainiere Ziggy im KI-Labor.",
+      "spatial": "Das Schiebepuzzle trainiert dein Raumgefühl."
+    }
+  },
+  "mission": {
+    "title": "Mission des Tages",
+    "goal": "{stars, plural, one {Hol # Stern} other {Hol # Sterne}} bei {game}",
+    "done": "Mission erfüllt!",
+    "come_back": "Komm morgen für die nächste wieder.",
+    "hint": "Jeden Tag eine neue Mission.",
+    "streak": "{count, plural, =0 {0 Tage} one {# Tag} other {# Tage}}",
+    "streak_hint": "Tage in Folge mit erfüllter Mission",
+    "go": "Los geht’s",
+    "lab": "KI-Labor"
   }
 }

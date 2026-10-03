@@ -75,7 +75,6 @@ export default async function OpengraphImage({ params }: { params: Promise<{ loc
             <span style={{ color: '#F3D27A' }}>Hyper™ AI Engine</span>
           </div>
         </div>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={mascotSrc} width={417} height={560} alt="" style={{ marginTop: 40 }} />
       </div>
     ),

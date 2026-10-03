@@ -13,7 +13,11 @@
     "agents": "Agentes",
     "games": "Jogos",
     "account": "A minha conta",
-    "signin": "Entrar"
+    "signin": "Entrar",
+    "lab": "Laboratório IA",
+    "new": "NOVO",
+    "theme_light": "Modo claro",
+    "theme_dark": "Modo escuro"
   },
   "hero": {
     "badge": "Educação em IA para crianças dos 5 aos 12 anos",
@@ -592,7 +596,9 @@
     "thinking": "{name} está a pensar",
     "safety": "Mensagem protegida",
     "send": "Enviar",
-    "ask": "Escreve ao {name}…"
+    "ask": "Escreve ao {name}…",
+    "call": "Ligar ao {name}",
+    "call_short": "Ligar"
   },
   "voice": {
     "listen": "Ouvir",
@@ -684,5 +690,130 @@
     "ziggy_title": "Tudo isto, para um só amigo",
     "ziggy_text": "O motor fica nos bastidores. No palco, só estão o Ziggy e o seu filho.",
     "cta": "Falar com o Ziggy"
+  },
+  "call": {
+    "title": "Chamada com {name}",
+    "ready": "Pronto para falar?",
+    "no_mic": "Microfone indisponível",
+    "no_mic_text": "Este navegador não consegue ouvir. Experimenta o Chrome, Edge ou Safari, ou escreve ao Ziggy no chat.",
+    "listening": "Estou a ouvir",
+    "thinking": "A pensar",
+    "speaking": "A falar",
+    "paused": "Em pausa",
+    "interrupt": "Toca-me para falar",
+    "speak_now": "Fala, estou a ouvir…",
+    "start": "Começar a chamada",
+    "resume": "Retomar",
+    "hang_up": "Desligar",
+    "hello": "Olá! É o {name}. Estou a ouvir: o que queres aprender hoje?",
+    "trouble": "Ups, não ouvi bem. Podes repetir?"
+  },
+  "lab": {
+    "eyebrow": "Laboratório IA",
+    "title": "Ensina o Ziggy a reconhecer",
+    "subtitle": "Desenha exemplos, treina uma inteligência artificial a sério e vê como ela pensa. Tudo acontece no teu aparelho.",
+    "presets": {
+      "sun_moon": "Sol ou lua?",
+      "shapes": "Círculo ou triângulo?",
+      "faces": "Contente ou triste?",
+      "digits": "Os números 1, 2, 3"
+    },
+    "preset_hint": "{count} categorias para ensinar ao Ziggy",
+    "labels": {
+      "sun": "um sol",
+      "moon": "uma lua",
+      "circle": "um círculo",
+      "triangle": "um triângulo",
+      "happy": "uma cara contente",
+      "sad": "uma cara triste",
+      "one": "um 1",
+      "two": "um 2",
+      "three": "um 3"
+    },
+    "pad_label": "Quadro de desenho",
+    "clear": "Apagar",
+    "back": "Mudar de desafio",
+    "steps": {
+      "teach": "Mostrar",
+      "train": "Treinar",
+      "test": "Testar"
+    },
+    "teach_hint": "Desenha um exemplo no quadro e arruma-o na caixa certa. Varia: grande, pequeno, inclinado!",
+    "add_to": "É {label}",
+    "enough": "{count} exemplos, perfeito!",
+    "need_more": "{count, plural, one {Falta # exemplo} other {Faltam # exemplos}}",
+    "bias": "Há muito poucos exemplos de «{label}». Uma IA reconhece mal o que viu pouco: chama-se enviesamento. Junta mais!",
+    "train_button": "Ziggy, aprende!",
+    "training": "O Ziggy está a memorizar os teus {count} exemplos…",
+    "test_hint": "Desenha algo novo: o Ziggy vai adivinhar!",
+    "guess": "Acho que é {label}!",
+    "unsure": "Hmm… não tenho a certeza.",
+    "sees": "O que o Ziggy vê",
+    "alike": "Parece-se com",
+    "right": "Sim, boa Ziggy!",
+    "wrong_was": "Não, era {label}",
+    "learned": "Obrigado, vou lembrar-me! Este desenho é um novo exemplo.",
+    "waiting": "O Ziggy espera o teu desenho…",
+    "done_title": "Treinaste uma IA!",
+    "score": "O Ziggy acertou {correct} vezes em {total}",
+    "lessons": {
+      "data": "Uma IA aprende com exemplos: são os seus dados. Sem exemplos, não sabe nada.",
+      "more": "Quanto mais exemplos variados tiver, melhor reconhece desenhos novos.",
+      "mistakes": "Uma IA pode enganar-se. Quando a corriges, melhora: cabe-te a ti verificar!"
+    },
+    "again": "Testar outra vez",
+    "new_challenge": "Novo desafio",
+    "how_title": "Como o Ziggy aprende",
+    "how": {
+      "data": {
+        "title": "Dás-lhe exemplos",
+        "desc": "Cada desenho arrumado numa caixa é um exemplo. Juntos formam os seus dados de treino."
+      },
+      "see": {
+        "title": "Ele olha para quadradinhos",
+        "desc": "O Ziggy reduz o teu desenho a uma grelha de 16 × 16: é tudo o que vê, sem saber o que é um sol."
+      },
+      "vote": {
+        "title": "Os vizinhos votam",
+        "desc": "Compara o teu desenho com todos os exemplos, fica com os três mais parecidos e deixa-os votar. Chama-se «vizinhos mais próximos»."
+      }
+    },
+    "private": "Os teus desenhos ficam no teu aparelho: nada é enviado pela internet.",
+    "teaser_title": "Torna-te professor de uma IA",
+    "teaser_text": "No Laboratório IA, o seu filho desenha exemplos, treina uma inteligência artificial a sério e descobre como ela «vê», compara e se engana.",
+    "teaser_cta": "Abrir o laboratório"
+  },
+  "skills": {
+    "title": "Perfil de competências",
+    "subtitle": "Calculado a partir dos jogos: cada partida faz crescer uma competência.",
+    "names": {
+      "memory": "Memória",
+      "logic": "Lógica",
+      "math": "Cálculo",
+      "knowledge": "Cultura",
+      "code_ai": "Código e IA",
+      "spatial": "Espaço"
+    },
+    "strength": "Ponto forte",
+    "next": "Próximo desafio",
+    "tips": {
+      "memory": "Joga Memória ou O Ziggy diz para treinar a memória.",
+      "logic": "Experimenta Lógica ou O intruso para treinar o raciocínio.",
+      "math": "Uma ronda de Matemática para subir o cálculo.",
+      "knowledge": "O Quiz espera por ti com muito para descobrir.",
+      "code_ai": "Programa o robô ou treina o Ziggy no Laboratório IA.",
+      "spatial": "O Puzzle deslizante treina o teu sentido de espaço."
+    }
+  },
+  "mission": {
+    "title": "Missão do dia",
+    "goal": "{stars, plural, one {Ganha # estrela} other {Ganha # estrelas}} em {game}",
+    "done": "Missão cumprida!",
+    "come_back": "Volta amanhã para a próxima.",
+    "hint": "Uma missão nova todos os dias.",
+    "streak": "{count, plural, =0 {0 dias} one {# dia} other {# dias}}",
+    "streak_hint": "Dias seguidos com a missão cumprida",
+    "go": "Vamos",
+    "lab": "Laboratório IA"
   }
 }

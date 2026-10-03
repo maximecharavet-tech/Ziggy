@@ -76,7 +76,7 @@ export function LoginPageContent() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-clip">
         <ParticleField count={24} />
         <div className="max-w-md mx-auto px-4 py-10 text-center relative z-10">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>

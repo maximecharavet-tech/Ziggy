@@ -13,7 +13,11 @@
     "agents": "에이전트",
     "games": "게임",
     "account": "내 계정",
-    "signin": "로그인"
+    "signin": "로그인",
+    "lab": "AI 연구소",
+    "new": "NEW",
+    "theme_light": "라이트 모드",
+    "theme_dark": "다크 모드"
   },
   "hero": {
     "badge": "5~12세 어린이를 위한 AI 교육",
@@ -592,7 +596,9 @@
     "thinking": "{name}가 생각 중",
     "safety": "보호된 메시지",
     "send": "보내기",
-    "ask": "{name}에게 쓰기…"
+    "ask": "{name}에게 쓰기…",
+    "call": "{name}에게 전화",
+    "call_short": "전화"
   },
   "voice": {
     "listen": "듣기",
@@ -684,5 +690,130 @@
     "ziggy_title": "이 모든 것은 단 한 친구를 위해",
     "ziggy_text": "엔진은 무대 뒤에 있어요. 무대 위에는 지기와 아이뿐이에요.",
     "cta": "지기와 말하기"
+  },
+  "call": {
+    "title": "{name}와 통화",
+    "ready": "이야기할 준비 됐나요?",
+    "no_mic": "마이크를 쓸 수 없어요",
+    "no_mic_text": "이 브라우저는 들을 수 없어요. Chrome, Edge, Safari로 해 보거나 채팅으로 지기에게 써 주세요.",
+    "listening": "듣고 있어요",
+    "thinking": "생각 중",
+    "speaking": "말하는 중",
+    "paused": "일시 정지",
+    "interrupt": "말하려면 나를 눌러요",
+    "speak_now": "말해 봐요, 듣고 있어요…",
+    "start": "통화 시작",
+    "resume": "계속하기",
+    "hang_up": "끊기",
+    "hello": "여보세요! {name}예요. 듣고 있어요. 오늘은 뭘 배우고 싶어요?",
+    "trouble": "앗, 잘 못 들었어요. 다시 말해 줄래요?"
+  },
+  "lab": {
+    "eyebrow": "AI 연구소",
+    "title": "지기에게 알아보는 법을 가르쳐요",
+    "subtitle": "예시를 그리고, 진짜 인공지능을 훈련하고, 어떻게 생각하는지 봐요. 모든 건 내 기기 안에서 일어나요.",
+    "presets": {
+      "sun_moon": "해일까 달일까?",
+      "shapes": "원일까 세모일까?",
+      "faces": "기쁨일까 슬픔일까?",
+      "digits": "숫자 1, 2, 3"
+    },
+    "preset_hint": "지기에게 가르칠 {count}가지",
+    "labels": {
+      "sun": "해",
+      "moon": "달",
+      "circle": "원",
+      "triangle": "세모",
+      "happy": "기쁨",
+      "sad": "슬픔",
+      "one": "1",
+      "two": "2",
+      "three": "3"
+    },
+    "pad_label": "그림판",
+    "clear": "지우기",
+    "back": "도전 바꾸기",
+    "steps": {
+      "teach": "보여 주기",
+      "train": "훈련하기",
+      "test": "시험하기"
+    },
+    "teach_hint": "그림판에 예시를 그리고 알맞은 상자에 넣어요. 크게, 작게, 기울여서 다양하게 그려요!",
+    "add_to": "{label}이에요",
+    "enough": "{count}개, 완벽해요!",
+    "need_more": "{count, plural, other {#개 더}}",
+    "bias": "{label} 예시가 너무 적어요. AI는 적게 본 것을 잘 못 알아봐요. 이걸 편향(바이어스)이라고 해요. 더 넣어 봐요!",
+    "train_button": "지기, 배워!",
+    "training": "지기가 예시 {count}개를 외우고 있어요…",
+    "test_hint": "새로운 걸 그려 봐요. 지기가 맞혀 볼게요!",
+    "guess": "{label} 같아요!",
+    "unsure": "음… 잘 모르겠어요.",
+    "sees": "지기가 보는 것",
+    "alike": "닮은 그림",
+    "right": "맞아요, 지기 최고!",
+    "wrong_was": "아니, {label}이었어",
+    "learned": "고마워요, 기억할게요! 이 그림이 새 예시가 됐어요.",
+    "waiting": "지기가 그림을 기다려요…",
+    "done_title": "AI를 훈련했어요!",
+    "score": "지기가 {total}번 중 {correct}번 맞혔어요",
+    "lessons": {
+      "data": "AI는 예시로 배워요. 그게 바로 데이터예요. 예시가 없으면 아무것도 몰라요.",
+      "more": "다양한 예시가 많을수록 새 그림을 더 잘 알아봐요.",
+      "mistakes": "AI도 틀릴 수 있어요. 고쳐 주면 더 좋아져요. 확인하는 건 바로 나!"
+    },
+    "again": "다시 시험하기",
+    "new_challenge": "새 도전",
+    "how_title": "지기가 배우는 방법",
+    "how": {
+      "data": {
+        "title": "내가 예시를 줘요",
+        "desc": "상자에 넣은 그림 하나하나가 예시예요. 모두 모여 훈련 데이터가 돼요."
+      },
+      "see": {
+        "title": "작은 칸을 봐요",
+        "desc": "지기는 그림을 16 × 16 칸으로 줄여요. 지기가 보는 건 그것뿐이고, 해가 뭔지는 몰라요."
+      },
+      "vote": {
+        "title": "이웃들이 투표해요",
+        "desc": "내 그림을 모든 예시와 비교해서 가장 닮은 셋을 골라 투표하게 해요. 이걸 ‘최근접 이웃’이라고 해요."
+      }
+    },
+    "private": "그림은 내 기기에만 있어요. 인터넷으로 보내지 않아요.",
+    "teaser_title": "AI의 선생님이 되어 보세요",
+    "teaser_text": "AI 연구소에서 아이는 예시를 그리고, 진짜 인공지능을 훈련하며, AI가 어떻게 “보고”, 비교하고, 틀리는지 발견해요.",
+    "teaser_cta": "연구소 열기"
+  },
+  "skills": {
+    "title": "능력 프로필",
+    "subtitle": "게임 결과로 계산해요. 한 판 할 때마다 능력이 자라요.",
+    "names": {
+      "memory": "기억력",
+      "logic": "논리",
+      "math": "계산",
+      "knowledge": "상식",
+      "code_ai": "코딩·AI",
+      "spatial": "공간"
+    },
+    "strength": "강점",
+    "next": "다음 도전",
+    "tips": {
+      "memory": "기억력을 키우려면 메모리나 지기가 말해요를 해 봐요.",
+      "logic": "논리력을 키우려면 논리나 다른 하나 찾기를 해 봐요.",
+      "math": "수학 한 판으로 계산력을 올려요.",
+      "knowledge": "퀴즈가 새로운 걸 잔뜩 준비했어요.",
+      "code_ai": "로봇을 프로그래밍하거나 AI 연구소에서 지기를 훈련해요.",
+      "spatial": "슬라이드 퍼즐로 공간 감각을 키워요."
+    }
+  },
+  "mission": {
+    "title": "오늘의 미션",
+    "goal": "{game}에서 별 {stars}개 모으기",
+    "done": "미션 성공!",
+    "come_back": "다음 미션은 내일 만나요.",
+    "hint": "매일 새로운 미션.",
+    "streak": "{count}일",
+    "streak_hint": "미션을 연속으로 성공한 날",
+    "go": "가자",
+    "lab": "AI 연구소"
   }
 }

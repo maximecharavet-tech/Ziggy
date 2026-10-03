@@ -9,7 +9,6 @@ import { GameShell, GameStartScreen, GameResultScreen } from './GameShell';
 type Phase = 'start' | 'playing' | 'done';
 
 const SIZE = 3;
-const TILES = SIZE * SIZE;
 const SOLVED = [1, 2, 3, 4, 5, 6, 7, 8, 0];
 const SCRAMBLE_MOVES = 90;
 

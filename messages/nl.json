@@ -13,7 +13,11 @@
     "agents": "Agenten",
     "games": "Spelletjes",
     "account": "Mijn account",
-    "signin": "Inloggen"
+    "signin": "Inloggen",
+    "lab": "AI-lab",
+    "new": "NIEUW",
+    "theme_light": "Lichte modus",
+    "theme_dark": "Donkere modus"
   },
   "hero": {
     "badge": "AI-onderwijs voor kinderen van 5 tot 12 jaar",
@@ -592,7 +596,9 @@
     "thinking": "{name} denkt na",
     "safety": "Beschermd bericht",
     "send": "Versturen",
-    "ask": "Schrijf naar {name}…"
+    "ask": "Schrijf naar {name}…",
+    "call": "{name} bellen",
+    "call_short": "Bellen"
   },
   "voice": {
     "listen": "Luisteren",
@@ -684,5 +690,130 @@
     "ziggy_title": "Dit alles, voor één vriendje",
     "ziggy_text": "De motor blijft achter de schermen. Op het podium staan alleen Ziggy en uw kind.",
     "cta": "Praat met Ziggy"
+  },
+  "call": {
+    "title": "Gesprek met {name}",
+    "ready": "Klaar om te praten?",
+    "no_mic": "Microfoon niet beschikbaar",
+    "no_mic_text": "Deze browser kan niet luisteren. Probeer Chrome, Edge of Safari, of schrijf Ziggy in de chat.",
+    "listening": "Ik luister",
+    "thinking": "Ik denk na",
+    "speaking": "Ik praat",
+    "paused": "Gepauzeerd",
+    "interrupt": "Tik op mij om te praten",
+    "speak_now": "Praat maar, ik luister…",
+    "start": "Gesprek starten",
+    "resume": "Verder",
+    "hang_up": "Ophangen",
+    "hello": "Hallo! Met {name}. Ik luister: wat wil je vandaag leren?",
+    "trouble": "Oei, dat hoorde ik niet goed. Wil je het nog eens zeggen?"
+  },
+  "lab": {
+    "eyebrow": "AI-lab",
+    "title": "Leer Ziggy dingen herkennen",
+    "subtitle": "Teken voorbeelden, train een echte kunstmatige intelligentie en kijk hoe ze denkt. Alles gebeurt op je eigen apparaat.",
+    "presets": {
+      "sun_moon": "Zon of maan?",
+      "shapes": "Cirkel of driehoek?",
+      "faces": "Blij of verdrietig?",
+      "digits": "De cijfers 1, 2, 3"
+    },
+    "preset_hint": "{count} categorieën om Ziggy te leren",
+    "labels": {
+      "sun": "een zon",
+      "moon": "een maan",
+      "circle": "een cirkel",
+      "triangle": "een driehoek",
+      "happy": "een blij gezicht",
+      "sad": "een verdrietig gezicht",
+      "one": "een 1",
+      "two": "een 2",
+      "three": "een 3"
+    },
+    "pad_label": "Tekenbord",
+    "clear": "Wissen",
+    "back": "Andere uitdaging",
+    "steps": {
+      "teach": "Laten zien",
+      "train": "Trainen",
+      "test": "Testen"
+    },
+    "teach_hint": "Teken een voorbeeld op het bord en stop het in de juiste doos. Wissel af: groot, klein, scheef!",
+    "add_to": "Het is {label}",
+    "enough": "{count} voorbeelden, perfect!",
+    "need_more": "{count, plural, one {Nog # voorbeeld} other {Nog # voorbeelden}}",
+    "bias": "Er zijn heel weinig voorbeelden van „{label}”. Een AI herkent slecht wat ze weinig heeft gezien: dat heet vooringenomenheid (bias). Voeg er meer toe!",
+    "train_button": "Ziggy, leer!",
+    "training": "Ziggy onthoudt je {count} voorbeelden…",
+    "test_hint": "Teken iets nieuws: Ziggy raadt het!",
+    "guess": "Ik denk dat het {label} is!",
+    "unsure": "Hmm… ik weet het niet zeker.",
+    "sees": "Wat Ziggy ziet",
+    "alike": "Lijkt op",
+    "right": "Ja, goed zo Ziggy!",
+    "wrong_was": "Nee, het was {label}",
+    "learned": "Dank je, ik onthoud het! Deze tekening wordt een nieuw voorbeeld.",
+    "waiting": "Ziggy wacht op je tekening…",
+    "done_title": "Je hebt een AI getraind!",
+    "score": "Ziggy had het {correct} van de {total} keer goed",
+    "lessons": {
+      "data": "Een AI leert van voorbeelden: dat zijn haar gegevens. Zonder voorbeelden weet ze niets.",
+      "more": "Hoe meer verschillende voorbeelden, hoe beter ze nieuwe tekeningen herkent.",
+      "mistakes": "Een AI kan zich vergissen. Als je haar verbetert, wordt ze beter: controleren doe jij!"
+    },
+    "again": "Opnieuw testen",
+    "new_challenge": "Nieuwe uitdaging",
+    "how_title": "Hoe Ziggy leert",
+    "how": {
+      "data": {
+        "title": "Jij geeft voorbeelden",
+        "desc": "Elke tekening in een doos is een voorbeeld. Samen vormen ze zijn trainingsgegevens."
+      },
+      "see": {
+        "title": "Hij kijkt naar vakjes",
+        "desc": "Ziggy maakt van je tekening een rooster van 16 × 16 vakjes: meer ziet hij niet, hij weet niet wat een zon is."
+      },
+      "vote": {
+        "title": "Zijn buren stemmen",
+        "desc": "Hij vergelijkt je tekening met al zijn voorbeelden, houdt de drie meest gelijkende over en laat ze stemmen. Dat heet „dichtstbijzijnde buren”."
+      }
+    },
+    "private": "Je tekeningen blijven op je apparaat: er gaat niets over internet.",
+    "teaser_title": "Word de leraar van een AI",
+    "teaser_text": "In het AI-lab tekent uw kind voorbeelden, traint het een echte kunstmatige intelligentie en ontdekt het hoe die „ziet”, vergelijkt en zich vergist.",
+    "teaser_cta": "Open het lab"
+  },
+  "skills": {
+    "title": "Vaardighedenprofiel",
+    "subtitle": "Berekend uit de spellen: elk spel laat een vaardigheid groeien.",
+    "names": {
+      "memory": "Geheugen",
+      "logic": "Logica",
+      "math": "Rekenen",
+      "knowledge": "Kennis",
+      "code_ai": "Code & AI",
+      "spatial": "Ruimte"
+    },
+    "strength": "Sterk punt",
+    "next": "Volgende uitdaging",
+    "tips": {
+      "memory": "Speel Memory of Ziggy zegt om je geheugen te trainen.",
+      "logic": "Probeer Logica of Wat hoort er niet bij om je denken te trainen.",
+      "math": "Een rondje Rekenen voor je sommen.",
+      "knowledge": "De Quiz wacht met van alles om te ontdekken.",
+      "code_ai": "Programmeer de robot of train Ziggy in het AI-lab.",
+      "spatial": "De Schuifpuzzel traint je ruimtelijk inzicht."
+    }
+  },
+  "mission": {
+    "title": "Missie van de dag",
+    "goal": "{stars, plural, one {Win # ster} other {Win # sterren}} bij {game}",
+    "done": "Missie gelukt!",
+    "come_back": "Kom morgen terug voor de volgende.",
+    "hint": "Elke dag een nieuwe missie.",
+    "streak": "{count, plural, =0 {0 dagen} one {# dag} other {# dagen}}",
+    "streak_hint": "Dagen op rij met de missie gehaald",
+    "go": "Aan de slag",
+    "lab": "AI-lab"
   }
 }

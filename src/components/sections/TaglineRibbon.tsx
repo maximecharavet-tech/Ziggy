@@ -38,7 +38,7 @@ export function TaglineRibbon() {
   );
 
   return (
-    <section className="relative py-8 sm:py-10 overflow-hidden" aria-label={t('tagline')}>
+    <section className="relative py-8 sm:py-10 overflow-clip" aria-label={t('tagline')}>
       <div className="relative -rotate-[1.5deg] scale-[1.03] border-y-2 border-white/70 dark:border-white/10 bg-gradient-to-r from-[#FFE7C2] via-peach to-blush dark:from-[#3a2a17] dark:via-[#4a3218] dark:to-[#4a2626] py-4 sm:py-5 shadow-[0_18px_40px_-24px_rgba(107,74,43,0.6)]">
         <Sparkle className="w-5 top-2 start-[12%] z-10" color="#FFFFFF" delay={0.4} />
         <Sparkle className="w-4 bottom-2 end-[20%] z-10" color="#FFFFFF" delay={1.4} />

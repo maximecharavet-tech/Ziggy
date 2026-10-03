@@ -10,6 +10,8 @@ import { AgentAvatar } from '@/components/agents/AgentAvatar';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { useProgressMap } from '@/components/account/useProgressMap';
 import { RewardsPanel } from '@/components/rewards/RewardsPanel';
+import { SkillRadar } from '@/components/rewards/SkillRadar';
+import { MissionCard } from '@/components/rewards/MissionCard';
 import { ChangePasswordForm } from '@/components/account/ChangePasswordForm';
 import { DeleteAccount } from '@/components/account/DeleteAccount';
 import { AVATAR_CHOICES, avatarColor } from '@/lib/account';
@@ -56,7 +58,11 @@ export function AccountPageContent() {
 
   const trophies = (
     <>
+      <div className="mt-10">
+        <MissionCard />
+      </div>
       {!loading && plays > 0 && <RewardsPanel progress={progress} />}
+      {!loading && plays > 0 && <SkillRadar progress={progress} />}
       <h2 className="font-display text-xl font-bold text-text-body mt-10 mb-4">{t('progressTitle')}</h2>
       {!loading && plays === 0 ? (
         <div className="glass rounded-2xl border border-border/50 p-8 text-center">

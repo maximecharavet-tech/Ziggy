@@ -12,7 +12,7 @@ export function AgentsPageContent() {
 
   return (
     <div className="min-h-screen pt-24 pb-16">
-      <div className="relative overflow-hidden">
+      <div className="relative overflow-clip">
         <ParticleField count={30} />
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 text-center relative z-10">
           <motion.div

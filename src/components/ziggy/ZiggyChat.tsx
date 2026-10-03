@@ -3,6 +3,8 @@
 import { useTranslations } from 'next-intl';
 import { ChatWindow } from '@/components/chat/ChatWindow';
 import { MascotCutout, ZiggyAvatar } from './Mascot';
+import { ZiggyVideo } from './ZiggyVideo';
+import { FILMS } from '@/lib/mascot';
 
 /** Ziggy himself: the official mascot, his voice, his colour. */
 export function ZiggyChat() {
@@ -13,6 +15,14 @@ export function ZiggyChat() {
         name: 'Ziggy',
         color: '#22C55E',
         avatar: (size) => <ZiggyAvatar size={size} ring={size > 30} />,
+        portrait: (
+          <ZiggyVideo
+            src={FILMS.loop.src}
+            webm={FILMS.loop.webm}
+            poster={FILMS.loop.poster}
+            className="w-full h-full object-cover object-[50%_42%] scale-[1.35]"
+          />
+        ),
         welcome: (
           <div className="w-24 animate-float">
             <MascotCutout pose="wave" width={96} />
