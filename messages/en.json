@@ -17,7 +17,8 @@
     "lab": "AI Lab",
     "new": "NEW",
     "theme_light": "Switch to light mode",
-    "theme_dark": "Switch to dark mode"
+    "theme_dark": "Switch to dark mode",
+    "learn": "Learn"
   },
   "hero": {
     "badge": "AI Education for Kids Aged 5-12",
@@ -297,7 +298,10 @@
     "math": {
       "name": "Speed Maths",
       "description": "Solve as many sums as you can in 60 seconds. The longer your streak, the trickier they get!",
-      "howTo": "Pick the right answer out of four. Every correct answer grows your streak — and the questions level up with you."
+      "howTo": "Pick the right answer out of four. Every correct answer grows your streak — and the questions level up with you.",
+      "zen": "Calm",
+      "challenge": "Timed challenge",
+      "mode": "Game mode"
     },
     "logic": {
       "name": "Pattern Quest",
@@ -417,7 +421,11 @@
       "cleared": "Level cleared!",
       "crashed": "Oops! Ziggy bumped into something.",
       "emptyQueue": "Add at least one arrow.",
-      "tries": "tries"
+      "tries": "tries",
+      "bug": "A bug! Fix the blinking arrow.",
+      "short": "Ziggy stopped before the star: add more arrows!",
+      "hint": "Hint",
+      "hintText": "Follow the footprints!"
     },
     "oddone": {
       "name": "Odd One Out",
@@ -449,7 +457,15 @@
       "moves": "Moves",
       "goal": "Put 1 to 8 in order",
       "solved": "Solved!"
-    }
+    },
+    "great": "Great!",
+    "growing": "Your brain is growing!",
+    "growth": [
+      "Every try grows your brain 🌱",
+      "A mistake is a clue for next time.",
+      "You don’t know it yet… but you’re learning!",
+      "Champions train — nobody is born a champion."
+    ]
   },
   "account": {
     "badge": "My account",
@@ -814,6 +830,161 @@
     "streak": "{count, plural, =0 {0 days} one {# day} other {# days}}",
     "streak_hint": "Days in a row with the mission done",
     "go": "Let’s go",
-    "lab": "AI Lab"
+    "lab": "AI Lab",
+    "palace": "Memory Palace",
+    "memo": "Memory Boxes"
+  },
+  "memo": {
+    "eyebrow": "Memory Boxes",
+    "title": "Remember for good",
+    "subtitle": "Ziggy asks each question again just before you would forget it. A little every day, and it stays in your long-term memory.",
+    "decks": {
+      "times": "Times tables",
+      "bonds": "Number bonds to 10 and 20",
+      "words": "My first words"
+    },
+    "decks_desc": {
+      "times": "From 2 × 2 to 10 × 10.",
+      "bonds": "3 + ? = 10, 13 + ? = 20…",
+      "words": "A picture, a word in another language."
+    },
+    "due": "{count, plural, =0 {nothing to review} other {# to review}}",
+    "fresh": "{count, plural, =0 {all discovered} other {# new}}",
+    "long_term": "{count} in long-term memory",
+    "done_title": "Well done, session complete!",
+    "nothing_due": "Nothing to review right now",
+    "done_score": "You remembered {recalled} out of {seen}",
+    "come_back": "Next review: {date}.",
+    "why": "Reviewing at the right time is the secret: every time you find an answer again, your brain stores it more firmly.",
+    "back": "My boxes",
+    "think_number": "Work it out in your head",
+    "think_word": "How do you say it in {language}?",
+    "languages": {
+      "en": "English",
+      "fr": "French"
+    },
+    "right": "Correct!",
+    "not_yet_typed": "Not yet: it was {answer}. We’ll see it again soon!",
+    "check": "Check",
+    "show": "Show the answer",
+    "rate": {
+      "again": "Not yet",
+      "hard": "Hard",
+      "good": "I knew it",
+      "easy": "Too easy"
+    },
+    "fsrs": "Reviews scheduled by FSRS, the open-source memory algorithm"
+  },
+  "palace": {
+    "eyebrow": "Memory Palace",
+    "title": "The memory palace",
+    "subtitle": "Memory champions’ trick: put each thing in a room of Ziggy’s house, then take the walk again.",
+    "intro": "Our brain is great at remembering places and funny pictures. The memory palace uses both superpowers.",
+    "step1": "Ziggy gives you one thing to put in each room.",
+    "step2": "Imagine it doing something really silly in that room.",
+    "step3": "Then take the walk again and find each thing.",
+    "level": "Level {level}: {count} things to remember",
+    "start": "Start the walk",
+    "room_n": "Room {n} of {total}",
+    "rooms": {
+      "door": "The front door",
+      "hall": "The hallway",
+      "living": "The living room",
+      "kitchen": "The kitchen",
+      "bath": "The bathroom",
+      "bedroom": "The bedroom",
+      "attic": "The attic",
+      "garden": "The garden"
+    },
+    "imagine": [
+      "Imagine it dancing here!",
+      "Imagine it giant, filling the whole room!",
+      "Imagine it singing really loudly!",
+      "Imagine it blowing bubbles everywhere!"
+    ],
+    "imagined": "I imagined it!",
+    "pause_title": "Close your eyes for a second…",
+    "pause_text": "Take the walk in your head: the front door, the hallway… What did you put in each room?",
+    "walk": "Take the walk again",
+    "what_here": "What did you put here?",
+    "found": "Found it!",
+    "not_yet": "Not yet: it was {item}",
+    "done_title": "Walk complete!",
+    "score": "{found} of {total} found",
+    "tip": "The weirder and funnier the picture, the better you remember. Try the palace for a shopping list or your lessons!",
+    "next_walk": "New walk ({count} things)",
+    "how": "How it works"
+  },
+  "breathe": {
+    "in": "Breathe in…",
+    "hold": "Hold it…",
+    "out": "Breathe out slowly…",
+    "done": "Well done, your brain is rested!",
+    "title": "Breathe with Ziggy",
+    "reminder_title": "Little break?",
+    "reminder_text": "You’ve been learning for 20 minutes. Your brain sorts things better after a break!",
+    "start": "Breathe for 1 minute",
+    "later": "Later",
+    "close": "Close"
+  },
+  "curve": {
+    "title": "The forgetting curve",
+    "text": "Without reviews, we forget fast. Reviewed at the right moments, a memory lasts longer and longer.",
+    "day": "D{n}",
+    "without": "No reviews",
+    "with": "With Ziggy’s boxes"
+  },
+  "learn": {
+    "eyebrow": "Learning to learn",
+    "title": "Your brain’s superpowers",
+    "subtitle": "Six methods tested by researchers, explained for children — and a Ziggy app for each.",
+    "methods": {
+      "spaced": {
+        "title": "Review at the right time",
+        "kid": "Reviewing a little every day, just before you forget, works better than cramming everything at once.",
+        "science": "Spaced repetition",
+        "cta": "Memory Boxes"
+      },
+      "recall": {
+        "title": "Search in your head",
+        "kid": "Trying to find the answer without looking, even when it’s hard, builds memory far more than rereading.",
+        "science": "Active recall",
+        "cta": "Practise"
+      },
+      "palace": {
+        "title": "The memory palace",
+        "kid": "Put what you want to remember in the rooms of a house, with funny pictures.",
+        "science": "Method of loci",
+        "cta": "Visit the palace"
+      },
+      "teach": {
+        "title": "Learn by teaching",
+        "kid": "Explaining to someone else — even a robot — makes you really understand.",
+        "science": "Protégé effect",
+        "cta": "Train Ziggy"
+      },
+      "mix": {
+        "title": "Mix it up",
+        "kid": "Switching between games (maths, logic, memory) helps you pick the right method.",
+        "science": "Interleaved practice",
+        "cta": "The games"
+      },
+      "dual": {
+        "title": "Picture + word",
+        "kid": "A word with a picture hooks into your brain twice.",
+        "science": "Dual coding",
+        "cta": "My first words"
+      }
+    },
+    "mindset_title": "At Ziggy’s, there is no failing",
+    "mindset": {
+      "m1": "“I don’t know” becomes “I don’t know yet”.",
+      "m2": "A mistake is information: it shows what you will learn next.",
+      "m3": "Effort grows the brain, like a muscle.",
+      "m4": "Sleep and breaks help the brain sort what it has learnt."
+    },
+    "break_title": "A break for your brain",
+    "break_text": "One minute of calm breathing, then back you go, stronger.",
+    "break_cta": "Breathe with Ziggy"
   }
 }

@@ -17,7 +17,8 @@
     "lab": "KI-Labor",
     "new": "NEU",
     "theme_light": "Heller Modus",
-    "theme_dark": "Dunkler Modus"
+    "theme_dark": "Dunkler Modus",
+    "learn": "Lernen"
   },
   "hero": {
     "badge": "KI-Bildung für Kinder von 5 bis 12 Jahren",
@@ -297,7 +298,10 @@
     "math": {
       "name": "Blitzrechnen",
       "description": "Löse in 60 Sekunden so viele Aufgaben wie möglich. Je länger deine Serie, desto kniffliger wird es!",
-      "howTo": "Wähle aus vier Möglichkeiten die richtige Antwort. Jede richtige Antwort verlängert deine Serie — und die Aufgaben wachsen mit dir mit."
+      "howTo": "Wähle aus vier Möglichkeiten die richtige Antwort. Jede richtige Antwort verlängert deine Serie — und die Aufgaben wachsen mit dir mit.",
+      "zen": "Ruhig",
+      "challenge": "Zeit-Challenge",
+      "mode": "Spielmodus"
     },
     "logic": {
       "name": "Muster-Rätsel",
@@ -417,7 +421,11 @@
       "cleared": "Level geschafft!",
       "crashed": "Hoppla! Ziggy ist angestoßen.",
       "emptyQueue": "Füge mindestens einen Pfeil hinzu.",
-      "tries": "Versuche"
+      "tries": "Versuche",
+      "bug": "Ein Bug! Korrigiere den blinkenden Pfeil.",
+      "short": "Ziggy hat vor dem Stern angehalten: Füg Pfeile hinzu!",
+      "hint": "Tipp",
+      "hintText": "Folge den Fußspuren!"
     },
     "oddone": {
       "name": "Was passt nicht?",
@@ -449,7 +457,15 @@
       "moves": "Züge",
       "goal": "Bringe 1 bis 8 in die Reihe",
       "solved": "Gelöst!"
-    }
+    },
+    "great": "Super!",
+    "growing": "Dein Gehirn wächst!",
+    "growth": [
+      "Jeder Versuch lässt dein Gehirn wachsen 🌱",
+      "Ein Fehler ist ein Hinweis für das nächste Mal.",
+      "Du kannst es noch nicht … aber du lernst es!",
+      "Champions trainieren – niemand wird als Champion geboren."
+    ]
   },
   "account": {
     "badge": "Mein Konto",
@@ -814,6 +830,161 @@
     "streak": "{count, plural, =0 {0 Tage} one {# Tag} other {# Tage}}",
     "streak_hint": "Tage in Folge mit erfüllter Mission",
     "go": "Los geht’s",
-    "lab": "KI-Labor"
+    "lab": "KI-Labor",
+    "palace": "Gedächtnispalast",
+    "memo": "Erinnerungskisten"
+  },
+  "memo": {
+    "eyebrow": "Erinnerungskisten",
+    "title": "Für immer merken",
+    "subtitle": "Ziggy fragt jede Frage genau dann wieder, bevor du sie vergessen würdest. Jeden Tag ein bisschen – und es bleibt im Langzeitgedächtnis.",
+    "decks": {
+      "times": "Einmaleins",
+      "bonds": "Ergänzen bis 10 und 20",
+      "words": "Meine ersten Wörter"
+    },
+    "decks_desc": {
+      "times": "Von 2 × 2 bis 10 × 10.",
+      "bonds": "3 + ? = 10, 13 + ? = 20 …",
+      "words": "Ein Bild, ein Wort in einer anderen Sprache."
+    },
+    "due": "{count, plural, =0 {nichts zu wiederholen} other {# zu wiederholen}}",
+    "fresh": "{count, plural, =0 {alles entdeckt} other {# neu}}",
+    "long_term": "{count} im Langzeitgedächtnis",
+    "done_title": "Super, Runde geschafft!",
+    "nothing_due": "Gerade nichts zu wiederholen",
+    "done_score": "Du hast dich an {recalled} von {seen} erinnert",
+    "come_back": "Nächste Wiederholung: {date}.",
+    "why": "Im richtigen Moment wiederholen ist das Geheimnis: Jedes Mal, wenn du eine Antwort wiederfindest, speichert dein Gehirn sie fester.",
+    "back": "Meine Kisten",
+    "think_number": "Rechne im Kopf",
+    "think_word": "Wie heißt das auf {language}?",
+    "languages": {
+      "en": "Englisch",
+      "fr": "Französisch"
+    },
+    "right": "Richtig!",
+    "not_yet_typed": "Noch nicht: Es war {answer}. Wir sehen es bald wieder!",
+    "check": "Prüfen",
+    "show": "Antwort zeigen",
+    "rate": {
+      "again": "Noch nicht",
+      "hard": "Schwer",
+      "good": "Wusste ich",
+      "easy": "Zu leicht"
+    },
+    "fsrs": "Wiederholungen geplant mit FSRS, dem Open-Source-Gedächtnisalgorithmus"
+  },
+  "palace": {
+    "eyebrow": "Gedächtnispalast",
+    "title": "Der Gedächtnispalast",
+    "subtitle": "Der Trick der Gedächtnis-Champions: Leg jedes Ding in einen Raum von Ziggys Haus und mach den Spaziergang noch einmal.",
+    "intro": "Unser Gehirn merkt sich Orte und lustige Bilder richtig gut. Der Gedächtnispalast nutzt diese beiden Superkräfte.",
+    "step1": "Ziggy gibt dir für jeden Raum ein Ding.",
+    "step2": "Stell dir vor, wie es dort etwas total Lustiges macht.",
+    "step3": "Dann gehst du den Weg noch einmal und findest jedes Ding.",
+    "level": "Level {level}: {count} Dinge merken",
+    "start": "Spaziergang starten",
+    "room_n": "Raum {n} von {total}",
+    "rooms": {
+      "door": "Die Haustür",
+      "hall": "Der Flur",
+      "living": "Das Wohnzimmer",
+      "kitchen": "Die Küche",
+      "bath": "Das Bad",
+      "bedroom": "Das Schlafzimmer",
+      "attic": "Der Dachboden",
+      "garden": "Der Garten"
+    },
+    "imagine": [
+      "Stell dir vor, es tanzt hier!",
+      "Stell dir vor, es ist riesig und füllt alles aus!",
+      "Stell dir vor, es singt ganz laut!",
+      "Stell dir vor, es macht überall Seifenblasen!"
+    ],
+    "imagined": "Hab’s mir vorgestellt!",
+    "pause_title": "Schließ kurz die Augen …",
+    "pause_text": "Geh den Weg im Kopf: die Haustür, der Flur … Was lag in jedem Raum?",
+    "walk": "Weg noch einmal gehen",
+    "what_here": "Was hattest du hier hingelegt?",
+    "found": "Gefunden!",
+    "not_yet": "Noch nicht: Es war {item}",
+    "done_title": "Spaziergang geschafft!",
+    "score": "{found} von {total} gefunden",
+    "tip": "Je verrückter und lustiger das Bild, desto besser merkst du es dir. Probier den Palast mit dem Einkaufszettel oder deinen Hausaufgaben!",
+    "next_walk": "Neuer Spaziergang ({count} Dinge)",
+    "how": "So geht’s"
+  },
+  "breathe": {
+    "in": "Einatmen …",
+    "hold": "Luft anhalten …",
+    "out": "Langsam ausatmen …",
+    "done": "Super, dein Gehirn ist ausgeruht!",
+    "title": "Atme mit Ziggy",
+    "reminder_title": "Kleine Pause?",
+    "reminder_text": "Du lernst schon seit 20 Minuten. Nach einer Pause sortiert dein Gehirn besser!",
+    "start": "1 Minute atmen",
+    "later": "Später",
+    "close": "Schließen"
+  },
+  "curve": {
+    "title": "Die Vergessenskurve",
+    "text": "Ohne Wiederholung vergisst man schnell. Im richtigen Moment wiederholt, hält die Erinnerung immer länger.",
+    "day": "T{n}",
+    "without": "Ohne Wiederholung",
+    "with": "Mit Ziggys Kisten"
+  },
+  "learn": {
+    "eyebrow": "Lernen lernen",
+    "title": "Die Superkräfte deines Gehirns",
+    "subtitle": "Sechs von Forschern getestete Methoden, für Kinder erklärt – und für jede eine Ziggy-App.",
+    "methods": {
+      "spaced": {
+        "title": "Im richtigen Moment wiederholen",
+        "kid": "Jeden Tag ein bisschen wiederholen, kurz vor dem Vergessen, wirkt besser als alles auf einmal zu pauken.",
+        "science": "Verteiltes Wiederholen",
+        "cta": "Erinnerungskisten"
+      },
+      "recall": {
+        "title": "Im Kopf suchen",
+        "kid": "Die Antwort ohne Nachschauen zu suchen, auch wenn es schwer ist, trainiert das Gedächtnis viel mehr als Nachlesen.",
+        "science": "Aktives Abrufen",
+        "cta": "Üben"
+      },
+      "palace": {
+        "title": "Der Gedächtnispalast",
+        "kid": "Was du dir merken willst, in die Räume eines Hauses legen – mit lustigen Bildern.",
+        "science": "Loci-Methode",
+        "cta": "Palast besuchen"
+      },
+      "teach": {
+        "title": "Lernen durch Lehren",
+        "kid": "Wer jemand anderem etwas erklärt – sogar einem Roboter –, muss es wirklich verstehen.",
+        "science": "Protégé-Effekt",
+        "cta": "Ziggy trainieren"
+      },
+      "mix": {
+        "title": "Aufgaben mischen",
+        "kid": "Zwischen Spielen wechseln (Rechnen, Logik, Gedächtnis) hilft, die richtige Methode zu wählen.",
+        "science": "Verschachteltes Üben",
+        "cta": "Die Spiele"
+      },
+      "dual": {
+        "title": "Bild + Wort",
+        "kid": "Ein Wort mit Bild verankert sich doppelt im Gehirn.",
+        "science": "Doppelte Kodierung",
+        "cta": "Meine ersten Wörter"
+      }
+    },
+    "mindset_title": "Bei Ziggy gibt es kein Scheitern",
+    "mindset": {
+      "m1": "„Ich kann das nicht“ wird zu „Ich kann das noch nicht“.",
+      "m2": "Ein Fehler ist eine Information: Er zeigt, was du als Nächstes lernst.",
+      "m3": "Anstrengung lässt das Gehirn wachsen, wie einen Muskel.",
+      "m4": "Schlaf und Pausen helfen dem Gehirn, Gelerntes zu ordnen."
+    },
+    "break_title": "Eine Pause fürs Gehirn",
+    "break_text": "Eine Minute ruhig atmen, dann geht’s gestärkt weiter.",
+    "break_cta": "Mit Ziggy atmen"
   }
 }

@@ -14,13 +14,13 @@ describe('skills', () => {
   it('has six skills covering every game and the lab', () => {
     expect(SKILLS).toHaveLength(6);
     expect(SKILLS.flatMap((s) => s.games)).toEqual(
-      expect.arrayContaining(['memory', 'math', 'logic', 'quiz', 'simon', 'coding', 'oddone', 'puzzle', 'lab'])
+      expect.arrayContaining(['memory', 'math', 'logic', 'quiz', 'simon', 'coding', 'oddone', 'puzzle', 'lab', 'palace', 'memo'])
     );
   });
 
   it('averages the games of a skill, untried ones counting zero', () => {
     const s = computeSkills({ memory: e('memory', 3, 5), math: e('math', 3, 5) });
-    expect(s.memory).toBe(50);
+    expect(s.memory).toBe(25); // 1 of 4 memory activities, at 100
     expect(s.math).toBe(100);
     expect(s.spatial).toBe(0);
     expect(strengths(s)).toEqual({ best: 'math', next: 'logic' });

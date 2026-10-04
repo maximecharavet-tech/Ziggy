@@ -17,7 +17,8 @@
     "lab": "Labo IA",
     "new": "NOUVEAU",
     "theme_light": "Passer en mode clair",
-    "theme_dark": "Passer en mode sombre"
+    "theme_dark": "Passer en mode sombre",
+    "learn": "Apprendre"
   },
   "hero": {
     "badge": "L'IA éducative pour les 5-12 ans",
@@ -297,7 +298,10 @@
     "math": {
       "name": "Calcul éclair",
       "description": "Résous un maximum d'opérations en 60 secondes. Plus ta série est longue, plus ça se corse !",
-      "howTo": "Choisis la bonne réponse parmi quatre. Chaque bonne réponse allonge ta série — et les calculs montent d'un cran avec toi."
+      "howTo": "Choisis la bonne réponse parmi quatre. Chaque bonne réponse allonge ta série — et les calculs montent d'un cran avec toi.",
+      "zen": "Zen",
+      "challenge": "Défi chrono",
+      "mode": "Mode de jeu"
     },
     "logic": {
       "name": "Suite logique",
@@ -417,7 +421,11 @@
       "cleared": "Niveau réussi !",
       "crashed": "Aïe ! Ziggy a heurté quelque chose.",
       "emptyQueue": "Ajoute au moins une flèche.",
-      "tries": "essais"
+      "tries": "essais",
+      "bug": "Un bug ! Corrige la flèche qui clignote.",
+      "short": "Ziggy s’est arrêté avant l’étoile : ajoute des flèches !",
+      "hint": "Indice",
+      "hintText": "Suis les empreintes !"
     },
     "oddone": {
       "name": "L’intrus",
@@ -449,7 +457,15 @@
       "moves": "Coups",
       "goal": "Remets 1 à 8 dans l’ordre",
       "solved": "Résolu !"
-    }
+    },
+    "great": "Super !",
+    "growing": "Ton cerveau grandit !",
+    "growth": [
+      "Chaque essai fait pousser ton cerveau 🌱",
+      "Une erreur, c’est une info pour la prochaine fois.",
+      "Tu ne sais pas encore… mais tu apprends !",
+      "Les champions s’entraînent, ils ne naissent pas champions."
+    ]
   },
   "account": {
     "badge": "Mon compte",
@@ -814,6 +830,161 @@
     "streak": "{count, plural, =0 {0 jour} one {# jour} other {# jours}}",
     "streak_hint": "Jours de suite avec la mission réussie",
     "go": "J’y vais",
-    "lab": "Labo IA"
+    "lab": "Labo IA",
+    "palace": "Palais de la mémoire",
+    "memo": "Boîtes à souvenirs"
+  },
+  "memo": {
+    "eyebrow": "Boîtes à souvenirs",
+    "title": "Retiens pour toujours",
+    "subtitle": "Ziggy te repose chaque question juste avant que tu l’oublies. Un peu chaque jour, et ça reste dans ta mémoire longue.",
+    "decks": {
+      "times": "Tables de multiplication",
+      "bonds": "Compléments à 10 et 20",
+      "words": "Mes premiers mots"
+    },
+    "decks_desc": {
+      "times": "De 2 × 2 à 10 × 10.",
+      "bonds": "3 + ? = 10, 13 + ? = 20…",
+      "words": "Une image, un mot dans une autre langue."
+    },
+    "due": "{count, plural, =0 {rien à revoir} one {# à revoir} other {# à revoir}}",
+    "fresh": "{count, plural, =0 {tout découvert} one {# nouvelle} other {# nouvelles}}",
+    "long_term": "{count} en mémoire longue",
+    "done_title": "Bravo, séance terminée !",
+    "nothing_due": "Rien à revoir pour l’instant",
+    "done_score": "Tu t’es souvenu de {recalled} sur {seen}",
+    "come_back": "Prochaine révision : {date}.",
+    "why": "Revoir au bon moment, c’est le secret : chaque fois que tu retrouves une réponse, ton cerveau la range plus solidement.",
+    "back": "Mes boîtes",
+    "think_number": "Calcule dans ta tête",
+    "think_word": "Comment dit-on en {language} ?",
+    "languages": {
+      "en": "anglais",
+      "fr": "français"
+    },
+    "right": "Exact !",
+    "not_yet_typed": "Pas encore : c’était {answer}. On le revoit bientôt !",
+    "check": "Vérifier",
+    "show": "Voir la réponse",
+    "rate": {
+      "again": "Pas encore",
+      "hard": "Difficile",
+      "good": "Je savais",
+      "easy": "Trop facile"
+    },
+    "fsrs": "Révisions planifiées par FSRS, l’algorithme de mémoire open source"
+  },
+  "palace": {
+    "eyebrow": "Palais de la mémoire",
+    "title": "Le palais de la mémoire",
+    "subtitle": "L’astuce des champions de mémoire : ranger chaque chose dans une pièce de la maison de Ziggy, puis refaire la promenade.",
+    "intro": "Notre cerveau retient très bien les lieux et les images rigolotes. Le palais de la mémoire utilise ces deux super-pouvoirs.",
+    "step1": "Ziggy te donne une chose à poser dans chaque pièce.",
+    "step2": "Imagine-la en train de faire quelque chose de très drôle dans cette pièce.",
+    "step3": "Puis refais la promenade et retrouve chaque chose.",
+    "level": "Niveau {level} : {count} choses à retenir",
+    "start": "Commencer la promenade",
+    "room_n": "Pièce {n} sur {total}",
+    "rooms": {
+      "door": "L’entrée",
+      "hall": "Le couloir",
+      "living": "Le salon",
+      "kitchen": "La cuisine",
+      "bath": "La salle de bain",
+      "bedroom": "La chambre",
+      "attic": "Le grenier",
+      "garden": "Le jardin"
+    },
+    "imagine": [
+      "Imagine-le en train de danser ici !",
+      "Imagine-le géant, qui prend toute la place !",
+      "Imagine-le qui chante très fort !",
+      "Imagine-le qui fait des bulles partout !"
+    ],
+    "imagined": "Je l’ai imaginé !",
+    "pause_title": "Ferme les yeux une seconde…",
+    "pause_text": "Refais la promenade dans ta tête : l’entrée, le couloir… Qu’avais-tu mis dans chaque pièce ?",
+    "walk": "Refaire la promenade",
+    "what_here": "Qu’avais-tu posé ici ?",
+    "found": "Retrouvé !",
+    "not_yet": "Pas encore : c’était {item}",
+    "done_title": "Promenade terminée !",
+    "score": "{found} sur {total} retrouvés",
+    "tip": "Plus l’image est bizarre et drôle, mieux tu t’en souviens. Essaie le palais pour ta liste de courses ou tes leçons !",
+    "next_walk": "Nouvelle promenade ({count} choses)",
+    "how": "Comment ça marche"
+  },
+  "breathe": {
+    "in": "Inspire…",
+    "hold": "Garde l’air…",
+    "out": "Souffle doucement…",
+    "done": "Bravo, ton cerveau est reposé !",
+    "title": "Respire avec Ziggy",
+    "reminder_title": "Petite pause ?",
+    "reminder_text": "Ça fait 20 minutes que tu apprends. Ton cerveau range mieux après une pause !",
+    "start": "Respirer 1 minute",
+    "later": "Plus tard",
+    "close": "Fermer"
+  },
+  "curve": {
+    "title": "La courbe de l’oubli",
+    "text": "Sans révision, on oublie vite. En revoyant au bon moment, le souvenir dure de plus en plus longtemps.",
+    "day": "J{n}",
+    "without": "Sans révision",
+    "with": "Avec les boîtes de Ziggy"
+  },
+  "learn": {
+    "eyebrow": "Apprendre à apprendre",
+    "title": "Les super-pouvoirs de ton cerveau",
+    "subtitle": "Six méthodes que les chercheurs ont testées, expliquées pour les enfants — et une app Ziggy pour chacune.",
+    "methods": {
+      "spaced": {
+        "title": "Revoir au bon moment",
+        "kid": "Revoir un peu chaque jour, juste avant d’oublier, c’est plus efficace que tout réviser d’un coup.",
+        "science": "Répétition espacée",
+        "cta": "Boîtes à souvenirs"
+      },
+      "recall": {
+        "title": "Chercher dans sa tête",
+        "kid": "Essayer de retrouver la réponse sans regarder, même si c’est dur, muscle la mémoire bien plus que relire.",
+        "science": "Rappel actif",
+        "cta": "S’entraîner"
+      },
+      "palace": {
+        "title": "Le palais de la mémoire",
+        "kid": "Ranger ce qu’on veut retenir dans les pièces d’une maison, avec des images rigolotes.",
+        "science": "Méthode des lieux",
+        "cta": "Visiter le palais"
+      },
+      "teach": {
+        "title": "Apprendre en enseignant",
+        "kid": "Expliquer à quelqu’un d’autre — même à un robot — oblige à bien comprendre.",
+        "science": "Effet du tuteur",
+        "cta": "Entraîner Ziggy"
+      },
+      "mix": {
+        "title": "Mélanger les exercices",
+        "kid": "Passer d’un jeu à l’autre (calcul, logique, mémoire) aide à choisir la bonne méthode.",
+        "science": "Pratique entrelacée",
+        "cta": "Les jeux"
+      },
+      "dual": {
+        "title": "Image + mot",
+        "kid": "Un mot avec une image s’accroche deux fois dans le cerveau.",
+        "science": "Double codage",
+        "cta": "Mes premiers mots"
+      }
+    },
+    "mindset_title": "Chez Ziggy, il n’y a pas d’échec",
+    "mindset": {
+      "m1": "« Je ne sais pas » devient « je ne sais pas encore ».",
+      "m2": "Une erreur est une information : elle montre ce qu’on va apprendre ensuite.",
+      "m3": "L’effort fait grandir le cerveau, comme un muscle.",
+      "m4": "Dormir et faire des pauses aide le cerveau à ranger ce qu’il a appris."
+    },
+    "break_title": "Une pause pour ton cerveau",
+    "break_text": "Une minute de respiration calme, puis tu repars plus fort.",
+    "break_cta": "Respirer avec Ziggy"
   }
 }

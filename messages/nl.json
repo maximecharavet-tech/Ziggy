@@ -17,7 +17,8 @@
     "lab": "AI-lab",
     "new": "NIEUW",
     "theme_light": "Lichte modus",
-    "theme_dark": "Donkere modus"
+    "theme_dark": "Donkere modus",
+    "learn": "Leren"
   },
   "hero": {
     "badge": "AI-onderwijs voor kinderen van 5 tot 12 jaar",
@@ -297,7 +298,10 @@
     "math": {
       "name": "Bliksemrekenen",
       "description": "Los zoveel mogelijk sommen op in 60 seconden. Hoe langer je reeks, hoe lastiger het wordt!",
-      "howTo": "Kies het juiste antwoord uit vier. Elk goed antwoord maakt je reeks langer — en de sommen groeien met je mee."
+      "howTo": "Kies het juiste antwoord uit vier. Elk goed antwoord maakt je reeks langer — en de sommen groeien met je mee.",
+      "zen": "Rustig",
+      "challenge": "Tijdsuitdaging",
+      "mode": "Spelmodus"
     },
     "logic": {
       "name": "Patroonpuzzel",
@@ -417,7 +421,11 @@
       "cleared": "Niveau gehaald!",
       "crashed": "Oeps! Ziggy botste ergens tegenaan.",
       "emptyQueue": "Voeg minstens één pijl toe.",
-      "tries": "pogingen"
+      "tries": "pogingen",
+      "bug": "Een bug! Verbeter de knipperende pijl.",
+      "short": "Ziggy stopte voor de ster: voeg pijlen toe!",
+      "hint": "Hint",
+      "hintText": "Volg de voetstappen!"
     },
     "oddone": {
       "name": "Wie hoort er niet bij?",
@@ -449,7 +457,15 @@
       "moves": "Zetten",
       "goal": "Zet 1 tot 8 op volgorde",
       "solved": "Opgelost!"
-    }
+    },
+    "great": "Super!",
+    "growing": "Je brein groeit!",
+    "growth": [
+      "Elke poging laat je brein groeien 🌱",
+      "Een fout is een tip voor de volgende keer.",
+      "Je kunt het nog niet… maar je leert het!",
+      "Kampioenen trainen: niemand wordt als kampioen geboren."
+    ]
   },
   "account": {
     "badge": "Mijn account",
@@ -814,6 +830,161 @@
     "streak": "{count, plural, =0 {0 dagen} one {# dag} other {# dagen}}",
     "streak_hint": "Dagen op rij met de missie gehaald",
     "go": "Aan de slag",
-    "lab": "AI-lab"
+    "lab": "AI-lab",
+    "palace": "Geheugenpaleis",
+    "memo": "Herinneringsdozen"
+  },
+  "memo": {
+    "eyebrow": "Herinneringsdozen",
+    "title": "Voor altijd onthouden",
+    "subtitle": "Ziggy vraagt elke vraag opnieuw net voordat je hem zou vergeten. Elke dag een beetje, en het blijft in je langetermijngeheugen.",
+    "decks": {
+      "times": "Tafels",
+      "bonds": "Splitsen tot 10 en 20",
+      "words": "Mijn eerste woorden"
+    },
+    "decks_desc": {
+      "times": "Van 2 × 2 tot 10 × 10.",
+      "bonds": "3 + ? = 10, 13 + ? = 20…",
+      "words": "Een plaatje, een woord in een andere taal."
+    },
+    "due": "{count, plural, =0 {niets te herhalen} other {# te herhalen}}",
+    "fresh": "{count, plural, =0 {alles ontdekt} other {# nieuw}}",
+    "long_term": "{count} in het lange geheugen",
+    "done_title": "Goed zo, sessie klaar!",
+    "nothing_due": "Nu niets te herhalen",
+    "done_score": "Je wist er {recalled} van de {seen}",
+    "come_back": "Volgende herhaling: {date}.",
+    "why": "Herhalen op het juiste moment is het geheim: elke keer dat je een antwoord terugvindt, bewaart je brein het steviger.",
+    "back": "Mijn dozen",
+    "think_number": "Reken het uit in je hoofd",
+    "think_word": "Hoe zeg je dat in het {language}?",
+    "languages": {
+      "en": "Engels",
+      "fr": "Frans"
+    },
+    "right": "Goed!",
+    "not_yet_typed": "Nog niet: het was {answer}. We zien het snel terug!",
+    "check": "Controleren",
+    "show": "Antwoord tonen",
+    "rate": {
+      "again": "Nog niet",
+      "hard": "Moeilijk",
+      "good": "Wist ik",
+      "easy": "Te makkelijk"
+    },
+    "fsrs": "Herhalingen gepland door FSRS, het opensource-geheugenalgoritme"
+  },
+  "palace": {
+    "eyebrow": "Geheugenpaleis",
+    "title": "Het geheugenpaleis",
+    "subtitle": "De truc van geheugenkampioenen: leg elk ding in een kamer van Ziggy’s huis en loop de route opnieuw.",
+    "intro": "Ons brein onthoudt plekken en grappige plaatjes heel goed. Het geheugenpaleis gebruikt die twee superkrachten.",
+    "step1": "Ziggy geeft je iets om in elke kamer te leggen.",
+    "step2": "Stel je voor dat het daar iets heel grappigs doet.",
+    "step3": "Loop dan de route opnieuw en vind alles terug.",
+    "level": "Level {level}: {count} dingen onthouden",
+    "start": "Start de wandeling",
+    "room_n": "Kamer {n} van {total}",
+    "rooms": {
+      "door": "De voordeur",
+      "hall": "De gang",
+      "living": "De woonkamer",
+      "kitchen": "De keuken",
+      "bath": "De badkamer",
+      "bedroom": "De slaapkamer",
+      "attic": "De zolder",
+      "garden": "De tuin"
+    },
+    "imagine": [
+      "Stel je voor dat het hier danst!",
+      "Stel je voor dat het reusachtig is en alles vult!",
+      "Stel je voor dat het heel hard zingt!",
+      "Stel je voor dat het overal bellen blaast!"
+    ],
+    "imagined": "Ik heb het me voorgesteld!",
+    "pause_title": "Doe je ogen even dicht…",
+    "pause_text": "Loop de route in je hoofd: de voordeur, de gang… Wat lag er in elke kamer?",
+    "walk": "Route opnieuw lopen",
+    "what_here": "Wat had je hier neergelegd?",
+    "found": "Gevonden!",
+    "not_yet": "Nog niet: het was {item}",
+    "done_title": "Wandeling klaar!",
+    "score": "{found} van de {total} gevonden",
+    "tip": "Hoe gekker en grappiger het plaatje, hoe beter je het onthoudt. Probeer het paleis met je boodschappenlijstje of je lessen!",
+    "next_walk": "Nieuwe wandeling ({count} dingen)",
+    "how": "Hoe het werkt"
+  },
+  "breathe": {
+    "in": "Adem in…",
+    "hold": "Houd vast…",
+    "out": "Adem langzaam uit…",
+    "done": "Goed zo, je brein is uitgerust!",
+    "title": "Adem met Ziggy",
+    "reminder_title": "Even pauze?",
+    "reminder_text": "Je leert al 20 minuten. Na een pauze ordent je brein beter!",
+    "start": "1 minuut ademen",
+    "later": "Later",
+    "close": "Sluiten"
+  },
+  "curve": {
+    "title": "De vergeetcurve",
+    "text": "Zonder herhaling vergeet je snel. Herhaal je op het juiste moment, dan blijft het steeds langer hangen.",
+    "day": "D{n}",
+    "without": "Zonder herhaling",
+    "with": "Met Ziggy’s dozen"
+  },
+  "learn": {
+    "eyebrow": "Leren leren",
+    "title": "De superkrachten van je brein",
+    "subtitle": "Zes methoden die onderzoekers testten, uitgelegd voor kinderen — en voor elke methode een Ziggy-app.",
+    "methods": {
+      "spaced": {
+        "title": "Herhalen op het juiste moment",
+        "kid": "Elke dag een beetje herhalen, net voor je het vergeet, werkt beter dan alles in één keer stampen.",
+        "science": "Gespreid herhalen",
+        "cta": "Herinneringsdozen"
+      },
+      "recall": {
+        "title": "Zoeken in je hoofd",
+        "kid": "Het antwoord proberen te vinden zonder te kijken, ook al is het moeilijk, traint je geheugen veel meer dan herlezen.",
+        "science": "Actief ophalen",
+        "cta": "Oefenen"
+      },
+      "palace": {
+        "title": "Het geheugenpaleis",
+        "kid": "Wat je wilt onthouden in de kamers van een huis leggen, met grappige plaatjes.",
+        "science": "Loci-methode",
+        "cta": "Bezoek het paleis"
+      },
+      "teach": {
+        "title": "Leren door uit te leggen",
+        "kid": "Iets uitleggen aan een ander — zelfs aan een robot — dwingt je het echt te snappen.",
+        "science": "Protégé-effect",
+        "cta": "Train Ziggy"
+      },
+      "mix": {
+        "title": "Oefeningen mengen",
+        "kid": "Wisselen tussen spellen (rekenen, logica, geheugen) helpt je de juiste aanpak te kiezen.",
+        "science": "Afgewisseld oefenen",
+        "cta": "De spellen"
+      },
+      "dual": {
+        "title": "Plaatje + woord",
+        "kid": "Een woord met een plaatje haakt zich twee keer vast in je brein.",
+        "science": "Duaal coderen",
+        "cta": "Mijn eerste woorden"
+      }
+    },
+    "mindset_title": "Bij Ziggy bestaat mislukken niet",
+    "mindset": {
+      "m1": "„Ik weet het niet” wordt „ik weet het nog niet”.",
+      "m2": "Een fout is informatie: ze laat zien wat je hierna leert.",
+      "m3": "Moeite laat je brein groeien, net als een spier.",
+      "m4": "Slapen en pauzes helpen je brein te ordenen wat je leerde."
+    },
+    "break_title": "Een pauze voor je brein",
+    "break_text": "Een minuut rustig ademen, dan ga je sterker verder.",
+    "break_cta": "Adem met Ziggy"
   }
 }

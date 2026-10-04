@@ -17,7 +17,8 @@
     "lab": "Yapay Zekâ Lab",
     "new": "YENİ",
     "theme_light": "Açık mod",
-    "theme_dark": "Koyu mod"
+    "theme_dark": "Koyu mod",
+    "learn": "Öğren"
   },
   "hero": {
     "badge": "5-12 yaş çocuklar için yapay zeka eğitimi",
@@ -297,7 +298,10 @@
     "math": {
       "name": "Şimşek matematik",
       "description": "60 saniyede olabildiğince çok işlem çöz. Serin uzadıkça sorular da zorlaşır!",
-      "howTo": "Dört seçenek arasından doğru cevabı seç. Her doğru cevap serini uzatır — sorular da seninle birlikte zorlaşır."
+      "howTo": "Dört seçenek arasından doğru cevabı seç. Her doğru cevap serini uzatır — sorular da seninle birlikte zorlaşır.",
+      "zen": "Sakin",
+      "challenge": "Süreli mücadele",
+      "mode": "Oyun modu"
     },
     "logic": {
       "name": "Mantık dizisi",
@@ -417,7 +421,11 @@
       "cleared": "Seviye tamam!",
       "crashed": "Eyvah! Ziggy bir yere çarptı.",
       "emptyQueue": "En az bir ok ekle.",
-      "tries": "deneme"
+      "tries": "deneme",
+      "bug": "Bir hata! Yanıp sönen oku düzelt.",
+      "short": "Ziggy yıldıza varmadan durdu: ok ekle!",
+      "hint": "İpucu",
+      "hintText": "Ayak izlerini takip et!"
     },
     "oddone": {
       "name": "Farklı olan",
@@ -449,7 +457,15 @@
       "moves": "Hamle",
       "goal": "1’den 8’e sırala",
       "solved": "Çözüldü!"
-    }
+    },
+    "great": "Süper!",
+    "growing": "Beynin büyüyor!",
+    "growth": [
+      "Her deneme beynini büyütür 🌱",
+      "Bir hata, bir sonraki sefer için ipucudur.",
+      "Henüz bilmiyorsun… ama öğreniyorsun!",
+      "Şampiyonlar çalışır; kimse şampiyon doğmaz."
+    ]
   },
   "account": {
     "badge": "Hesabım",
@@ -814,6 +830,161 @@
     "streak": "{count, plural, other {# gün}}",
     "streak_hint": "Görevin üst üste tamamlandığı günler",
     "go": "Hadi",
-    "lab": "Yapay Zekâ Lab"
+    "lab": "Yapay Zekâ Lab",
+    "palace": "Hafıza sarayı",
+    "memo": "Anı kutuları"
+  },
+  "memo": {
+    "eyebrow": "Anı kutuları",
+    "title": "Sonsuza dek hatırla",
+    "subtitle": "Ziggy her soruyu tam unutmak üzereyken yeniden sorar. Her gün biraz, ve uzun süreli hafızanda kalır.",
+    "decks": {
+      "times": "Çarpım tablosu",
+      "bonds": "10’a ve 20’ye tamamlama",
+      "words": "İlk kelimelerim"
+    },
+    "decks_desc": {
+      "times": "2 × 2’den 10 × 10’a.",
+      "bonds": "3 + ? = 10, 13 + ? = 20…",
+      "words": "Bir resim, başka bir dilde bir kelime."
+    },
+    "due": "{count, plural, =0 {tekrar yok} other {# tekrar}}",
+    "fresh": "{count, plural, =0 {hepsi keşfedildi} other {# yeni}}",
+    "long_term": "Uzun hafızada {count}",
+    "done_title": "Aferin, oturum bitti!",
+    "nothing_due": "Şimdilik tekrar yok",
+    "done_score": "{seen} kartın {recalled} tanesini hatırladın",
+    "come_back": "Sonraki tekrar: {date}.",
+    "why": "Doğru zamanda tekrar etmek işin sırrıdır: bir cevabı her bulduğunda beynin onu daha sağlam saklar.",
+    "back": "Kutularım",
+    "think_number": "Kafandan hesapla",
+    "think_word": "{language} nasıl denir?",
+    "languages": {
+      "en": "İngilizcede",
+      "fr": "Fransızcada"
+    },
+    "right": "Doğru!",
+    "not_yet_typed": "Henüz değil: cevap {answer}. Yakında yine göreceğiz!",
+    "check": "Kontrol et",
+    "show": "Cevabı göster",
+    "rate": {
+      "again": "Henüz değil",
+      "hard": "Zor",
+      "good": "Biliyordum",
+      "easy": "Çok kolay"
+    },
+    "fsrs": "Tekrarlar açık kaynaklı hafıza algoritması FSRS ile planlanır"
+  },
+  "palace": {
+    "eyebrow": "Hafıza sarayı",
+    "title": "Hafıza sarayı",
+    "subtitle": "Hafıza şampiyonlarının hilesi: her şeyi Ziggy’nin evinde bir odaya koy, sonra yürüyüşü tekrarla.",
+    "intro": "Beynimiz yerleri ve komik resimleri çok iyi hatırlar. Hafıza sarayı bu iki süper gücü kullanır.",
+    "step1": "Ziggy her odaya koyman için sana bir şey verir.",
+    "step2": "O odada çok komik bir şey yaptığını hayal et.",
+    "step3": "Sonra yürüyüşü tekrarla ve her şeyi bul.",
+    "level": "Seviye {level}: hatırlanacak {count} şey",
+    "start": "Yürüyüşe başla",
+    "room_n": "{total} odadan {n}.",
+    "rooms": {
+      "door": "Giriş kapısı",
+      "hall": "Koridor",
+      "living": "Oturma odası",
+      "kitchen": "Mutfak",
+      "bath": "Banyo",
+      "bedroom": "Yatak odası",
+      "attic": "Tavan arası",
+      "garden": "Bahçe"
+    },
+    "imagine": [
+      "Burada dans ettiğini hayal et!",
+      "Dev gibi olup her yeri kapladığını hayal et!",
+      "Çok yüksek sesle şarkı söylediğini hayal et!",
+      "Her yere baloncuk üflediğini hayal et!"
+    ],
+    "imagined": "Hayal ettim!",
+    "pause_title": "Bir saniye gözlerini kapat…",
+    "pause_text": "Yürüyüşü kafanda tekrarla: giriş, koridor… Her odaya ne koymuştun?",
+    "walk": "Yürüyüşü tekrarla",
+    "what_here": "Buraya ne koymuştun?",
+    "found": "Buldun!",
+    "not_yet": "Henüz değil: {item} idi",
+    "done_title": "Yürüyüş bitti!",
+    "score": "{total} şeyden {found} tanesi bulundu",
+    "tip": "Resim ne kadar tuhaf ve komikse o kadar iyi hatırlarsın. Sarayı alışveriş listen ya da derslerin için dene!",
+    "next_walk": "Yeni yürüyüş ({count} şey)",
+    "how": "Nasıl çalışır"
+  },
+  "breathe": {
+    "in": "Nefes al…",
+    "hold": "Tut…",
+    "out": "Yavaşça ver…",
+    "done": "Aferin, beynin dinlendi!",
+    "title": "Ziggy ile nefes al",
+    "reminder_title": "Küçük bir mola?",
+    "reminder_text": "20 dakikadır öğreniyorsun. Beynin moladan sonra daha iyi düzenler!",
+    "start": "1 dakika nefes",
+    "later": "Sonra",
+    "close": "Kapat"
+  },
+  "curve": {
+    "title": "Unutma eğrisi",
+    "text": "Tekrar etmezsek çabuk unuturuz. Doğru zamanda tekrar edince hatıra gittikçe daha uzun kalır.",
+    "day": "G{n}",
+    "without": "Tekrarsız",
+    "with": "Ziggy’nin kutularıyla"
+  },
+  "learn": {
+    "eyebrow": "Öğrenmeyi öğrenmek",
+    "title": "Beyninin süper güçleri",
+    "subtitle": "Araştırmacıların test ettiği altı yöntem, çocuklar için anlatıldı — ve her biri için bir Ziggy uygulaması.",
+    "methods": {
+      "spaced": {
+        "title": "Doğru zamanda tekrar",
+        "kid": "Her gün biraz, unutmadan hemen önce tekrar etmek, hepsini bir kerede çalışmaktan daha iyidir.",
+        "science": "Aralıklı tekrar",
+        "cta": "Anı kutuları"
+      },
+      "recall": {
+        "title": "Kafanın içinde ara",
+        "kid": "Bakmadan cevabı bulmaya çalışmak, zor olsa bile, hafızayı tekrar okumaktan çok daha fazla güçlendirir.",
+        "science": "Aktif hatırlama",
+        "cta": "Alıştırma yap"
+      },
+      "palace": {
+        "title": "Hafıza sarayı",
+        "kid": "Hatırlamak istediklerini komik resimlerle bir evin odalarına yerleştir.",
+        "science": "Loci yöntemi",
+        "cta": "Sarayı gez"
+      },
+      "teach": {
+        "title": "Öğreterek öğren",
+        "kid": "Başkasına — bir robota bile — anlatmak, gerçekten anlamanı sağlar.",
+        "science": "Protégé etkisi",
+        "cta": "Ziggy’yi eğit"
+      },
+      "mix": {
+        "title": "Alıştırmaları karıştır",
+        "kid": "Oyunlar arasında geçiş yapmak (hesap, mantık, hafıza) doğru yöntemi seçmeye yardım eder.",
+        "science": "Karışık çalışma",
+        "cta": "Oyunlar"
+      },
+      "dual": {
+        "title": "Resim + kelime",
+        "kid": "Resimli bir kelime beyne iki kez tutunur.",
+        "science": "İkili kodlama",
+        "cta": "İlk kelimelerim"
+      }
+    },
+    "mindset_title": "Ziggy’de başarısızlık yoktur",
+    "mindset": {
+      "m1": "“Bilmiyorum” → “Henüz bilmiyorum” olur.",
+      "m2": "Hata bir bilgidir: sırada ne öğreneceğini gösterir.",
+      "m3": "Çaba beyni bir kas gibi büyütür.",
+      "m4": "Uyku ve molalar beynin öğrendiklerini düzenlemesine yardım eder."
+    },
+    "break_title": "Beynin için bir mola",
+    "break_text": "Bir dakika sakin nefes, sonra daha güçlü devam.",
+    "break_cta": "Ziggy ile nefes al"
   }
 }

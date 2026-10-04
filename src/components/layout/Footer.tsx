@@ -11,6 +11,7 @@ export function Footer() {
 
   const productLinks = [
     { label: tn('features'), href: '#features' },
+    { label: tn('learn'), href: '/apprendre' as const },
     { label: tn('lab'), href: '/lab' as const },
     { label: tn('games'), href: '/games' as const },
     { label: tn('agents'), href: '/agents' as const },

@@ -30,7 +30,7 @@ function hash(s: string): number {
 
 /** Today's mission: one game, and how many stars to earn in it (1 to 3). */
 export function missionFor(day: string): Mission {
-  const pool = [...GAMES.map((g) => g.id), 'lab'];
+  const pool = [...GAMES.map((g) => g.id), 'lab', 'palace', 'memo'];
   const h = hash(`ziggy:${day}`);
   return { gameId: pool[h % pool.length], stars: 1 + ((h >>> 8) % 3) };
 }

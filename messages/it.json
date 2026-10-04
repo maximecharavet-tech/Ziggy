@@ -17,7 +17,8 @@
     "lab": "Laboratorio IA",
     "new": "NUOVO",
     "theme_light": "Modalità chiara",
-    "theme_dark": "Modalità scura"
+    "theme_dark": "Modalità scura",
+    "learn": "Imparare"
   },
   "hero": {
     "badge": "Educazione IA per bambini dai 5 ai 12 anni",
@@ -297,7 +298,10 @@
     "math": {
       "name": "Calcolo lampo",
       "description": "Risolvi più operazioni che puoi in 60 secondi. Più lunga è la serie, più diventa difficile!",
-      "howTo": "Scegli la risposta giusta fra quattro. Ogni risposta corretta allunga la serie — e i calcoli salgono di livello con te."
+      "howTo": "Scegli la risposta giusta fra quattro. Ogni risposta corretta allunga la serie — e i calcoli salgono di livello con te.",
+      "zen": "Zen",
+      "challenge": "Sfida a tempo",
+      "mode": "Modalità di gioco"
     },
     "logic": {
       "name": "Sequenza logica",
@@ -417,7 +421,11 @@
       "cleared": "Livello superato!",
       "crashed": "Ops! Ziggy ha sbattuto.",
       "emptyQueue": "Aggiungi almeno una freccia.",
-      "tries": "tentativi"
+      "tries": "tentativi",
+      "bug": "Un bug! Correggi la freccia che lampeggia.",
+      "short": "Ziggy si è fermato prima della stella: aggiungi frecce!",
+      "hint": "Aiuto",
+      "hintText": "Segui le impronte!"
     },
     "oddone": {
       "name": "L’intruso",
@@ -449,7 +457,15 @@
       "moves": "Mosse",
       "goal": "Metti da 1 a 8 in ordine",
       "solved": "Risolto!"
-    }
+    },
+    "great": "Ottimo!",
+    "growing": "Il tuo cervello sta crescendo!",
+    "growth": [
+      "Ogni tentativo fa crescere il tuo cervello 🌱",
+      "Un errore è un indizio per la prossima volta.",
+      "Non lo sai ancora… ma stai imparando!",
+      "I campioni si allenano: nessuno nasce campione."
+    ]
   },
   "account": {
     "badge": "Il mio account",
@@ -814,6 +830,161 @@
     "streak": "{count, plural, =0 {0 giorni} one {# giorno} other {# giorni}}",
     "streak_hint": "Giorni di fila con la missione compiuta",
     "go": "Andiamo",
-    "lab": "Laboratorio IA"
+    "lab": "Laboratorio IA",
+    "palace": "Palazzo della memoria",
+    "memo": "Scatole dei ricordi"
+  },
+  "memo": {
+    "eyebrow": "Scatole dei ricordi",
+    "title": "Ricorda per sempre",
+    "subtitle": "Ziggy ti ripropone ogni domanda proprio prima che tu la dimentichi. Un po’ ogni giorno e resta nella memoria a lungo termine.",
+    "decks": {
+      "times": "Tabelline",
+      "bonds": "Complementi a 10 e 20",
+      "words": "Le mie prime parole"
+    },
+    "decks_desc": {
+      "times": "Da 2 × 2 a 10 × 10.",
+      "bonds": "3 + ? = 10, 13 + ? = 20…",
+      "words": "Un’immagine, una parola in un’altra lingua."
+    },
+    "due": "{count, plural, =0 {niente da ripassare} other {# da ripassare}}",
+    "fresh": "{count, plural, =0 {tutto scoperto} one {# nuova} other {# nuove}}",
+    "long_term": "{count} nella memoria lunga",
+    "done_title": "Bravo, sessione finita!",
+    "nothing_due": "Niente da ripassare per ora",
+    "done_score": "Ne hai ricordate {recalled} su {seen}",
+    "come_back": "Prossimo ripasso: {date}.",
+    "why": "Ripassare al momento giusto è il segreto: ogni volta che ritrovi una risposta, il cervello la conserva più saldamente.",
+    "back": "Le mie scatole",
+    "think_number": "Calcola a mente",
+    "think_word": "Come si dice in {language}?",
+    "languages": {
+      "en": "inglese",
+      "fr": "francese"
+    },
+    "right": "Esatto!",
+    "not_yet_typed": "Non ancora: era {answer}. La rivediamo presto!",
+    "check": "Verifica",
+    "show": "Vedi la risposta",
+    "rate": {
+      "again": "Non ancora",
+      "hard": "Difficile",
+      "good": "Lo sapevo",
+      "easy": "Troppo facile"
+    },
+    "fsrs": "Ripassi pianificati da FSRS, l’algoritmo della memoria open source"
+  },
+  "palace": {
+    "eyebrow": "Palazzo della memoria",
+    "title": "Il palazzo della memoria",
+    "subtitle": "Il trucco dei campioni di memoria: mettere ogni cosa in una stanza della casa di Ziggy e rifare la passeggiata.",
+    "intro": "Il nostro cervello ricorda benissimo i luoghi e le immagini buffe. Il palazzo della memoria usa questi due superpoteri.",
+    "step1": "Ziggy ti dà una cosa da mettere in ogni stanza.",
+    "step2": "Immaginala mentre fa qualcosa di molto buffo in quella stanza.",
+    "step3": "Poi rifai la passeggiata e ritrova ogni cosa.",
+    "level": "Livello {level}: {count} cose da ricordare",
+    "start": "Inizia la passeggiata",
+    "room_n": "Stanza {n} di {total}",
+    "rooms": {
+      "door": "L’ingresso",
+      "hall": "Il corridoio",
+      "living": "Il salotto",
+      "kitchen": "La cucina",
+      "bath": "Il bagno",
+      "bedroom": "La camera",
+      "attic": "La soffitta",
+      "garden": "Il giardino"
+    },
+    "imagine": [
+      "Immaginalo mentre balla qui!",
+      "Immaginalo gigante, che occupa tutto!",
+      "Immaginalo mentre canta fortissimo!",
+      "Immaginalo mentre fa bolle di sapone ovunque!"
+    ],
+    "imagined": "L’ho immaginato!",
+    "pause_title": "Chiudi gli occhi un secondo…",
+    "pause_text": "Rifai la passeggiata nella testa: l’ingresso, il corridoio… Cosa avevi messo in ogni stanza?",
+    "walk": "Rifai la passeggiata",
+    "what_here": "Cosa avevi messo qui?",
+    "found": "Trovato!",
+    "not_yet": "Non ancora: era {item}",
+    "done_title": "Passeggiata finita!",
+    "score": "{found} su {total} trovati",
+    "tip": "Più l’immagine è strana e buffa, meglio la ricordi. Prova il palazzo con la lista della spesa o le lezioni!",
+    "next_walk": "Nuova passeggiata ({count} cose)",
+    "how": "Come funziona"
+  },
+  "breathe": {
+    "in": "Inspira…",
+    "hold": "Trattieni il respiro…",
+    "out": "Espira piano…",
+    "done": "Bravo, il tuo cervello si è riposato!",
+    "title": "Respira con Ziggy",
+    "reminder_title": "Una pausa?",
+    "reminder_text": "Stai imparando da 20 minuti. Dopo una pausa il cervello mette in ordine meglio!",
+    "start": "Respira 1 minuto",
+    "later": "Più tardi",
+    "close": "Chiudi"
+  },
+  "curve": {
+    "title": "La curva dell’oblio",
+    "text": "Senza ripasso si dimentica in fretta. Ripassando al momento giusto, il ricordo dura sempre di più.",
+    "day": "G{n}",
+    "without": "Senza ripasso",
+    "with": "Con le scatole di Ziggy"
+  },
+  "learn": {
+    "eyebrow": "Imparare a imparare",
+    "title": "I superpoteri del tuo cervello",
+    "subtitle": "Sei metodi testati dai ricercatori, spiegati per i bambini, e un’app di Ziggy per ognuno.",
+    "methods": {
+      "spaced": {
+        "title": "Ripassare al momento giusto",
+        "kid": "Ripassare un po’ ogni giorno, poco prima di dimenticare, funziona meglio che studiare tutto in una volta.",
+        "science": "Ripetizione dilazionata",
+        "cta": "Scatole dei ricordi"
+      },
+      "recall": {
+        "title": "Cercare nella testa",
+        "kid": "Provare a ritrovare la risposta senza guardare, anche se è difficile, allena la memoria molto più che rileggere.",
+        "science": "Richiamo attivo",
+        "cta": "Esercitati"
+      },
+      "palace": {
+        "title": "Il palazzo della memoria",
+        "kid": "Mettere ciò che vuoi ricordare nelle stanze di una casa, con immagini buffe.",
+        "science": "Metodo dei loci",
+        "cta": "Visita il palazzo"
+      },
+      "teach": {
+        "title": "Imparare insegnando",
+        "kid": "Spiegare a qualcun altro, anche a un robot, ti obbliga a capire davvero.",
+        "science": "Effetto protégé",
+        "cta": "Allena Ziggy"
+      },
+      "mix": {
+        "title": "Mescolare gli esercizi",
+        "kid": "Passare da un gioco all’altro (calcolo, logica, memoria) aiuta a scegliere il metodo giusto.",
+        "science": "Pratica intercalata",
+        "cta": "I giochi"
+      },
+      "dual": {
+        "title": "Immagine + parola",
+        "kid": "Una parola con un’immagine si aggancia due volte nel cervello.",
+        "science": "Doppia codifica",
+        "cta": "Le mie prime parole"
+      }
+    },
+    "mindset_title": "Con Ziggy non esiste il fallimento",
+    "mindset": {
+      "m1": "«Non lo so» diventa «non lo so ancora».",
+      "m2": "Un errore è un’informazione: mostra cosa imparerai dopo.",
+      "m3": "L’impegno fa crescere il cervello, come un muscolo.",
+      "m4": "Dormire e fare pause aiuta il cervello a mettere in ordine ciò che ha imparato."
+    },
+    "break_title": "Una pausa per il cervello",
+    "break_text": "Un minuto di respiro calmo, poi riparti più forte.",
+    "break_cta": "Respira con Ziggy"
   }
 }

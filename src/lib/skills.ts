@@ -6,7 +6,7 @@
 import type { ProgressMap } from './progress';
 
 export const SKILLS = [
-  { id: 'memory', games: ['memory', 'simon'], color: '#8B5CF6' },
+  { id: 'memory', games: ['memory', 'simon', 'palace', 'memo'], color: '#8B5CF6' },
   { id: 'logic', games: ['logic', 'oddone'], color: '#3B82F6' },
   { id: 'math', games: ['math'], color: '#22C55E' },
   { id: 'knowledge', games: ['quiz'], color: '#F59E0B' },

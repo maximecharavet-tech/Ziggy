@@ -28,9 +28,9 @@ export function Navbar() {
   }, []);
 
   // Section anchors live on the home page, so they point there from any page.
-  const navLinks: { hash?: string; path?: '/lab'; label: string; key: string }[] = [
+  const navLinks: { hash?: string; path?: '/lab' | '/apprendre'; label: string; key: string }[] = [
+    { key: 'learn', path: '/apprendre', label: t('learn') },
     { key: 'lab', path: '/lab', label: t('lab') },
-    { key: 'features', hash: 'features', label: t('features') },
     { key: 'agents', hash: 'agents', label: t('agents') },
     { key: 'games', hash: 'games', label: t('games') },
     { key: 'pricing', hash: 'pricing', label: t('pricing') },
@@ -63,7 +63,7 @@ export function Navbar() {
               href={hrefOf(link)}
               onMouseEnter={() => setHovered(link.key)}
               onFocus={() => setHovered(link.key)}
-              className="relative px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
+              className="relative whitespace-nowrap px-3 xl:px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
             >
               {hovered === link.key && (
                 <motion.span
@@ -73,7 +73,7 @@ export function Navbar() {
                 />
               )}
               {link.label}
-              {link.path && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
+              {link.key === 'learn' && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
             </Link>
           ))}
         </div>

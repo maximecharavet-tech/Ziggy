@@ -7,6 +7,8 @@ import { Calculator, Flame, Timer } from 'lucide-react';
 import { GameShell, GameStartScreen, GameResultScreen } from './GameShell';
 
 const ROUND_SECONDS = 60;
+/** Calm mode: no clock, a fixed number of questions, stars for accuracy. */
+const ZEN_QUESTIONS = 15;
 
 type Phase = 'start' | 'playing' | 'done';
 
@@ -90,11 +92,12 @@ export function MathGame({ color }: { color: string }) {
   const [bestStreak, setBestStreak] = useState(0);
   const [timeLeft, setTimeLeft] = useState(ROUND_SECONDS);
   const [picked, setPicked] = useState<number | null>(null);
+  const [zen, setZen] = useState(true);
   const lockRef = useRef(false);
 
-  /* Countdown */
+  /* Countdown (challenge mode only) */
   useEffect(() => {
-    if (phase !== 'playing') return;
+    if (phase !== 'playing' || zen) return;
     const id = window.setInterval(() => {
       setTimeLeft((s) => {
         if (s <= 1) {
@@ -106,7 +109,7 @@ export function MathGame({ color }: { color: string }) {
       });
     }, 1000);
     return () => window.clearInterval(id);
-  }, [phase]);
+  }, [phase, zen]);
 
   const start = useCallback(() => {
     setScore(0);
@@ -141,6 +144,11 @@ export function MathGame({ color }: { color: string }) {
       window.setTimeout(
         () => {
           setPicked(null);
+          if (zen && round + 1 >= ZEN_QUESTIONS) {
+            setPhase('done');
+            lockRef.current = false;
+            return;
+          }
           setRound((r) => r + 1);
           setProblem(makeProblem(difficultyFromStreak(nextStreak)));
           lockRef.current = false;
@@ -148,10 +156,10 @@ export function MathGame({ color }: { color: string }) {
         correct ? 450 : 750
       );
     },
-    [problem, streak]
+    [problem, streak, zen, round]
   );
 
-  const stars = score >= 15 ? 3 : score >= 8 ? 2 : 1;
+  const stars = zen ? (score >= 13 ? 3 : score >= 9 ? 2 : 1) : score >= 15 ? 3 : score >= 8 ? 2 : 1;
   const lowTime = timeLeft <= 10;
 
   return (
@@ -179,6 +187,26 @@ export function MathGame({ color }: { color: string }) {
             description={t('math.description')}
             howTo={t('math.howTo')}
             onStart={start}
+            options={
+              <div role="radiogroup" aria-label={t('math.mode')} className="inline-flex rounded-full border border-border/60 bg-bg-card p-1">
+                {[
+                  { zen: true, label: `🌿 ${t('math.zen')}` },
+                  { zen: false, label: `⏱️ ${t('math.challenge')}` },
+                ].map((m) => (
+                  <button
+                    key={String(m.zen)}
+                    type="button"
+                    role="radio"
+                    aria-checked={zen === m.zen}
+                    onClick={() => setZen(m.zen)}
+                    className="press rounded-full px-4 py-2 text-sm font-bold transition-colors"
+                    style={zen === m.zen ? { backgroundColor: color, color: '#fff' } : { color: 'var(--color-text-muted)' }}
+                  >
+                    {m.label}
+                  </button>
+                ))}
+              </div>
+            }
           />
         )}
 
@@ -190,7 +218,16 @@ export function MathGame({ color }: { color: string }) {
             exit={{ opacity: 0 }}
             className="mx-auto w-full max-w-md"
           >
-            {/* Timer bar */}
+            {/* Progress (calm mode) or timer bar (challenge) */}
+            {zen ? (
+              <div className="flex items-center gap-2 mb-5">
+                <span className="text-sm">🌿</span>
+                <div className="flex-1 h-2.5 rounded-full bg-border/60 overflow-hidden">
+                  <motion.div className="h-full rounded-full" animate={{ width: `${(round / ZEN_QUESTIONS) * 100}%` }} style={{ backgroundColor: color }} />
+                </div>
+                <span className="text-sm font-extrabold tabular-nums text-text-muted">{round + 1}/{ZEN_QUESTIONS}</span>
+              </div>
+            ) : (
             <div className="flex items-center gap-2 mb-5">
               <Timer size={16} className={lowTime ? 'text-red-500' : 'text-text-dim'} />
               <div className="flex-1 h-2.5 rounded-full bg-border/60 overflow-hidden">
@@ -209,6 +246,7 @@ export function MathGame({ color }: { color: string }) {
                 {timeLeft}
               </span>
             </div>
+            )}
 
             {/* Streak flame */}
             <AnimatePresence>

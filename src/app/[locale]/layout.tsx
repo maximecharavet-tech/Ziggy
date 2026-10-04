@@ -13,6 +13,7 @@ import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { MotionProvider } from '@/components/ui/MotionProvider';
 import { RewardCeremony } from '@/components/rewards/RewardCeremony';
 import { ZiggyIntro } from '@/components/ziggy/ZiggyIntro';
+import { BreakReminder } from '@/components/wellbeing/BreakReminder';
 import { SITE_URL } from '@/lib/site-url';
 import type { Metadata } from 'next';
 import '../globals.css';
@@ -157,6 +158,7 @@ export default async function LocaleLayout({
           <BackToTop />
           <CookieConsent />
           <RewardCeremony />
+          <BreakReminder />
           </MotionProvider>
         </NextIntlClientProvider>
       </body>

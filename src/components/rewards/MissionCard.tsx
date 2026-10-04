@@ -40,8 +40,15 @@ export function MissionCard({ compact = false }: { compact?: boolean }) {
   const { mission, done, streak } = state;
   const game = GAMES.find((g) => g.id === mission.gameId);
   const color = game?.color ?? '#0EA5E9';
-  const gameName = mission.gameId === 'lab' ? t('lab') : tg(`${mission.gameId}.name`);
-  const href = mission.gameId === 'lab' ? '/lab' : (`/games/${mission.gameId}` as '/games/memory');
+  // Activities that live outside the games catalogue have their own page.
+  const APPS: Record<string, { name: string; href: '/lab' | '/palais' | '/memo' }> = {
+    lab: { name: t('lab'), href: '/lab' },
+    palace: { name: t('palace'), href: '/palais' },
+    memo: { name: t('memo'), href: '/memo' },
+  };
+  const app = APPS[mission.gameId];
+  const gameName = app ? app.name : tg(`${mission.gameId}.name`);
+  const href = app ? app.href : (`/games/${mission.gameId}` as '/games/memory');
 
   return (
     <motion.div

@@ -2,7 +2,7 @@
 
 import { ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { recordGameResult } from '@/lib/progress';
 import { playSound } from '@/lib/sound';
@@ -208,6 +208,7 @@ export function GameStartScreen({
   description,
   howTo,
   onStart,
+  options,
 }: {
   color: string;
   emoji: string;
@@ -215,6 +216,8 @@ export function GameStartScreen({
   description: string;
   howTo: string;
   onStart: () => void;
+  /** Extra choices before starting (e.g. a calm mode without a timer). */
+  options?: React.ReactNode;
 }) {
   const t = useTranslations('games');
 
@@ -242,6 +245,7 @@ export function GameStartScreen({
       <p className="text-sm sm:text-base text-text-muted max-w-md mb-4 leading-relaxed">{description}</p>
       <p className="text-xs sm:text-sm text-text-dim max-w-sm mb-8 leading-relaxed">{howTo}</p>
 
+      {options && <div className="mb-6">{options}</div>}
       <GameButton color={color} onClick={onStart} className="w-full sm:w-auto">
         <Play size={18} fill="currentColor" />
         {t('start')}
@@ -273,7 +277,14 @@ export function GameResultScreen({
   gameId?: string;
 }) {
   const t = useTranslations('games');
-  const title = stars >= 2 ? t('wellDone') : t('tryAgain');
+  // No failure at Ziggy's: finishing a round always earns the effort star.
+  const earned = Math.max(1, stars);
+  const title = earned >= 3 ? t('wellDone') : earned === 2 ? t('great') : t('growing');
+  // One growth-mindset line per round, picked once.
+  const [growth] = useState(() => {
+    const lines = t.raw('growth') as string[];
+    return lines[Math.floor(Math.random() * lines.length)];
+  });
 
   // Every game funnels through this screen, so recording here keeps the four
   // of them from each repeating the same call.
@@ -283,16 +294,16 @@ export function GameResultScreen({
     if (!gameId || recordedRef.current) return;
     recordedRef.current = true;
     const numeric = typeof scoreValue === 'number' ? scoreValue : Number.parseInt(String(scoreValue), 10);
-    recordGameResult(gameId, Number.isFinite(numeric) ? numeric : 0, stars);
-  }, [gameId, scoreValue, stars]);
+    recordGameResult(gameId, Number.isFinite(numeric) ? numeric : 0, earned);
+  }, [gameId, scoreValue, earned]);
 
   useEffect(() => {
-    playSound(stars >= 2 ? 'win' : 'star');
-  }, [stars]);
+    playSound(earned >= 2 ? 'win' : 'star');
+  }, [earned]);
 
   return (
     <>
-      <Confetti trigger={stars >= 2} />
+      <Confetti trigger={earned >= 2} />
     <motion.div
       initial={{ opacity: 0, scale: 0.94 }}
       animate={{ opacity: 1, scale: 1 }}
@@ -307,12 +318,13 @@ export function GameResultScreen({
         role="img"
         aria-hidden="true"
       >
-        {stars >= 3 ? '🏆' : stars === 2 ? '🎉' : '💪'}
+        {earned >= 3 ? '🏆' : earned === 2 ? '🎉' : '🌱'}
       </motion.div>
 
-      <GameStars stars={stars} color={color} />
+      <GameStars stars={earned} color={color} />
 
       <h3 className="text-2xl sm:text-3xl font-extrabold mt-5 mb-2 text-text-body">{title}</h3>
+      <p className="mb-4 max-w-sm text-sm font-semibold text-green">{growth}</p>
 
       <p className="text-sm text-text-muted mb-1">{scoreLabel ?? t('yourScore')}</p>
       <motion.p
