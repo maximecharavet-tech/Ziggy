@@ -18,10 +18,12 @@
     "lucide-react": "^0.503.0",
     "next": "^15.3.2",
     "next-intl": "^4.1.0",
+    "phaser": "^3.90.0",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "server-only": "^0.0.1",
-    "ts-fsrs": "^5.4.2"
+    "ts-fsrs": "^5.4.2",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",

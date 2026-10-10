@@ -28,7 +28,8 @@ export function Navbar() {
   }, []);
 
   // Section anchors live on the home page, so they point there from any page.
-  const navLinks: { hash?: string; path?: '/lab' | '/apprendre'; label: string; key: string }[] = [
+  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde'; label: string; key: string }[] = [
+    { key: 'world', path: '/monde', label: t('world') },
     { key: 'learn', path: '/apprendre', label: t('learn') },
     { key: 'lab', path: '/lab', label: t('lab') },
     { key: 'agents', hash: 'agents', label: t('agents') },
@@ -73,7 +74,7 @@ export function Navbar() {
                 />
               )}
               {link.label}
-              {link.key === 'learn' && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
+              {link.key === 'world' && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
             </Link>
           ))}
         </div>

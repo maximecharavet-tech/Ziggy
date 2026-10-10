@@ -8,7 +8,7 @@ import type { Metadata } from 'next';
  */
 
 const CONTACT = 'contact@ziggy-ai.fr';
-const UPDATED = { fr: '3 octobre 2026', en: '3 October 2026' };
+const UPDATED = { fr: '10 octobre 2026', en: '10 October 2026' };
 
 type Section = { title: string; body: (string | string[])[] };
 
@@ -32,8 +32,9 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
             'Pour le parent : l’adresse e-mail et le mot de passe (stocké chiffré, jamais lisible par nous).',
             'Pour l’enfant : son prénom, sa tranche d’âge (5-7, 8-10 ou 11-12 ans) et l’avatar choisi.',
             'Les résultats de jeu : le jeu, le score, les étoiles et la date.',
+            'Ziggy World : la progression (quêtes, étoiles, XP, niveau de jeu par compétence), les avatars créés, les histoires gardées, les consentements parentaux et un journal technique des générations IA (type, statut, coût estimé — jamais le contenu).',
           ],
-          'Nous ne demandons ni nom de famille, ni photo, ni date de naissance, ni adresse, ni téléphone.',
+          'Nous ne demandons ni nom de famille, ni date de naissance, ni adresse, ni téléphone. Nous ne conservons jamais de photo (voir la section « Ziggy World »).',
         ],
       },
       {
@@ -45,12 +46,21 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         ],
       },
       {
+        title: '3 bis. Ziggy World : avatars, photos et contenus créés par IA',
+        body: [
+          'Les enfants n’écrivent jamais de texte libre pour l’IA : ils choisissent parmi des options prédéfinies. Les quêtes, histoires et questions générées par IA (DeepSeek, avec NVIDIA en secours) sont vérifiées par un schéma strict puis par notre filtre ChildShield ; en cas de doute, un contenu écrit par l’équipe Ziggy est affiché à la place. Ces générations nécessitent un compte parent.',
+          'Avatar depuis une photo — uniquement à l’initiative du parent, avec son consentement explicite : la photo est réduite dans le navigateur, envoyée à notre serveur puis au modèle de vision de NVIDIA, qui ne renvoie que des choix de dessin (couleur des cheveux, de la peau, des yeux, lunettes…). La photo n’existe que le temps de cette requête : elle n’est jamais enregistrée (ni fichier, ni base de données, ni journaux) et n’est jamais transmise au générateur d’images.',
+          'L’image de l’avatar est créée par Agnes AI à partir de ces seuls choix en texte, puis rangée dans un espace privé du compte (Supabase, Paris). Le parent peut retirer son consentement et supprimer les avatars, les histoires, la progression et l’historique IA à tout moment depuis l’Espace parents.',
+        ],
+      },
+      {
         title: '4. Où sont les données',
         body: [
           [
             'Comptes et résultats : Supabase, serveurs situés à Paris (Union européenne).',
             'Hébergement du site : Vercel.',
-            'Réponses du chat et voix de Ziggy : Google (Gemini API).',
+            'Réponses du chat et voix de Ziggy : Google (Gemini API), et DeepSeek ou NVIDIA en secours.',
+            'Ziggy World : DeepSeek (textes), NVIDIA (lecture de photo en mémoire, sécurité des contenus), Agnes AI (images d’avatar, à partir de texte seulement).',
           ],
           'Ces prestataires traitent les données pour notre compte uniquement. Les échanges avec le site sont chiffrés (HTTPS).',
         ],
@@ -96,8 +106,9 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
             'For the parent: the email address and password (stored hashed; we can never read it).',
             'For the child: first name, age range (5-7, 8-10 or 11-12) and chosen avatar.',
             'Game results: the game, score, stars and date.',
+            'Ziggy World: adventure progress (quests, stars, XP, game level per skill), avatars created, saved stories, parental consents and a technical log of AI generations (type, status, estimated cost — never the content).',
           ],
-          'We never ask for a surname, photo, date of birth, address or phone number.',
+          'We never ask for a surname, date of birth, address or phone number. We never keep a photo (see the “Ziggy World” section).',
         ],
       },
       {
@@ -109,12 +120,21 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         ],
       },
       {
+        title: '3a. Ziggy World: avatars, photos and AI-made content',
+        body: [
+          'Children never type free text for the AI: they pick from predefined options. AI-made quests, stories and questions (DeepSeek, with NVIDIA as a fallback) are checked against a strict schema and then by our ChildShield filter; if in doubt, content written by the Ziggy team is shown instead. These generations require a parent account.',
+          'Avatar from a photo — only at the parent’s initiative, with explicit consent: the photo is shrunk in the browser, sent to our server and then to NVIDIA’s vision model, which returns only drawing choices (hair, skin and eye colour, glasses…). The photo exists only for that request: it is never stored (no file, no database, no logs) and never sent to the image generator.',
+          'The avatar image is created by Agnes AI from those text choices only, then kept in the account’s private storage (Supabase, Paris). Parents can withdraw consent and delete avatars, stories, progress and AI history at any time from the Parents’ area.',
+        ],
+      },
+      {
         title: '4. Where data lives',
         body: [
           [
             'Accounts and results: Supabase, servers in Paris (European Union).',
             'Website hosting: Vercel.',
-            'Chat replies and Ziggy’s voice: Google (Gemini API).',
+            'Chat replies and Ziggy’s voice: Google (Gemini API), with DeepSeek or NVIDIA as fallbacks.',
+            'Ziggy World: DeepSeek (text), NVIDIA (in-memory photo reading, content safety), Agnes AI (avatar images, from text only).',
           ],
           'These providers process data on our behalf only. Traffic to the site is encrypted (HTTPS).',
         ],

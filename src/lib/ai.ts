@@ -3,9 +3,11 @@
  *
  * Works with whichever provider has a key configured, checked in order of how
  * easy the key is to get for free:
- *   1. GEMINI_API_KEY  - Google AI Studio, free tier, no card required
- *   2. GROQ_API_KEY    - Groq Cloud, free tier
- *   3. ANTHROPIC_API_KEY
+ *   1. GEMINI_API_KEY   - Google AI Studio, free tier, no card required
+ *   2. DEEPSEEK_API_KEY - DeepSeek (also Hyper Engine's text brain for Ziggy World)
+ *   3. NVIDIA_API_KEY   - NVIDIA NIM (build.nvidia.com)
+ *   4. GROQ_API_KEY     - Groq Cloud, free tier
+ *   5. ANTHROPIC_API_KEY
  *
  * With no key at all it throws NoProviderError; the chat route turns that into
  * a friendly "Ziggy is napping" reply so the rest of the site keeps working.
@@ -119,7 +121,7 @@ async function callOpenAICompatible(
     }),
   });
 
-  if (!res.ok) throw new Error(`Groq ${res.status}: ${await res.text()}`);
+  if (!res.ok) throw new Error(`${new URL(url).hostname} ${res.status}`);
   const data = await res.json();
   return data.choices?.[0]?.message?.content ?? '';
 }
@@ -146,12 +148,14 @@ async function callAnthropic(key: string, system: string, messages: ChatMessage[
   return block?.type === 'text' ? block.text : '';
 }
 
-type Provider = 'gemini' | 'groq' | 'anthropic';
+type Provider = 'gemini' | 'deepseek' | 'nvidia' | 'groq' | 'anthropic';
 
 /** Every configured provider, in order of preference. */
 export function configuredProviders(): Provider[] {
   const out: Provider[] = [];
   if (process.env.GEMINI_API_KEY) out.push('gemini');
+  if (process.env.DEEPSEEK_API_KEY) out.push('deepseek');
+  if (process.env.NVIDIA_API_KEY) out.push('nvidia');
   if (process.env.GROQ_API_KEY) out.push('groq');
   if (process.env.ANTHROPIC_API_KEY) out.push('anthropic');
   return out;
@@ -166,6 +170,16 @@ function callProvider(provider: Provider, system: string, history: ChatMessage[]
   switch (provider) {
     case 'gemini':
       return callGemini(process.env.GEMINI_API_KEY!, system, history);
+    case 'deepseek':
+      return callOpenAICompatible('https://api.deepseek.com/chat/completions', process.env.DEEPSEEK_API_KEY!, process.env.DEEPSEEK_MODEL || 'deepseek-v4-flash', system, history);
+    case 'nvidia':
+      return callOpenAICompatible(
+        'https://integrate.api.nvidia.com/v1/chat/completions',
+        process.env.NVIDIA_API_KEY!,
+        process.env.NVIDIA_TEXT_MODEL || 'meta/llama-3.3-70b-instruct',
+        system,
+        history
+      );
     case 'groq':
       return callOpenAICompatible(
         'https://api.groq.com/openai/v1/chat/completions',
