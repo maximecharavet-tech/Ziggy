@@ -7,6 +7,7 @@ import { playSound } from '@/lib/sound';
 import { isOrderCorrect, orderCorrectPositions, shuffleNotIdentity, swap } from '../logic';
 import { ArcadeButton, Feedback, Hint, POP, Prompt, RoundProgress, SOFT_SHAKE, Stage, alpha, useFinishIfEmpty, useGameRun } from './shared';
 import { cheer, ui } from '../ui-text';
+import { useSay } from '../read-aloud';
 
 type Phase = 'play' | 'retry' | 'right' | 'shown';
 
@@ -40,12 +41,14 @@ function OrderRound({
   const [checked, setChecked] = useState<boolean[] | null>(null);
   const [shakeKey, setShakeKey] = useState(0);
 
+  const say = useSay();
   const locked = phase === 'right' || phase === 'shown';
   const current = order.map((i) => steps[i]);
 
   const tapCard = (pos: number) => {
     if (locked) return;
     playSound('tap');
+    say('order-step', steps[order[pos]]);
     setChecked(null);
     if (selected === null) setSelected(pos);
     else if (selected === pos) setSelected(null);
@@ -102,7 +105,7 @@ function OrderRound({
 
   return (
     <div>
-      <Prompt text={prompt} color={color} />
+      <Prompt text={prompt} color={color} say={[ui('orderHint', locale)]} />
       {!locked && <Hint>{ui('orderHint', locale)}</Hint>}
 
       <motion.ol key={shakeKey} animate={shakeKey ? SOFT_SHAKE : undefined} className="flex flex-col gap-2.5 max-w-lg mx-auto" dir="ltr">

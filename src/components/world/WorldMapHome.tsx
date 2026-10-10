@@ -17,12 +17,15 @@ import { EASE_OUT } from '@/lib/motion';
 import { StatusBar } from './StatusBar';
 import { CompanionBuddy } from './CompanionBuddy';
 import { wt } from './text';
+import { AgePicker, AGE_CHOICES } from './AgePicker';
+import { SayButton } from '@/components/arcade/read-aloud';
 
 export function WorldMapHome() {
   const locale = useLocale();
   const hydrated = useHydrated();
   const memory = useWorldMemory();
   const [signedIn, setSignedIn] = useState<boolean | null>(null);
+  const [askAge, setAskAge] = useState(false);
 
   useEffect(() => {
     void accessToken().then((t) => {
@@ -68,6 +71,14 @@ export function WorldMapHome() {
         </section>
 
         {signedIn !== null ? <p className="mt-8 text-center text-sm text-text-muted">{signedIn ? wt('syncedNote', locale) : wt('guestNote', locale)}</p> : null}
+        {hydrated && memory.age ? (
+          <p className="mt-2 text-center text-sm">
+            <button type="button" onClick={() => setAskAge(true)} className="font-semibold text-text-muted underline">
+              {AGE_CHOICES.find((a) => a.id === memory.age)?.emoji} {tr(AGE_CHOICES.find((a) => a.id === memory.age)!.title, locale)} · {locale === 'fr' ? 'changer' : 'change'}
+            </button>
+          </p>
+        ) : null}
+        {hydrated && (!memory.age || askAge) ? <AgePicker locale={locale} onChosen={() => setAskAge(false)} /> : null}
       </div>
     </div>
   );
@@ -107,9 +118,12 @@ function ContinueCard({ plan, memory, locale }: { plan: AdventurePlan; memory: W
             {world.icon} {tr(world.name, locale)} · {wt('chapter', locale)} {plan.chapter}
             {plan.isDaily ? <span className="ms-2 rounded-full bg-white/70 px-2 py-0.5 normal-case tracking-normal">☀️ {wt('dailyBonus', locale)}</span> : null}
           </p>
-          <h2 id="continue-title" className="mt-2 font-display text-3xl font-bold sm:text-4xl">
-            {tr(quest.title, locale)}
-          </h2>
+          <div className="mt-2 flex items-center gap-3">
+            <h2 id="continue-title" className="font-display text-3xl font-bold sm:text-4xl">
+              {tr(quest.title, locale)}
+            </h2>
+            <SayButton texts={[tr(quest.title, locale), tr(quest.intro, locale)]} locale={locale} />
+          </div>
           <p className="mt-2 max-w-xl text-base font-medium opacity-90">{tr(quest.intro, locale)}</p>
           <p className="mt-3 text-sm font-semibold opacity-80">
             {game.emoji} {tr(game.name, locale)} · {wt('difficulty', locale)} {plan.difficulty}/5 · +{plan.reward.xp} XP

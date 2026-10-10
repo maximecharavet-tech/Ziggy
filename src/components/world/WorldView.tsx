@@ -17,6 +17,7 @@ import { tr } from '@/lib/i18n-text';
 import { EASE_OUT } from '@/lib/motion';
 import { StatusBar } from './StatusBar';
 import { wt } from './text';
+import { SayButton } from '@/components/arcade/read-aloud';
 
 /** One world: its story in 3 chapters, quests as scenes, inhabitants, treasures found. */
 export function WorldView({ worldId }: { worldId: string }) {
@@ -53,7 +54,10 @@ export function WorldView({ worldId }: { worldId: string }) {
           <motion.div className="text-8xl" initial={{ scale: 0.5, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: 'spring', stiffness: 180, damping: 14 }} aria-hidden="true">
             {world.icon}
           </motion.div>
-          <h1 className="mt-2 font-display text-4xl font-bold sm:text-6xl">{tr(world.name, locale)}</h1>
+          <div className="mt-2 flex items-center justify-center gap-3">
+            <h1 className="font-display text-4xl font-bold sm:text-6xl">{tr(world.name, locale)}</h1>
+            <SayButton texts={[tr(world.name, locale), tr(world.description, locale)]} locale={locale} />
+          </div>
           <p className="mx-auto mt-3 max-w-2xl text-lg font-medium opacity-90">{tr(world.description, locale)}</p>
           {hydrated ? (
             <p className="mt-3 text-sm font-bold opacity-80">
@@ -100,10 +104,11 @@ export function WorldView({ worldId }: { worldId: string }) {
                               <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl text-2xl" style={{ backgroundColor: `${c.accent}1f` }} aria-hidden="true">
                                 {s.status === 'done' ? s.emoji : game.emoji}
                               </span>
-                              <div className="min-w-0">
+                              <div className="min-w-0 flex-1">
                                 <h3 className="font-display text-lg font-bold leading-tight text-text-body">{s.title}</h3>
                                 <p className="mt-1 text-sm text-text-muted">{s.text}</p>
                               </div>
+                              <SayButton texts={[s.title, s.text]} locale={locale} size="sm" />
                             </div>
                             <p className="mt-3 text-xs font-semibold text-text-muted">
                               {game.emoji} {tr(game.name, locale)} · {tr(SKILL_NAMES[q.skill], locale)} · +{q.reward.xp} XP

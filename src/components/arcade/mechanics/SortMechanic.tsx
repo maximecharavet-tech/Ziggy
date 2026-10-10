@@ -7,6 +7,7 @@ import { playSound } from '@/lib/sound';
 import { shuffle } from '../logic';
 import { Feedback, Hint, POP, RoundProgress, SOFT_SHAKE, Stage, alpha, useFinishIfEmpty, useGameRun, useTimers } from './shared';
 import { cheer, ui } from '../ui-text';
+import { useSay } from '../read-aloud';
 
 type SortItem = { label: string; emoji: string; bin: string; id: number };
 
@@ -21,6 +22,7 @@ export function SortMechanic({ content, color, locale, onFinish, onAnswer }: Mec
   const [items] = useState<SortItem[]>(() => shuffle(rawItems.map((it, id) => ({ ...it, id }))));
   const [placed, setPlaced] = useState<Record<number, string>>({});
   const [selected, setSelected] = useState<number | null>(null);
+  const say = useSay();
   const [feedback, setFeedback] = useState<{ tone: 'right' | 'almost'; item: SortItem } | null>(null);
   const [wiggleBin, setWiggleBin] = useState<{ id: string; n: number } | null>(null);
   const [busy, setBusy] = useState(false);
@@ -77,7 +79,7 @@ export function SortMechanic({ content, color, locale, onFinish, onAnswer }: Mec
   return (
     <Stage color={color}>
       <RoundProgress index={doneCount} total={total} color={color} locale={locale} />
-      <Hint>{ui('sortHint', locale)}</Hint>
+      <Hint say={ui('sortHint', locale)}>{ui('sortHint', locale)}</Hint>
 
       {/* Item tray */}
       <div className="flex flex-wrap items-center justify-center gap-2.5 min-h-[96px] mb-5" role="group" aria-label={ui('sortHint', locale)}>
@@ -91,6 +93,7 @@ export function SortMechanic({ content, color, locale, onFinish, onAnswer }: Mec
                 layout
                 onClick={() => {
                   playSound('tap');
+                  say('sort-item', it.label);
                   setSelected(it.id);
                 }}
                 aria-pressed={isActive}

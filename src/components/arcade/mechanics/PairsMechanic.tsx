@@ -80,7 +80,7 @@ export function PairsMechanic({ content, color, locale, onFinish, onAnswer }: Me
           {found} / {total}
         </span>
       </div>
-      <Hint>{ui('pairsHint', locale)}</Hint>
+      <Hint say={ui('pairsHint', locale)}>{ui('pairsHint', locale)}</Hint>
 
       <div className={`grid ${cols} gap-2.5 sm:gap-3 max-w-xl mx-auto`} dir="ltr">
         {deck.map((card, i) => {

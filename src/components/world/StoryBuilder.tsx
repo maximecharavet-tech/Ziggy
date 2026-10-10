@@ -11,6 +11,10 @@ import { speak, stopSpeaking } from '@/lib/voice';
 import { tr, type L } from '@/lib/i18n-text';
 import { playSound } from '@/lib/sound';
 import { AppPage } from '@/components/learn/AppPage';
+import { SayButton } from '@/components/arcade/read-aloud';
+import { getMemory } from '@/lib/world/store';
+import { readAloudOn } from '@/lib/world/memory';
+import { speakSequence } from '@/lib/voice';
 
 type Key = 'hero' | 'place' | 'companion' | 'object' | 'goal';
 const STEPS: { key: Key; title: L; list: { id: string; emoji: string; label: L }[] }[] = [
@@ -89,9 +93,12 @@ export function StoryBuilder() {
         <div className="grid gap-6">
           {STEPS.map((step, si) => (
             <section key={step.key} aria-labelledby={`step-${step.key}`} className="rounded-[2rem] bg-bg-card p-5 shadow-sm">
-              <h2 id={`step-${step.key}`} className="font-display text-xl font-bold text-text-body">
-                {si + 1}. {tr(step.title, locale)}
-              </h2>
+              <div className="flex items-center gap-3">
+                <h2 id={`step-${step.key}`} className="font-display text-xl font-bold text-text-body">
+                  {si + 1}. {tr(step.title, locale)}
+                </h2>
+                <SayButton texts={[tr(step.title, locale), ...step.list.map((o) => tr(o.label, locale))]} locale={locale} size="sm" />
+              </div>
               <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6" role="radiogroup" aria-labelledby={`step-${step.key}`}>
                 {step.list.map((o) => {
                   const on = choices[step.key] === o.id;
@@ -104,6 +111,7 @@ export function StoryBuilder() {
                       onClick={() => {
                         setChoices((c) => ({ ...c, [step.key]: o.id }));
                         playSound('tap');
+                        if (readAloudOn(getMemory())) void speakSequence('story-pick', [tr(o.label, locale)], locale);
                       }}
                       className={`flex flex-col items-center gap-1 rounded-3xl border-2 p-3 text-center text-sm font-semibold transition focus-visible:outline focus-visible:outline-4 focus-visible:outline-sky/40 ${on ? 'border-sky bg-sky/10 text-text-body' : 'border-border/60 text-text-muted hover:border-sky/50'}`}
                     >

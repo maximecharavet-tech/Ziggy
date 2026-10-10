@@ -7,6 +7,7 @@ import { playSound } from '@/lib/sound';
 import { mixHex, readableOn, sameMultiset } from '../logic';
 import { ArcadeButton, Feedback, Hint, POP, RoundProgress, SOFT_SHAKE, Stage, useFinishIfEmpty, useGameRun } from './shared';
 import { cheer, ui } from '../ui-text';
+import { useSay } from '../read-aloud';
 
 type Phase = 'play' | 'retry' | 'right' | 'shown';
 type Paint = { id: string; name: string; hex: string };
@@ -42,7 +43,9 @@ function MixRound({
   const paint = (id: string) => palette.find((p) => p.id === id);
   const mixed = mixHex(chosen.map((id) => paint(id)?.hex ?? '#FFFFFF'));
 
+  const say = useSay();
   const add = (p: Paint) => {
+    say('mix-paint', p.name);
     if (locked || chosen.length >= max) return;
     playSound('pop');
     setChosen((c) => [...c, p.id]);
@@ -148,7 +151,7 @@ function MixRound({
 
       {!locked && (
         <>
-          <Hint>{ui('mixHint', locale)}</Hint>
+          <Hint say={`${ui('target', locale)} : ${target.name}. ${ui('mixHint', locale)}`}>{ui('mixHint', locale)}</Hint>
           <div className="flex flex-wrap justify-center gap-3 mb-4" role="group" aria-label={ui('mixHint', locale)}>
             {palette.map((p) => (
               <motion.button

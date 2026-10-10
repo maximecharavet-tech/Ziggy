@@ -9,6 +9,7 @@ import { digTilesFor, shuffle } from '../logic';
 import { ChoiceQuestion } from './ChoiceQuestion';
 import { ArcadeButton, Hint, POP, RoundProgress, Stage, alpha, useFinishIfEmpty, useGameRun } from './shared';
 import { ui } from '../ui-text';
+import { useAutoSay } from '../read-aloud';
 
 const GRID = 4;
 const TILES = GRID * GRID;
@@ -24,6 +25,8 @@ export function DigMechanic({ content, color, locale, onFinish, onAnswer }: Mech
   const [order] = useState(() => shuffle(Array.from({ length: TILES }, (_, i) => i)));
   const [uncovered, setUncovered] = useState(0);
   const [found, setFound] = useState(false);
+  const digFind = content.kind === 'dig' ? content.find : null;
+  useAutoSay(found ? 'dig-found' : 'dig', found && digFind ? [ui('found', locale), `${ui('youFound', locale)} ${digFind.name}`] : []);
 
   if (content.kind !== 'dig') return null;
   const { find } = content;

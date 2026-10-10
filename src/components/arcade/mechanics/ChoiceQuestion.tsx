@@ -6,6 +6,13 @@ import type { ChoiceItem } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { ArcadeButton, Feedback, POP, Prompt, SOFT_SHAKE, alpha } from './shared';
 import { cheer, ui } from '../ui-text';
+import { CountDots, useReadAloud } from '../read-aloud';
+
+/** Split "🐑 mouton" into its leading picture and its word. */
+function pictured(opt: string): [string, string] | null {
+  const m = /^(\p{Extended_Pictographic}(?:\u200d\p{Extended_Pictographic}|\ufe0f|\p{Emoji_Modifier})*)\s*(.*)$/u.exec(opt.trim());
+  return m ? [m[1], m[2]] : null;
+}
 
 /**
  * One multiple-choice question (used by Choice and Dig). The parent keys it
@@ -29,6 +36,9 @@ export function ChoiceQuestion({
   onNext: () => void;
 }) {
   const [picked, setPicked] = useState<number | null>(null);
+  // Which answer Ziggy is reading aloud right now (lit up for pre-readers).
+  const [reading, setReading] = useState<number | null>(null);
+  const { little } = useReadAloud();
   const answered = picked !== null;
   const right = picked === item.answer;
 
@@ -57,7 +67,7 @@ export function ChoiceQuestion({
 
   return (
     <div>
-      <Prompt visual={item.visual} text={item.prompt} color={color} />
+      <Prompt visual={item.visual} text={item.prompt} color={color} say={item.options} onSpeak={(i) => setReading(i && i > 0 ? i - 1 : null)} />
 
       <div className={`grid grid-cols-1 ${cols} gap-3`} role="group" aria-label={item.prompt}>
         {item.options.map((opt, i) => {
@@ -65,6 +75,7 @@ export function ChoiceQuestion({
           const isPicked = i === picked;
           const showRight = answered && isAnswer;
           const dim = answered && !isAnswer && !isPicked;
+          const lit = !answered && reading === i;
           return (
             <motion.button
               key={`${i}-${opt}`}
@@ -77,13 +88,14 @@ export function ChoiceQuestion({
               animate={
                 answered && isPicked && !isAnswer
                   ? { opacity: 1, y: 0, ...SOFT_SHAKE }
-                  : { opacity: dim ? 0.45 : 1, y: 0, scale: showRight ? 1.04 : 1 }
+                  : { opacity: dim ? 0.45 : 1, y: 0, scale: showRight || lit ? 1.05 : 1 }
               }
               whileTap={answered ? undefined : { scale: 0.96 }}
               transition={{ ...POP, delay: answered ? 0 : i * 0.04 }}
               className="relative min-h-[64px] rounded-3xl px-4 py-3 text-lg sm:text-xl font-extrabold text-text-body border-2 flex items-center justify-center gap-2 text-center disabled:cursor-default"
               style={{
-                borderColor: showRight ? '#22C55E' : isPicked ? '#FBBF24' : alpha(color, '30'),
+                borderColor: showRight ? '#22C55E' : isPicked ? '#FBBF24' : lit ? color : alpha(color, '30'),
+                boxShadow: lit ? `0 0 0 4px ${alpha(color, '40')}` : undefined,
                 background: showRight
                   ? 'linear-gradient(135deg, #22C55E22, #22C55E0A)'
                   : `linear-gradient(135deg, ${alpha(color, '12')}, transparent)`,
@@ -96,7 +108,20 @@ export function ChoiceQuestion({
               >
                 {showRight ? '✓' : i + 1}
               </span>
-              <span className="px-8">{opt}</span>
+              <span className="flex flex-col items-center px-8">
+                {little && pictured(opt) ? (
+                  // Pre-readers: the picture is the answer, the word is just a caption.
+                  <>
+                    <span className="text-5xl leading-none" aria-hidden="true">
+                      {pictured(opt)![0]}
+                    </span>
+                    <span className="mt-1 text-base font-bold text-text-muted">{pictured(opt)![1]}</span>
+                  </>
+                ) : (
+                  <span>{opt}</span>
+                )}
+                {little ? <CountDots text={opt} color={color} /> : null}
+              </span>
             </motion.button>
           );
         })}
@@ -107,6 +132,7 @@ export function ChoiceQuestion({
           tone={answered ? (right ? 'right' : 'almost') : null}
           title={answered ? (right ? cheer(round, locale) : ui('almost', locale)) : undefined}
           color={color}
+          say={answered ? [right ? '' : `${ui('answerWas', locale)} ${item.options[item.answer]}.`, item.explain ?? ''].join(' ').trim() : undefined}
         >
           {answered && !right && (
             <>

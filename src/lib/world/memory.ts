@@ -25,8 +25,16 @@ export interface RecentRound {
   at: string;
 }
 
+/** little = can't read yet (4–6), middle = learning to read (6–8), big = reads (8–12). */
+export const AGE_BANDS = ['little', 'middle', 'big'] as const;
+export type AgeBand = (typeof AGE_BANDS)[number];
+
 export interface WorldMemory {
   version: number;
+  /** Chosen once by the family; null until then. */
+  age?: AgeBand | null;
+  /** Ziggy reads everything aloud. null = automatic from the age. */
+  readAloud?: boolean | null;
   xp: number;
   /** World the child was last exploring — "Continuer mon aventure". */
   currentWorld: string;
@@ -49,6 +57,8 @@ export interface WorldMemory {
 export function emptyMemory(firstWorld = 'princess'): WorldMemory {
   return {
     version: MEMORY_VERSION,
+    age: null,
+    readAloud: null,
     xp: 0,
     currentWorld: firstWorld,
     companion: 'dragon',
@@ -79,6 +89,8 @@ const SkillStateSchema = z.object({
 /** Strict schema: the server only stores memory that matches it. */
 export const WorldMemorySchema = z.object({
   version: z.number().int().min(1).max(MEMORY_VERSION),
+  age: z.enum(AGE_BANDS).nullable().optional(),
+  readAloud: z.boolean().nullable().optional(),
   xp: z.number().int().min(0).max(1e7),
   currentWorld: id,
   companion: z.enum(COMPANION_IDS),
@@ -124,6 +136,8 @@ export function mergeMemory(a: WorldMemory, b: WorldMemory): WorldMemory {
   const union = (x: string[], y: string[]) => [...new Set([...x, ...y])];
   return {
     version: MEMORY_VERSION,
+    age: newer.age ?? (newer === a ? b.age : a.age) ?? null,
+    readAloud: newer.readAloud ?? null,
     xp: Math.max(a.xp, b.xp),
     currentWorld: newer.currentWorld,
     companion: newer.companion,
@@ -146,4 +160,19 @@ export function mergeMemory(a: WorldMemory, b: WorldMemory): WorldMemory {
 /** Total stars = best stars of each quest (replaying never inflates it). */
 export function totalStars(m: WorldMemory): number {
   return Object.values(m.completedQuests).reduce((s, q) => s + q.stars, 0);
+}
+
+/** Read-aloud is on for children who can't read fluently yet, unless the family chose otherwise. */
+export function readAloudOn(m: WorldMemory): boolean {
+  return m.readAloud ?? (m.age === 'little' || m.age === 'middle');
+}
+
+/** Highest game level per age: little ones stay on gentle levels. */
+export function maxDifficulty(m: WorldMemory): 1 | 2 | 3 | 4 | 5 {
+  return m.age === 'little' ? 2 : m.age === 'middle' ? 4 : 5;
+}
+
+/** The age group the AI writes for. */
+export function aiAgeGroup(m: WorldMemory): '5-7' | '8-10' | '11-12' {
+  return m.age === 'big' ? '8-10' : '5-7';
 }

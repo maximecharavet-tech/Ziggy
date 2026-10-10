@@ -33,3 +33,14 @@ The same engine runs on the server (`/api/ziggy/game/result`) and offline on the
 ## Story
 Each world = 3 chapters × 2 quests; completing a quest reveals a place, friend or treasure
 (`buildStory`). Story Builder (`/monde/histoires`) composes stories from predefined choices only.
+
+## Children who can't read yet
+The family picks an age band on first visit (`little` 4–6, `middle` 6–8, `big` 8–12; changeable in the
+parent console). For `little` and `middle`, read-aloud is on by default (`readAloudOn`):
+- Ziggy reads the quest intro, every instruction, then every answer while it lights up, then the
+  feedback ("Almost! The answer is…"), the result and Magic Moments. A 🔊 button replays any line.
+- Answers that start with an emoji become big pictures with the word as a caption; small numbers are
+  also shown as dots to count; spelling games show the model word to copy.
+- Game level is capped (2 for `little`, 4 for `middle`) and the AI is told the child may not read:
+  ≤10-word questions, an emoji first in every option, numbers ≤10, never "read this word".
+The voice is Gemini TTS when configured, otherwise the browser's own voice.

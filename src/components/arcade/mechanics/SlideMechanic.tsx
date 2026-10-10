@@ -88,7 +88,7 @@ export function SlideMechanic({ content, color, locale, onFinish, onAnswer }: Me
           💡 <span className="hidden sm:inline">{ui('help', locale)}</span>
         </ArcadeButton>
       </div>
-      {!done && <Hint>{ui('slideHint', locale)}</Hint>}
+      {!done && <Hint say={ui('slideHint', locale)}>{ui('slideHint', locale)}</Hint>}
 
       <div
         className="relative mx-auto w-full max-w-[360px] aspect-square rounded-3xl p-2"

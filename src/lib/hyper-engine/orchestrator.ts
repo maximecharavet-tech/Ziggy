@@ -54,7 +54,12 @@ const LANG = (locale: string) => (locale === 'fr' ? 'French' : 'English');
 const CHILD_RULES = (locale: string, ageGroup: string) =>
   `You write for children aged ${ageGroup} in ${LANG(locale)}. Warm, playful, simple words, short sentences. ` +
   `Never: violence, weapons, scary or sad themes, romance, adult themes, brands, real people, personal questions, links. ` +
-  `Encourage effort and curiosity; mistakes are part of learning. Answer with ONE JSON object only — no markdown, no code, no HTML.`;
+  `Encourage effort and curiosity; mistakes are part of learning. Answer with ONE JSON object only — no markdown, no code, no HTML.` +
+  (ageGroup === '5-7'
+    ? ` Many of these children cannot read yet: everything is read aloud to them. Questions of at most 10 simple words; ` +
+      `every answer option starts with ONE emoji that shows its meaning, then 1 to 3 words; numbers stay at or below 10; ` +
+      `never ask to read a written word.`
+    : '');
 
 /** Ask the text brain for JSON matching `schema`: DeepSeek first, NVIDIA as fallback, one controlled correction. */
 async function aiJson<T>(schema: z.ZodType<T>, system: string, user: string): Promise<{ data: T; provider: string } | null> {

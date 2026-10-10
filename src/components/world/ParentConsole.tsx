@@ -12,6 +12,9 @@ import { WORLD_KEY, accessToken, api, getMemory, setMemory } from '@/lib/world/s
 import { tr, type L } from '@/lib/i18n-text';
 import { AppPage } from '@/components/learn/AppPage';
 import { MASTERY_TEXT } from './text';
+import { AGE_CHOICES, chooseAge } from './AgePicker';
+import { readAloudOn } from '@/lib/world/memory';
+import { syncWorld, useWorldMemory } from '@/lib/world/store';
 
 type Overview = {
   memory: WorldMemory | null;
@@ -80,6 +83,7 @@ export function ParentConsole() {
   const [data, setData] = useState<Overview | null>(null);
   const [armed, setArmed] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const device = useWorldMemory();
 
   const load = useCallback(async () => {
     if (!(await accessToken())) return setState('guest');
@@ -204,6 +208,41 @@ export function ParentConsole() {
           ) : (
             <p className="mt-3 text-sm text-text-muted">{tr(T.none, locale)}</p>
           )}
+        </Card>
+
+        <Card title={`👶 ${locale === 'fr' ? 'Âge et lecture' : 'Age and reading'}`}>
+          <div className="grid gap-2" role="radiogroup" aria-label={locale === 'fr' ? 'Âge' : 'Age'}>
+            {AGE_CHOICES.map((a) => (
+              <button
+                key={a.id}
+                type="button"
+                role="radio"
+                aria-checked={device.age === a.id}
+                onClick={() => chooseAge(a.id)}
+                className={`flex items-center gap-3 rounded-2xl border-2 px-4 py-2 text-left text-sm ${device.age === a.id ? 'border-teal bg-teal/10' : 'border-border/60'}`}
+              >
+                <span className="text-2xl" aria-hidden="true">
+                  {a.emoji}
+                </span>
+                <span>
+                  <span className="block font-bold text-text-body">{tr(a.title, locale)}</span>
+                  <span className="block text-xs text-text-muted">{tr(a.detail, locale)}</span>
+                </span>
+              </button>
+            ))}
+          </div>
+          <label className="mt-4 flex items-center gap-3 text-sm font-semibold text-text-body">
+            <input
+              type="checkbox"
+              className="h-5 w-5 accent-teal"
+              checked={readAloudOn(device)}
+              onChange={(e) => {
+                setMemory({ ...getMemory(), readAloud: e.target.checked, updatedAt: new Date().toISOString() });
+                void syncWorld();
+              }}
+            />
+            {locale === 'fr' ? '🔊 Ziggy lit à voix haute les consignes, les réponses et les histoires' : '🔊 Ziggy reads instructions, answers and stories aloud'}
+          </label>
         </Card>
 
         <Card title={`🔐 ${tr(T.consents, locale)}`}>

@@ -223,3 +223,28 @@ describe('mastery pacing', () => {
     expect(s.masteryEstimate).toBeGreaterThanOrEqual(0.85);
   });
 });
+
+describe('pre-readers', () => {
+  it('reads aloud automatically for children who cannot read fluently yet', async () => {
+    const { readAloudOn, maxDifficulty, aiAgeGroup } = await import('./memory');
+    const m = emptyMemory();
+    expect(m.age).toBeNull();
+    expect(readAloudOn({ ...m, age: 'little' })).toBe(true);
+    expect(readAloudOn({ ...m, age: 'middle' })).toBe(true);
+    expect(readAloudOn({ ...m, age: 'big' })).toBe(false);
+    expect(readAloudOn({ ...m, age: 'big', readAloud: true })).toBe(true);
+    expect(readAloudOn({ ...m, age: 'little', readAloud: false })).toBe(false);
+    expect(maxDifficulty({ ...m, age: 'little' })).toBe(2);
+    expect(aiAgeGroup({ ...m, age: 'little' })).toBe('5-7');
+  });
+
+  it('keeps the age through validation and merges', () => {
+    const a = { ...emptyMemory(), age: 'little' as const, updatedAt: '2026-01-02' };
+    expect(WorldMemorySchema.safeParse(a).success).toBe(true);
+    expect(normalizeMemory(a).age).toBe('little');
+    // Older memories without the field stay valid.
+    const { age: _age, readAloud: _r, ...old } = emptyMemory();
+    expect(WorldMemorySchema.safeParse(old).success).toBe(true);
+    expect(mergeMemory(a, { ...emptyMemory(), updatedAt: '2026-01-03' }).age).toBe('little');
+  });
+});

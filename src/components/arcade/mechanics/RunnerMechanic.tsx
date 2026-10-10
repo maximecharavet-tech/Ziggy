@@ -28,6 +28,7 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
   const [lane, setLane] = useState(1);
   const [verdict, setVerdict] = useState<Verdict>(null);
   const [failed, setFailed] = useState(false);
+  const [reading, setReading] = useState<number | null>(null);
 
   const round = items[index] ? runnerLanes(items[index].options, items[index].answer) : null;
 
@@ -113,7 +114,21 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
   return (
     <Stage color={color} className="!p-3 sm:!p-5">
       <RoundProgress index={index} total={total} color={color} locale={locale} />
-      <Prompt visual={item.visual} text={item.prompt} color={color} />
+      <Prompt visual={item.visual} text={item.prompt} color={color} say={round.options} onSpeak={(i) => setReading(i && i > 0 ? i - 1 : null)} />
+      {/* The gates' answers, in lane order, lit up while Ziggy reads them. */}
+      <div className="-mt-2 mb-3 flex justify-center gap-2" dir="ltr" aria-hidden="true">
+        {round.options.map((o, i) => (
+          <span
+            key={i}
+            className="rounded-2xl border-2 px-3 py-1.5 text-base font-extrabold text-text-body transition"
+            style={{ borderColor: reading === i || lane === i ? color : alpha(color, '30'), transform: reading === i ? 'scale(1.1)' : undefined }}
+          >
+            {i === 0 ? '◀ ' : i === round.options.length - 1 ? '' : '▲ '}
+            {o}
+            {i === round.options.length - 1 && i !== 0 ? ' ▶' : ''}
+          </span>
+        ))}
+      </div>
 
       <div
         className="relative w-full h-[380px] sm:h-[440px] rounded-3xl overflow-hidden border-2 touch-none select-none"
@@ -172,6 +187,7 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
           tone={verdict ? (verdict.right ? 'right' : 'almost') : 'info'}
           title={verdict ? (verdict.right ? cheer(index, locale) : ui('almost', locale)) : undefined}
           color={color}
+          say={verdict && !verdict.right ? `${ui('answerWas', locale)} ${verdict.answer}` : undefined}
         >
           {verdict && !verdict.right ? (
             <>

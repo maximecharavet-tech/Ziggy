@@ -7,6 +7,7 @@ import { playSound } from '@/lib/sound';
 import { normWord, shuffleNotIdentity, spellLetters } from '../logic';
 import { ArcadeButton, Feedback, POP, Prompt, RoundProgress, SOFT_SHAKE, Stage, alpha, useFinishIfEmpty, useGameRun, useTimers } from './shared';
 import { cheer, ui } from '../ui-text';
+import { useReadAloud, useSay } from '../read-aloud';
 
 type Phase = 'play' | 'retry' | 'right' | 'shown';
 type Tile = { id: number; ch: string };
@@ -35,6 +36,8 @@ function SpellRound({
   onNext: () => void;
 }) {
   const later = useTimers();
+  const say = useSay();
+  const { little } = useReadAloud();
   const letters = spellLetters(word);
   const chars = Array.from(normWord(word));
   const [tiles] = useState<Tile[]>(() =>
@@ -89,6 +92,7 @@ function SpellRound({
     const k = slots.indexOf(null);
     if (k < 0) return;
     playSound('tap');
+    say('spell-letter', tile.ch.toLowerCase());
     const next = [...slots];
     next[k] = tile.id;
     setSlots(next);
@@ -135,7 +139,13 @@ function SpellRound({
 
   return (
     <div>
-      <Prompt visual={hint} text={ui('spellHint', locale)} color={color} />
+      <Prompt visual={hint} text={ui('spellHint', locale)} color={color} say={[word.toLowerCase()]} />
+      {little && phase !== 'right' && phase !== 'shown' ? (
+        // Pre-readers copy the model, letter by letter: recognising letters comes before reading.
+        <p className="-mt-2 mb-4 text-center text-3xl font-extrabold tracking-[0.35em] text-text-muted/70" dir="ltr" aria-hidden="true">
+          {word}
+        </p>
+      ) : null}
 
       <motion.div
         key={shake}
@@ -217,6 +227,7 @@ function SpellRound({
             phase === 'right' ? cheer(round, locale) : phase === 'retry' ? ui('tryAgain', locale) : phase === 'shown' ? ui('almost', locale) : undefined
           }
           color={color}
+          say={phase === 'shown' ? `${ui('answerWas', locale)} ${word.toLowerCase()}` : undefined}
         >
           {phase === 'shown' && (
             <>

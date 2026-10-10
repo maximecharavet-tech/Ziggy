@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { ui } from '../ui-text';
+import { SayButton, useAutoSay, useReadAloud } from '../read-aloud';
 
 /** Spring used for every micro-interaction in the arcade. */
 export const POP = { type: 'spring', stiffness: 420, damping: 24 } as const;
@@ -109,12 +110,16 @@ export function Feedback({
   title,
   children,
   color,
+  say,
 }: {
   tone: FeedbackTone | null;
   title?: string;
   children?: ReactNode;
   color: string;
+  /** What Ziggy says after the title, for children who can't read it. */
+  say?: string;
 }) {
+  useAutoSay(`fb-${tone ?? ''}-${title ?? ''}-${say ?? ''}`, tone ? [title, say] : []);
   const bg = tone === 'right' ? '#22C55E1A' : tone === 'almost' ? '#FBBF2422' : alpha(color, '14');
   const fg = tone === 'right' ? '#16A34A' : tone === 'almost' ? '#B45309' : color;
   return (
@@ -201,8 +206,26 @@ export function Stage({ color, children, className = '' }: { color: string; chil
   );
 }
 
-/** Big emoji + prompt heading. */
-export function Prompt({ visual, text, color }: { visual?: string; text: string; color: string }) {
+/**
+ * Big emoji + prompt heading, with a 🔊 button. In read-aloud mode Ziggy says
+ * the prompt, then `say` (e.g. each answer, with `onSpeak` lighting it up).
+ */
+export function Prompt({
+  visual,
+  text,
+  color,
+  say = [],
+  onSpeak,
+}: {
+  visual?: string;
+  text: string;
+  color: string;
+  say?: string[];
+  onSpeak?: (i: number | null) => void;
+}) {
+  const { locale } = useReadAloud();
+  const lines = [text, ...say];
+  useAutoSay(`prompt-${lines.join('|')}`, lines, onSpeak);
   return (
     <div className="flex flex-col items-center text-center gap-3 mb-5">
       {visual && (
@@ -219,14 +242,24 @@ export function Prompt({ visual, text, color }: { visual?: string; text: string;
           {visual}
         </motion.div>
       )}
-      <h3 className="text-xl sm:text-2xl font-extrabold text-text-body text-balance">{text}</h3>
+      <div className="flex items-center justify-center gap-3">
+        <h3 className="text-xl sm:text-2xl font-extrabold text-text-body text-balance">{text}</h3>
+        <SayButton texts={lines} locale={locale} onIndex={onSpeak} />
+      </div>
     </div>
   );
 }
 
-/** Hint line under the prompt. */
-export function Hint({ children }: { children: ReactNode }) {
-  return <p className="text-center text-sm text-text-muted mb-4">{children}</p>;
+/** Hint line under the prompt. With `say`, Ziggy reads it aloud (when there is no prompt to read). */
+export function Hint({ children, say }: { children: ReactNode; say?: string }) {
+  const { locale } = useReadAloud();
+  useAutoSay(`hint-${say ?? ''}`, say ? [say] : []);
+  return (
+    <p className="mb-4 flex items-center justify-center gap-2 text-center text-sm text-text-muted">
+      {children}
+      {say ? <SayButton texts={[say]} locale={locale} size="sm" /> : null}
+    </p>
+  );
 }
 
 /** Content with nothing to play still has to end the game (once). */

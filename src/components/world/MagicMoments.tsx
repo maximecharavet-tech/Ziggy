@@ -9,6 +9,9 @@ import { WORLD_BADGES } from '@/lib/world/gamification';
 import { SKILL_NAMES, type LearningSkill } from '@/lib/learning/skills';
 import { tr } from '@/lib/i18n-text';
 import { playSound } from '@/lib/sound';
+import { speakSequence } from '@/lib/voice';
+import { getMemory } from '@/lib/world/store';
+import { readAloudOn } from '@/lib/world/memory';
 import { Confetti } from '@/components/ui/Confetti';
 import { MAGIC_TEXT } from './text';
 
@@ -57,8 +60,14 @@ export function MagicMoments({ moments, locale, onDone }: { moments: MagicMoment
   const current = big[i];
 
   useEffect(() => {
-    if (current) playSound('win');
-  }, [current]);
+    if (!current) return;
+    playSound('win');
+    // Children who can't read hear the celebration too.
+    if (readAloudOn(getMemory())) {
+      const d = detail(current, locale);
+      void speakSequence(`magic-${current.kind}`, [tr(MAGIC_TEXT[current.kind], locale), d.label ?? ''].filter(Boolean), locale);
+    }
+  }, [current, locale]);
 
   useEffect(() => {
     if (!current) return;

@@ -11,6 +11,8 @@ import { setMemory, syncWorld, useHydrated, useWorldMemory, getMemory } from '@/
 import { companionLine } from '@/lib/world/companion';
 import { tr } from '@/lib/i18n-text';
 import { playSound } from '@/lib/sound';
+import { readAloudOn } from '@/lib/world/memory';
+import { speakSequence } from '@/lib/voice';
 import { AppPage } from '@/components/learn/AppPage';
 import { CompanionBuddy } from './CompanionBuddy';
 import { wt } from './text';
@@ -43,6 +45,8 @@ export function CompanionsPage() {
     if (!unlocked.includes(id)) return;
     setMemory({ ...getMemory(), companion: id, updatedAt: new Date().toISOString() });
     playSound('pop');
+    const c = COMPANIONS.find((x) => x.id === id)!;
+    if (readAloudOn(getMemory())) void speakSequence('companion-pick', [tr(c.name, locale), tr(c.personality, locale)], locale);
     void syncWorld();
   }
 
