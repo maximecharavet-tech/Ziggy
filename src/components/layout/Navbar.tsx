@@ -28,8 +28,9 @@ export function Navbar() {
   }, []);
 
   // Section anchors live on the home page, so they point there from any page.
-  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde'; label: string; key: string }[] = [
+  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde' | '/dodo'; label: string; key: string }[] = [
     { key: 'world', path: '/monde', label: t('world') },
+    { key: 'dodo', path: '/dodo', label: `🌙 ${t('dodo')}` },
     { key: 'learn', path: '/apprendre', label: t('learn') },
     { key: 'lab', path: '/lab', label: t('lab') },
     { key: 'agents', hash: 'agents', label: t('agents') },

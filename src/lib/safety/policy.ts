@@ -24,7 +24,7 @@ export const RULES: Record<SafetyCategory, RegExp> = {
     String.raw`sex\w*|sexy|porn\w*|érotique|erotic\w*|seins?|breasts?|lingerie|bikini|string|kiss(?:ing)? on the mouth|bisou sur la bouche|séduisante?|seductive|sensual\w*|sensuel\w*|hot girl|hot boy`
   ),
   nudity: words(String.raw`nue?s?|nudes?|naked|tout nue?|toute nue|déshabill\w*|undress\w*|topless|sans vêtements|without clothes`),
-  graphic_violence: words(String.raw`sang|sangs|sanglante?s?|blood\w*|gore|tuer|kill\w*|meurtre|murder\w*|mort\w*|dead|death|cadavre|corpse|torture\w*|décapit\w*|behead\w*|massacre`),
+  graphic_violence: words(String.raw`(?:du|le|de|en|plein de) sang|sangs|sanglante?s?|blood\w*|gore|tuer|kill\w*|meurtre|murder\w*|mort\w*|dead|death|cadavre|corpse|torture\w*|décapit\w*|behead\w*|massacre`),
   weapons: words(String.raw`armes?|weapons?|fusils?|guns?|pistolets?|pistols?|couteaux?|knife|knives|épée sanglante|bombes?|bombs?|grenades?|explosi\w*|rifle`),
   drugs: words(String.raw`drogues?|drugs?|cocaïne|cocaine|cannabis|weed|alcool|alcohol|bière|beer|vin|wine|cigarettes?|tabac|tobacco|vape`),
   adult_transformation: words(

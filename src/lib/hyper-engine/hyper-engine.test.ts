@@ -44,6 +44,7 @@ describe("ChildShield policy", () => {
     "The skilled robot counts to ten",
     "Larmes de joie",
     "Une armoire magique",
+    "The little bird sang a sweet song",
   ])("lets %s through", (text) => {
     expect(classify(text)).toBeNull();
   });

@@ -21,6 +21,9 @@ export const bcp47 = (locale: string) => LANG[locale] ?? locale;
 
 const AUTO_KEY = 'ziggy:auto-voice';
 
+/** 'bedtime' = the slow, soft storyteller voice of Mode dodo. */
+export type VoiceStyle = 'ziggy' | 'bedtime';
+
 type State = { speakingId: string | null; loadingId: string | null; autoRead: boolean };
 let state: State = { speakingId: null, loadingId: null, autoRead: true };
 const listeners = new Set<() => void>();
@@ -85,35 +88,35 @@ export function stopSpeaking() {
   if (state.speakingId || state.loadingId) emit({ speakingId: null, loadingId: null });
 }
 
-function browserVoice(text: string, locale: string, id: string, mine: number): Promise<void> {
+function browserVoice(text: string, locale: string, id: string, mine: number, style: VoiceStyle = 'ziggy'): Promise<void> {
   return new Promise((resolve) => {
     if (!('speechSynthesis' in window)) return resolve();
     const u = new SpeechSynthesisUtterance(text.replace(/\p{Extended_Pictographic}|️/gu, ''));
     u.lang = bcp47(locale);
     const voices = window.speechSynthesis.getVoices();
     u.voice = voices.find((v) => v.lang === u.lang) ?? voices.find((v) => v.lang.startsWith(locale)) ?? null;
-    u.pitch = 1.35;
-    u.rate = 0.98;
+    u.pitch = style === 'bedtime' ? 1.15 : 1.35;
+    u.rate = style === 'bedtime' ? 0.82 : 0.98;
     u.onstart = () => mine === token && emit({ speakingId: id, loadingId: null });
     u.onend = u.onerror = () => resolve();
     window.speechSynthesis.speak(u);
   });
 }
 
-async function serverClip(text: string): Promise<string | null> {
+async function serverClip(text: string, style: VoiceStyle = 'ziggy'): Promise<string | null> {
   if (serverDown) return null;
-  const hit = clips.get(text);
+  const hit = clips.get(`${style}:${text}`);
   if (hit) return hit;
   try {
     const res = await fetch('/api/tts', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, style }),
     });
     if (res.status === 503) serverDown = true; // no key: stop asking this session
     if (!res.ok) return null;
     const url = URL.createObjectURL(await res.blob());
-    clips.set(text, url);
+    clips.set(`${style}:${text}`, url);
     return url;
   } catch {
     return null;
@@ -145,23 +148,24 @@ export async function speakSequence(
   id: string,
   sentences: string[],
   locale: string,
-  onSentence?: (index: number) => void
+  onSentence?: (index: number) => void,
+  style: VoiceStyle = 'ziggy'
 ): Promise<boolean> {
   if (typeof window === 'undefined' || isMuted() || !sentences.length) return false;
   stopSpeaking();
   const mine = ++token;
   emit({ loadingId: id });
 
-  let next: Promise<string | null> | null = serverClip(sentences[0]);
+  let next: Promise<string | null> | null = serverClip(sentences[0], style);
   for (let i = 0; i < sentences.length; i++) {
     const url = await next;
     if (mine !== token) return false;
-    next = i + 1 < sentences.length ? serverClip(sentences[i + 1]) : null;
+    next = i + 1 < sentences.length ? serverClip(sentences[i + 1], style) : null;
     onSentence?.(i);
     emit({ speakingId: id, loadingId: null });
     const played = url ? await playClip(url) : false;
     if (mine !== token) return false;
-    if (!played) await browserVoice(sentences[i], locale, id, mine);
+    if (!played) await browserVoice(sentences[i], locale, id, mine, style);
     if (mine !== token) return false;
   }
   emit({ speakingId: null, loadingId: null });

@@ -148,12 +148,13 @@ const LINKS = [
   { href: '/monde/histoires', emoji: '📚', key: 'stories', color: '#5FB6EA' },
   { href: '/monde/compagnons', emoji: '🐾', key: 'companions', color: '#7FC85C' },
   { href: '/monde/collection', emoji: '💎', key: 'collection', color: '#FBBF24' },
+  { href: '/dodo', emoji: '🌙', key: 'dodo', color: '#7C6CF0' },
   { href: '/monde/parents', emoji: '👨‍👩‍👧', key: 'parents', color: '#4FC9C0' },
 ] as const;
 
 function QuickLinks({ locale }: { locale: string }) {
   return (
-    <nav aria-label={wt('title', locale)} className="mt-6 grid grid-cols-3 gap-3 sm:grid-cols-6">
+    <nav aria-label={wt('title', locale)} className="mt-6 grid grid-cols-4 gap-3 sm:grid-cols-7">
       {LINKS.map((l, i) => (
         <motion.div key={l.href} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 + i * 0.04 }}>
           <Link
@@ -164,7 +165,7 @@ function QuickLinks({ locale }: { locale: string }) {
             <span className="text-3xl transition group-hover:scale-110" aria-hidden="true">
               {l.emoji}
             </span>
-            {wt(l.key, locale)}
+            {l.key === 'dodo' ? (locale === 'fr' ? 'Mode dodo' : 'Bedtime') : wt(l.key, locale)}
           </Link>
         </motion.div>
       ))}
