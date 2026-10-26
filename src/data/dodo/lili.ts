@@ -21,7 +21,8 @@ export const LILI_STORY: DodoStory = {
   },
   emoji: '👑',
   age: 3,
-  cover: '/dodo/lili/cover.webp',
+  // The character art (no painted title or button), so nothing on it looks clickable.
+  cover: '/dodo/lili/lili.webp',
   reference: '/dodo/lili/lili-ref.jpg',
   scenes: [
     {

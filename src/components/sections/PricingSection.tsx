@@ -62,6 +62,10 @@ export function PricingSection() {
               {t('monthly')}
             </span>
             <button
+              type="button"
+              role="switch"
+              aria-checked={yearly}
+              aria-label={t('yearly')}
               onClick={() => setYearly(!yearly)}
               className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
                 yearly ? 'bg-green shadow-[0_0_12px_rgba(34,197,94,0.4)]' : 'bg-border'

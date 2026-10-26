@@ -1,4 +1,4 @@
-import type { Noise } from "./catalog";
+import type { Noise } from './catalog';
 
 /** Seeded uniform noise in [-1, 1] (mulberry32), so tests and exports are reproducible. */
 function rng(seed: number) {
@@ -24,15 +24,21 @@ function normalise(x: Float32Array, peak = 0.9) {
  * white (flat), pink (−3 dB/oct, Paul Kellet's filter), brown (−6 dB/oct, leaky
  * integrator), ocean (brown under a slow 0.08 Hz swell), rain (pink with sparse drops).
  */
-export function noise(kind: Exclude<Noise, "none">, length: number, sampleRate: number, seed = 1): Float32Array {
+export function noise(kind: Exclude<Noise, 'none'>, length: number, sampleRate: number, seed = 1): Float32Array {
   const r = rng(seed);
   const x = new Float32Array(length);
-  if (kind === "white") {
+  if (kind === 'white') {
     for (let i = 0; i < length; i++) x[i] = r();
     return normalise(x, 0.6);
   }
-  if (kind === "pink" || kind === "rain") {
-    let b0 = 0, b1 = 0, b2 = 0, b3 = 0, b4 = 0, b5 = 0, b6 = 0;
+  if (kind === 'pink' || kind === 'rain') {
+    let b0 = 0,
+      b1 = 0,
+      b2 = 0,
+      b3 = 0,
+      b4 = 0,
+      b5 = 0,
+      b6 = 0;
     for (let i = 0; i < length; i++) {
       const w = r();
       b0 = 0.99886 * b0 + w * 0.0555179;
@@ -44,7 +50,7 @@ export function noise(kind: Exclude<Noise, "none">, length: number, sampleRate: 
       x[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + w * 0.5362;
       b6 = w * 0.115926;
     }
-    if (kind === "rain") {
+    if (kind === 'rain') {
       // Drops: short decaying clicks, a few per second, at random places.
       const drops = Math.round((length / sampleRate) * 14);
       for (let d = 0; d < drops; d++) {
@@ -62,7 +68,7 @@ export function noise(kind: Exclude<Noise, "none">, length: number, sampleRate: 
     x[i] = last;
   }
   normalise(x, 0.8);
-  if (kind === "ocean") {
+  if (kind === 'ocean') {
     for (let i = 0; i < length; i++) {
       const swell = 0.55 + 0.45 * Math.sin((2 * Math.PI * 0.08 * i) / sampleRate) ** 2;
       x[i] = x[i]! * swell;
@@ -80,7 +86,9 @@ export function bandEnergy(x: Float32Array, sampleRate: number, lo: number, hi: 
     const k = Math.round((f * n) / sampleRate);
     const w = (2 * Math.PI * k) / n;
     const c = 2 * Math.cos(w);
-    let s0 = 0, s1 = 0, s2 = 0;
+    let s0 = 0,
+      s1 = 0,
+      s2 = 0;
     for (let i = 0; i < n; i++) {
       s0 = x[i]! + c * s1 - s2;
       s2 = s1;

@@ -146,8 +146,9 @@ export function SpringNumber({
  */
 export function SplitWords({ text, className = '', delay = 0 }: { text: string; className?: string; delay?: number }) {
   const words = text.split(' ');
+  // Each word is its own inline box: dir="auto" keeps a Latin title in reading order on Arabic pages.
   return (
-    <span className={className}>
+    <span className={className} dir="auto">
       {words.map((w, i) => (
         <span key={`${w}-${i}`}>
           <span className="word-mask">

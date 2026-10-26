@@ -14,7 +14,7 @@ describe('Mode dodo stories', () => {
     expect(DODO_STORIES).toHaveLength(31);
     expect(new Set(DODO_STORIES.map((s) => s.id)).size).toBe(31);
     expect(DODO_STORIES[0].id).toBe('lili');
-    expect(getDodoStory('lili')?.cover).toBe('/dodo/lili/cover.webp');
+    expect(getDodoStory('lili')?.cover).toBe('/dodo/lili/lili.webp');
   });
 
   it('every story is complete, bilingual and well-formed', () => {
