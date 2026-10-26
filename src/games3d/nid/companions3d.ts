@@ -112,7 +112,12 @@ function hitbox(r: number, y: number) {
 }
 
 /** A standard face on a head sphere of radius R (centre at `c`). */
-function face(head: THREE.Group, R: number, c: THREE.Vector3, opts: { eye?: number; eyeX?: number; eyeY?: number; mouthY?: number; mouthZ?: number; iris?: string; mouthColor?: string; noCheeks?: boolean }) {
+function face(
+  head: THREE.Group,
+  R: number,
+  c: THREE.Vector3,
+  opts: { eye?: number; eyeX?: number; eyeY?: number; mouthY?: number; mouthZ?: number; iris?: string; mouthColor?: string; noCheeks?: boolean }
+) {
   const eyes: THREE.Object3D[] = [];
   const es = R * (opts.eye ?? 0.24);
   for (const s of [-1, 1]) {

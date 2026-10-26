@@ -79,8 +79,24 @@ interface Flight {
 }
 
 const STAGE_SCALE = [1.15, 1.32, 1.5, 1.66];
-const DAY = { top: new THREE.Color('#6ec2ff'), bottom: new THREE.Color('#ffe6c4'), below: new THREE.Color('#a9dcff'), fog: new THREE.Color('#d8eefc'), hemiSky: new THREE.Color('#d6ecff'), hemiGround: new THREE.Color('#8fae6a'), sun: new THREE.Color('#fff1d6') };
-const NIGHT = { top: new THREE.Color('#0b1238'), bottom: new THREE.Color('#3b3f86'), below: new THREE.Color('#141a45'), fog: new THREE.Color('#1c2657'), hemiSky: new THREE.Color('#6f80d8'), hemiGround: new THREE.Color('#1d2440'), sun: new THREE.Color('#9fb4ff') };
+const DAY = {
+  top: new THREE.Color('#6ec2ff'),
+  bottom: new THREE.Color('#ffe6c4'),
+  below: new THREE.Color('#a9dcff'),
+  fog: new THREE.Color('#d8eefc'),
+  hemiSky: new THREE.Color('#d6ecff'),
+  hemiGround: new THREE.Color('#8fae6a'),
+  sun: new THREE.Color('#fff1d6'),
+};
+const NIGHT = {
+  top: new THREE.Color('#0b1238'),
+  bottom: new THREE.Color('#3b3f86'),
+  below: new THREE.Color('#141a45'),
+  fog: new THREE.Color('#1c2657'),
+  hemiSky: new THREE.Color('#6f80d8'),
+  hemiGround: new THREE.Color('#1d2440'),
+  sun: new THREE.Color('#9fb4ff'),
+};
 const WINDOW_DAY = new THREE.Color('#cfeaff');
 const WINDOW_NIGHT = new THREE.Color('#ffc865').multiplyScalar(1.4);
 
@@ -410,7 +426,10 @@ export class NidGame {
   private mouthWorld(): THREE.Vector3 {
     const s = STAGE_SCALE[this.stage];
     const fwd = new THREE.Vector3(Math.sin(this.c.yaw), 0, Math.cos(this.c.yaw));
-    return this.comp.root.position.clone().add(new THREE.Vector3(0, this.comp.mouthY * s, 0)).addScaledVector(fwd, 0.45 * s);
+    return this.comp.root.position
+      .clone()
+      .add(new THREE.Vector3(0, this.comp.mouthY * s, 0))
+      .addScaledVector(fwd, 0.45 * s);
   }
 
   /* ───────────────────────── Decorations ───────────────────────── */
@@ -1116,7 +1135,7 @@ export class NidGame {
     // Garden life.
     this.swing.seat.rotation.x = Math.sin(t * 1.3) * 0.22 * motion;
     this.clouds.rotation.y += dt * 0.006;
-    ((this.pond.userData.water.material as THREE.MeshPhongMaterial).emissiveIntensity = 0.22 + Math.sin(t * 1.5) * 0.05);
+    (this.pond.userData.water.material as THREE.MeshPhongMaterial).emissiveIntensity = 0.22 + Math.sin(t * 1.5) * 0.05;
     this.butterflies.forEach((b, i) => {
       const k = t * (0.35 + i * 0.07) + i * 2;
       b.position.set(Math.sin(k) * (4 + i) + (i - 1) * 1.5, 1.2 + Math.sin(k * 2.3) * 0.5 + i * 0.3, Math.cos(k * 0.8) * (3 + i) + 1);

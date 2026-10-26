@@ -108,12 +108,11 @@ export function growthOf(m: WorldMemory): Growth {
 }
 
 export function nextStageHint(g: Growth, locale: string): string {
-  if (!g.next || g.missing === null) return tr({ fr: 'Ton compagnon est légendaire ! Merci pour tout ce que tu as appris.', en: 'Your companion is legendary! Thank you for everything you learned.' }, locale);
+  if (!g.next || g.missing === null)
+    return tr({ fr: 'Ton compagnon est légendaire ! Merci pour tout ce que tu as appris.', en: 'Your companion is legendary! Thank you for everything you learned.' }, locale);
   const n = g.missing;
   const stage = tr(STAGE_INFO[g.next].label, locale);
-  return locale === 'fr'
-    ? `Encore ${n} étoile${n > 1 ? 's' : ''} dans Ziggy World pour devenir ${stage} !`
-    : `${n} more star${n > 1 ? 's' : ''} in Ziggy World to become ${stage}!`;
+  return locale === 'fr' ? `Encore ${n} étoile${n > 1 ? 's' : ''} dans Ziggy World pour devenir ${stage} !` : `${n} more star${n > 1 ? 's' : ''} in Ziggy World to become ${stage}!`;
 }
 
 /* ───────────────────────── Decorations ───────────────────────── */
@@ -409,7 +408,8 @@ export function challengeText(ch: Challenge, locale: string, name: string, round
       return fr ? `Câlin ! Frotte doucement ${name} pour faire ${ch.hearts} cœurs.` : `Cuddle time! Gently rub ${name} to make ${ch.hearts} hearts.`;
     case 'bubbles':
       if (ch.mode === 'any') return fr ? `C’est l’heure du bain ! Éclate ${ch.labels.length} bulles.` : `Bath time! Pop ${ch.labels.length} bubbles.`;
-      if (ch.mode === 'order') return fr ? `Éclate les bulles dans l’ordre : ${ch.order[0]}, ${ch.order[1]}, ${ch.order[2]}…` : `Pop the bubbles in order: ${ch.order[0]}, ${ch.order[1]}, ${ch.order[2]}…`;
+      if (ch.mode === 'order')
+        return fr ? `Éclate les bulles dans l’ordre : ${ch.order[0]}, ${ch.order[1]}, ${ch.order[2]}…` : `Pop the bubbles in order: ${ch.order[0]}, ${ch.order[1]}, ${ch.order[2]}…`;
       return fr ? `Éclate les bulles pour écrire le mot ${ch.order.join('')} !` : `Pop the bubbles to spell the word ${ch.order.join('')}!`;
   }
 }
