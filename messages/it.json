@@ -19,6 +19,7 @@
     "theme_light": "Modalità chiara",
     "theme_dark": "Modalità scura",
     "world": "Ziggy World",
+    "create": "Crea",
     "dodo": "Nanna",
     "learn": "Imparare"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "Hihi, mi fai il solletico! 💚",
     "trust_1": "Senza pubblicità",
     "trust_2": "Dati ospitati in Europa",
-    "trust_3": "Si gioca senza account"
+    "trust_3": "Si gioca senza account",
+    "facts_worlds": "Mondi da esplorare",
+    "facts_stories": "Storie della buonanotte",
+    "facts_games": "Giochi adattivi",
+    "facts_ads": "Pubblicità"
   },
   "features": {
     "title": "Perché i genitori adorano Ziggy",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "Pronto a iniziare l'avventura IA del tuo bambino?",
-    "subtitle": "Unisciti a migliaia di famiglie che già imparano con Ziggy. Inizia gratis oggi.",
+    "subtitle": "Inizia gratis oggi: 20 mondi da esplorare, 31 storie della buonanotte e zero pubblicità.",
     "cta": "Prova gratuita"
   },
   "footer": {

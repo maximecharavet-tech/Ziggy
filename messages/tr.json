@@ -19,6 +19,7 @@
     "theme_light": "Açık mod",
     "theme_dark": "Koyu mod",
     "world": "Ziggy World",
+    "create": "Yarat",
     "dodo": "Uyku vakti",
     "learn": "Öğren"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "Hihi, gıdıklanıyorum! 💚",
     "trust_1": "Reklamsız",
     "trust_2": "Veriler Avrupa’da",
-    "trust_3": "Hesapsız oynanır"
+    "trust_3": "Hesapsız oynanır",
+    "facts_worlds": "Keşfedilecek dünya",
+    "facts_stories": "Uyku öncesi masal",
+    "facts_games": "Uyarlanabilir oyun",
+    "facts_ads": "Reklam"
   },
   "features": {
     "title": "Ebeveynler Ziggy'yi neden seviyor?",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "Çocuğunuzun yapay zeka macerasını başlatmaya hazır mısınız?",
-    "subtitle": "Ziggy ile öğrenen binlerce aileye katılın. Bugün ücretsiz başlayın.",
+    "subtitle": "Bugün ücretsiz başla: keşfedilecek 20 dünya, 31 uyku masalı ve sıfır reklam.",
     "cta": "Ücretsiz dene"
   },
   "footer": {

@@ -18,6 +18,9 @@ import { StarBurst } from '@/components/ziggy/StarBurst';
 import { HyperBadge } from '@/components/ziggy/HyperBadge';
 import { ZiggyVideo } from '@/components/ziggy/ZiggyVideo';
 import { Sparkle, ZiggyAvatar } from '@/components/ziggy/Mascot';
+import { WORLDS } from '@/data/worlds';
+import { DODO_STORIES } from '@/data/dodo';
+import { ARCADE_GAMES } from '@/lib/arcade/registry';
 import { useSound } from '@/hooks/useSound';
 import { SplitWords } from '@/components/ui/motion-primitives';
 import { FILMS, FILM_ASPECT } from '@/lib/mascot';
@@ -82,11 +85,13 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
     setTimeout(() => setHappy(false), 1800);
   };
 
+  // Facts about the product itself, counted from the real content — never invented audience figures.
+  void figures;
   const stats = [
-    { value: figures.children, label: t('stats_children'), tint: 'text-leaf' },
-    { value: figures.sessions, label: t('stats_sessions'), tint: 'text-sky' },
-    { value: figures.countries, label: t('stats_countries'), tint: 'text-coral' },
-    { value: figures.rating, label: t('stats_rating'), tint: 'text-apricot' },
+    { value: String(WORLDS.length), label: t('facts_worlds'), tint: 'text-leaf' },
+    { value: String(DODO_STORIES.length), label: t('facts_stories'), tint: 'text-sky' },
+    { value: String(Object.keys(ARCADE_GAMES).length + 2), label: t('facts_games'), tint: 'text-coral' },
+    { value: '0', label: t('facts_ads'), tint: 'text-apricot' },
   ];
 
   return (

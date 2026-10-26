@@ -28,15 +28,15 @@ export function Navbar() {
   }, []);
 
   // Section anchors live on the home page, so they point there from any page.
-  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde' | '/dodo'; label: string; key: string }[] = [
+  // Child-first menu: play, create, sleep, learn. (The business agents and the chat demo stay reachable from the home page.)
+  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde' | '/dodo' | '/creer' | '/monde/arcade'; label: string; key: string }[] = [
     { key: 'world', path: '/monde', label: t('world') },
+    { key: 'games', path: '/monde/arcade', label: t('games') },
+    { key: 'create', path: '/creer', label: t('create') },
     { key: 'dodo', path: '/dodo', label: `🌙 ${t('dodo')}` },
     { key: 'learn', path: '/apprendre', label: t('learn') },
     { key: 'lab', path: '/lab', label: t('lab') },
-    { key: 'agents', hash: 'agents', label: t('agents') },
-    { key: 'games', hash: 'games', label: t('games') },
     { key: 'pricing', hash: 'pricing', label: t('pricing') },
-    { key: 'demo', hash: 'demo', label: t('demo') },
   ];
   const hrefOf = (l: (typeof navLinks)[number]) => (l.path ? l.path : { pathname: '/' as const, hash: l.hash });
 
@@ -75,7 +75,7 @@ export function Navbar() {
                 />
               )}
               {link.label}
-              {link.key === 'world' && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
+              {link.key === 'create' && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
             </Link>
           ))}
         </div>

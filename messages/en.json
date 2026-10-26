@@ -19,6 +19,7 @@
     "theme_light": "Switch to light mode",
     "theme_dark": "Switch to dark mode",
     "world": "Ziggy World",
+    "create": "Create",
     "dodo": "Bedtime",
     "learn": "Learn"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "Hehe, that tickles! 💚",
     "trust_1": "No ads",
     "trust_2": "Data hosted in Europe",
-    "trust_3": "Play without an account"
+    "trust_3": "Play without an account",
+    "facts_worlds": "Worlds to explore",
+    "facts_stories": "Bedtime stories",
+    "facts_games": "Adaptive games",
+    "facts_ads": "Ads"
   },
   "features": {
     "title": "Why Parents Love Ziggy",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "Ready to Start Your Child's AI Adventure?",
-    "subtitle": "Join thousands of families already learning with Ziggy. Start free today.",
+    "subtitle": "Start for free today: 20 worlds to explore, 31 bedtime stories and zero ads.",
     "cta": "Start Free Trial"
   },
   "footer": {

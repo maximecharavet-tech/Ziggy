@@ -5,12 +5,12 @@ import { PageTransition } from '@/components/ui/PageTransition';
 import { HeroSection } from '@/components/sections/HeroSection';
 import { ZiggyShowcase } from '@/components/sections/ZiggyShowcase';
 import { LabTeaser } from '@/components/sections/LabTeaser';
+import { Planet3DSection } from '@/components/sections/Planet3DSection';
 import { MissionCard } from '@/components/rewards/MissionCard';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { ModulesSection } from '@/components/sections/ModulesSection';
 import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { PricingSection } from '@/components/sections/PricingSection';
-import { ReviewsSection } from '@/components/sections/ReviewsSection';
 import { AgentsSection } from '@/components/sections/AgentsSection';
 import { GamesSection } from '@/components/sections/GamesSection';
 import { DemoSection } from '@/components/sections/DemoSection';
@@ -38,6 +38,7 @@ export default async function HomePage({
         <MissionCard />
       </div>
       <TrustBar />
+      <Planet3DSection />
       {sections.showcase && <ZiggyShowcase />}
       <LabTeaser />
       <FeaturesSection />
@@ -46,7 +47,6 @@ export default async function HomePage({
       {sections.games && <GamesSection />}
       <HowItWorksSection />
       {sections.pricing && <PricingSection />}
-      {sections.reviews && <ReviewsSection />}
       <DemoSection />
       <FAQSection />
       <CTAFinalSection />

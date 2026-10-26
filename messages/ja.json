@@ -19,6 +19,7 @@
     "theme_light": "ライトモード",
     "theme_dark": "ダークモード",
     "world": "Ziggy World",
+    "create": "つくる",
     "dodo": "おやすみ",
     "learn": "まなぶ"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "えへへ、くすぐったい！💚",
     "trust_1": "広告なし",
     "trust_2": "データはヨーロッパで保管",
-    "trust_3": "アカウントなしで遊べる"
+    "trust_3": "アカウントなしで遊べる",
+    "facts_worlds": "探検できる世界",
+    "facts_stories": "おやすみのお話",
+    "facts_games": "レベルに合わせたゲーム",
+    "facts_ads": "広告"
   },
   "features": {
     "title": "保護者がZiggyを選ぶ理由",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "お子さまのAIアドベンチャーを始める準備はできましたか？",
-    "subtitle": "すでにZiggyで学んでいる何千もの家族に加わりましょう。今日から無料で始められます。",
+    "subtitle": "今日から無料で：20の世界、31のおやすみのお話、広告はゼロ。",
     "cta": "無料で始める"
   },
   "footer": {

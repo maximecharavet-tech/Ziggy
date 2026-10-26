@@ -19,6 +19,7 @@
     "theme_light": "라이트 모드",
     "theme_dark": "다크 모드",
     "world": "Ziggy World",
+    "create": "만들기",
     "dodo": "잠자리",
     "learn": "배우기"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "히히, 간지러워! 💚",
     "trust_1": "광고 없음",
     "trust_2": "데이터는 유럽에 보관",
-    "trust_3": "계정 없이 플레이"
+    "trust_3": "계정 없이 플레이",
+    "facts_worlds": "탐험할 세계",
+    "facts_stories": "잠자리 이야기",
+    "facts_games": "맞춤형 게임",
+    "facts_ads": "광고"
   },
   "features": {
     "title": "부모님들이 Ziggy를 사랑하는 이유",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "아이의 AI 모험을 시작할 준비가 되셨나요?",
-    "subtitle": "이미 Ziggy와 함께 배우고 있는 수천 가족에 합류하세요. 오늘 무료로 시작하세요.",
+    "subtitle": "오늘 무료로 시작하세요: 20개의 세계, 31개의 잠자리 이야기, 광고 없음.",
     "cta": "무료 체험"
   },
   "footer": {

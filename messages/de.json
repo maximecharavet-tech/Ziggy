@@ -19,6 +19,7 @@
     "theme_light": "Heller Modus",
     "theme_dark": "Dunkler Modus",
     "world": "Ziggy World",
+    "create": "Erstellen",
     "dodo": "Schlafenszeit",
     "learn": "Lernen"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "Hihi, das kitzelt! 💚",
     "trust_1": "Keine Werbung",
     "trust_2": "Daten in Europa gehostet",
-    "trust_3": "Spielbar ohne Konto"
+    "trust_3": "Spielbar ohne Konto",
+    "facts_worlds": "Welten zum Entdecken",
+    "facts_stories": "Gutenachtgeschichten",
+    "facts_games": "Lernspiele, die sich anpassen",
+    "facts_ads": "Werbung"
   },
   "features": {
     "title": "Warum Eltern Ziggy lieben",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "Bereit für das KI-Abenteuer deines Kindes?",
-    "subtitle": "Schließe dich Tausenden von Familien an, die bereits mit Ziggy lernen. Starte heute kostenlos.",
+    "subtitle": "Starte heute kostenlos: 20 Welten, 31 Gutenachtgeschichten und null Werbung.",
     "cta": "Kostenlos testen"
   },
   "footer": {

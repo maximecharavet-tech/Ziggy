@@ -19,6 +19,7 @@
     "theme_light": "浅色模式",
     "theme_dark": "深色模式",
     "world": "Ziggy World",
+    "create": "创作",
     "dodo": "睡前故事",
     "learn": "学习方法"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "嘻嘻，好痒！💚",
     "trust_1": "无广告",
     "trust_2": "数据存放在欧洲",
-    "trust_3": "无需账户即可玩"
+    "trust_3": "无需账户即可玩",
+    "facts_worlds": "可探索的世界",
+    "facts_stories": "睡前故事",
+    "facts_games": "自适应游戏",
+    "facts_ads": "广告"
   },
   "features": {
     "title": "家长为什么喜爱Ziggy",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "准备好开始孩子的AI冒险了吗？",
-    "subtitle": "加入已经在使用Ziggy学习的数千个家庭。今天免费开始。",
+    "subtitle": "今天免费开始：20个世界、31个睡前故事，零广告。",
     "cta": "免费试用"
   },
   "footer": {

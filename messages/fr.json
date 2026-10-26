@@ -19,6 +19,7 @@
     "theme_light": "Passer en mode clair",
     "theme_dark": "Passer en mode sombre",
     "world": "Ziggy World",
+    "create": "Créer",
     "dodo": "Mode dodo",
     "learn": "Apprendre"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "Hihi, ça chatouille ! 💚",
     "trust_1": "Sans publicité",
     "trust_2": "Données hébergées en Europe",
-    "trust_3": "Jouable sans compte"
+    "trust_3": "Jouable sans compte",
+    "facts_worlds": "Mondes à explorer",
+    "facts_stories": "Histoires du soir",
+    "facts_games": "Jeux qui s’adaptent",
+    "facts_ads": "Publicité"
   },
   "features": {
     "title": "Pourquoi les parents adorent Ziggy",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "Prêt à lancer l'aventure IA de votre enfant ?",
-    "subtitle": "Rejoignez des milliers de familles qui apprennent déjà avec Ziggy. Commencez gratuitement aujourd'hui.",
+    "subtitle": "Commencez gratuitement aujourd’hui : 20 mondes à explorer, 31 histoires du soir et zéro publicité.",
     "cta": "Essai gratuit"
   },
   "footer": {

@@ -19,6 +19,7 @@
     "theme_light": "Lichte modus",
     "theme_dark": "Donkere modus",
     "world": "Ziggy World",
+    "create": "Maken",
     "dodo": "Bedtijd",
     "learn": "Leren"
   },
@@ -36,7 +37,11 @@
     "bubble_happy": "Hihi, dat kietelt! 💚",
     "trust_1": "Zonder reclame",
     "trust_2": "Gegevens in Europa",
-    "trust_3": "Spelen zonder account"
+    "trust_3": "Spelen zonder account",
+    "facts_worlds": "Werelden om te ontdekken",
+    "facts_stories": "Bedtijdverhalen",
+    "facts_games": "Spellen die zich aanpassen",
+    "facts_ads": "Reclame"
   },
   "features": {
     "title": "Waarom ouders van Ziggy houden",
@@ -169,7 +174,7 @@
   },
   "cta_final": {
     "title": "Klaar om het AI-avontuur van je kind te starten?",
-    "subtitle": "Sluit je aan bij duizenden gezinnen die al leren met Ziggy. Begin vandaag gratis.",
+    "subtitle": "Begin vandaag gratis: 20 werelden, 31 bedtijdverhalen en nul reclame.",
     "cta": "Gratis proberen"
   },
   "footer": {

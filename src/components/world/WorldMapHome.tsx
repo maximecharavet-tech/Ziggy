@@ -181,19 +181,23 @@ function MapBoard({ memory, locale, current }: { memory: WorldMemory; locale: st
   const path = WORLDS.map((w) => `${w.map.x},${w.map.y}`).join(' ');
   return (
     <>
-      {/* Wide screens: the illustrated map. */}
-      <div className="relative mt-6 hidden aspect-[16/10] overflow-hidden rounded-[2rem] border border-border/60 bg-gradient-to-br from-sky/15 via-leaf/10 to-peach/25 shadow-inner md:block">
+      {/* Wide screens: the map as a 3D board — worlds stand on it like toys. */}
+      <Board3D>
         <svg className="absolute inset-0 h-full w-full" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
-          <polyline points={path} fill="none" stroke="currentColor" strokeWidth="0.6" strokeDasharray="1.4 1.2" className="text-text-muted/40" vectorEffect="non-scaling-stroke" />
+          <polyline points={path} fill="none" stroke="currentColor" strokeWidth="0.7" strokeDasharray="1.4 1.2" className="text-text-muted/50" vectorEffect="non-scaling-stroke" />
         </svg>
-        <ol className="absolute inset-0">
+        <ol className="absolute inset-0 [transform-style:preserve-3d]">
           {WORLDS.map((w, i) => (
-            <li key={w.id} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${w.map.x}%`, top: `${w.map.y}%` }}>
-              <MapNode world={w} index={i} memory={memory} stars={stars} locale={locale} current={current === w.id} />
+            <li key={w.id} className="absolute [transform-style:preserve-3d]" style={{ left: `${w.map.x}%`, top: `${w.map.y}%` }}>
+              {/* Shadow on the board, then the world standing up. */}
+              <span className="absolute left-0 top-0 h-5 w-16 -translate-x-1/2 -translate-y-1/2 rounded-[50%] bg-black/15 blur-[3px]" aria-hidden="true" />
+              <div className="-translate-x-1/2 -translate-y-[85%] [transform-origin:50%_100%] [transform:rotateX(-26deg)_translateZ(2px)]">
+                <MapNode world={w} index={i} memory={memory} stars={stars} locale={locale} current={current === w.id} />
+              </div>
             </li>
           ))}
         </ol>
-      </div>
+      </Board3D>
       {/* Phones: the same journey as a winding path. */}
       <ol className="mt-6 grid gap-3 md:hidden">
         {WORLDS.map((w, i) => (
@@ -203,6 +207,37 @@ function MapBoard({ memory, locale, current }: { memory: WorldMemory; locale: st
         ))}
       </ol>
     </>
+  );
+}
+
+/** A tilted game board with thickness; leans a little towards the pointer. */
+function Board3D({ children }: { children: React.ReactNode }) {
+  const [tilt, setTilt] = useState({ x: 0, y: 0 });
+  return (
+    <div
+      className="relative mt-6 hidden md:block"
+      style={{ perspective: 1600 }}
+      onPointerMove={(e) => {
+        if (e.pointerType === 'touch') return;
+        const r = e.currentTarget.getBoundingClientRect();
+        setTilt({ x: ((e.clientX - r.left) / r.width - 0.5) * 6, y: ((e.clientY - r.top) / r.height - 0.5) * 4 });
+      }}
+      onPointerLeave={() => setTilt({ x: 0, y: 0 })}
+    >
+      <motion.div
+        className="relative mx-auto aspect-[16/12] w-[94%] rounded-[2rem] [transform-style:preserve-3d]"
+        initial={{ rotateX: 0, y: 40, opacity: 0 }}
+        animate={{ rotateX: 26 + tilt.y, rotateZ: tilt.x * 0.3, y: 0, opacity: 1 }}
+        transition={{ type: 'spring', stiffness: 60, damping: 16 }}
+        style={{ transformOrigin: '50% 60%' }}
+      >
+        {/* Board thickness and drop shadow */}
+        <div className="absolute inset-0 translate-y-3 rounded-[2rem] bg-[#7a5a3a]/50 blur-[1px] [transform:translateZ(-18px)]" aria-hidden="true" />
+        <div className="absolute inset-0 rounded-[2rem] border-4 border-white/70 bg-gradient-to-br from-sky/30 via-leaf/25 to-peach/40 shadow-[0_40px_80px_-30px_rgba(40,30,80,0.5)] [transform-style:preserve-3d] dark:border-white/10">
+          {children}
+        </div>
+      </motion.div>
+    </div>
   );
 }
 
