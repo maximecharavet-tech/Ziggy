@@ -88,6 +88,8 @@ export class Sandbox {
   readonly counts: Record<Reaction, number>;
   /** Reactions of the last step (at most one event per kind per step). */
   events: SimEvent[] = [];
+  private between: SimEvent[] = [];
+  private stepping = false;
   private readonly fired = new Uint8Array(REACTIONS.length);
 
   constructor(w: number, h: number, seed = 1) {
@@ -168,6 +170,7 @@ export class Sandbox {
     for (let s = 0; s < steps; s++) this.step();
     Object.assign(this.counts, saved);
     this.events = [];
+    this.between = [];
   }
 
   /** Number of cells holding this element. */
@@ -253,8 +256,12 @@ export class Sandbox {
 
   /** Advances the world by one tick. */
   step(): void {
-    this.events = [];
+    // Reactions caused by a gesture between two steps (the wind) are reported with this step.
+    this.events = this.between;
+    this.between = [];
     this.fired.fill(0);
+    for (const e of this.events) this.fired[REACTION_INDEX[e.kind]] = 1;
+    this.stepping = true;
     this.tick++;
     this.gen = this.gen === 255 ? 1 : this.gen + 1;
     if (this.gen === 1) this.clock.fill(0);
@@ -297,11 +304,16 @@ export class Sandbox {
         }
       }
     }
+    this.stepping = false;
   }
 
   private emit(kind: Reaction, x: number, y: number): void {
     const k = REACTION_INDEX[kind];
     this.counts[kind]++;
+    if (!this.stepping) {
+      if (!this.between.some((e) => e.kind === kind)) this.between.push({ kind, x, y });
+      return;
+    }
     if (this.fired[k]) return;
     this.fired[k] = 1;
     this.events.push({ kind, x, y });

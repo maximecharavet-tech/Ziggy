@@ -111,7 +111,17 @@ describe('Sandbox: movement', () => {
     for (let x = 22; x < sim.w; x++) for (let y = 0; y < sim.h; y++) if (sim.get(x, y) === SAND) right++;
     expect(right).toBeGreaterThan(0);
     expect(sim.counts.wind).toBeGreaterThan(0);
-    expect(sim.count(SAND)).toBe(4);
+    // Blowing happens between steps: the next step reports it.
+    sim.set(5, sim.h - 2, SAND);
+    sim.wind(5, sim.h - 2, 2, -1);
+    sim.wind(5, sim.h - 2, 2, -1);
+    sim.wind(5, sim.h - 2, 2, -1);
+    sim.wind(5, sim.h - 2, 2, -1);
+    sim.step();
+    expect(sim.events.filter((e) => e.kind === 'wind')).toHaveLength(1);
+    sim.step();
+    expect(sim.events.some((e) => e.kind === 'wind')).toBe(false);
+    expect(sim.count(SAND)).toBe(5); // nothing lost
   });
 
   it('painting fills only empty cells and the eraser clears', () => {

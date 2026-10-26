@@ -340,7 +340,6 @@ export function SandCanvas({
       <canvas
         ref={canvas}
         role="application"
-        aria-roledescription="sandbox"
         tabIndex={0}
         aria-label={label}
         aria-describedby="sandbox-help"
