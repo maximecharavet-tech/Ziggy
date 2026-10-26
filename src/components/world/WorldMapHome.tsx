@@ -17,6 +17,7 @@ import { EASE_OUT } from '@/lib/motion';
 import { StatusBar } from './StatusBar';
 import { CompanionBuddy } from './CompanionBuddy';
 import { wt } from './text';
+import { Games3DShowcase } from '@/components/games3d/Games3DShowcase';
 import { AgePicker, AGE_CHOICES } from './AgePicker';
 import { SayButton } from '@/components/arcade/read-aloud';
 
@@ -62,6 +63,8 @@ export function WorldMapHome() {
         {hydrated && plan ? <ContinueCard plan={plan} memory={memory} locale={locale} /> : <div className="mt-6 h-48 animate-pulse rounded-[2rem] bg-bg-card/60" aria-hidden="true" />}
 
         <QuickLinks locale={locale} />
+
+        <Games3DShowcase locale={locale} />
 
         <section className="mt-12" aria-labelledby="map-title">
           <h2 id="map-title" className="font-display text-3xl font-bold text-text-body">

@@ -7,7 +7,7 @@ import type { LearningSkill } from '@/lib/learning/skills';
 import { logRound } from '@/lib/mission';
 import { applyRound, type RoundOutcome } from './engine';
 import { dayKey } from './gamification';
-import { api, getMemory, setMemory } from './store';
+import { api, getMemory, setMemory, syncWorld } from './store';
 import { normalizeMemory } from './memory';
 
 export interface FinishInput {
@@ -40,5 +40,17 @@ export async function finishRound(input: FinishInput): Promise<RoundOutcome> {
   setMemory(outcome.memory);
   // Counts for the day's streak too; Ziggy World celebrates with its own Magic Moments.
   logRound('world', outcome.stars);
+  return outcome;
+}
+
+/**
+ * A game outside the arcade registry (the 3D games): same engine — the skill
+ * level, XP, badges and Magic Moments — computed on the device, then synced.
+ */
+export function finishExtraGame(gameId: string, skill: LearningSkill, stats: { correct: number; mistakes: number; total: number }, durationMs: number): RoundOutcome {
+  const outcome = applyRound(getMemory(), { gameId: gameId as ArcadeGameId, skill, stats, durationMs }, WORLDS, COMPANIONS, dayKey());
+  setMemory(outcome.memory);
+  logRound('world', outcome.stars);
+  void syncWorld();
   return outcome;
 }

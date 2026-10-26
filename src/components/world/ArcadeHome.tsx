@@ -10,6 +10,7 @@ import { useHydrated, useWorldMemory } from '@/lib/world/store';
 import { tr } from '@/lib/i18n-text';
 import { AppPage } from '@/components/learn/AppPage';
 import { wt } from './text';
+import { Games3DShowcase } from '@/components/games3d/Games3DShowcase';
 
 const FAMILIES = ['all', 'math', 'language', 'logic', 'discovery', 'creativity'] as const;
 const FAMILY_TEXT: Record<(typeof FAMILIES)[number], { fr: string; en: string }> = {
@@ -36,7 +37,8 @@ export function ArcadeHome() {
       subtitle={locale === 'fr' ? 'Chaque jeu s’adapte à ton niveau : jamais trop facile, jamais trop dur. Et aucune partie n’est perdue !' : 'Every game adapts to your level: never too easy, never too hard. And no game is ever lost!'}
       color="#FF8A65"
     >
-      <div className="flex flex-wrap justify-center gap-2" role="group" aria-label={wt('skill', locale)}>
+      <Games3DShowcase locale={locale} />
+      <div className="mt-10 flex flex-wrap justify-center gap-2" role="group" aria-label={wt('skill', locale)}>
         {FAMILIES.map((f) => (
           <button
             key={f}
