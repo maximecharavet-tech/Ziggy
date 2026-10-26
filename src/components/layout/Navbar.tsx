@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
@@ -20,6 +20,22 @@ export function Navbar() {
   // Pages on a dark stage keep the glass pill on, so the links stay readable.
   const pathname = usePathname();
   const pill = scrolled || pathname.startsWith('/hyper');
+  const locale = useLocale();
+  const menuLabel = locale === 'fr' ? { open: 'Ouvrir le menu', close: 'Fermer le menu' } : { open: 'Open menu', close: 'Close menu' };
+
+  // Mobile menu: Escape closes it, the page does not scroll behind it, and it closes on navigation.
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setIsOpen(false);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    window.addEventListener('keydown', onKey);
+    return () => {
+      document.body.style.overflow = prev;
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [isOpen]);
+  useEffect(() => setIsOpen(false), [pathname]);
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 20);
@@ -89,8 +105,10 @@ export function Navbar() {
 
         <button
           onClick={() => setIsOpen(!isOpen)}
+          aria-expanded={isOpen}
+          aria-controls="mobile-menu"
           className="relative z-10 lg:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
-          aria-label="Toggle menu"
+          aria-label={isOpen ? menuLabel.close : menuLabel.open}
         >
           {isOpen ? <X size={22} /> : <Menu size={22} />}
         </button>
@@ -99,11 +117,13 @@ export function Navbar() {
       <AnimatePresence>
         {isOpen && (
           <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.3, ease: 'easeInOut' }}
-            className="lg:hidden mx-3 mt-2 rounded-3xl border border-border/50 glass-strong overflow-hidden shadow-xl"
+            id="mobile-menu"
+            initial={{ opacity: 0, y: -12, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            transition={{ duration: 0.22, ease: 'easeOut' }}
+            // Solid (not see-through) and not clipped, so the language list can open.
+            className="lg:hidden mx-3 mt-2 max-h-[calc(100dvh-5.5rem)] overflow-y-auto rounded-3xl border border-border/60 bg-bg-card/[0.97] shadow-2xl backdrop-blur-xl"
           >
             <div className="px-4 py-5 space-y-1">
               {navLinks.map((link, i) => (

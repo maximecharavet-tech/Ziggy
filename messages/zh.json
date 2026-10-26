@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "创作",
     "dodo": "睡前故事",
-    "learn": "学习方法"
+    "learn": "学习方法",
+    "sound_on": "打开声音",
+    "sound_off": "关闭声音",
+    "switch_language": "切换语言"
   },
   "hero": {
     "badge": "面向5-12岁儿童的AI教育",
@@ -276,7 +279,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "立即体验"
   },
   "games": {
     "badge": "小游戏",

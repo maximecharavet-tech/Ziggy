@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "إبداع",
     "dodo": "وقت النوم",
-    "learn": "تعلّم"
+    "learn": "تعلّم",
+    "sound_on": "تشغيل الصوت",
+    "sound_off": "كتم الصوت",
+    "switch_language": "تغيير اللغة"
   },
   "hero": {
     "badge": "تعليم الذكاء الاصطناعي للأطفال من 5 إلى 12 سنة",
@@ -276,7 +279,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "جرّب الآن"
   },
   "games": {
     "badge": "ألعاب صغيرة",

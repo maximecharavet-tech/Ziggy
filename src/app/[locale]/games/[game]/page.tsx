@@ -4,15 +4,14 @@ import type { Metadata } from 'next';
 import { GAMES, getGame } from '@/lib/games';
 import { GamePageContent } from './GamePageContent';
 
+/** Unknown ids are a real 404, not a 200 "not found" page. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return GAMES.map((game) => ({ game: game.id }));
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ locale: string; game: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ locale: string; game: string }> }): Promise<Metadata> {
   const { locale, game: gameId } = await params;
   if (!getGame(gameId)) return { title: 'Not Found' };
 
@@ -23,11 +22,7 @@ export async function generateMetadata({
   };
 }
 
-export default async function GamePage({
-  params,
-}: {
-  params: Promise<{ locale: string; game: string }>;
-}) {
+export default async function GamePage({ params }: { params: Promise<{ locale: string; game: string }> }) {
   const { locale, game: gameId } = await params;
 
   if (!getGame(gameId)) notFound();

@@ -4,14 +4,24 @@ import { setRequestLocale } from 'next-intl/server';
 import { WORLDS } from '@/data/worlds';
 import { PlayFlow } from '@/components/world/PlayFlow';
 import { tr } from '@/lib/i18n-text';
+import { alternatesFor } from '@/lib/seo';
 
-type Props = { params: Promise<{ locale: string }>; searchParams: Promise<{ world?: string; quest?: string }> };
+type Props = {
+  params: Promise<{ locale: string }>;
+  searchParams: Promise<{ world?: string; quest?: string }>;
+};
 
 export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { locale } = await params;
   const { world, quest } = await searchParams;
   const q = WORLDS.find((w) => w.id === world)?.quests.find((x) => x.id === quest);
-  return { title: `${q ? tr(q.title, locale) : 'Quest'} — Ziggy World`, robots: { index: false } };
+  return {
+    ...{
+      title: `${q ? tr(q.title, locale) : 'Quest'} — Ziggy World`,
+      robots: { index: false },
+    },
+    alternates: alternatesFor(locale, '/monde/jouer'),
+  };
 }
 
 export default async function PlayPage({ params, searchParams }: Props) {

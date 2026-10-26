@@ -13,7 +13,7 @@
   --color-text-body-dark: #E8ECEF;
   --color-text-muted: #6B7280;
   --color-text-muted-dark: #9CA3AF;
-  --color-text-dim: #9CA3AF;
+  --color-text-dim: #6B7280; /* AA on white (was #9CA3AF, 2.5:1) */
   --color-text-dim-dark: #6B7280;
   --color-green: #22C55E;
   --color-green-dark: #16A34A;
@@ -644,4 +644,21 @@ html[data-intro='1'] .ziggy-intro {
 @keyframes gold-sheen {
   0%, 60% { background-position: 150% 0, 0 0; }
   100% { background-position: -100% 0, 0 0; }
+}
+
+/* Arabic pages that show a French/English text (content not translated yet):
+   each block takes the direction of its own words, so "Who is playing?" keeps
+   its punctuation and word order, while Arabic text stays right-to-left. */
+[dir='rtl'] :where(h1, h2, h3, h4, p, li, button, a, label, figcaption, dd, dt) {
+  unicode-bidi: plaintext;
+}
+
+/* Twinkling stars (bedtime mode) — cheap CSS, paused for reduced motion. */
+@keyframes dodo-twinkle {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.9; }
+}
+.dodo-twinkle { animation: dodo-twinkle 3s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .dodo-twinkle { animation: none; opacity: 0.5; }
 }

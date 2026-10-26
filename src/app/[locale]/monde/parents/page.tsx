@@ -1,10 +1,17 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { ParentConsole } from '@/components/world/ParentConsole';
+import { alternatesFor } from '@/lib/seo';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
-  return { title: `${locale === 'fr' ? 'Espace parents' : 'Parents’ area'} — Ziggy World`, robots: { index: false } };
+  return {
+    ...{
+      title: `${locale === 'fr' ? 'Espace parents' : 'Parents’ area'} — Ziggy World`,
+      robots: { index: false },
+    },
+    alternates: alternatesFor(locale, '/monde/parents'),
+  };
 }
 
 export default async function Page({ params }: { params: Promise<{ locale: string }> }) {

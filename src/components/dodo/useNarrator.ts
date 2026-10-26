@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import type { DodoStory } from '@/data/dodo/types';
 import { outroText } from '@/data/dodo';
 import { speakSequence, stopSpeaking, unlockAudio } from '@/lib/voice';
+import { isMuted } from '@/lib/sound';
 import { sentences, type DodoManifest } from '@/lib/dodo/client';
 
 export type NarratorStatus = 'idle' | 'speaking' | 'paused' | 'between' | 'done';
@@ -48,8 +49,18 @@ export function useNarrator(story: DodoStory, locale: 'fr' | 'en', manifest: Dod
       setSentence(fromSentence);
       setStatus('speaking');
       speakingCb.current?.(true);
+      // A scene never goes by faster than a calm reading pace (~2.2 words/s), even when the
+      // site is muted or no voice is available — the child can still follow the subtitles.
+      const startedAt = performance.now();
+      const words = textOf(i).split(/\s+/).length;
+      const minMs = Math.max(5000, (words / 2.2) * 1000) * (fromSentence ? 0.4 : 1);
       const finished = () => {
         if (mine !== token.current) return;
+        const wait = minMs - (performance.now() - startedAt);
+        if (wait > 50) {
+          timer.current = window.setTimeout(finished, wait);
+          return;
+        }
         speakingCb.current?.(false);
         if (i >= last) {
           setStatus('done');
@@ -75,13 +86,14 @@ export function useNarrator(story: DodoStory, locale: 'fr' | 'en', manifest: Dod
           while (k < lengths.length - 1 && sum + lengths[k] < at) sum += lengths[k++];
           setSentence(k);
         };
+        a.muted = isMuted();
         a.onended = finished;
         a.play().catch(() => {
           // Autoplay blocked or file unreachable: fall back to the live voice.
-          void speakSequence(`dodo-${story.id}-${i}`, parts, locale, setSentence, 'bedtime').then((ok) => ok && finished());
+          void speakSequence(`dodo-${story.id}-${i}`, parts, locale, setSentence, 'bedtime').then(() => finished());
         });
       } else {
-        void speakSequence(`dodo-${story.id}-${i}`, parts.slice(fromSentence), locale, (k) => setSentence(fromSentence + k), 'bedtime').then((ok) => ok && finished());
+        void speakSequence(`dodo-${story.id}-${i}`, parts.slice(fromSentence), locale, (k) => setSentence(fromSentence + k), 'bedtime').then(() => finished());
       }
     },
      

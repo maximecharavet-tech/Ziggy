@@ -1,9 +1,9 @@
-"use client";
+'use client';
 
-import { motion } from "framer-motion";
-import { Link } from "@/i18n/navigation";
-import { tr, type L } from "@/lib/i18n-text";
-import { Tilt3D } from "@/components/ui/Tilt3D";
+import { motion } from 'framer-motion';
+import { Link } from '@/i18n/navigation';
+import { tr, type L } from '@/lib/i18n-text';
+import { Tilt3D } from '@/components/ui/Tilt3D';
 
 const GAMES: {
   href: string;
@@ -15,63 +15,49 @@ const GAMES: {
   skill: L;
 }[] = [
   {
-    href: "/monde/3d/noel",
-    emoji: "🎄",
-    title: { fr: "Le Noël de Ziggy", en: "Ziggy’s Christmas" },
+    href: '/monde/3d/noel',
+    emoji: '🎄',
+    title: { fr: 'Le Noël de Ziggy', en: 'Ziggy’s Christmas' },
     teaser: {
-      fr: "Livre les cadeaux du village enneigé et illumine le grand sapin.",
-      en: "Deliver presents in the snowy village and light up the big tree.",
+      fr: 'Livre les cadeaux du village enneigé et illumine le grand sapin.',
+      en: 'Deliver presents in the snowy village and light up the big tree.',
     },
-    from: "#0b1238",
-    to: "#7a1f3d",
+    from: '#0b1238',
+    to: '#7a1f3d',
     skill: {
-      fr: "Couleurs · compter · additionner · suites",
-      en: "Colours · counting · adding · patterns",
+      fr: 'Couleurs · compter · additionner · suites',
+      en: 'Colours · counting · adding · patterns',
     },
   },
   {
-    href: "/monde/3d/luge",
-    emoji: "🛷",
-    title: { fr: "La Luge des nombres", en: "The Number Sled" },
+    href: '/monde/3d/luge',
+    emoji: '🛷',
+    title: { fr: 'La Luge des nombres', en: 'The Number Sled' },
     teaser: {
-      fr: "Dévale la piste et passe sous l’arche de la bonne réponse.",
-      en: "Race down the slope through the arch with the right answer.",
+      fr: 'Dévale la piste et passe sous l’arche de la bonne réponse.',
+      en: 'Race down the slope through the arch with the right answer.',
     },
-    from: "#0b1238",
-    to: "#2f5fa8",
+    from: '#0b1238',
+    to: '#2f5fa8',
     skill: {
-      fr: "Compter · additions · tables",
-      en: "Counting · sums · times tables",
+      fr: 'Compter · additions · tables',
+      en: 'Counting · sums · times tables',
     },
   },
 ];
 
 /** The 3D games, as big posters. */
-export function Games3DShowcase({
-  locale,
-  title = true,
-}: {
-  locale: string;
-  title?: boolean;
-}) {
+export function Games3DShowcase({ locale, title = true }: { locale: string; title?: boolean }) {
   return (
-    <section aria-labelledby={title ? "games3d" : undefined} className="mt-8">
+    <section aria-labelledby={title ? 'games3d' : undefined} className="mt-8">
       {title ? (
-        <h2
-          id="games3d"
-          className="mb-4 flex items-center gap-2 font-display text-2xl font-bold text-text-body"
-        >
-          ✨ {locale === "fr" ? "Nouveau : les jeux en 3D" : "New: 3D games"}
+        <h2 id="games3d" className="mb-4 flex items-center gap-2 font-display text-2xl font-bold text-text-body">
+          ✨ {locale === 'fr' ? 'Nouveau : les jeux en 3D' : 'New: 3D games'}
         </h2>
       ) : null}
       <div className="grid gap-4 sm:grid-cols-2">
         {GAMES.map((g, i) => (
-          <motion.div
-            key={g.href}
-            initial={{ opacity: 0, y: 14 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.08 * i }}
-          >
+          <motion.div key={g.href} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 * i }}>
             <Tilt3D className="rounded-[2rem]">
               <Link
                 href={g.href}
@@ -97,20 +83,14 @@ export function Games3DShowcase({
                     aria-hidden="true"
                   />
                 ))}
-                <span className="relative inline-flex rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-black text-[#2a1650]">
-                  3D
-                </span>
+                <span className="relative inline-flex rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-black text-[#2a1650]">3D</span>
                 <h3 className="relative mt-3 font-display text-2xl font-bold">
                   {g.emoji} {tr(g.title, locale)}
                 </h3>
-                <p className="relative mt-1 max-w-xs text-white/80">
-                  {tr(g.teaser, locale)}
-                </p>
-                <p className="relative mt-3 text-xs font-semibold text-white/60">
-                  {tr(g.skill, locale)}
-                </p>
+                <p className="relative mt-1 max-w-xs text-white/80">{tr(g.teaser, locale)}</p>
+                <p className="relative mt-3 text-xs font-semibold text-white/60">{tr(g.skill, locale)}</p>
                 <span className="relative mt-4 inline-flex rounded-full bg-white/95 px-5 py-2 font-bold text-[#1b2150] transition group-hover:scale-105">
-                  ▶ {locale === "fr" ? "Jouer" : "Play"}
+                  ▶ {locale === 'fr' ? 'Jouer' : 'Play'}
                 </span>
               </Link>
             </Tilt3D>

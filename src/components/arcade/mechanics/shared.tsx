@@ -234,7 +234,8 @@ export function Prompt({
           initial={{ scale: 0.6, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           transition={POP}
-          className="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl flex items-center justify-center text-5xl sm:text-6xl"
+          // Long visuals ("🍎🍎 + 🍎🍎🍎") get a wide, wrapping box instead of overflowing.
+          className={`rounded-3xl flex items-center justify-center text-center ${[...visual].length > 3 ? 'min-h-20 max-w-full px-4 py-2 text-3xl leading-snug sm:text-4xl' : 'w-24 h-24 sm:w-28 sm:h-28 text-5xl sm:text-6xl'}`}
           style={{ backgroundColor: alpha(color, '14'), boxShadow: `0 10px 30px ${alpha(color, '22')}` }}
           role="img"
           aria-hidden="true"

@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "Create",
     "dodo": "Bedtime",
-    "learn": "Learn"
+    "learn": "Learn",
+    "sound_on": "Turn sound on",
+    "sound_off": "Turn sound off",
+    "switch_language": "Switch language"
   },
   "hero": {
     "badge": "AI Education for Kids Aged 5-12",
@@ -276,7 +279,8 @@
         "What makes ads catchy?",
         "Design a poster idea!"
       ]
-    }
+    },
+    "try_now": "Try now"
   },
   "games": {
     "badge": "Mini-games",

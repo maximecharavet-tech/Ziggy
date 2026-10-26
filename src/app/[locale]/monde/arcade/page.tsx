@@ -1,12 +1,16 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { ArcadeHome } from '@/components/world/ArcadeHome';
+import { alternatesFor } from '@/lib/seo';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return {
-    title: 'Ziggy Arcade — Ziggy World',
-    description: locale === 'fr' ? '20 jeux éducatifs qui s’adaptent à ton enfant.' : '20 learning games that adapt to your child.',
+    ...{
+      title: 'Ziggy Arcade — Ziggy World',
+      description: locale === 'fr' ? '20 jeux éducatifs qui s’adaptent à ton enfant.' : '20 learning games that adapt to your child.',
+    },
+    alternates: alternatesFor(locale, '/monde/arcade'),
   };
 }
 

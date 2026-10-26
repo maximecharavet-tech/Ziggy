@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "Yarat",
     "dodo": "Uyku vakti",
-    "learn": "Öğren"
+    "learn": "Öğren",
+    "sound_on": "Sesi aç",
+    "sound_off": "Sesi kapat",
+    "switch_language": "Dili değiştir"
   },
   "hero": {
     "badge": "5-12 yaş çocuklar için yapay zeka eğitimi",
@@ -276,7 +279,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "Hemen dene"
   },
   "games": {
     "badge": "Mini oyunlar",

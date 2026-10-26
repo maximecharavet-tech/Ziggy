@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "Créer",
     "dodo": "Mode dodo",
-    "learn": "Apprendre"
+    "learn": "Apprendre",
+    "sound_on": "Activer le son",
+    "sound_off": "Couper le son",
+    "switch_language": "Changer de langue"
   },
   "hero": {
     "badge": "L'IA éducative pour les 5-12 ans",
@@ -189,7 +192,7 @@
     "privacy": "Politique de confidentialité",
     "terms": "Conditions d'utilisation",
     "cookies": "Politique de cookies",
-    "gdpr": "GDPR",
+    "gdpr": "RGPD",
     "copyright": "© 2026 Ziggy Technologies SAS. Tous droits réservés.",
     "made_with": "Fait avec",
     "for_kids": "pour les enfants"
@@ -276,7 +279,8 @@
         "Qu'est-ce qui rend une pub mémorable ?",
         "Dessine-moi une affiche !"
       ]
-    }
+    },
+    "try_now": "Essayer"
   },
   "games": {
     "badge": "Mini-jeux",

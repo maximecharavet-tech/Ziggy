@@ -1,3 +1,5 @@
+import type { Metadata } from 'next';
+import { alternatesFor } from '@/lib/seo';
 import { setRequestLocale } from 'next-intl/server';
 import { TrustBar } from '@/components/sections/TrustBar';
 import { TaglineRibbon } from '@/components/sections/TaglineRibbon';
@@ -18,14 +20,15 @@ import { FAQSection } from '@/components/sections/FAQSection';
 import { CTAFinalSection } from '@/components/sections/CTAFinalSection';
 import { fetchSiteConfig } from '@/lib/site-config.server';
 
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  return { alternates: alternatesFor(locale, '') };
+}
+
 // Owner edits reach the page within a minute, or at once via /api/revalidate.
 export const revalidate = 60;
 
-export default async function HomePage({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
+export default async function HomePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
   const { sections } = await fetchSiteConfig();

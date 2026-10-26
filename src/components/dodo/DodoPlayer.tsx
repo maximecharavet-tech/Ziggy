@@ -104,10 +104,21 @@ export function DodoPlayer({ story }: { story: DodoStory }) {
   const dim = phase === 'sleep' ? 0.92 : phase === 'breathe' ? 0.55 : phase === 'story' ? Math.min(0.4, (narrator.scene / story.scenes.length) * 0.4) : 0;
 
   return (
-    <div className="fixed inset-0 z-[60] overflow-hidden bg-[#070a1f] text-white" onPointerMove={phase === 'story' ? poke : undefined} onPointerDown={phase === 'story' ? poke : undefined}>
+    <div
+      className="fixed inset-0 z-[60] overflow-hidden bg-[#070a1f] text-white"
+      onPointerMove={phase === 'story' ? poke : undefined}
+      onPointerDown={phase === 'story' ? poke : undefined}
+    >
       {/* Picture: the pre-generated illustration with a slow Ken Burns drift, else the animated night scene */}
       <AnimatePresence mode="sync">
-        <motion.div key={`${phase === 'cover' ? 'cover' : sceneIndex}`} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 1.8 }}>
+        <motion.div
+          key={`${phase === 'cover' ? 'cover' : sceneIndex}`}
+          className="absolute inset-0"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 1.8 }}
+        >
           {phase === 'cover' && story.cover ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={story.cover} alt="" className="h-full w-full object-cover" />
@@ -131,31 +142,38 @@ export function DodoPlayer({ story }: { story: DodoStory }) {
       {/* Cover */}
       <AnimatePresence>
         {phase === 'cover' ? (
-          <motion.section key="cover" exit={{ opacity: 0 }} className="absolute inset-0 flex flex-col items-center justify-end gap-5 p-6 pb-10 text-center sm:justify-center">
-            <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold backdrop-blur">
-              {story.emoji} {tr(VALUE_LABEL[story.value], locale)} · {minutes} {tr(T.minutes, locale)} · {tr(T.told, locale)}
-            </motion.p>
-            <motion.h1 initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="max-w-3xl font-display text-4xl font-bold drop-shadow-[0_4px_24px_rgba(0,0,0,.6)] sm:text-6xl">
-              {tr(story.title, locale)}
-            </motion.h1>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="max-w-xl text-lg text-white/85">
-              {tr(story.teaser, locale)}
-            </motion.p>
-            <SoundPicker locale={locale} value={settings.sound} onChange={(sound) => updateDodo({ sound })} />
-            <TimerPicker locale={locale} value={settings.timer} onChange={(timer) => updateDodo({ timer })} />
-            <motion.button
-              type="button"
-              onClick={() => void begin()}
-              whileTap={{ scale: 0.96 }}
-              animate={{ boxShadow: ['0 0 0 0 rgba(255,214,140,.45)', '0 0 0 18px rgba(255,214,140,0)'] }}
-              transition={{ duration: 2.2, repeat: Infinity }}
-              className="mt-2 flex items-center gap-3 rounded-full bg-gradient-to-r from-amber-300 to-pink-300 px-9 py-4 text-xl font-bold text-[#2a1650] focus-visible:outline focus-visible:outline-4 focus-visible:outline-white/70"
-            >
-              <span aria-hidden="true">🌙</span> {tr(T.listen, locale)}
-            </motion.button>
-            <Link href="/dodo" className="text-sm font-semibold text-white/70 underline">
-              {tr(T.close, locale)}
-            </Link>
+          <motion.section key="cover" exit={{ opacity: 0 }} className="absolute inset-0 overflow-y-auto bg-gradient-to-t from-[#070a1f]/95 via-[#070a1f]/55 to-transparent">
+            <div className="flex min-h-full flex-col items-center justify-end gap-5 p-6 pb-10 pt-24 text-center sm:justify-center">
+              <motion.p initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="rounded-full bg-white/10 px-4 py-1.5 text-sm font-semibold backdrop-blur">
+                {story.emoji} {tr(VALUE_LABEL[story.value], locale)} · {minutes} {tr(T.minutes, locale)} · {tr(T.told, locale)}
+              </motion.p>
+              <motion.h1
+                initial={{ opacity: 0, y: 14 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="max-w-3xl font-display text-4xl font-bold drop-shadow-[0_4px_24px_rgba(0,0,0,.6)] sm:text-6xl"
+              >
+                {tr(story.title, locale)}
+              </motion.h1>
+              <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.25 }} className="max-w-xl text-lg text-white/85">
+                {tr(story.teaser, locale)}
+              </motion.p>
+              <SoundPicker locale={locale} value={settings.sound} onChange={(sound) => updateDodo({ sound })} />
+              <TimerPicker locale={locale} value={settings.timer} onChange={(timer) => updateDodo({ timer })} />
+              <motion.button
+                type="button"
+                onClick={() => void begin()}
+                whileTap={{ scale: 0.96 }}
+                animate={{ boxShadow: ['0 0 0 0 rgba(255,214,140,.45)', '0 0 0 18px rgba(255,214,140,0)'] }}
+                transition={{ duration: 2.2, repeat: Infinity }}
+                className="mt-2 flex items-center gap-3 rounded-full bg-gradient-to-r from-amber-300 to-pink-300 px-9 py-4 text-xl font-bold text-[#2a1650] focus-visible:outline focus-visible:outline-4 focus-visible:outline-white/70"
+              >
+                <span aria-hidden="true">🌙</span> {tr(T.listen, locale)}
+              </motion.button>
+              <Link href="/dodo" className="text-sm font-semibold text-white/70 underline">
+                {tr(T.close, locale)}
+              </Link>
+            </div>
           </motion.section>
         ) : null}
       </AnimatePresence>
@@ -188,7 +206,10 @@ export function DodoPlayer({ story }: { story: DodoStory }) {
       {phase === 'story' ? (
         <div className="absolute inset-x-0 top-5 flex justify-center gap-2" aria-hidden="true">
           {[...story.scenes, null].map((_, i) => (
-            <span key={i} className={`h-1.5 rounded-full transition-all duration-700 ${i === narrator.scene ? 'w-8 bg-amber-200' : i < narrator.scene ? 'w-3 bg-white/70' : 'w-3 bg-white/25'}`} />
+            <span
+              key={i}
+              className={`h-1.5 rounded-full transition-all duration-700 ${i === narrator.scene ? 'w-8 bg-amber-200' : i < narrator.scene ? 'w-3 bg-white/70' : 'w-3 bg-white/25'}`}
+            />
           ))}
         </div>
       ) : null}
@@ -209,7 +230,11 @@ export function DodoPlayer({ story }: { story: DodoStory }) {
             <Ctl label={tr(T.prev, locale)} onClick={() => narrator.go(narrator.scene - 1)}>
               ⏮
             </Ctl>
-            <Ctl big label={narrator.status === 'paused' ? tr(T.play, locale) : tr(T.pause, locale)} onClick={() => (narrator.status === 'paused' ? narrator.resume() : narrator.pause())}>
+            <Ctl
+              big
+              label={narrator.status === 'paused' ? tr(T.play, locale) : tr(T.pause, locale)}
+              onClick={() => (narrator.status === 'paused' ? narrator.resume() : narrator.pause())}
+            >
               {narrator.status === 'paused' ? '▶' : '❚❚'}
             </Ctl>
             <Ctl label={tr(T.next, locale)} onClick={() => narrator.go(narrator.scene + 1)}>
@@ -242,7 +267,14 @@ export function DodoPlayer({ story }: { story: DodoStory }) {
       {/* Breathing like a balloon */}
       <AnimatePresence>
         {phase === 'breathe' ? (
-          <motion.section key="breathe" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 2 }} className="absolute inset-0 flex flex-col items-center justify-center gap-8 p-6 text-center">
+          <motion.section
+            key="breathe"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 2 }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-8 p-6 text-center"
+          >
             <p className="max-w-md text-xl text-white/85">{tr(T.breathe, locale)}</p>
             <Balloon locale={locale} />
           </motion.section>
@@ -252,7 +284,13 @@ export function DodoPlayer({ story }: { story: DodoStory }) {
       {/* Good night */}
       <AnimatePresence>
         {phase === 'sleep' ? (
-          <motion.section key="sleep" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 4 }} className="absolute inset-0 flex flex-col items-center justify-center gap-6 text-center">
+          <motion.section
+            key="sleep"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 4 }}
+            className="absolute inset-0 flex flex-col items-center justify-center gap-6 text-center"
+          >
             <motion.div className="text-7xl" animate={{ y: [0, -6, 0], opacity: [0.7, 1, 0.7] }} transition={{ duration: 6, repeat: Infinity }} aria-hidden="true">
               🌙
             </motion.div>

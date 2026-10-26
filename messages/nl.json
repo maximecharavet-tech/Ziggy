@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "Maken",
     "dodo": "Bedtijd",
-    "learn": "Leren"
+    "learn": "Leren",
+    "sound_on": "Geluid aanzetten",
+    "sound_off": "Geluid uitzetten",
+    "switch_language": "Taal wijzigen"
   },
   "hero": {
     "badge": "AI-onderwijs voor kinderen van 5 tot 12 jaar",
@@ -189,7 +192,7 @@
     "privacy": "Privacybeleid",
     "terms": "Algemene voorwaarden",
     "cookies": "Cookiebeleid",
-    "gdpr": "GDPR",
+    "gdpr": "AVG",
     "copyright": "© 2026 Ziggy Technologies SAS. Alle rechten voorbehouden.",
     "made_with": "Gemaakt met",
     "for_kids": "voor kinderen"
@@ -276,7 +279,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "Nu proberen"
   },
   "games": {
     "badge": "Minispelletjes",

@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "Criar",
     "dodo": "Hora de dormir",
-    "learn": "Aprender"
+    "learn": "Aprender",
+    "sound_on": "Ativar o som",
+    "sound_off": "Desativar o som",
+    "switch_language": "Mudar de idioma"
   },
   "hero": {
     "badge": "Educação em IA para crianças dos 5 aos 12 anos",
@@ -189,7 +192,7 @@
     "privacy": "Política de privacidade",
     "terms": "Termos de serviço",
     "cookies": "Política de cookies",
-    "gdpr": "GDPR",
+    "gdpr": "RGPD",
     "copyright": "© 2026 Ziggy Technologies SAS. Todos os direitos reservados.",
     "made_with": "Feito com",
     "for_kids": "para as crianças"
@@ -276,7 +279,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "Experimentar"
   },
   "games": {
     "badge": "Minijogos",

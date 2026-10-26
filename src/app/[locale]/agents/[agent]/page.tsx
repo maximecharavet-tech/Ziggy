@@ -5,6 +5,9 @@ import type { Metadata } from 'next';
 import { AGENTS } from '@/lib/agents';
 import { AgentPageContent } from './AgentPageContent';
 
+/** Unknown ids are a real 404, not a 200 "not found" page. */
+export const dynamicParams = false;
+
 export function generateStaticParams() {
   return AGENTS.map((agent) => ({ agent: agent.id }));
 }

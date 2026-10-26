@@ -1,11 +1,15 @@
 import type { Metadata } from 'next';
 import { getTranslations, setRequestLocale } from 'next-intl/server';
 import { MemoPageContent } from './MemoPageContent';
+import { alternatesFor } from '@/lib/seo';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'memo' });
-  return { title: `${t('title')} — Ziggy`, description: t('subtitle') };
+  return {
+    ...{ title: `${t('title')} — Ziggy`, description: t('subtitle') },
+    alternates: alternatesFor(locale, '/memo'),
+  };
 }
 
 export default async function MemoPage({ params }: { params: Promise<{ locale: string }> }) {

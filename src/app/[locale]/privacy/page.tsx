@@ -1,5 +1,6 @@
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { alternatesFor } from '@/lib/seo';
 
 /**
  * Written from what the product actually does today — keep it in step with
@@ -90,8 +91,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
   en: {
     title: 'Privacy Policy',
     updated: `Last updated: ${UPDATED.en}`,
-    intro:
-      'Ziggy is a learning platform for children aged 5 to 12. We collect the bare minimum, sell no data and show no advertising.',
+    intro: 'Ziggy is a learning platform for children aged 5 to 12. We collect the bare minimum, sell no data and show no advertising.',
     sections: [
       {
         title: '1. Who creates the account',
@@ -166,7 +166,10 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   const c = CONTENT[locale === 'fr' ? 'fr' : 'en'];
-  return { title: `${c.title} — Ziggy`, description: c.intro };
+  return {
+    ...{ title: `${c.title} — Ziggy`, description: c.intro },
+    alternates: alternatesFor(locale, '/privacy'),
+  };
 }
 
 export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
@@ -195,7 +198,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
                     </ul>
                   ) : (
                     <p key={i}>{block}</p>
-                  ),
+                  )
                 )}
               </div>
             </section>

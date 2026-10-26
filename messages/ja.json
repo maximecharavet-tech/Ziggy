@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "つくる",
     "dodo": "おやすみ",
-    "learn": "まなぶ"
+    "learn": "まなぶ",
+    "sound_on": "サウンドをオンにする",
+    "sound_off": "サウンドをオフにする",
+    "switch_language": "言語を切り替える"
   },
   "hero": {
     "badge": "5〜12歳向けAI教育",
@@ -276,7 +279,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "試してみる"
   },
   "games": {
     "badge": "ミニゲーム",

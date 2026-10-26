@@ -62,23 +62,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       index: true,
       follow: true,
     },
-    alternates: {
-      canonical: '/',
-      languages: {
-        'fr': '/fr',
-        'en': '/en',
-        'es': '/es',
-        'de': '/de',
-        'pt': '/pt',
-        'it': '/it',
-        'nl': '/nl',
-        'tr': '/tr',
-        'ja': '/ja',
-        'ko': '/ko',
-        'zh': '/zh',
-        'ar': '/ar',
-      },
-    },
   };
 }
 

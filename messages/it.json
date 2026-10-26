@@ -21,7 +21,10 @@
     "world": "Ziggy World",
     "create": "Crea",
     "dodo": "Nanna",
-    "learn": "Imparare"
+    "learn": "Imparare",
+    "sound_on": "Attiva l’audio",
+    "sound_off": "Disattiva l’audio",
+    "switch_language": "Cambia lingua"
   },
   "hero": {
     "badge": "Educazione IA per bambini dai 5 ai 12 anni",
@@ -276,7 +279,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "Prova ora"
   },
   "games": {
     "badge": "Mini-giochi",
