@@ -24,7 +24,6 @@ import { ARCADE_GAMES } from '@/lib/arcade/registry';
 import { useSound } from '@/hooks/useSound';
 import { SplitWords } from '@/components/ui/motion-primitives';
 import { FILMS, FILM_ASPECT } from '@/lib/mascot';
-import type { SiteConfig } from '@/lib/site-config';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -50,7 +49,7 @@ function Sticker({ className, delay, children }: { className: string; delay: num
   );
 }
 
-export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) {
+export function HeroSection() {
   const t = useTranslations('hero');
   const { play } = useSound();
   const reduce = useReducedMotion();
@@ -86,7 +85,6 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
   };
 
   // Facts about the product itself, counted from the real content — never invented audience figures.
-  void figures;
   const stats = [
     { value: String(WORLDS.length), label: t('facts_worlds'), tint: 'text-leaf' },
     { value: String(DODO_STORIES.length), label: t('facts_stories'), tint: 'text-sky' },

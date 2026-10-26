@@ -28,11 +28,11 @@ export default async function HomePage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const { stats, sections } = await fetchSiteConfig();
+  const { sections } = await fetchSiteConfig();
 
   return (
     <PageTransition>
-      <HeroSection stats={stats} />
+      <HeroSection />
       <TaglineRibbon />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-4">
         <MissionCard />
