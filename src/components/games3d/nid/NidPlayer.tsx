@@ -690,7 +690,7 @@ export function NidPlayer() {
 
       {/* Intro */}
       {phase !== 'play' ? (
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-gradient-to-b from-[#9fd8ff] via-[#d9efff] to-[#ffe8c2] p-6 text-center">
+        <div className="absolute inset-0 [&>*:not(:first-child)]:relative flex flex-col items-center justify-center gap-4 bg-gradient-to-b from-[#9fd8ff] via-[#d9efff] to-[#ffe8c2] p-6 text-center">
           <Floaters reduce={Boolean(reduce)} />
           <motion.div
             className="relative grid h-36 w-36 place-items-center rounded-full bg-white/70 text-8xl shadow-[0_20px_60px_rgba(255,150,200,.45)] ring-8 ring-white/70"
@@ -823,7 +823,7 @@ function CarePanel({
               </span>
             ) : (
               <span className="rounded-full bg-[#fff1e0] px-4 py-2 text-base font-bold">
-                🧺 {tr(T.inBasket, locale)} : <span className="text-2xl text-[#e8403a]">{count}</span>
+                🧺 {tr(T.inBasket, locale)}{locale === 'fr' ? ' :' : ':'} <span className="text-2xl text-[#e8403a]">{count}</span>
               </span>
             )}
             {!ch.autoFinish ? (
