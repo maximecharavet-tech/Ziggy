@@ -11,6 +11,7 @@ import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { MotionProvider } from '@/components/ui/MotionProvider';
+import { ServiceWorker } from '@/components/ui/ServiceWorker';
 import { RewardCeremony } from '@/components/rewards/RewardCeremony';
 import { ZiggyIntro } from '@/components/ziggy/ZiggyIntro';
 import { BreakReminder } from '@/components/wellbeing/BreakReminder';
@@ -148,6 +149,7 @@ export default async function LocaleLayout({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <ServiceWorker />
           <MotionProvider>
           <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-green focus:text-white focus:rounded-lg">Skip to content</a>
           <ZiggyIntro />
