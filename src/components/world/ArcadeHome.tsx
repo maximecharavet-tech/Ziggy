@@ -11,11 +11,11 @@ import { useHydrated, useWorldMemory } from '@/lib/world/store';
 import { tr } from '@/lib/i18n-text';
 import { wt } from './text';
 import { Games3DShowcase } from '@/components/games3d/Games3DShowcase';
-import { Tilt3D } from '@/components/ui/Tilt3D';
 import { GameScene } from '@/components/arcade/stage/GameScene';
 import { GAME_MOTIFS, NIGHT_GAMES, scenePalette } from '@/components/arcade/stage/themes';
 import { SpeechBubble, Title3D } from '@/components/arcade/stage/Showpieces';
 import { ZiggyHost } from '@/components/arcade/stage/ZiggyHost';
+import { useTilt } from '@/components/arcade/stage/Toy';
 import { darken, lighten, rgba, strong } from '@/components/arcade/stage/color';
 import css from '@/components/arcade/stage/stage.module.css';
 
@@ -150,8 +150,9 @@ function GameCard({ game: g, level, plays, locale }: { game: GameDefinition; lev
   const base = strong(g.color);
   const p = scenePalette(g.color, { night });
   const motifs = GAME_MOTIFS[g.id];
+  const tilt = useTilt(7);
   return (
-    <Tilt3D className="h-full rounded-[1.8rem]" max={8}>
+    <motion.div className="h-full rounded-[1.8rem]" style={tilt.style} onPointerMove={tilt.onPointerMove} onPointerLeave={tilt.onPointerLeave} whileHover={{ scale: 1.02 }} transition={{ type: 'spring', stiffness: 260, damping: 20 }}>
       <Link
         href={`/monde/arcade/${g.id}`}
         className="group relative flex h-full flex-col overflow-hidden rounded-[1.8rem] border-[3px] bg-bg-card outline-none focus-visible:ring-4"
@@ -228,6 +229,6 @@ function GameCard({ game: g, level, plays, locale }: { game: GameDefinition; lev
           </span>
         </span>
       </Link>
-    </Tilt3D>
+    </motion.div>
   );
 }

@@ -263,10 +263,10 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
                   color={color}
                   label={locale === 'fr' ? 'Ziggy te dit bonjour' : 'Ziggy says hello'}
                 />
-                <div className="absolute -top-1 start-0 origin-top-left scale-[0.68] sm:start-2 sm:top-2 sm:scale-90 lg:start-0 lg:top-6 lg:scale-100">
+                <div className="absolute -top-1 left-0 origin-top-left scale-[0.68] sm:left-2 sm:top-2 sm:scale-90 lg:left-0 lg:top-6 lg:scale-100">
                   <GameToken emoji={quest ? quest.outcome.emoji : game.emoji} color={color} size={108} />
                 </div>
-                <div className="absolute bottom-2 start-0 sm:bottom-6 lg:start-4">
+                <div className="absolute bottom-2 left-0 sm:bottom-6 lg:left-4">
                   <CompanionBuddy profile={companion} mood={stage === 'loading' ? 'THINKING' : 'HAPPY'} locale={locale} size={56} />
                 </div>
               </div>
@@ -294,7 +294,7 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
                     <span className="grid h-11 w-11 place-items-center rounded-full bg-white/95 text-xl shadow-[inset_0_-3px_0_rgba(0,0,0,0.08)]" style={{ color: strong(color) }} aria-hidden="true">
                       {stage === 'loading' ? <LoadingDots color={strong(color)} /> : <span className="ms-1">▶</span>}
                     </span>
-                    {wt('letsGo', locale)}
+                    <span dir="auto">{wt('letsGo', locale)}</span>
                   </ToyButton>
                 </motion.div>
               </div>

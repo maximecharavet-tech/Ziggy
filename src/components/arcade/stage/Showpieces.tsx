@@ -9,7 +9,6 @@ import css from './stage.module.css';
 
 /** Sticker-style 3D title: coloured letters, a white outline and a deep extrusion; words pop in. */
 export function Title3D({ text, color, className = '', delay = 0, as = 'h1', id }: { text: string; color: string; className?: string; delay?: number; as?: 'h1' | 'h2'; id?: string }) {
-  const reduce = useReducedMotion();
   const ink = darken(strong(color), 0.18);
   const deep = darken(strong(color), 0.5);
   const o = 3;
@@ -23,7 +22,7 @@ export function Title3D({ text, color, className = '', delay = 0, as = 'h1', id 
         <span key={`${w}-${i}`}>
           <motion.span
             className="inline-block max-w-full [overflow-wrap:anywhere]"
-            initial={reduce ? false : { y: 36, opacity: 0, rotateX: -75, scale: 0.6 }}
+            initial={{ y: 36, opacity: 0, rotateX: -75, scale: 0.6 }}
             animate={{ y: 0, opacity: 1, rotateX: 0, scale: 1 }}
             transition={{ type: 'spring', stiffness: 320, damping: 15, delay: delay + i * 0.08 }}
             style={{ transformPerspective: 600 }}

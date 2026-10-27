@@ -57,7 +57,7 @@ export function WorldView({ worldId }: { worldId: string }) {
       <div className="relative mx-auto max-w-5xl px-4 pt-24 sm:px-6">
         <Link
           href="/monde"
-          className="inline-flex min-h-[44px] items-center gap-1 rounded-full bg-white/90 px-4 py-2 text-sm font-bold shadow-[0_4px_0_rgba(40,30,80,0.12)] transition-transform active:translate-y-[3px] dark:bg-bg-card/90"
+          className="inline-flex min-h-[44px] items-center gap-1 rounded-full bg-white/90 px-4 py-2 text-sm font-bold shadow-[0_4px_0_rgba(40,30,80,0.12)] transition-transform active:translate-y-[3px] dark:bg-bg-card/90 dark:!text-text-body"
           style={{ color: c.ink }}
         >
           <span aria-hidden="true" className="rtl:rotate-180">

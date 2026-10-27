@@ -94,7 +94,7 @@ export function PairsMechanic({ content, color, locale, onFinish, onAnswer }: Me
       </div>
       <Hint say={ui('pairsHint', locale)}>{ui('pairsHint', locale)}</Hint>
 
-      <div className={`mx-auto grid max-w-xl ${cols} gap-3 sm:gap-4`} dir="ltr" style={{ perspective: 1100 }}>
+      <div className={`mx-auto grid ${n <= 6 ? 'max-w-[25rem]' : n <= 12 ? 'max-w-lg' : 'max-w-xl'} ${cols} gap-3 sm:gap-4`} dir="ltr" style={{ perspective: 1100 }}>
         {deck.map((card, i) => (
           <PairCardView
             key={card.id}

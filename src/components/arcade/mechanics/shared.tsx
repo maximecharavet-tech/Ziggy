@@ -273,7 +273,7 @@ export function Prompt({
           role="img"
           aria-hidden="true"
         >
-          <span className={`relative flex items-center justify-center text-center ${long ? 'min-h-20 max-w-full rounded-[1.75rem] px-5 py-3 text-3xl leading-snug sm:text-4xl' : 'h-28 w-28 rounded-full text-6xl sm:h-32 sm:w-32 sm:text-7xl'} ${css.bob}`}
+          <span className={`relative flex items-center justify-center text-center text-[#2A2340] ${long ? 'min-h-20 max-w-full rounded-[1.75rem] px-5 py-3 text-3xl leading-snug sm:text-4xl' : 'h-28 w-28 rounded-full text-6xl sm:h-32 sm:w-32 sm:text-7xl'} ${css.bob}`}
             style={{
               background: `radial-gradient(circle at 34% 26%, #FFFFFF 0%, ${lighten(color, 0.86)} 42%, ${lighten(color, 0.62)} 100%)`,
               boxShadow: `inset 0 -8px 16px ${rgba(color, 0.22)}, inset 0 4px 0 rgba(255,255,255,0.9), 0 6px 0 ${lighten(color, 0.35)}, 0 18px 30px -12px ${rgba(darken(color, 0.4), 0.45)}`,

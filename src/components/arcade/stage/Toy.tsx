@@ -172,6 +172,8 @@ export const ToyTile = forwardRef<HTMLButtonElement, ToyTileProps>(function ToyT
       ref={ref}
       type="button"
       disabled={disabled}
+      initial={false}
+      animate="rest"
       whileTap={disabled ? undefined : 'press'}
       onPointerMove={t.onPointerMove}
       onPointerLeave={t.onPointerLeave}
@@ -182,7 +184,7 @@ export const ToyTile = forwardRef<HTMLButtonElement, ToyTileProps>(function ToyT
       <span className="pointer-events-none absolute inset-x-4 -bottom-2.5 h-4 rounded-full opacity-50 blur-[7px]" style={{ background: rgba(darken(color, 0.4), 0.5) }} aria-hidden="true" />
       <span className="absolute inset-x-0 bottom-0" style={{ top: depth, borderRadius: radius, background: c.edge }} aria-hidden="true" />
       <motion.span
-        variants={{ press: { y: depth - 1 } }}
+        variants={{ rest: { y: 0 }, press: { y: depth - 1 } }}
         transition={PRESS}
         className={`relative flex h-full w-full items-center justify-center overflow-hidden border-[3px] bg-white text-[#2A2340] ${faceClassName}`}
         style={{
