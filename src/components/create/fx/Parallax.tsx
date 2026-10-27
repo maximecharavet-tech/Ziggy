@@ -1,7 +1,8 @@
 'use client';
 
 import { createContext, useContext, useEffect, useRef, type CSSProperties, type ReactNode, type RefObject } from 'react';
-import { motion, useInView, useMotionValue, useReducedMotion, useSpring, useTransform, type MotionValue } from 'framer-motion';
+import { motion, useInView, useMotionValue, useSpring, useTransform, type MotionValue } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 
 type Pointer = { x: MotionValue<number>; y: MotionValue<number> };
 const Ctx = createContext<Pointer | null>(null);

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { animate, motion, useMotionValue, useReducedMotion, useTransform } from 'framer-motion';
+import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 
 type Turn = { from: number; to: number; id: number };
 

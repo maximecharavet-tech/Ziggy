@@ -1,7 +1,8 @@
 'use client';
 
 import { forwardRef, useCallback, type CSSProperties, type PointerEvent, type ReactNode } from 'react';
-import { motion, useMotionValue, useReducedMotion, useSpring, type HTMLMotionProps, type MotionStyle } from 'framer-motion';
+import { motion, useMotionValue, useSpring, type HTMLMotionProps, type MotionStyle } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { darken, lighten, rgba, strong } from './color';
 import css from './stage.module.css';
 

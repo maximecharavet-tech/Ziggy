@@ -18,7 +18,8 @@ public/dodo/voice/en/{histoire}/…            (les 31 histoires, en français e
   exact affiché et l’instant (en secondes) où commence chaque mot. Les mots viennent des durées de
   phonèmes calculées par le modèle lui-même : pas d’estimation, pas de dérive d’une phrase à l’autre.
 - MP3 mono 24 kHz à 40 kbit/s, volume homogène (−18 LUFS), fondus de 20 ms.
-- Total : voir le rapport de génération (≈ 3 h de lecture, ~50–60 Mo pour les deux langues).
+- Total : 2 h 34 de lecture (français 81,5 min, anglais 72,1 min), 46,6 Mo pour les deux langues
+  (31 histoires × 8 segments × 2 langues = 496 MP3).
 
 ## La voix de Ziggy
 

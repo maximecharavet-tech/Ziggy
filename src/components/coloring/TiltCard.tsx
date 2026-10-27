@@ -1,7 +1,8 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { motion, useMotionTemplate, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 
 /** A card that tilts in 3D towards the pointer / finger, with a soft moving shine. */
 export function TiltCard({ children, className = '', delay = 0 }: { children: ReactNode; className?: string; delay?: number }) {

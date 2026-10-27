@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
-import { useReducedMotion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { fx } from './toy';
 
 export type BurstKind = 'confetti' | 'stars' | 'notes' | 'hearts';

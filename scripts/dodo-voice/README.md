@@ -49,7 +49,7 @@ cd scripts/dodo-voice
 
 After editing a story (`src/data/dodo`), regenerate that story (the vitest test fails
 until you do). Synthesis runs at about 0.3× real time on 4 free CPU cores (much slower on a
-busy machine), ~3 h of audio for everything. To use several processes, start a few workers
+busy machine); everything is 2 h 34 min of audio (46.6 MB). To use several processes, start a few workers
 with the same claims folder — each takes the next story nobody has (all French first):
 
 ```bash
@@ -87,8 +87,9 @@ effect, the loudness or the MP3 settings re-renders everything in a few minutes.
    pauses: 0.38 s after `.`, 0.45 s after `?`/`!`, 0.60 s after `…`; 0.08 s before the
    segment, 0.30 s after. The voice effect keeps the tempo (checked with tone bursts: ±20 ms),
    so the times stay true.
-6. Loudness: two-pass EBU R128, a static gain to −18 LUFS (true peak ≤ −1.5 dBTP, never
-   compressed), 20 ms fades, MP3 mono 24 kHz 40 kbps (`libmp3lame`).
+6. Loudness: measured with EBU R128 (`loudnorm`), one static gain to −18 LUFS, then a
+   transparent peak limiter (`alimiter`, latency-compensated, ≤ 4 dB on rare plosives) so the
+   peaks stay ≤ −2 dBFS; 20 ms fades; MP3 mono 24 kHz 40 kbps (`libmp3lame`).
 
 ## Ziggy's voice recipe
 

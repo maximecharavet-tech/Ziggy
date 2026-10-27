@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Download, Printer, Trash2 } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { MascotCutout } from '@/components/ziggy/Mascot';

@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { SplitWords } from '@/components/ui/motion-primitives';
 import { Ziggy3D, type ZiggyCue } from '@/components/ziggy3d/Ziggy3D';

@@ -1,7 +1,8 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { ArrowLeft, Download, Heart, Minus, MoreHorizontal, Plus, Printer, Redo2, Trash2, Undo2, Wand2 } from 'lucide-react';
 import { SayButton, useAutoSay, useSay } from '@/components/arcade/read-aloud';
 import { tr, type L } from '@/lib/i18n-text';

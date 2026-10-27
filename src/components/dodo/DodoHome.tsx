@@ -2,7 +2,8 @@
 
 import { useMemo, useState, type ReactNode } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { AnimatePresence, motion, useScroll, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Link, useRouter } from '@/i18n/navigation';
 import { DODO_STORIES } from '@/data/dodo';
 import { VALUE_LABEL, type DodoStory, type DodoValue } from '@/data/dodo/types';

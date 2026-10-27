@@ -1,14 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  useReducedMotion,
-} from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, Play, Check, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';

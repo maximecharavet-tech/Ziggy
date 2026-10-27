@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
-import { motion, useMotionValue, useReducedMotion, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { SPRING, STAGGER, pointerFine } from '@/lib/motion';
 
 /**
