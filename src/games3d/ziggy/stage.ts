@@ -11,6 +11,15 @@ export interface StageOptions {
   mood: ZiggyMood;
   followPointer: boolean;
   reduceMotion: boolean;
+  /** Tests only: allow software WebGL (SwiftShader / llvmpipe). */
+  allowSoftware?: boolean;
+}
+
+/** Software WebGL (no graphics card) is far too slow for the plush: keep the picture. */
+function softwareRenderer(gl: WebGLRenderingContext | WebGL2RenderingContext) {
+  const ext = gl.getExtension('WEBGL_debug_renderer_info');
+  const name = String(ext ? gl.getParameter(ext.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+  return /swiftshader|llvmpipe|softpipe|software|basic render/i.test(name);
 }
 
 /** Vertical extent the camera keeps in view for each framing (model units). */
@@ -85,6 +94,9 @@ export class ZiggyStage {
   private slowFrames = 0;
   private dpr: number;
   private scarf: THREE.Group | null = null;
+  private frameTimes: number[] = [];
+  /** Called once if the device can't keep up: the page shows the picture instead. */
+  onTooSlow: (() => void) | null = null;
 
   constructor(
     canvas: HTMLCanvasElement,
@@ -92,7 +104,11 @@ export class ZiggyStage {
   ) {
     const low = weakDevice();
     this.renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true, powerPreference: 'high-performance', premultipliedAlpha: true });
-    if (!this.renderer.getContext()) throw new Error('no webgl');
+    const gl = this.renderer.getContext();
+    if (!gl || (!opts.allowSoftware && softwareRenderer(gl))) {
+      this.renderer.dispose();
+      throw new Error('no fast webgl');
+    }
     this.dpr = Math.min(window.devicePixelRatio || 1, low ? 1.5 : 2);
     this.renderer.setPixelRatio(this.dpr);
     this.renderer.setClearColor(0x000000, 0);
@@ -191,8 +207,25 @@ export class ZiggyStage {
     cancelAnimationFrame(this.raf);
   }
 
+  /** Shaders compiled off the main thread when the browser can: no freeze on first paint. */
+  async prepare() {
+    await this.renderer.compileAsync(this.scene, this.camera);
+  }
+
   /** Lower the resolution a little when frames are slow (cheap phones). */
   private adapt(dt: number) {
+    // Watchdog on the first frames: hopelessly slow → give up and keep the picture.
+    if (this.frameTimes.length < 24) {
+      this.frameTimes.push(dt);
+      if (this.frameTimes.length === 24) {
+        const sorted = this.frameTimes.slice(4).sort((a, b) => a - b);
+        if (sorted[Math.floor(sorted.length / 2)] > 0.09) {
+          this.stop();
+          this.onTooSlow?.();
+          return;
+        }
+      }
+    }
     this.slowFrames = dt > 1 / 32 ? this.slowFrames + 1 : Math.max(0, this.slowFrames - 1);
     if (this.slowFrames > 45 && this.dpr > 0.75) {
       this.dpr = Math.max(0.75, this.dpr - 0.25);

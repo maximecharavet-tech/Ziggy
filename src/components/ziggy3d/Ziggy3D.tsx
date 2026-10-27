@@ -96,10 +96,22 @@ export function Ziggy3D({
         const mod = await import('@/games3d/ziggy/stage');
         if (!alive) return;
         const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
-        stage = new mod.ZiggyStage(canvas!, { ...initial.current, reduceMotion: reduce });
-        stageRef.current = stage;
+        const s = new mod.ZiggyStage(canvas!, { ...initial.current, reduceMotion: reduce });
+        s.onTooSlow = () => {
+          s.dispose();
+          if (stageRef.current === s) stageRef.current = null;
+          stage = null;
+          if (alive) setFailed(true);
+        };
+        await s.prepare().catch(() => {});
+        if (!alive) {
+          s.dispose();
+          return;
+        }
+        stage = s;
+        stageRef.current = s;
         resize();
-        if (visible && !document.hidden) stage.start();
+        if (visible && !document.hidden) s.start();
         setReady(true);
       } catch {
         if (alive) setFailed(true);
