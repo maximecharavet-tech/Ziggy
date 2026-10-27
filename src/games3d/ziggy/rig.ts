@@ -259,9 +259,10 @@ export class ZiggyRig {
     const [L, R] = P.arms;
     switch (kind) {
       case 'wave': {
-        R.up = lerp(R.up, 2.35, w);
-        R.bend = lerp(R.bend, 0.5, w);
-        R.fwd = lerp(R.fwd, 0.25, w);
+        // Hand up beside the head (not behind it), forearm upright, waving from the wrist.
+        R.up = lerp(R.up, 1.9, w);
+        R.bend = lerp(R.bend, 0.95, w);
+        R.fwd = lerp(R.fwd, 0.3, w);
         R.wrist = Math.sin(p * Math.PI * 7) * 0.55 * w * E;
         R.elbow = Math.sin(p * Math.PI * 7 + 0.6) * 0.25 * w * E;
         P.roll = lerp(P.roll, -0.1, w);
