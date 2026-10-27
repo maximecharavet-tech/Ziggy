@@ -13,6 +13,7 @@ import { PageArt } from './PageArt';
 import { printBlank } from './PrintDialog';
 import { TiltCard } from './TiltCard';
 import { alpha, fx, toy } from '@/components/create/fx/toy';
+import { Glyph } from '@/components/create/fx/ZiggyMark';
 
 const THEMES_LABEL = { fr: 'Thèmes', en: 'Themes' };
 
@@ -76,7 +77,7 @@ export function PagePicker({ locale, onPick }: { locale: string; onPick: (page: 
                     </span>
                     <span className="flex items-center gap-2 px-3 pb-3 pt-1">
                       <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full text-xl" style={{ backgroundColor: `${th.color}1f` }} aria-hidden="true">
-                        {p.emoji}
+                        <Glyph e={p.emoji} size={34} />
                       </span>
                       <span className="min-w-0 flex-1">
                         <span className="line-clamp-2 font-display text-[0.95rem] font-semibold leading-tight text-text-body sm:text-base">{title}</span>

@@ -19,6 +19,7 @@ import { Burst, Twinkle } from '@/components/create/fx/Burst';
 import { FlipBook } from '@/components/create/fx/FlipBook';
 import { StudioFrame } from '@/components/create/fx/StudioFrame';
 import { alpha, fx, loop, shade, toy } from '@/components/create/fx/toy';
+import { Glyph, ZIGGY_EMOJI, ZiggyMark } from '@/components/create/fx/ZiggyMark';
 
 type Key = 'hero' | 'place' | 'companion' | 'object' | 'goal';
 type Choice = { id: string; emoji: string; label: L };
@@ -152,7 +153,7 @@ export function StoryBuilder() {
                   >
                     <AnimatePresence mode="popLayout" initial={false}>
                       <motion.span key={chosen?.id ?? 'n'} initial={{ rotateY: 90, scale: 0.5 }} animate={{ rotateY: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 380, damping: 18 }} className="text-2xl leading-none sm:text-[1.8rem]" aria-hidden="true">
-                        {chosen ? chosen.emoji : i + 1}
+                        {chosen ? <Glyph e={chosen.emoji} size={30} /> : i + 1}
                       </motion.span>
                     </AnimatePresence>
                   </button>
@@ -215,7 +216,7 @@ export function StoryBuilder() {
                                   className="text-[1.7rem] leading-none sm:text-4xl"
                                   aria-hidden="true"
                                 >
-                                  {chosen.emoji}
+                                  <Glyph e={chosen.emoji} size={34} />
                                 </motion.span>
                               ) : (
                                 <span key="empty" className="font-display text-sm font-bold opacity-60" style={{ color: shade(s.color, -0.3) }} aria-hidden="true">
@@ -330,7 +331,7 @@ function ChoiceCard({ o, i, color, on, locale, onPick }: { o: Choice; i: number;
       >
         <span className="relative grid h-24 w-full place-items-center rounded-[1.3rem] sm:h-28" style={{ background: on ? 'radial-gradient(70% 70% at 50% 40%, rgba(255,255,255,0.55), rgba(255,255,255,0.08))' : `radial-gradient(70% 70% at 50% 35%, #ffffff, ${alpha(color, 0.22)})` }}>
           <span aria-hidden="true" className={`block text-[3.4rem] leading-none drop-shadow-[0_8px_6px_rgba(40,20,80,0.25)] sm:text-[4rem] ${on ? fx.bob : fx.float}`} style={loop({ dur: on ? 1.8 : 3.6 + (i % 3) * 0.4, delay: i * 0.3, amp: on ? -8 : -5, tilt: 6 })}>
-            {o.emoji}
+            <Glyph e={o.emoji} size={66} />
           </span>
           {on ? (
             <motion.span initial={{ scale: 0, rotate: -40 }} animate={{ scale: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 420, damping: 14 }} className="absolute end-1.5 top-1.5 grid h-8 w-8 place-items-center rounded-full bg-white text-sm font-black shadow-[0_3px_0_rgba(0,0,0,0.15)]" style={{ color }} aria-hidden="true">
@@ -417,12 +418,12 @@ function StoryBook({ story, source, saved, cast, locale, onClose }: { story: Sto
         ))}
         <div className="absolute inset-0 grid place-items-center">
           <span aria-hidden="true" className={`block leading-none drop-shadow-[0_14px_12px_rgba(60,30,90,0.25)] ${compact ? 'text-[5.5rem]' : 'text-[8rem]'} ${fx.float}`} style={loop({ dur: 4, amp: -12 })}>
-            {pg.emoji ?? '✨'}
+            {pg.emoji === ZIGGY_EMOJI ? <ZiggyMark size={compact ? 96 : 140} full /> : (pg.emoji ?? '✨')}
           </span>
         </div>
         {cast[0] ? (
           <span aria-hidden="true" className={`absolute bottom-[8%] left-[10%] block leading-none drop-shadow-[0_8px_6px_rgba(60,30,90,0.25)] ${compact ? 'text-4xl' : 'text-5xl'} ${fx.bob}`} style={loop({ dur: 2.4, tilt: 6 })}>
-            {cast[0]}
+            {cast[0] === ZIGGY_EMOJI ? <ZiggyMark size={compact ? 40 : 52} full /> : cast[0]}
           </span>
         ) : null}
         {cast[1] ? (

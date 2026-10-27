@@ -11,6 +11,7 @@ import { Ziggy3D, type ZiggyCue } from '@/components/ziggy3d/Ziggy3D';
 import { Burst } from '@/components/create/fx/Burst';
 import { StudioFrame } from '@/components/create/fx/StudioFrame';
 import { fx, shade, toy } from '@/components/create/fx/toy';
+import { Glyph } from '@/components/create/fx/ZiggyMark';
 import { getMemory, useWorldMemory } from '@/lib/world/store';
 import { readAloudOn } from '@/lib/world/memory';
 import { speakSequence } from '@/lib/voice';
@@ -362,7 +363,7 @@ export function SongMaker() {
               style={on ? toy(c, { ring: '#ffffff' }) : undefined}
             >
               <span aria-hidden="true" className={`text-[2rem] leading-none ${on ? fx.bob : ''}`}>
-                {SOUND_NAME[s].emoji}
+                <Glyph e={SOUND_NAME[s].emoji} size={34} />
               </span>
               {tr(SOUND_NAME[s], locale)}
             </button>

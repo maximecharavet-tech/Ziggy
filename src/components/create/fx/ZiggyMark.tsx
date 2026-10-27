@@ -8,8 +8,13 @@ export const ZIGGY_EMOJI = '🤖';
  * the whole plush (waving) for big ones.
  */
 export function ZiggyMark({ size, full = false, className = '' }: { size: number; full?: boolean; className?: string }) {
-  if (full) return <MascotCutout pose="wave" width={size} glow className={`inline-block ${className}`} />;
-  return <ZiggyAvatar size={size} ring={false} className={`!bg-transparent ${className}`} />;
+  if (full)
+    return (
+      <span className={`inline-block align-bottom ${className}`} style={{ width: size }}>
+        <MascotCutout pose="wave" width={size} glow />
+      </span>
+    );
+  return <ZiggyAvatar size={size} className={`align-middle ${className}`} />;
 }
 
 /** An emoji, or the real Ziggy when the emoji is the robot. */

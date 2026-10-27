@@ -23,6 +23,7 @@ import { Stage, type CommitKind, type StageApi } from './Stage';
 import { IconButton, ZiggyCheer } from './ui';
 import { Ziggy3D } from '@/components/ziggy3d/Ziggy3D';
 import { Burst } from '@/components/create/fx/Burst';
+import { Glyph } from '@/components/create/fx/ZiggyMark';
 
 const SIZES: { id: 'S' | 'M' | 'L'; px: number; label: L; dot: number }[] = [
   { id: 'S', px: 8, label: T.small, dot: 10 },
@@ -352,7 +353,9 @@ export function Studio({ page, locale, artId, initial, createdAt, onExit }: { pa
         </IconButton>
         <div className="flex min-w-0 flex-1 items-center gap-2">
           <h1 className="hidden min-w-0 truncate font-display text-xl font-bold text-[#3B2A7A] dark:text-white sm:block lg:text-2xl">
-            <span aria-hidden="true">{page.emoji} </span>
+            <span aria-hidden="true">
+              <Glyph e={page.emoji} size={30} />{' '}
+            </span>
             {title}
           </h1>
           <h1 className="sr-only sm:hidden">{title}</h1>
