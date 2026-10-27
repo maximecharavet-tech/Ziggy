@@ -7,7 +7,7 @@
  * - API calls and anything cross-origin: untouched (no data is cached).
  * Bump VERSION to clear old caches.
  */
-const VERSION = 'ziggy-v1';
+const VERSION = 'ziggy-v2';
 const STATIC = `${VERSION}-static`;
 const PAGES = `${VERSION}-pages`;
 const OFFLINE_URL = '/offline.html';

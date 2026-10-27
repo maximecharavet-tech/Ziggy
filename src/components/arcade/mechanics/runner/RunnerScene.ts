@@ -840,21 +840,43 @@ function makeTheme(o: RunnerOptions) {
   };
 }
 
-/** Build the Phaser game inside `parent`. */
+/**
+ * Build the Phaser game inside `parent`. The canvas follows the parent's
+ * layout size (ResizeObserver), not its on-screen box: the board around it
+ * springs in with 3D transforms, which must not resize the game every frame.
+ */
 export function createRunnerGame(parent: HTMLElement, cb: RunnerCallbacks, opts: RunnerOptions) {
   const scene = new RunnerScene(cb, opts);
+  const size = () => ({ w: Math.max(280, Math.round(parent.clientWidth)), h: Math.max(320, Math.round(parent.clientHeight)) });
+  const first = size();
   const game = new Phaser.Game({
     type: Phaser.AUTO,
     parent,
-    width: Math.max(280, parent.clientWidth),
-    height: Math.max(320, parent.clientHeight),
+    width: first.w,
+    height: first.h,
     backgroundColor: opts.night ? '#211A55' : '#A8E392',
     banner: false,
     audio: { noAudio: true },
-    scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.NO_CENTER },
+    scale: { mode: Phaser.Scale.NONE, autoCenter: Phaser.Scale.NO_CENTER },
     render: { antialias: true, roundPixels: false },
     scene,
   });
-  return { game, scene };
+  let last = first;
+  const ro = new ResizeObserver(() => {
+    const next = size();
+    if (next.w === last.w && next.h === last.h) return;
+    last = next;
+    game.scale.resize(next.w, next.h);
+  });
+  ro.observe(parent);
+  return {
+    game: {
+      destroy(removeCanvas: boolean) {
+        ro.disconnect();
+        game.destroy(removeCanvas);
+      },
+    },
+    scene,
+  };
 }
 
