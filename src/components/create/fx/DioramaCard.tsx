@@ -80,7 +80,7 @@ export function DioramaCard({
           </DepthProvider>
           {children}
         </Link>
-        {corner ? <div className="absolute end-6 top-6 z-10 [transform:translateZ(30px)]">{corner}</div> : null}
+        {corner ? <div className="absolute bottom-[1.55rem] end-5 z-10 [transform:translateZ(30px)] sm:bottom-[1.8rem] sm:end-6">{corner}</div> : null}
       </motion.div>
     </motion.div>
   );

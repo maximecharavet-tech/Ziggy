@@ -166,7 +166,6 @@ export function SongMaker() {
   const rows = useMemo(() => [...MELODY.map((r, i) => ({ ...r, row: i, drum: false })), ...DRUMS.map((d, i) => ({ ...d, row: MELODY.length + i, drum: true }))], []);
   const hit = (row: number) => playing && step >= 0 && song.grid[row][step];
   const count = noteCount(song);
-  const cellMin = song.steps === 16 ? 30 : 31;
 
   return (
     <StudioFrame eyebrow={tr(T.eyebrow, locale)} emoji="🎶" title={tr(T.title, locale)} subtitle={tr(T.subtitle, locale)} color="#8B5CF6" locale={locale} props={['🎹', '🥁', '🎺', '🎸']}>
@@ -232,21 +231,26 @@ export function SongMaker() {
       </div>
 
       {/* ── The note board ── */}
-      <div className={`${m.board} relative mt-8 rounded-[2rem] p-2.5 sm:p-5`}>
+      <div className={`${m.board} relative -mx-3 mt-8 rounded-[1.6rem] p-2 sm:rounded-[2rem] sm:p-5 ${song.steps === 8 ? 'sm:mx-auto sm:w-fit' : 'sm:mx-0'}`}>
         <div className="overflow-x-auto overscroll-x-contain [scrollbar-width:thin]">
-          <div className="grid min-w-max gap-[3px] sm:gap-1.5" style={{ gridTemplateColumns: `auto repeat(${song.steps}, minmax(${cellMin}px, 1fr))` }} role="group" aria-label={tr(T.board, locale)}>
+          <div
+            className={`grid gap-[3px] sm:gap-1.5 ${song.steps === 16 ? 'w-full min-w-max' : 'w-full justify-center sm:w-[42rem]'}`}
+            style={{ gridTemplateColumns: song.steps === 16 ? `auto repeat(16, minmax(40px, 1fr))` : `auto repeat(8, minmax(0, 72px))` }}
+            role="group"
+            aria-label={tr(T.board, locale)}
+          >
             {rows.map((r) => {
               const edge = shade(r.color, -0.35);
               const gap = r.drum && r.row === MELODY.length ? 'mt-3 sm:mt-4' : '';
               return (
                 <div key={r.id} className="contents">
-                  <div className={`sticky start-0 z-[1] flex items-center rounded-e-2xl bg-[#f5f1ff] pe-1 dark:bg-[#1e1840] sm:pe-2 ${gap}`}>
+                  <div className={`sticky start-0 z-[1] flex items-center rounded-e-2xl bg-[#f5f1ff] pe-0.5 dark:bg-[#1e1840] sm:pe-2 ${gap}`}>
                     <button
                       type="button"
                       onClick={() => void hear(r.row)}
                       aria-label={tr(r.name, locale)}
                       title={tr(r.name, locale)}
-                      className={`${m.badge} grid h-10 w-10 place-items-center rounded-2xl text-[1.45rem] sm:h-12 sm:w-12 sm:text-[1.7rem]`}
+                      className={`${m.badge} grid h-8 w-8 place-items-center rounded-xl text-[1.15rem] sm:h-12 sm:w-12 sm:rounded-2xl sm:text-[1.7rem]`}
                       style={{ '--c': r.color, '--edge': edge } as CSSProperties}
                     >
                       <span aria-hidden="true">{r.emoji}</span>
@@ -263,7 +267,7 @@ export function SongMaker() {
                         onClick={() => void tap(r.row, c)}
                         data-now={now ? '' : undefined}
                         data-alt={Math.floor(c / 4) % 2 ? '' : undefined}
-                        className={`${m.cell} aspect-square ${gap}`}
+                        className={`${m.cell} aspect-square w-full ${gap}`}
                         style={{ '--c': r.color, '--edge': edge } as CSSProperties}
                       >
                         <AnimatePresence initial={false}>

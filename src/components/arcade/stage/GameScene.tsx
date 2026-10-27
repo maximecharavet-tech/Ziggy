@@ -97,6 +97,10 @@ export function GameScene({
         }}
       />
       {p.night ? (
+        // Moonlit haze at the very top: the site's light navbar stays readable over a night sky.
+        <div className="absolute inset-x-0 top-0 h-36 dark:hidden" style={{ background: 'linear-gradient(180deg, rgba(226,220,255,0.92) 0, rgba(196,186,255,0.45) 72px, rgba(170,160,255,0) 144px)' }} />
+      ) : null}
+      {p.night ? (
         STARS.map((s, i) => (
           <span
             key={i}
@@ -138,7 +142,7 @@ export function GameScene({
 
       {/* Floating motifs */}
       {motifs.length ? (
-        <motion.div className="absolute inset-0" style={{ x: front }}>
+        <motion.div className={`absolute inset-0 ${startOnly ? 'hidden lg:block' : ''}`} style={{ x: front }}>
           {MOTIF_SPOTS.map((m, i) => {
             if (startOnly && m.x > 50) return null;
             const e = motifs[i % motifs.length];

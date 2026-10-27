@@ -67,7 +67,7 @@ export function WorldView({ worldId }: { worldId: string }) {
         </Link>
 
         {/* Hero: the world as a floating toy island, Ziggy presenting it */}
-        <header className="mt-4 grid items-center gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
+        <header className="relative mt-4 grid items-center gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">
           <div className="flex flex-col items-center text-center lg:items-start lg:text-start">
             <motion.div initial={{ scale: 0.4, opacity: 0, y: 30 }} animate={{ scale: 1, opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 200, damping: 13 }}>
               <GameToken emoji={world.icon} color={c.accent} size={118} />
@@ -95,7 +95,8 @@ export function WorldView({ worldId }: { worldId: string }) {
               </SpeechBubble>
             </motion.div>
           </div>
-          <div className="relative mx-auto hidden h-[300px] w-[230px] lg:block">
+          {/* Phones: Ziggy stands beside the world's token; wide screens: beside the whole header. */}
+          <div className="absolute -top-3 end-0 h-[150px] w-[112px] sm:end-6 lg:relative lg:top-auto lg:end-auto lg:mx-auto lg:h-[300px] lg:w-[230px]">
             <ZiggyHost className="h-full w-full" idle="wave" reaction={HELLO} pose="wave" color={c.accent} label={locale === 'fr' ? 'Ziggy te présente ce monde' : 'Ziggy shows you this world'} />
           </div>
         </header>
@@ -116,9 +117,8 @@ export function WorldView({ worldId }: { worldId: string }) {
                   <motion.section
                     key={ch.number}
                     initial={{ opacity: 0, y: 30 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true, margin: '-40px' }}
-                    transition={{ type: 'spring', stiffness: 160, damping: 20, delay: 0.05 * ci }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ type: 'spring', stiffness: 160, damping: 20, delay: 0.15 + 0.1 * ci }}
                     className={`relative rounded-[2.2rem] p-2 ${ch.status === 'locked' ? 'opacity-70 saturate-[0.6]' : ''}`}
                     style={{
                       background: `linear-gradient(170deg, ${lighten(c.accent, 0.55)}, ${lighten(c.accent, 0.2)})`,
@@ -242,8 +242,7 @@ export function WorldView({ worldId }: { worldId: string }) {
                           <motion.li
                             key={f.id}
                             initial={{ scale: 0.5, opacity: 0 }}
-                            whileInView={{ scale: 1, opacity: 1 }}
-                            viewport={{ once: true }}
+                            animate={{ scale: 1, opacity: 1 }}
                             transition={{ type: 'spring', stiffness: 300, damping: 15, delay: i * 0.05 }}
                             className="flex items-center gap-2 rounded-2xl border-2 bg-bg-card px-3 py-1.5 text-sm font-semibold text-text-body shadow-[0_3px_0_rgba(40,30,80,0.07)]"
                             style={{ borderColor: lighten(c.accent, 0.6) }}
@@ -281,9 +280,8 @@ function QuestCard({ accent, next, index, children }: { accent: string; next: bo
   return (
     <motion.li
       initial={{ opacity: 0, y: 16, rotate: index % 2 ? 1.5 : -1.5 }}
-      whileInView={{ opacity: 1, y: 0, rotate: 0 }}
-      viewport={{ once: true }}
-      transition={{ type: 'spring', stiffness: 220, damping: 18, delay: 0.08 * index }}
+      animate={{ opacity: 1, y: 0, rotate: 0 }}
+      transition={{ type: 'spring', stiffness: 220, damping: 18, delay: 0.3 + 0.08 * index }}
       className="relative flex flex-col rounded-[1.5rem] border-[3px] bg-bg-card p-4"
       style={
         {

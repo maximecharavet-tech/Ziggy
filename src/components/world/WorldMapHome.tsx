@@ -135,7 +135,7 @@ function ContinueCard({ plan, memory, locale }: { plan: AdventurePlan; memory: W
         </div>
         <div className="relative grid items-center gap-6 md:grid-cols-[1fr_auto]">
           <div>
-            <p className="inline-flex flex-wrap items-center gap-2 rounded-full bg-white/75 px-3 py-1 text-sm font-bold uppercase tracking-wider">
+            <p className="inline-flex flex-wrap items-center gap-2 rounded-2xl bg-white/75 px-3 py-1 text-sm font-bold uppercase tracking-wider">
               {world.icon} {tr(world.name, locale)} · {wt('chapter', locale)} {plan.chapter}
               {plan.isDaily ? <span className="rounded-full bg-yellow/40 px-2 py-0.5 normal-case tracking-normal">☀️ {wt('dailyBonus', locale)}</span> : null}
             </p>
@@ -277,9 +277,18 @@ function Terrain() {
         [12, 108],
       ].map(([x, y], k) => (
         <g key={k}>
-          <ellipse cx={x} cy={y + 2.6} rx="3.2" ry="1.2" fill="rgba(60,90,40,0.18)" />
-          <circle cx={x} cy={y} r="3" fill="#8FD07E" />
-          <circle cx={x - 0.9} cy={y - 0.9} r="1.1" fill="rgba(255,255,255,0.45)" />
+          {[
+            [0, 0, 1.7],
+            [2.6, 0.8, 1.3],
+            [-2.2, 1, 1.2],
+          ].map(([dx, dy, r], j) => (
+            <g key={j}>
+              <ellipse cx={x + dx} cy={y + dy + r * 0.9} rx={r * 1.1} ry={r * 0.4} fill="rgba(60,90,40,0.2)" />
+              <rect x={x + dx - 0.25} y={y + dy} width="0.5" height={r * 0.9} fill="#9A6B44" />
+              <circle cx={x + dx} cy={y + dy - r * 0.2} r={r} fill={j === 1 ? '#7CC66B' : '#6DBB5E'} />
+              <circle cx={x + dx - r * 0.35} cy={y + dy - r * 0.55} r={r * 0.35} fill="rgba(255,255,255,0.4)" />
+            </g>
+          ))}
         </g>
       ))}
       {[

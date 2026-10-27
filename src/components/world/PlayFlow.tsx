@@ -355,7 +355,7 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
                 <Sunburst color={color} className="left-1/2 top-[42%] w-[170%] -translate-x-1/2 -translate-y-1/2 lg:w-[150%]" />
                 <ZiggyHost className="absolute bottom-0 left-1/2 h-full w-[72%] -translate-x-1/2" idle="dance" reaction={ziggy} pose="heart" color={color} label={locale === 'fr' ? 'Ziggy est fier de toi' : 'Ziggy is proud of you'} />
               </div>
-              <div className="relative flex flex-col items-center text-center">
+              <div className="relative mt-3 flex flex-col items-center text-center lg:mt-0">
                 <div className="flex items-center justify-center gap-3">
                   <Title3D text={quest ? wt('result', locale) : wt('resultPractice', locale)} color={color} className="text-3xl sm:text-5xl" />
                   <SayButton texts={resultLines} locale={locale} />

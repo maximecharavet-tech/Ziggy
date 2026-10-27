@@ -502,10 +502,10 @@ export function AvatarStudio() {
                   <div className="grid aspect-square place-items-center text-5xl">🧑‍🎨</div>
                 )}
                 <div className="flex gap-2 p-3">
-                  <button type="button" onClick={() => choose(a.id)} className={`${fx.toy} min-h-11 flex-1 rounded-full px-3 font-display text-xs font-bold`} style={toy(ACCENT, { depth: 4 })}>
+                  <button type="button" onClick={() => choose(a.id)} className={`${fx.toy} min-h-12 flex-1 rounded-full px-3 font-display text-xs font-bold`} style={toy(ACCENT, { depth: 4 })}>
                     {tr(selected === a.id ? T.inUse : T.use, locale)}
                   </button>
-                  <button type="button" onClick={() => void remove(a.id)} className={`${fx.toy} ${fx.light} min-h-11 rounded-full px-3 font-display text-xs font-bold`} style={{ '--depth': '4px' } as CSSProperties}>
+                  <button type="button" onClick={() => void remove(a.id)} className={`${fx.toy} ${fx.light} min-h-12 rounded-full px-3 font-display text-xs font-bold`} style={{ '--depth': '4px' } as CSSProperties}>
                     {tr(T.del, locale)}
                   </button>
                 </div>

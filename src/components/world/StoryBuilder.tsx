@@ -239,7 +239,7 @@ export function StoryBuilder() {
                     {AGES.map((a) => {
                       const on = choices.ageGroup === a;
                       return (
-                        <button key={a} type="button" role="radio" aria-checked={on} onClick={() => setChoices((c) => ({ ...c, ageGroup: a }))} className={`${fx.toy} ${on ? fx.on : fx.light} min-h-12 min-w-14 rounded-full px-3 font-display text-base font-bold`} style={on ? toy('#3F8FE0', { depth: 5, ring: '#fff' }) : ({ '--depth': '5px' } as CSSProperties)}>
+                        <button key={a} type="button" role="radio" aria-checked={on} onClick={() => setChoices((c) => ({ ...c, ageGroup: a }))} className={`${fx.toy} ${on ? fx.on : fx.light} min-h-14 min-w-14 rounded-full px-3 font-display text-base font-bold`} style={on ? toy('#3F8FE0', { depth: 5, ring: '#fff' }) : ({ '--depth': '5px' } as CSSProperties)}>
                           {a}
                         </button>
                       );
@@ -295,10 +295,10 @@ export function StoryBuilder() {
                     <span className="line-clamp-2 font-display text-lg font-bold leading-tight text-text-body">{s.story.title}</span>
                     <span className="mt-0.5 text-xs text-text-muted">{new Date(s.createdAt).toLocaleDateString(locale)}</span>
                     <span className="mt-auto flex gap-2 pt-2">
-                      <button type="button" onClick={() => setStory({ story: s.story, source: s.source, saved: true, cast: [] })} className={`${fx.toy} min-h-11 rounded-full px-4 font-display text-sm font-bold`} style={toy('#3F8FE0', { depth: 4 })}>
+                      <button type="button" onClick={() => setStory({ story: s.story, source: s.source, saved: true, cast: [] })} className={`${fx.toy} min-h-12 rounded-full px-4 font-display text-sm font-bold`} style={toy('#3F8FE0', { depth: 4 })}>
                         {tr(T.open, locale)}
                       </button>
-                      <button type="button" onClick={() => void remove(s.id)} className={`${fx.toy} ${fx.light} min-h-11 rounded-full px-4 font-display text-sm font-bold`} style={{ '--depth': '4px' } as CSSProperties}>
+                      <button type="button" onClick={() => void remove(s.id)} className={`${fx.toy} ${fx.light} min-h-12 rounded-full px-4 font-display text-sm font-bold`} style={{ '--depth': '4px' } as CSSProperties}>
                         {tr(T.del, locale)}
                       </button>
                     </span>
