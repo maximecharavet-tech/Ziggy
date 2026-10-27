@@ -64,7 +64,7 @@ export function scenePalette(accent: string, opts: { night?: boolean; from?: str
   const from = opts.from ?? lighten(accent, 0.78);
   const to = opts.to ?? lighten(accent, 0.55);
   return {
-    skyTop: mix(mix(to, '#8FD3FF', 0.35), accent, 0.12),
+    skyTop: mix(mix(to, '#8FD3FF', 0.45), accent, 0.08),
     skyBottom: mix(from, '#FFF8EC', 0.45),
     sun: '#FFE9A8',
     far: mix(lighten(accent, 0.66), '#DFF3FF', 0.25),

@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, type CSSProperties, type ReactNode } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Link } from '@/i18n/navigation';
 import { DepthProvider, useAwake, usePointerDepth, useTilt } from './Parallax';
 import { fx, shade } from './toy';
@@ -34,7 +34,6 @@ export function DioramaCard({
   className?: string;
   index?: number;
 }) {
-  const reduce = useReducedMotion();
   const box = useRef<HTMLDivElement>(null);
   const awake = useAwake(box);
   const p = usePointerDepth<HTMLDivElement>();
@@ -46,23 +45,15 @@ export function DioramaCard({
       ref={box}
       data-still={awake ? undefined : ''}
       className={`relative h-full [perspective:1100px] ${className}`}
-      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 46, rotateX: -28, scale: 0.94 }}
-      whileInView={reduce ? { opacity: 1 } : { opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+      initial={{ opacity: 0, y: 46, rotateX: -28, scale: 0.94 }}
+      whileInView={{ opacity: 1, y: 0, rotateX: 0, scale: 1 }}
       viewport={{ once: true, margin: '0px 0px -40px 0px' }}
       transition={{ type: 'spring', stiffness: 110, damping: 15, delay: 0.08 + (index % 3) * 0.09 }}
     >
       <motion.div
         ref={p.ref}
         {...p.handlers}
-        style={
-          reduce
-            ? undefined
-            : ({
-                rotateX: tilt.rotateX,
-                rotateY: tilt.rotateY,
-                transformStyle: 'preserve-3d',
-              } as unknown as CSSProperties)
-        }
+        style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY, transformStyle: 'preserve-3d' }}
         className="group/card relative h-full rounded-[2.2rem]"
       >
         <Link

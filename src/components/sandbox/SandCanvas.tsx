@@ -107,13 +107,6 @@ export function SandCanvas({
     off.width = w;
     off.height = h;
     const offCtx = off.getContext('2d')!;
-    // Soft shadows cast by solid things, drawn a little lower behind them.
-    const shade = new ImageData(w, h);
-    const shade32 = new Uint32Array(shade.data.buffer);
-    const shadeCanvas = document.createElement('canvas');
-    shadeCanvas.width = w;
-    shadeCanvas.height = h;
-    const shadeCtx = shadeCanvas.getContext('2d')!;
     const { gw, gh } = glowSize(world);
     const glow = new ImageData(gw, gh);
     const glow32 = new Uint32Array(glow.data.buffer);
@@ -190,10 +183,7 @@ export function SandCanvas({
         ctx.fillRect(0, 0, W, H);
       }
       renderPixels(world, pix32, now, !live.current.reduceMotion);
-      enrich(world, pix32, shade32, now, !live.current.reduceMotion);
-      shadeCtx.putImageData(shade, 0, 0);
-      ctx.imageSmoothingEnabled = true;
-      ctx.drawImage(shadeCanvas, k * 0.55, k * 0.9, W, H);
+      enrich(world, pix32, now, !live.current.reduceMotion);
       offCtx.putImageData(pixels, 0, 0);
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(off, 0, 0, W, H);

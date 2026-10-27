@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { Fragment, memo, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import { linesFromTops, prompterOffset, sentenceOf, wordLook, type HighlightMode, type WordLook } from '@/lib/dodo/player';
 import { tokenize } from '@/lib/dodo/voice';
 import css from './dodo.module.css';
@@ -8,6 +8,7 @@ import css from './dodo.module.css';
 /** French typography: « ? ! : ; » stay on the line of the word they follow (and « on the one it opens). */
 const isMark = (tok: string) => !/[\p{L}\p{N}]/u.test(tok) && !/^[«“(]+$/u.test(tok);
 const isOpening = (tok: string) => /^[«“]+$/u.test(tok);
+const NBSP = String.fromCharCode(0xa0);
 
 type Layout = { lineOf: number[]; tops: number[]; lineH: number; contentH: number; viewH: number };
 
@@ -72,17 +73,28 @@ export function Prompter({
   }
 
   const looks: WordLook[] = tokens.map((_, i) => wordLook(i, current, of, mode, valid?.lineOf));
-  const render = (from: number, to: number) =>
-    tokens.slice(from, to).map((tok, k) => {
-      const i = from + k;
-      const glue = k > 0 && (isMark(tok) || isOpening(tokens[i - 1])) ? ' ' : k > 0 ? ' ' : null;
-      return (
-        <span key={i}>
-          {glue}
-          <Word i={i} text={tok} look={looks[i]} moral={variant === 'outro' && i < moralCount} />
+  // Words that must stay on one line (« On … / secrets ? / … »): grouped, never split.
+  const render = (from: number, to: number) => {
+    const groups: number[][] = [];
+    for (let i = from; i < to; i++) {
+      if (groups.length && (isMark(tokens[i]) || isOpening(tokens[i - 1]))) groups[groups.length - 1].push(i);
+      else groups.push([i]);
+    }
+    // The space between groups stays outside them: that is where lines may break.
+    return groups.map((g, k) => (
+      <Fragment key={g[0]}>
+        {k > 0 ? ' ' : null}
+        <span className={g.length > 1 ? 'whitespace-nowrap' : undefined}>
+          {g.map((i, j) => (
+            <Fragment key={i}>
+              {j > 0 ? NBSP : null}
+              <Word i={i} text={tokens[i]} look={looks[i]} moral={variant === 'outro' && i < moralCount} />
+            </Fragment>
+          ))}
         </span>
-      );
-    });
+      </Fragment>
+    ));
+  };
 
   return (
     <div ref={viewRef} className={`${css.viewport} ${mode === 'line' ? css.line : ''} ${className}`} role="region" aria-label={label}>

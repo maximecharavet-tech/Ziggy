@@ -179,7 +179,7 @@
 }
 .later { color: rgba(226, 230, 255, 0.7); }
 .next { color: #fbfaff; }
-.past { color: rgba(214, 218, 248, 0.5); transition-duration: 0.6s; }
+.past { color: rgba(214, 218, 248, 0.5); transition-duration: 0.3s; }
 .now {
   transition: color 0.14s ease-out, transform 0.22s ease-out, text-shadow 0.22s ease-out, background-color 0.22s ease-out;
   color: #ffe1a1;
@@ -310,9 +310,9 @@
   .panel .viewport { height: calc(var(--fs) * 1.6 * 3 + var(--fs) * 1.7); }
   .dock { bottom: max(0.9rem, env(safe-area-inset-bottom)); }
   .coverCard {
-    left: max(10.5rem, calc(50% - 22rem));
-    right: max(1rem, calc(50% - 22rem));
-    bottom: 1.25rem;
+    left: max(10.5rem, calc(50% - 20rem));
+    right: max(1rem, calc(50% - 20rem));
+    bottom: 1.5rem;
     max-height: calc(100% - 5.5rem);
     padding: 1.5rem 1.75rem;
     border-radius: 2rem;
@@ -332,5 +332,5 @@
   }
   .panel .viewport { height: calc(var(--fs) * 1.6 * 2.2 + var(--fs) * 1.7); }
   .dock { bottom: 0.4rem; }
-  .coverCard { left: max(7.5rem, calc(50% - 22rem)); bottom: 0.75rem; max-height: calc(100% - 4.25rem); padding: 1rem 1.25rem; }
+  .coverCard { left: max(7.5rem, calc(50% - 20rem)); bottom: 0.75rem; max-height: calc(100% - 4.25rem); padding: 1rem 1.25rem; }
 }

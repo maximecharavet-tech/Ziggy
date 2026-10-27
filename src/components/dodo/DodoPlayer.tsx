@@ -47,6 +47,8 @@ const T = {
   deviceVoice: { fr: 'Voix de l’appareil', en: 'Device voice' },
   sounds: { fr: 'Sons du sommeil', en: 'Sleep sounds' },
   timer: { fr: 'Après l’histoire', en: 'After the story' },
+  timerOffShort: { fr: 's’arrêtent avec l’histoire', en: 'stop with the story' },
+  change: { fr: 'Changer', en: 'Change' },
   pause: { fr: 'Pause', en: 'Pause' },
   play: { fr: 'Lecture', en: 'Play' },
   prev: { fr: 'Scène précédente', en: 'Previous scene' },
@@ -173,7 +175,12 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
     poke();
     void (navigator as Navigator & { wakeLock?: { request: (t: 'screen') => Promise<WakeLock> } }).wakeLock
       ?.request('screen')
-      .then((w) => (wake.current = w))
+      .then((w) => {
+        wake.current = w;
+        (w as WakeLock & { addEventListener?: (t: string, cb: () => void) => void }).addEventListener?.('release', () => {
+          if (wake.current === w) wake.current = null;
+        });
+      })
       .catch(() => undefined);
   };
 
@@ -208,8 +215,14 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   }, [snap.status]);
 
   // Keyboard: space = play/pause, arrows = scenes, Escape closes the settings.
+  const onKey = useRef<(e: KeyboardEvent) => void>(() => undefined);
   useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
+    const listen = (e: KeyboardEvent) => onKey.current(e);
+    window.addEventListener('keydown', listen);
+    return () => window.removeEventListener('keydown', listen);
+  }, []);
+  useEffect(() => {
+    onKey.current = (e: KeyboardEvent) => {
       if (e.altKey || e.ctrlKey || e.metaKey) return;
       const el = e.target as HTMLElement | null;
       if (el?.closest('input, select, textarea, [contenteditable="true"]')) return;
@@ -230,9 +243,26 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
         poke();
       }
     };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
   });
+
+  // The screen may sleep again when the page was hidden: ask once more when it comes back.
+  useEffect(() => {
+    if (phase !== 'story') return;
+    const again = () => {
+      if (document.visibilityState !== 'visible' || wake.current) return;
+      void (navigator as Navigator & { wakeLock?: { request: (t: 'screen') => Promise<WakeLock> } }).wakeLock
+        ?.request('screen')
+        .then((w) => {
+          wake.current = w;
+          (w as WakeLock & { addEventListener?: (t: string, cb: () => void) => void }).addEventListener?.('release', () => {
+            if (wake.current === w) wake.current = null;
+          });
+        })
+        .catch(() => undefined);
+    };
+    document.addEventListener('visibilitychange', again);
+    return () => document.removeEventListener('visibilitychange', again);
+  }, [phase]);
 
   const progress = count > 1 ? snap.seg / (count - 1) : 0;
   // The picture dims slowly as the story goes on; the end screen dims further after a while.
@@ -354,7 +384,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
               {timingReady ? <Pill>{recorded ? `🎙️ ${tr(T.told, locale)}` : `📖 ${tr(T.quiet, locale)}`}</Pill> : null}
             </div>
             <div className="mt-3 flex items-start gap-3">
-              <h1 className="font-display text-[clamp(1.75rem,1.2rem+2.4vw,3rem)] font-bold leading-tight text-[#fff8ea] [text-wrap:balance]">{tr(story.title, locale)}</h1>
+              <h1 className="font-display text-[clamp(1.75rem,1.2rem+2.4vw,3rem)] font-bold leading-tight text-[#fff8ea] [text-wrap:balance] [@media(orientation:landscape)_and_(max-height:520px)]:text-2xl">{tr(story.title, locale)}</h1>
               <DodoSay texts={[tr(story.title, locale), tr(story.teaser, locale)]} clip={titleClip} locale={raw} size="sm" className="mt-1" />
             </div>
             <p className="mt-2 max-w-xl text-base text-white/75 sm:text-lg">{tr(story.teaser, locale)}</p>
@@ -389,16 +419,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
               </div>
             ) : null}
 
-            <div className="mt-5 grid gap-4">
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-white/55">{tr(T.sounds, locale)}</p>
-                <SoundChips locale={locale} value={settings.sound} onChange={(sound) => updateDodo({ sound })} />
-              </div>
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-white/55">⏱ {tr(T.timer, locale)}</p>
-                <TimerChips locale={locale} value={settings.timer} onChange={(timer) => updateDodo({ timer })} />
-              </div>
-            </div>
+            <SleepSetup locale={locale} sound={settings.sound} timer={settings.timer} />
           </motion.section>
         ) : null}
       </AnimatePresence>
@@ -570,6 +591,55 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
               setVolume(v);
             }}
           />
+        ) : null}
+      </AnimatePresence>
+    </div>
+  );
+}
+
+/** Sleep sounds and timer, folded into one quiet line until a grown-up opens it. */
+function SleepSetup({ locale, sound, timer }: { locale: 'fr' | 'en'; sound: string; timer: number }) {
+  const [open, setOpen] = useState(false);
+  const s = SLEEP_SOUNDS.find((x) => x.id === sound);
+  return (
+    <div className="mt-4">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls="dodo-sleep-setup"
+        className="flex min-h-11 w-full items-center gap-2 rounded-2xl bg-white/[0.06] px-4 py-2 text-start text-sm font-semibold text-white/80 ring-1 ring-white/10 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200"
+      >
+        <span className="truncate">
+          {s ? `${s.emoji} ${tr(s.name, locale)}` : tr(T.sounds, locale)} · ⏱ {timer ? `+${timer} min` : tr(T.timerOffShort, locale)}
+        </span>
+        <span className="ms-auto text-xs text-white/50">{tr(T.change, locale)}</span>
+        <span aria-hidden="true" className={`text-white/60 transition-transform ${open ? 'rotate-180' : ''}`}>
+          ▾
+        </span>
+      </button>
+      <AnimatePresence initial={false}>
+        {open ? (
+          <motion.div
+            id="dodo-sleep-setup"
+            key="setup"
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.35, ease: 'easeOut' }}
+            className="overflow-hidden"
+          >
+            <div className="grid gap-4 pt-4">
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-white/55">{tr(T.sounds, locale)}</p>
+                <SoundChips locale={locale} value={sound} onChange={(id) => updateDodo({ sound: id })} />
+              </div>
+              <div>
+                <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-white/55">⏱ {tr(T.timer, locale)}</p>
+                <TimerChips locale={locale} value={timer} onChange={(t) => updateDodo({ timer: t })} />
+              </div>
+            </div>
+          </motion.div>
         ) : null}
       </AnimatePresence>
     </div>

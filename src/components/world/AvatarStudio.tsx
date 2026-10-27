@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { Link } from '@/i18n/navigation';
 import { WORLDS } from '@/data/worlds';
 import { AVATAR_STYLES, EYE_COLORS, HAIR_COLORS, HAIR_LENGTHS, HAIR_STYLES, OUTFITS, SKIN_TONES, type AvatarRequest, type VisualBlueprint } from '@/lib/hyper-engine/schemas';
@@ -160,7 +160,6 @@ function Tiles<V extends string>({ options, value, onChange, locale, art, cols =
 
 export function AvatarStudio() {
   const locale = useLocale();
-  const reduce = useReducedMotion();
   const [mode, setMode] = useState<'choices' | 'photo'>('choices');
   const [tab, setTab] = useState<Tab>('hair');
   const [b, setB] = useState<VisualBlueprint>(DEFAULT);
@@ -289,7 +288,7 @@ export function AvatarStudio() {
         {/* ── The preview: a little stage that tilts ── */}
         <aside className="sticky top-[4.6rem] z-10 lg:order-2 lg:top-28">
           <div className="[perspective:1000px]">
-            <motion.div ref={p.ref} {...p.handlers} style={reduce ? undefined : { rotateX: tilt.rotateX, rotateY: tilt.rotateY }} className="relative mx-auto max-w-sm">
+            <motion.div ref={p.ref} {...p.handlers} style={{ rotateX: tilt.rotateX, rotateY: tilt.rotateY }} className="relative mx-auto max-w-sm">
               <DepthProvider x={p.x} y={p.y}>
                 <div
                   className="relative h-[13.5rem] overflow-hidden rounded-[2rem] shadow-[0_8px_0_rgba(90,40,140,0.25),0_30px_50px_-24px_rgba(90,40,140,0.6)] ring-4 ring-white sm:h-[19rem] lg:h-[23rem]"
@@ -309,7 +308,7 @@ export function AvatarStudio() {
                     <div className="h-full w-full rounded-[50%] shadow-[0_10px_0_rgba(0,0,0,0.12)]" style={{ background: `radial-gradient(70% 80% at 50% 30%, #ffffff, ${shade(world.colors.accent, 0.4)})` }} />
                   </Layer>
                   <Layer depth={12} className="bottom-[9%] left-1/2 -translate-x-1/2">
-                    <motion.div key={look + bare} initial={reduce ? false : { scale: 0.9, y: 6 }} animate={{ scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 14 }}>
+                    <motion.div key={look + bare} initial={{ scale: 0.9, y: 6 }} animate={{ scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 14 }}>
                       <div className="sm:hidden">
                         <AvatarPreview b={b} outfit={outfit} outfitColor={OUTFIT_COLOR[outfit]} size={150} hat={!bare} label={tr(T.preview, locale)} />
                       </div>

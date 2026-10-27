@@ -13,7 +13,7 @@ import { voiceBase } from '@/lib/dodo/voice';
 import { useHydrated } from '@/lib/world/store';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { Ziggy3D } from '@/components/ziggy3d/Ziggy3D';
-import { NightScene } from './NightScene';
+import { NightScene, SKY } from './NightScene';
 import { DodoPrepare } from './DodoPrepare';
 import { DodoSay } from './DodoSay';
 import { Horizon, Moon, NightSky, Sparkles } from './Scenery';
@@ -139,8 +139,9 @@ export function DodoHome({ voices }: { voices?: VoiceSummary }) {
   const moonY = useTransform(scrollY, [0, 800], [0, reduce ? 0 : 90]);
 
   return (
-    <div className="relative min-h-screen overflow-clip bg-[#060a24] text-white">
-      <NightSky className="fixed inset-0" far={far} near={near} moon={false} stars={80} />
+    <div className="relative isolate min-h-screen overflow-clip bg-[#060a24] text-white [clip-path:inset(0)]">
+      {/* The sky stays in view while the page scrolls; the clip-path above keeps it inside this page (never over the footer). */}
+      <NightSky className="fixed inset-0 -z-10" far={far} near={near} moon={false} stars={80} />
 
       <div className="relative mx-auto max-w-6xl px-4 pb-28 pt-28 sm:px-6 lg:px-8">
         {/* Hero */}
@@ -181,9 +182,12 @@ export function DodoHome({ voices }: { voices?: VoiceSummary }) {
             <div className={`${css.float} absolute bottom-0 left-3 sm:left-4`}>
               <Ziggy3D className="h-48 w-36 sm:h-64 sm:w-48" idle="calm" mood="calm" accessory="nightcap" framing="full" fallback="heart" />
             </div>
-            <svg viewBox="0 0 220 60" className="absolute -bottom-3 left-0 w-[85%] opacity-90" aria-hidden="true">
-              <path d="M20 52c-12 0-18-7-18-15s8-15 18-14c3-9 12-15 22-14 5-7 14-10 23-8 9-8 24-7 32 2 10-2 21 4 23 14 11 1 20 8 20 18 0 9-8 17-19 17z" fill="#2b2a6e" opacity="0.85" />
-            </svg>
+            {/* A soft cloud for Ziggy to sit on. */}
+            <div className="pointer-events-none absolute -bottom-4 left-0 h-14 w-[80%]" aria-hidden="true">
+              <div className="absolute inset-x-0 bottom-0 h-[70%] rounded-full bg-[radial-gradient(closest-side,rgba(139,132,240,0.55),rgba(139,132,240,0.22)_60%,transparent)]" />
+              <div className="absolute bottom-[30%] left-[18%] h-[80%] w-[36%] rounded-full bg-[radial-gradient(closest-side,rgba(160,152,250,0.5),transparent)]" />
+              <div className="absolute bottom-[34%] left-[46%] h-full w-[40%] rounded-full bg-[radial-gradient(closest-side,rgba(160,152,250,0.45),transparent)]" />
+            </div>
           </div>
         </header>
 
@@ -384,6 +388,11 @@ function Chip({
 function Cover({ story, manifest, big }: { story: DodoStory; manifest: DodoManifest | null; big?: boolean }) {
   const image = story.cover ?? manifest?.images[story.id]?.[1] ?? null;
   const [failed, setFailed] = useState(false);
+  if (!image && !manifest) {
+    // Still finding out whether the illustration exists: the scene's sky only, no emoji flash.
+    const sky = SKY[story.scenes[0].art.sky];
+    return <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, ${sky.top} 0%, ${sky.bottom} 100%)` }} />;
+  }
   if (image && !failed) {
     return (
       // eslint-disable-next-line @next/next/no-img-element

@@ -173,7 +173,7 @@ export function StoryBuilder() {
                 </div>
                 <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-6 [perspective:1200px] sm:grid-cols-3" role="radiogroup" aria-labelledby={`step-${step.key}`}>
                   {step.list.map((o, i) => (
-                    <ChoiceCard key={o.id} o={o} i={i} color={step.color} on={choices[step.key] === o.id} locale={locale} reduce={!!reduce} onPick={() => choose(step.key, o)} />
+                    <ChoiceCard key={o.id} o={o} i={i} color={step.color} on={choices[step.key] === o.id} locale={locale} onPick={() => choose(step.key, o)} />
                   ))}
                 </div>
               </motion.section>
@@ -249,8 +249,9 @@ export function StoryBuilder() {
               <div className="mt-6 flex justify-center">
                 <button
                   type="button"
-                  disabled={!ready || busy}
-                  onClick={() => void tell()}
+                  disabled={!ready}
+                  aria-busy={busy}
+                  onClick={() => (busy ? undefined : void tell())}
                   className={`${fx.toy} ${ready && !busy ? fx.sheen : ''} inline-flex min-h-[68px] w-full max-w-sm items-center justify-center gap-3 rounded-full px-6 font-display text-xl font-bold`}
                   style={toy('#FF7AB8', { depth: 8 })}
                 >
@@ -312,10 +313,10 @@ export function StoryBuilder() {
 }
 
 /** A choice: a thick 3D card that flips in, lifts and glows when picked. */
-function ChoiceCard({ o, i, color, on, locale, reduce, onPick }: { o: Choice; i: number; color: string; on: boolean; locale: string; reduce: boolean; onPick: () => void }) {
+function ChoiceCard({ o, i, color, on, locale, onPick }: { o: Choice; i: number; color: string; on: boolean; locale: string; onPick: () => void }) {
   const [n, setN] = useState(0);
   return (
-    <motion.div initial={reduce ? { opacity: 0 } : { rotateY: -95, opacity: 0, y: 20 }} animate={reduce ? { opacity: 1 } : { rotateY: 0, opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 170, damping: 16, delay: i * 0.06 }} className="relative">
+    <motion.div initial={{ rotateY: -95, opacity: 0, y: 20 }} animate={{ rotateY: 0, opacity: 1, y: 0 }} transition={{ type: 'spring', stiffness: 170, damping: 16, delay: i * 0.06 }} className="relative">
       <button
         type="button"
         role="radio"
@@ -498,20 +499,20 @@ function StoryBook({ story, source, saved, cast, locale, onClose }: { story: Sto
         </motion.div>
       </div>
 
-      <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
+      <div className="mt-8 flex flex-wrap items-center justify-center gap-2.5 sm:gap-4">
         <button type="button" disabled={i === 0} onClick={() => go(i - 1)} aria-label={tr(T.prev, locale)} title={tr(T.prev, locale)} className={`${fx.toy} ${fx.light} grid h-16 w-16 place-items-center rounded-full text-2xl font-black`}>
           <span aria-hidden="true" className="rtl:-scale-x-100">
             ◀
           </span>
         </button>
-        <button type="button" onClick={() => (reading ? (stopSpeaking(), setReading(false)) : void readAloud())} aria-pressed={reading} className={`${fx.toy} inline-flex min-h-16 items-center gap-2 rounded-full px-6 font-display text-lg font-bold`} style={toy('#8B5CF6', { depth: 7 })}>
+        <button type="button" onClick={() => (reading ? (stopSpeaking(), setReading(false)) : void readAloud())} aria-pressed={reading} className={`${fx.toy} inline-flex min-h-16 items-center gap-2 rounded-full px-4 font-display text-base font-bold sm:px-6 sm:text-lg`} style={toy('#8B5CF6', { depth: 7 })}>
           <span aria-hidden="true" className={reading ? fx.pulse : ''}>
             {reading ? '⏹' : '🔊'}
           </span>
           {tr(reading ? T.stop : T.read, locale)}
         </button>
         {last ? (
-          <button type="button" onClick={onClose} className={`${fx.toy} ${fx.sheen} inline-flex min-h-16 items-center gap-2 rounded-full px-6 font-display text-lg font-bold`} style={toy('#FF7AB8', { depth: 7 })}>
+          <button type="button" onClick={onClose} className={`${fx.toy} ${fx.sheen} inline-flex min-h-16 items-center gap-2 rounded-full px-5 font-display text-base font-bold sm:px-6 sm:text-lg`} style={toy('#FF7AB8', { depth: 7 })}>
             <span aria-hidden="true">✨</span> {tr(T.newStory, locale)}
           </button>
         ) : (

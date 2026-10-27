@@ -165,7 +165,7 @@ export function SongMaker() {
   const rows = useMemo(() => [...MELODY.map((r, i) => ({ ...r, row: i, drum: false })), ...DRUMS.map((d, i) => ({ ...d, row: MELODY.length + i, drum: true }))], []);
   const hit = (row: number) => playing && step >= 0 && song.grid[row][step];
   const count = noteCount(song);
-  const cellMin = song.steps === 16 ? 30 : 34;
+  const cellMin = song.steps === 16 ? 30 : 31;
 
   return (
     <StudioFrame eyebrow={tr(T.eyebrow, locale)} emoji="🎶" title={tr(T.title, locale)} subtitle={tr(T.subtitle, locale)} color="#8B5CF6" locale={locale} props={['🎹', '🥁', '🎺', '🎸']}>
@@ -269,9 +269,9 @@ export function SongMaker() {
                           {on ? (
                             <motion.span
                               key="pad"
-                              initial={reduce ? { opacity: 0 } : { scale: 0.2, opacity: 0 }}
-                              animate={reduce ? { opacity: 1 } : { scale: 1, opacity: 1 }}
-                              exit={reduce ? { opacity: 0 } : { scale: 0.3, opacity: 0 }}
+                              initial={{ scale: 0.2, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              exit={{ scale: 0.3, opacity: 0 }}
                               transition={{ type: 'spring', stiffness: 520, damping: 18 }}
                               className="absolute inset-0"
                             >
