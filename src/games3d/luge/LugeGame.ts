@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createRenderer, disposeTree, glow, glowTex, labelSprite, mat, prefersLowPower } from '../kit/look';
+import { createRenderer, studioEnvironment, disposeTree, glow, glowTex, labelSprite, mat, prefersLowPower } from '../kit/look';
 import { makeNightSky, makePine, makeZiggy, PALETTE } from '../kit/models';
 import { Puffs, Snowfall } from '../kit/world';
 import { GameAudio } from '../kit/music';
@@ -74,11 +74,12 @@ function makeGate(n: number, x: number): THREE.Group {
 export class LugeGame {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
+  private dropEnv: () => void = () => {};
   private camera = new THREE.PerspectiveCamera(62, 1, 0.1, 300);
   private clock = new THREE.Clock();
   private raf = 0;
   private sled = new THREE.Group();
-  private ziggy = makeZiggy();
+  private ziggy = makeZiggy({ accessory: 'santa', lowPower: prefersLowPower() });
   private pines: THREE.Group[] = [];
   private bumps: THREE.Mesh[] = [];
   private stars: THREE.Group[] = [];
@@ -113,6 +114,7 @@ export class LugeGame {
     private cb: LugeCallbacks
   ) {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
+    this.dropEnv = studioEnvironment(this.renderer, this.ziggy, 0.8);
     this.snow = new Snowfall(this.lowPower ? 600 : 1300, 50, 20);
     this.qs = planRun(seed, band, level);
     this.speed = speedFor(band, level);
@@ -190,10 +192,9 @@ export class LugeGame {
 
     this.sled.add(makeSled());
     const z = this.ziggy;
-    z.userData.parts.hat.visible = true;
-    z.position.set(0, 0.3, 0.1);
+    z.position.set(0, 0.36, 0.25);
     z.rotation.y = Math.PI; // facing down the slope (-Z)
-    z.userData.parts.feet.position.set(0, 0.25, 0.35);
+    z.userData.rig.seated = true;
     this.sled.add(z);
     s.add(this.sled);
     s.add(this.snow.points, this.puffs.group, this.sparkles.group);
@@ -293,9 +294,8 @@ export class LugeGame {
     this.sled.position.x = this.x;
     this.sled.rotation.z = (this.x - before) * -3;
     this.sled.position.y = Math.abs(Math.sin(t * 9)) * 0.05 * (v > 0 ? 1 : 0);
-    const parts = this.ziggy.userData.parts;
-    parts.antennas.rotation.x = Math.sin(t * 12) * 0.15 * (v / 10);
-    parts.arms.children.forEach((a, i) => (a.rotation.x = -0.6 + Math.sin(t * 3 + i) * 0.1));
+    // The plush rides seated; its antennas wobble with the bumps on their own.
+    this.ziggy.userData.rig.update(dt);
 
     // Scenery flows towards the camera and loops.
     for (const p of this.pines) {
@@ -351,11 +351,13 @@ export class LugeGame {
           this.stats.correct++;
           this.boost = 6;
           this.audio.chime('deliver');
+          this.ziggy.userData.rig.cue('cheer');
           this.sparkles.emit(at, { color: '#9bf07f', count: 26, spread: 3, up: 3, life: 1.2, size: 0.4, additive: true });
           this.cb.onSay(this.locale === 'fr' ? ['Bravo !', 'Super !', 'Génial !'][this.index % 3] : ['Well done!', 'Great!', 'Awesome!'][this.index % 3], 'praise');
         } else {
           this.stats.mistakes++;
           this.audio.chime('oops');
+          this.ziggy.userData.rig.cue('oops');
           this.puffs.emit(at, { color: '#ffffff', count: 14, spread: 2.5, up: 1.6, life: 1.2, size: 0.9 });
           this.cb.onSay(this.locale === 'fr' ? `Presque ! C’était ${q.answer}.` : `Almost! It was ${q.answer}.`, 'hint');
         }
@@ -420,6 +422,7 @@ export class LugeGame {
     this.canvas.removeEventListener('pointerup', this.onUp);
     this.audio.dispose();
     disposeTree(this.scene);
+    this.dropEnv();
     this.renderer.dispose();
   }
 }

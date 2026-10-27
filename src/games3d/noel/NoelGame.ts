@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createRenderer, disposeTree, glow, glowTex, labelSprite, prefersLowPower } from '../kit/look';
+import { createRenderer, studioEnvironment, disposeTree, glow, glowTex, labelSprite, prefersLowPower } from '../kit/look';
 import { makeBigTree, makeGift, makeHouse, makeLamp, makeNightSky, makeOrnament, makePine, makeSnowman, makeZiggy, PALETTE } from '../kit/models';
 import { makeSnowGround, Puffs, Snowfall } from '../kit/world';
 import { Controls } from '../kit/input';
@@ -49,10 +49,11 @@ type GiftObj = THREE.Group & { userData: { gift: Gift; tappable: boolean; base: 
 export class NoelGame {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
+  private dropEnv: () => void = () => {};
   private camera = new THREE.PerspectiveCamera(52, 1, 0.1, 400);
   private clock = new THREE.Clock();
   private raf = 0;
-  private ziggy = makeZiggy();
+  private ziggy = makeZiggy({ accessory: 'santa', lowPower: prefersLowPower() });
   private tree = makeBigTree();
   private houses: ReturnType<typeof makeHouse>[] = [];
   private gifts: GiftObj[] = [];
@@ -89,6 +90,7 @@ export class NoelGame {
     private cb: NoelCallbacks
   ) {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
+    this.dropEnv = studioEnvironment(this.renderer, this.ziggy, 0.9);
     this.snow = new Snowfall(this.lowPower ? 700 : 1600);
     this.plan = planMission(seed, band, level, 0);
     this.patterns = planPattern(seed, band);
@@ -168,7 +170,6 @@ export class NoelGame {
       s.add(sn);
     }
 
-    this.ziggy.userData.parts.hat.visible = true;
     this.ziggy.position.set(0, 0, 7.5);
     this.ziggy.rotation.y = Math.PI;
     s.add(this.ziggy);
@@ -256,6 +257,7 @@ export class NoelGame {
       obj.userData.hop = 1;
       if (v.reason !== 'full') this.stats.mistakes++;
       this.audio.chime('oops');
+      this.ziggy.userData.rig.cue('oops');
       this.hint(hintText(v, this.plan.mission, this.locale));
       return;
     }
@@ -264,7 +266,7 @@ export class NoelGame {
     this.gifts = this.gifts.filter((g) => g !== obj);
     obj.userData.tappable = false;
     // The gift flies into Ziggy's arms and stacks up.
-    const slot = new THREE.Vector3(0, 1.45 + this.carriedObjs.length * 0.5, 0.78);
+    const slot = new THREE.Vector3(0, 0.85 + this.carriedObjs.length * 0.48, 0.66);
     this.fly(obj, obj.position.clone(), this.ziggy.localToWorld(slot.clone()), 0.35, () => {
       this.scene.remove(obj);
       obj.position.copy(slot);
@@ -295,6 +297,7 @@ export class NoelGame {
     this.carriedObjs = [];
     this.carried = [];
     this.stats.correct++;
+    this.ziggy.userData.rig.cue('cheer');
     for (const w of house.userData.windows) (w.material as THREE.MeshBasicMaterial).color.set('#ffd98c').multiplyScalar(1.8);
     for (let k = 0; k < 4; k++) setTimeout(() => this.puffs.emit(house.localToWorld(house.userData.smoke.clone()), { count: 4, up: 1.4, life: 2.6, size: 0.9 }), k * 450);
     this.sparkles.emit(door.clone().add(new THREE.Vector3(0, 1.5, 0)), { color: '#ffe680', count: 24, spread: 3, up: 2.5, life: 1.4, size: 0.4, additive: true });
@@ -334,11 +337,13 @@ export class NoelGame {
     if (o !== p.answer) {
       this.stats.mistakes++;
       this.audio.chime('oops');
+      this.ziggy.userData.rig.cue('think');
       this.hint(this.locale === 'fr' ? 'Presque ! Regarde bien la suite des couleurs.' : 'Almost! Look carefully at the colour pattern.');
       return false;
     }
     this.stats.correct++;
     this.audio.chime('pick');
+    this.ziggy.userData.rig.cue('jump');
     const orn = makeOrnament(COLOR_HEX[o === 'yellow' ? 'yellow' : o], this.round === 2 ? 'star' : 'ball');
     const slots = this.tree.userData.slots;
     const target = this.tree.localToWorld(slots[(this.round * 2) % slots.length].clone());
@@ -398,7 +403,6 @@ export class NoelGame {
 
   private step(dt: number, t: number) {
     const z = this.ziggy;
-    const parts = z.userData.parts;
     // Movement: keys first, else walk to the tapped point.
     const move = new THREE.Vector3();
     const kv = this.controls.keyVector();
@@ -419,13 +423,11 @@ export class NoelGame {
       z.rotation.y += d * Math.min(1, dt * 10);
     }
     this.collide(z.position);
-    // Walk cycle / idle breathing.
-    const k = walking ? 1 : 0;
-    parts.bodyGroup.position.y = k * Math.abs(Math.sin(t * 11)) * 0.12 + (1 - k) * Math.sin(t * 2) * 0.03;
-    parts.bodyGroup.rotation.z = k * Math.sin(t * 11) * 0.06;
-    parts.feet.children.forEach((f, i) => (f.position.z = 0.05 + k * Math.sin(t * 11 + i * Math.PI) * 0.18));
-    parts.antennas.rotation.z = Math.sin(t * 3) * 0.08;
-    parts.arms.children.forEach((a, i) => (a.rotation.x = this.carriedObjs.length ? -1.1 : k * Math.sin(t * 11 + i * Math.PI) * 0.5));
+    // The plush walks, carries, breathes, blinks — all from its rig.
+    const rig = z.userData.rig;
+    rig.walk += ((walking ? 1 : 0) - rig.walk) * Math.min(1, dt * 8);
+    rig.carrying = this.carriedObjs.length > 0;
+    rig.update(dt);
 
     // Gifts bob, spin, and react.
     for (const g of this.gifts) {
@@ -522,6 +524,7 @@ export class NoelGame {
     this.controls.dispose();
     this.audio.dispose();
     disposeTree(this.scene);
+    this.dropEnv();
     this.renderer.dispose();
   }
 }

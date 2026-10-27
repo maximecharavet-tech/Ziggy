@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { createRenderer, disposeTree, glow, mat, prefersLowPower } from '../kit/look';
+import { createRenderer, studioEnvironment, disposeTree, glow, mat, prefersLowPower } from '../kit/look';
 import { makePine, makeZiggy, PALETTE } from '../kit/models';
 import { rng } from '../kit/rng';
 
@@ -120,9 +120,10 @@ function cottage(): THREE.Group {
 export class PlanetScene {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
+  private dropEnv: () => void = () => {};
   private camera = new THREE.PerspectiveCamera(38, 1, 0.1, 100);
   private planet = new THREE.Group();
-  private ziggy = makeZiggy();
+  private ziggy = makeZiggy({ lowPower: prefersLowPower() });
   private moon = new THREE.Group();
   private clock = new THREE.Clock();
   private raf = 0;
@@ -141,6 +142,7 @@ export class PlanetScene {
     private onHotspots: (h: HotspotScreen[]) => void
   ) {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
+    this.dropEnv = studioEnvironment(this.renderer, this.ziggy, 0.45);
     this.renderer.setClearColor(0x000000, 0);
     this.build();
     this.resize = new ResizeObserver(() => this.fit());
@@ -211,7 +213,8 @@ export class PlanetScene {
     );
 
     // Ziggy on the north pole, waving.
-    this.ziggy.scale.setScalar(0.55);
+    this.ziggy.scale.setScalar(0.5);
+    this.ziggy.userData.rig.idle = 'wave';
     this.ziggy.position.y = R - 0.05;
     this.planet.add(this.ziggy);
 
@@ -253,6 +256,7 @@ export class PlanetScene {
   /** Ziggy jumps and spins (when the child taps him or the planet). */
   wave() {
     this.hop = 1;
+    this.ziggy.userData.rig.cue('giggle');
   }
 
   private onDown = (e: PointerEvent) => {
@@ -283,14 +287,11 @@ export class PlanetScene {
       this.planet.rotation.y += this.reduced ? 0 : this.spin * dt + this.velocity;
     }
     // Ziggy: idle bounce, waving arm, a happy hop when tapped.
-    const p = this.ziggy.userData.parts;
     this.hop = Math.max(0, this.hop - dt * 1.4);
     const jump = Math.sin(this.hop * Math.PI) * 1.2;
     this.ziggy.position.y = R - 0.05 + jump * 0.55 + (this.reduced ? 0 : Math.abs(Math.sin(t * 2.2)) * 0.06);
     this.ziggy.rotation.y = -this.planet.rotation.y + Math.sin(t * 0.7) * 0.4 + this.hop * Math.PI * 2;
-    const armR = p.arms.children.find((a) => a.name === 'armR');
-    if (armR) armR.rotation.z = -2.2 + Math.sin(t * 6) * 0.45;
-    p.antennas.rotation.z = Math.sin(t * 3) * 0.12;
+    this.ziggy.userData.rig.update(dt);
     // The moon orbits.
     this.moon.position.set(Math.cos(t * 0.35) * 5.2, 1.6 + Math.sin(t * 0.35) * 0.8, Math.sin(t * 0.35) * 5.2);
     this.renderer.render(this.scene, this.camera);
@@ -316,6 +317,7 @@ export class PlanetScene {
     window.removeEventListener('pointermove', this.onMove);
     window.removeEventListener('pointerup', this.onUp);
     disposeTree(this.scene);
+    this.dropEnv();
     this.renderer.dispose();
   }
 }

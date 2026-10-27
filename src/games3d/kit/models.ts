@@ -1,5 +1,8 @@
 import * as THREE from 'three';
 import { glow, glowMat, labelSprite, mat } from './look';
+import { buildZiggy, type ZiggyModel } from '../ziggy/model';
+import { ZiggyRig } from '../ziggy/rig';
+import type { ZiggyAccessory } from '../ziggy/types';
 
 /**
  * Low-poly models built in code. Every model is a Group whose origin sits on
@@ -7,8 +10,6 @@ import { glow, glowMat, labelSprite, mat } from './look';
  */
 
 export const PALETTE = {
-  ziggy: '#7fd04b',
-  ziggyDark: '#4e9a2a',
   snow: '#f2f6ff',
   snowShade: '#c9d6f2',
   pine: '#2f6b4a',
@@ -24,75 +25,20 @@ export const PALETTE = {
   warm: '#ffd48a',
 } as const;
 
-/** Ziggy: a round green plush robot with two antennas and a glowing heart. */
-export function makeZiggy(): THREE.Group & { userData: { parts: Record<string, THREE.Object3D> } } {
-  const g = new THREE.Group() as THREE.Group & { userData: { parts: Record<string, THREE.Object3D> } };
-  const body = new THREE.Mesh(new THREE.SphereGeometry(0.62, 14, 10), mat(PALETTE.ziggy, { emissive: new THREE.Color(PALETTE.ziggy).multiplyScalar(0.18) }));
-  body.scale.set(1, 1.08, 0.95);
-  body.position.y = 0.95;
-  body.castShadow = true;
-  const belly = new THREE.Mesh(new THREE.SphereGeometry(0.42, 12, 8), mat('#b9ef8a'));
-  belly.position.set(0, 0.82, 0.32);
-  belly.scale.set(1, 1, 0.55);
-  const face = new THREE.Mesh(new THREE.SphereGeometry(0.4, 14, 10, 0, Math.PI * 2, 0, Math.PI / 2), mat('#1d2a33'));
-  face.rotation.x = Math.PI / 2;
-  face.position.set(0, 1.18, 0.42);
-  face.scale.set(1, 0.42, 0.7);
-  const eyeGeo = new THREE.SphereGeometry(0.085, 10, 8);
-  const eyeL = new THREE.Mesh(eyeGeo, glowMat('#9ff8ff', 1.4));
-  const eyeR = eyeL.clone();
-  eyeL.position.set(-0.14, 1.2, 0.68);
-  eyeR.position.set(0.14, 1.2, 0.68);
-  const heart = new THREE.Mesh(new THREE.OctahedronGeometry(0.11, 0), glowMat('#ff5c8a', 1.5));
-  heart.position.set(0, 0.78, 0.6);
-  const heartGlow = glow('#ff5c8a', 0.7, 0.6);
-  heartGlow.position.copy(heart.position);
-  const antennas = new THREE.Group();
-  for (const side of [-1, 1]) {
-    const stalk = new THREE.Mesh(new THREE.CylinderGeometry(0.025, 0.035, 0.36, 6), mat(PALETTE.ziggyDark));
-    stalk.position.set(side * 0.22, 1.72, 0);
-    stalk.rotation.z = -side * 0.25;
-    const tip = new THREE.Mesh(new THREE.SphereGeometry(0.07, 8, 6), glowMat('#fff27a', 1.3));
-    tip.position.set(side * 0.27, 1.9, 0);
-    const tipGlow = glow('#fff27a', 0.5, 0.7);
-    tipGlow.position.copy(tip.position);
-    antennas.add(stalk, tip, tipGlow);
-  }
-  const feet = new THREE.Group();
-  for (const side of [-1, 1]) {
-    const foot = new THREE.Mesh(new THREE.SphereGeometry(0.2, 10, 6), mat(PALETTE.ziggyDark));
-    foot.scale.set(1, 0.6, 1.3);
-    foot.position.set(side * 0.26, 0.14, 0.05);
-    foot.castShadow = true;
-    feet.add(foot);
-  }
-  const arms = new THREE.Group();
-  for (const side of [-1, 1]) {
-    const arm = new THREE.Mesh(new THREE.CapsuleGeometry(0.1, 0.32, 4, 8), mat(PALETTE.ziggy));
-    arm.position.set(side * 0.66, 0.95, 0.05);
-    arm.rotation.z = side * 0.5;
-    arm.castShadow = true;
-    arm.name = side < 0 ? 'armL' : 'armR';
-    arms.add(arm);
-  }
-  // A little Christmas hat (removable).
-  const hat = new THREE.Group();
-  const cone = new THREE.Mesh(new THREE.ConeGeometry(0.34, 0.6, 10), mat(PALETTE.red));
-  cone.position.y = 1.84;
-  cone.rotation.z = -0.25;
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.33, 0.08, 6, 14), mat('#ffffff'));
-  rim.rotation.x = Math.PI / 2;
-  rim.position.y = 1.56;
-  const pom = new THREE.Mesh(new THREE.SphereGeometry(0.09, 8, 6), mat('#ffffff'));
-  pom.position.set(0.16, 2.12, 0);
-  hat.add(cone, rim, pom);
-  hat.visible = false;
+/** Ziggy in a game: the felt plush of the photos (model) and its animation rig. */
+export type ZiggyActor = THREE.Group & { userData: { model: ZiggyModel; rig: ZiggyRig } };
 
-  const bodyGroup = new THREE.Group();
-  bodyGroup.add(body, belly, face, eyeL, eyeR, heart, heartGlow, antennas, arms, hat);
-  g.add(bodyGroup, feet);
-  g.userData.parts = { bodyGroup, feet, antennas, arms, hat, eyeL, eyeR };
-  return g;
+/**
+ * The real Ziggy — the plush robot of the photos — for game scenes. Call
+ * `userData.rig.update(dt)` every frame; set `rig.walk`, `rig.carrying`,
+ * `rig.seated`, or play `rig.cue('cheer')`.
+ */
+export function makeZiggy(opts: { accessory?: ZiggyAccessory; lowPower?: boolean } = {}): ZiggyActor {
+  const model = buildZiggy({ accessory: opts.accessory ?? 'none', lowPower: opts.lowPower, shadows: true });
+  const actor = model.root as ZiggyActor;
+  actor.userData.model = model;
+  actor.userData.rig = new ZiggyRig(model);
+  return actor;
 }
 
 /** A pine tree in 3 tiers, optionally snowy. */

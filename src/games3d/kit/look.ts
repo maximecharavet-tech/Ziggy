@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 /**
  * The "PS2" look: low-poly flat-shaded models, painted vertex colours, soft
@@ -15,6 +16,29 @@ export function createRenderer(canvas: HTMLCanvasElement, opts: { lowPower: bool
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   return renderer;
+}
+
+/**
+ * Soft studio reflections for the felt plush (Ziggy) only: the environment
+ * is set on the physically based materials under `target`, so the low-poly
+ * world keeps its own lighting while Ziggy stays readable and velvety even
+ * at night. Returns the cleanup.
+ */
+export function studioEnvironment(renderer: THREE.WebGLRenderer, target: THREE.Object3D, intensity = 0.5): () => void {
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  const env = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  target.traverse((o) => {
+    const mats = (o as THREE.Mesh).material;
+    for (const m of Array.isArray(mats) ? mats : mats ? [mats] : [])
+      if (m instanceof THREE.MeshStandardMaterial) {
+        m.envMap = env;
+        m.envMapIntensity = intensity;
+      }
+  });
+  return () => {
+    env.dispose();
+    pmrem.dispose();
+  };
 }
 
 /** Flat-shaded material: the faceted low-poly feel. */
