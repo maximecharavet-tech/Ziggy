@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { ZiggyAvatar } from '@/components/ziggy/Mascot';
+import { fx, toy } from '@/components/create/fx/toy';
 import { EASE_OUT } from '@/lib/motion';
 
-/** Big round icon button (≥ 56 px), always labelled for screen readers. */
+/** Big toy-like icon button (≥ 56 px, with thickness; it squashes when pressed), always labelled for screen readers. */
 export function IconButton({
   label,
   onClick,
@@ -31,31 +32,28 @@ export function IconButton({
   /** Visible label when shorter than the accessible one. */
   short?: string;
 }) {
-  const reduce = useReducedMotion();
-  const base =
+  const look =
     tone === 'accent'
-      ? 'bg-gradient-to-br from-[#FF7AB8] via-[#B07CFF] to-[#5FB6EA] text-white shadow-[0_8px_20px_-8px_rgba(176,124,255,0.8)]'
+      ? { cls: fx.toy, style: { ...toy('#B07CFF', { depth: 5 }), '--face': 'linear-gradient(120deg, #FF7AB8, #B07CFF 50%, #5FB6EA)' } as CSSProperties }
       : tone === 'danger'
-        ? 'bg-[#FFE4E6] text-[#BE123C] ring-2 ring-[#FB7185]'
+        ? { cls: fx.toy, style: toy('#FFE4E6', { depth: 5, ink: '#BE123C' }) }
         : active
-          ? 'bg-white text-text-body ring-[3px] ring-[#B07CFF] shadow-[0_6px_16px_-6px_rgba(124,58,237,0.55)] dark:bg-white/95 dark:text-[#1A1A2E]'
-          : 'bg-white/85 text-text-body ring-1 ring-black/5 shadow-sm hover:bg-white dark:bg-white/10 dark:text-white dark:ring-white/10 dark:hover:bg-white/15';
+          ? { cls: `${fx.toy} ${fx.on}`, style: toy('#F1E9FF', { depth: 5, ink: '#3B2A7A', ring: '#B07CFF' }) }
+          : { cls: `${fx.toy} ${fx.light}`, style: { '--depth': '5px' } as CSSProperties };
   return (
-    <motion.button
+    <button
       type="button"
       onClick={onClick}
       disabled={disabled}
       aria-label={label}
       aria-pressed={pressed}
       title={label}
-      whileTap={reduce || disabled ? undefined : { scale: 0.9 }}
-      animate={active && !reduce ? { y: -2 } : { y: 0 }}
-      transition={{ duration: 0.18, ease: EASE_OUT }}
-      className={`relative flex min-h-14 min-w-14 shrink-0 select-none flex-col items-center justify-center gap-0.5 rounded-2xl px-2 font-display text-[11px] font-semibold leading-none transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky disabled:opacity-35 ${base} ${className}`}
+      className={`${look.cls} flex min-h-14 min-w-14 shrink-0 select-none flex-col items-center justify-center gap-0.5 rounded-2xl px-2 font-display text-[11px] font-semibold leading-none ${className}`}
+      style={look.style}
     >
       {children}
       {showLabel && <span className={tone === 'danger' ? 'whitespace-nowrap text-xs' : 'max-w-[4.6rem] truncate'} aria-hidden="true">{short ?? label}</span>}
-    </motion.button>
+    </button>
   );
 }
 

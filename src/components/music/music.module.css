@@ -1,0 +1,266 @@
+/* The Song Factory: stage, glossy pads and the toy deck. Transform and opacity only. */
+
+.stage {
+  background:
+    radial-gradient(60% 55% at 50% 0%, rgba(190, 160, 255, 0.55) 0%, rgba(190, 160, 255, 0) 70%),
+    linear-gradient(180deg, #2b1670 0%, #4a2bb0 55%, #6c48e6 100%);
+}
+
+/* A scalloped velvet curtain along the top. */
+.curtain {
+  background:
+    radial-gradient(circle at 50% 0%, #b8204f 0 60%, transparent 61%) 0 0 / 56px 34px repeat-x,
+    linear-gradient(180deg, #8a1438, #b8204f);
+  height: 22px;
+}
+
+.beam {
+  clip-path: polygon(42% 0, 58% 0, 100% 100%, 0 100%);
+  background: linear-gradient(180deg, rgba(255, 246, 200, 0.55), rgba(255, 246, 200, 0));
+  transform-origin: 50% 0;
+  transition: opacity 0.4s ease;
+}
+
+.floor {
+  background: radial-gradient(70% 90% at 50% 10%, #ffd88f 0%, #f0a94a 70%, #d98a2f 100%);
+  box-shadow:
+    inset 0 5px 0 rgba(255, 255, 255, 0.45),
+    0 10px 0 #a8641f,
+    0 24px 30px -14px rgba(20, 0, 60, 0.7);
+}
+
+.pedestal {
+  background: radial-gradient(70% 90% at 50% 15%, rgba(255, 255, 255, 0.85), var(--c) 55%, var(--c) 100%);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.12),
+    0 5px 0 var(--edge);
+  transition: box-shadow 0.25s ease;
+}
+.pedestal[data-hit] {
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.12),
+    0 5px 0 var(--edge),
+    0 0 26px 6px var(--c);
+}
+
+.lamp {
+  background: radial-gradient(circle at 40% 35%, #fff 0%, #ffe9a8 30%, #b38a2a 100%);
+  opacity: 0.35;
+  transition:
+    opacity 0.12s ease,
+    transform 0.12s ease;
+}
+.lamp[data-on] {
+  opacity: 1;
+  transform: scale(1.35);
+  box-shadow: 0 0 12px 3px #ffe27a;
+}
+
+/* The board of the sequencer: lavender moulded plastic with thickness. */
+.board {
+  background: linear-gradient(180deg, #faf7ff 0%, #efe8ff 100%);
+  box-shadow:
+    inset 0 2px 0 #fff,
+    0 10px 0 #d6caf5,
+    0 30px 50px -24px rgba(70, 30, 160, 0.45);
+}
+:global(.dark) .board {
+  background: linear-gradient(180deg, #221c46 0%, #1a1538 100%);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.08),
+    0 10px 0 #0e0b22,
+    0 30px 50px -24px rgba(0, 0, 0, 0.7);
+}
+
+/* An empty hole of the peg board, tinted with the animal's colour. */
+.cell {
+  position: relative;
+  border-radius: 30%;
+  background: color-mix(in srgb, var(--c) var(--mix, 9%), #ffffff);
+  box-shadow:
+    inset 0 3px 5px rgba(60, 30, 120, 0.16),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.9);
+  transition:
+    transform 0.35s cubic-bezier(0.34, 1.7, 0.6, 1),
+    background-color 0.15s ease;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+:global(.dark) .cell {
+  background: color-mix(in srgb, var(--c) var(--mix, 14%), #191433);
+  box-shadow:
+    inset 0 3px 5px rgba(0, 0, 0, 0.45),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.06);
+}
+.cell[data-alt] {
+  --mix: 15%;
+}
+.cell[data-now] {
+  --mix: 34%;
+}
+.cell:active {
+  transform: scale(0.88);
+  transition-duration: 0.06s;
+}
+.cell:focus-visible {
+  outline: 3px solid #5fb6ea;
+  outline-offset: 2px;
+}
+
+/* A note: a glossy jelly pad sitting in the hole. */
+.pad {
+  position: absolute;
+  inset: 6%;
+  border-radius: 30%;
+  background: radial-gradient(80% 70% at 35% 25%, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0) 45%), var(--c);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.14),
+    0 3px 0 var(--edge),
+    0 6px 12px -4px var(--c);
+  pointer-events: none;
+}
+.pad[data-now] {
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.14),
+    0 3px 0 var(--edge),
+    0 0 18px 4px var(--c);
+}
+
+.badge {
+  background: radial-gradient(80% 70% at 35% 25%, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.4) 40%, rgba(255, 255, 255, 0) 70%), var(--c);
+  box-shadow:
+    inset 0 -3px 0 rgba(0, 0, 0, 0.12),
+    0 4px 0 var(--edge);
+  transition: transform 0.35s cubic-bezier(0.34, 1.7, 0.6, 1);
+}
+.badge:active {
+  transform: translateY(3px) scale(0.94);
+  transition-duration: 0.06s;
+}
+
+/* Vinyl record of a nursery tune. */
+.record {
+  background:
+    radial-gradient(circle, var(--c) 0 27%, #1d1730 28% 30%, transparent 31%),
+    repeating-radial-gradient(circle, #2a2342 0 2px, #1d1730 2px 4px);
+  box-shadow:
+    0 6px 0 #0f0b1d,
+    0 16px 24px -12px rgba(20, 0, 60, 0.7),
+    inset 0 0 0 2px rgba(255, 255, 255, 0.08);
+}
+.record::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: conic-gradient(from 210deg, transparent 0 20%, rgba(255, 255, 255, 0.18) 25%, transparent 32% 70%, rgba(255, 255, 255, 0.12) 75%, transparent 80%);
+}
+
+.slider {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 14px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #7fc85c, #ffd447, #ff7ab8);
+  box-shadow: inset 0 2px 3px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #fff, #e9e3ff 60%, #c9bdf3);
+  box-shadow:
+    0 4px 0 #a99ad8,
+    0 8px 14px -4px rgba(60, 30, 140, 0.5);
+  border: 0;
+}
+.slider::-moz-range-thumb {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: radial-gradient(circle at 35% 30%, #fff, #e9e3ff 60%, #c9bdf3);
+  box-shadow:
+    0 4px 0 #a99ad8,
+    0 8px 14px -4px rgba(60, 30, 140, 0.5);
+  border: 0;
+}
+.slider:focus-visible {
+  outline: 3px solid #5fb6ea;
+  outline-offset: 6px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .hop {
+    animation: hop 0.42s cubic-bezier(0.3, 1.6, 0.5, 1);
+  }
+  .note {
+    animation: note 0.9s ease-out forwards;
+  }
+  .beat {
+    animation: beat 0.32s cubic-bezier(0.3, 1.8, 0.5, 1);
+  }
+  .spinning {
+    animation: spin 2.6s linear infinite;
+  }
+  .record:hover {
+    animation: spin 3s linear infinite;
+  }
+  .dance {
+    animation: dance 0.9s ease-in-out infinite;
+  }
+}
+
+@keyframes hop {
+  0% {
+    transform: translateY(0) scale(1, 1);
+  }
+  30% {
+    transform: translateY(-26%) scale(0.92, 1.12) rotate(-6deg);
+  }
+  65% {
+    transform: translateY(0) scale(1.12, 0.88);
+  }
+  100% {
+    transform: translateY(0) scale(1, 1);
+  }
+}
+@keyframes note {
+  0% {
+    transform: translate(-50%, 0) scale(0.4);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate(calc(-50% + var(--dx, 10px)), -56px) scale(1.1) rotate(var(--r, 12deg));
+    opacity: 0;
+  }
+}
+@keyframes beat {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes dance {
+  0%,
+  100% {
+    transform: rotate(-4deg);
+  }
+  50% {
+    transform: rotate(4deg) translateY(-3px);
+  }
+}

@@ -1,0 +1,336 @@
+/*
+ * Mode dodo — calm motion only: slow, transform/opacity, nothing flashes.
+ * Everything that moves on its own stops for reduced motion.
+ */
+
+/* ── Illustrations: slow Ken Burns pan and zoom ── */
+
+.kb {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  will-change: transform;
+  animation: 46s ease-in-out infinite alternate both;
+  transform-origin: 50% 45%;
+}
+.kbA { animation-name: kbA; }
+.kbB { animation-name: kbB; }
+.kbC { animation-name: kbC; }
+.kbD { animation-name: kbD; }
+@keyframes kbA {
+  from { transform: scale(1.04) translate3d(-1.2%, 0.6%, 0); }
+  to { transform: scale(1.15) translate3d(1.4%, -1%, 0); }
+}
+@keyframes kbB {
+  from { transform: scale(1.14) translate3d(1.2%, -0.8%, 0); }
+  to { transform: scale(1.04) translate3d(-1%, 0.8%, 0); }
+}
+@keyframes kbC {
+  from { transform: scale(1.05) translate3d(0.8%, 1%, 0); }
+  to { transform: scale(1.16) translate3d(-1.2%, -1.2%, 0); }
+}
+@keyframes kbD {
+  from { transform: scale(1.12) translate3d(-0.6%, -1.2%, 0); }
+  to { transform: scale(1.04) translate3d(1%, 1%, 0); }
+}
+
+/* ── The night scene drawn on the device (no illustration yet) ── */
+
+.nsDot {
+  position: absolute;
+  animation: nsDot ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes nsDot {
+  0%, 100% { opacity: 0.15; transform: translate3d(0, 0, 0); }
+  50% { opacity: 0.85; transform: translate3d(0, var(--drift, 0px), 0); }
+}
+.nsProp {
+  position: absolute;
+  animation: nsProp ease-in-out infinite;
+}
+@keyframes nsProp {
+  0%, 100% { transform: translate3d(-50%, -50%, 0) rotate(0deg); }
+  50% { transform: translate3d(-50%, calc(-50% - 8px), 0) rotate(var(--tilt, 4deg)); }
+}
+.nsHero {
+  position: absolute;
+  animation: nsHero 6s ease-in-out infinite;
+}
+@keyframes nsHero {
+  0%, 100% { transform: translate3d(-50%, -50%, 0) scale(1); }
+  50% { transform: translate3d(-50%, calc(-50% - 6px), 0) scale(1.035); }
+}
+.nsMoon {
+  position: absolute;
+  animation: halo 8s ease-in-out infinite;
+}
+.still { animation: none !important; }
+
+/* ── Sparkles drifting over the picture (two depths = parallax) ── */
+
+.sparkle {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(255, 246, 214, 0.95) 0%, rgba(255, 220, 150, 0.55) 35%, rgba(255, 220, 150, 0) 70%);
+  opacity: 0;
+  animation: sparkle ease-in-out infinite;
+  will-change: transform, opacity;
+}
+@keyframes sparkle {
+  0% { opacity: 0; transform: translate3d(0, 0, 0) scale(0.6); }
+  25% { opacity: 0.9; }
+  60% { opacity: 0.55; }
+  100% { opacity: 0; transform: translate3d(var(--dx, 10px), var(--dy, -60px), 0) scale(1); }
+}
+
+/* ── Night sky: twinkling stars, drifting clouds, breathing moon ── */
+
+.star {
+  position: absolute;
+  border-radius: 9999px;
+  background: #fff;
+  animation: twinkle ease-in-out infinite;
+}
+.glint {
+  position: absolute;
+  color: #fde9b5;
+  text-shadow: 0 0 8px rgba(255, 226, 160, 0.8);
+  animation: twinkle ease-in-out infinite;
+}
+@keyframes twinkle {
+  0%, 100% { opacity: 0.18; transform: scale(0.8); }
+  50% { opacity: 0.95; transform: scale(1); }
+}
+
+.cloud {
+  position: absolute;
+  animation: cloud linear infinite;
+  will-change: transform;
+}
+@keyframes cloud {
+  from { transform: translate3d(-8vw, 0, 0); }
+  to { transform: translate3d(8vw, 0, 0); }
+}
+.cloudAlt { animation-direction: alternate; animation-timing-function: ease-in-out; }
+
+.moonHalo {
+  animation: halo 9s ease-in-out infinite;
+}
+@keyframes halo {
+  0%, 100% { opacity: 0.75; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+.float {
+  animation: float 7s ease-in-out infinite;
+}
+@keyframes float {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(0, -8px, 0); }
+}
+
+/* ── The teleprompter ── */
+
+.viewport {
+  --fade: calc(var(--fs, 28px) * 0.95);
+  position: relative;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade, 14%), #000 calc(100% - var(--fade, 14%)), transparent 100%);
+  mask-image: linear-gradient(to bottom, transparent 0, #000 var(--fade, 14%), #000 calc(100% - var(--fade, 14%)), transparent 100%);
+}
+
+.track {
+  position: relative;
+  padding: calc(var(--fs, 28px) * 0.85) 0;
+  transition: transform 1s cubic-bezier(0.22, 0.8, 0.3, 1);
+  will-change: transform;
+}
+
+.band {
+  position: absolute;
+  left: -0.4em;
+  right: -0.4em;
+  top: 0;
+  border-radius: 0.6em;
+  background: linear-gradient(90deg, rgba(255, 214, 150, 0) 0%, rgba(255, 214, 150, 0.1) 12%, rgba(255, 214, 150, 0.1) 88%, rgba(255, 214, 150, 0) 100%);
+  transition: transform 0.8s cubic-bezier(0.22, 0.8, 0.3, 1), height 0.4s ease, opacity 0.6s ease;
+  pointer-events: none;
+}
+
+.text {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--fs);
+  line-height: 1.6;
+  letter-spacing: 0.005em;
+  overflow-wrap: break-word;
+}
+
+.w {
+  display: inline-block;
+  border-radius: 0.35em;
+  padding: 0 0.08em;
+  margin: 0 -0.08em;
+  transform-origin: 50% 70%;
+  transition: color 0.35s ease, transform 0.35s ease, text-shadow 0.35s ease, background-color 0.35s ease;
+}
+.later { color: rgba(226, 230, 255, 0.7); }
+.next { color: #fbfaff; }
+.past { color: rgba(214, 218, 248, 0.5); transition-duration: 0.6s; }
+.now {
+  transition: color 0.14s ease-out, transform 0.22s ease-out, text-shadow 0.22s ease-out, background-color 0.22s ease-out;
+  color: #ffe1a1;
+  background-color: rgba(255, 196, 110, 0.14);
+  text-shadow: 0 0 0.5em rgba(255, 190, 100, 0.65), 0 0 0.12em rgba(255, 232, 190, 0.9);
+  transform: scale(1.07);
+}
+.line .now {
+  background-color: transparent;
+  transform: none;
+  text-shadow: 0 0 0.45em rgba(255, 190, 100, 0.45);
+}
+
+/* The moral: warm gold, a little lesson that glows softly. */
+.moral.later { color: rgba(255, 228, 176, 0.72); }
+.moral.next { color: #ffeac4; }
+.moral.past { color: rgba(255, 226, 170, 0.62); }
+.moral.now { color: #ffd27a; }
+
+.title {
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kb, .sparkle, .star, .glint, .cloud, .moonHalo, .float, .nsDot, .nsProp, .nsHero, .nsMoon { animation: none; }
+  .nsDot { opacity: 0.5; }
+  .nsProp, .nsHero { transform: translate3d(-50%, -50%, 0); }
+  .sparkle { opacity: 0.4; }
+  .star { opacity: 0.6; }
+  .track, .band { transition: none; }
+  .w { transition: color 0.2s ease; }
+  .now { transform: none; }
+}
+
+/* ── Player layout ──
+ * Portrait (phones): the picture on top, the prompter below it.
+ * Landscape (tablets, computers): the picture fills the screen, the prompter floats over it.
+ */
+
+.player {
+  --split: 47vh;
+  --dock: calc(5.5rem + env(safe-area-inset-bottom));
+}
+@supports (height: 1dvh) {
+  .player { --split: 47dvh; }
+}
+
+.stage {
+  position: absolute;
+  inset: 0;
+  transition: bottom 0.9s cubic-bezier(0.22, 0.8, 0.3, 1);
+}
+
+.panel {
+  --fs-base: clamp(1.375rem, 1rem + 1.5vw, 2.125rem);
+  --fs: calc(var(--fs-base) * var(--k, 1));
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  z-index: 20;
+}
+
+.ziggy {
+  position: absolute;
+  z-index: 35;
+}
+
+.dock {
+  position: absolute;
+  z-index: 30;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.coverCard {
+  position: absolute;
+  z-index: 20;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+@media (orientation: portrait) {
+  .stage[data-split='1'] { bottom: calc(100% - var(--split)); }
+  .panel {
+    left: 0;
+    right: 0;
+    top: calc(var(--split) - 1.75rem);
+    bottom: var(--dock);
+    padding: 1rem 1.25rem 0.25rem;
+    border-radius: 2rem 2rem 0 0;
+    background: linear-gradient(180deg, #11163f 0%, #0a0d2b 45%, #070a1f 100%);
+    box-shadow: 0 -18px 40px rgba(3, 4, 18, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  .panel .viewport { flex: 1; min-height: 0; }
+  .dock {
+    height: var(--dock);
+    padding-bottom: env(safe-area-inset-bottom);
+    background: #070a1f;
+  }
+  .coverCard {
+    left: 0;
+    right: 0;
+    top: calc(var(--split) - 1.75rem);
+    bottom: 0;
+    padding: 1.4rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+    border-radius: 2rem 2rem 0 0;
+    background: linear-gradient(180deg, #11163f 0%, #0a0d2b 45%, #070a1f 100%);
+    box-shadow: 0 -18px 40px rgba(3, 4, 18, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  }
+  /* Ziggy sits on the top edge of the prompter, like on a windowsill. */
+  .ziggy { right: 0.5rem; top: calc(var(--split) - 10.85rem); }
+  .ziggy[data-mode='solo'] { top: auto; bottom: calc(var(--dock) + 0.25rem); }
+  .ziggy[data-mode='fin'] { right: calc(50% - 4rem); top: 7%; }
+}
+
+@media (orientation: landscape) {
+  .panel {
+    left: max(10.5rem, calc(50% - 29rem));
+    right: max(1rem, calc(50% - 29rem));
+    bottom: calc(6rem + env(safe-area-inset-bottom));
+    padding: 0.85rem 2rem 0.35rem;
+    border-radius: 1.9rem;
+    background: linear-gradient(180deg, rgba(12, 14, 46, 0.84), rgba(7, 9, 30, 0.9));
+    box-shadow: 0 24px 70px rgba(2, 3, 14, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  }
+  .panel .viewport { height: calc(var(--fs) * 1.6 * 3 + var(--fs) * 1.7); }
+  .dock { bottom: max(0.9rem, env(safe-area-inset-bottom)); }
+  .coverCard {
+    left: max(10.5rem, calc(50% - 22rem));
+    right: max(1rem, calc(50% - 22rem));
+    bottom: 1.25rem;
+    max-height: calc(100% - 5.5rem);
+    padding: 1.5rem 1.75rem;
+    border-radius: 2rem;
+    background: linear-gradient(180deg, rgba(10, 12, 40, 0.8), rgba(7, 9, 30, 0.88));
+    box-shadow: 0 24px 70px rgba(2, 3, 14, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+  }
+  .ziggy { left: 0.5rem; bottom: calc(0.5rem + env(safe-area-inset-bottom)); }
+  .ziggy[data-mode='fin'] { left: calc(50% - 4rem); bottom: auto; top: 6%; }
+}
+
+@media (orientation: landscape) and (max-height: 520px) {
+  .panel {
+    --fs-base: clamp(1.05rem, 0.55rem + 2.4vh, 1.4rem);
+    bottom: 4.4rem;
+    padding: 0.4rem 1.25rem 0.1rem;
+    left: max(7.5rem, calc(50% - 26rem));
+  }
+  .panel .viewport { height: calc(var(--fs) * 1.6 * 2.2 + var(--fs) * 1.7); }
+  .dock { bottom: 0.4rem; }
+  .coverCard { left: max(7.5rem, calc(50% - 22rem)); bottom: 0.75rem; max-height: calc(100% - 4.25rem); padding: 1rem 1.25rem; }
+}

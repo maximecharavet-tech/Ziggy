@@ -11,6 +11,7 @@ import { downloadCanvas, fileName, renderArtwork } from '@/coloring/raster';
 import { T } from '@/coloring/text';
 import type { ColoringPage, Drawing } from '@/coloring/types';
 import type { PopupScene } from '@/coloring/three/popup-scene';
+import { fx, toy } from '@/components/create/fx/toy';
 
 /**
  * "Mon dessin prend vie !": the finished drawing on a 3D pop-up card.
@@ -79,7 +80,8 @@ export function ComeAlive({ open, onClose, page, drawing, locale }: { open: bool
               type="button"
               onClick={onClose}
               aria-label={tr(T.close, locale)}
-              className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-white/80 shadow-sm ring-1 ring-black/5 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky"
+              className={`${fx.toy} ${fx.light} grid h-14 w-14 shrink-0 place-items-center rounded-2xl`}
+              style={{ '--depth': '5px' } as React.CSSProperties}
             >
               <X size={26} aria-hidden="true" />
             </button>
@@ -118,21 +120,22 @@ export function ComeAlive({ open, onClose, page, drawing, locale }: { open: bool
           </div>
 
           <div className="relative z-10 flex flex-wrap items-center justify-center gap-3 px-4 pb-[max(env(safe-area-inset-bottom),1rem)] pt-2">
-            <motion.button
+            <button
               type="button"
-              whileTap={reduce ? undefined : { scale: 0.92 }}
               onClick={() => {
                 playSound('star');
                 sceneRef.current?.burst();
               }}
-              className="flex min-h-14 items-center gap-2 rounded-full bg-gradient-to-r from-[#FF7AB8] via-[#B07CFF] to-[#5FB6EA] px-7 font-display text-lg font-bold text-white shadow-[0_10px_24px_-10px_rgba(176,124,255,0.9)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky"
+              className={`${fx.toy} ${fx.sheen} flex min-h-16 items-center gap-2 rounded-full px-7 font-display text-lg font-bold`}
+              style={{ ...toy('#B07CFF', { depth: 7 }), '--face': 'linear-gradient(120deg, #FF7AB8, #B07CFF 50%, #5FB6EA)' } as React.CSSProperties}
             >
               <PartyPopper size={22} aria-hidden="true" /> {tr(T.confetti, locale)}
-            </motion.button>
+            </button>
             <button
               type="button"
               onClick={() => artRef.current && void downloadCanvas(artRef.current, fileName(page.id))}
-              className="flex min-h-14 items-center gap-2 rounded-full bg-white/85 px-6 font-display text-lg font-semibold shadow-sm ring-1 ring-black/5 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky"
+              className={`${fx.toy} ${fx.light} flex min-h-16 items-center gap-2 rounded-full px-6 font-display text-lg font-semibold`}
+              style={{ '--depth': '7px' } as React.CSSProperties}
             >
               <Download size={22} aria-hidden="true" /> {tr(T.download, locale)}
             </button>

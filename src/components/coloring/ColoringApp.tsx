@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { Lock, Palette as PaletteIcon, Volume2, VolumeX } from 'lucide-react';
+import { Lock, Volume2, VolumeX } from 'lucide-react';
 import { useLocale } from 'next-intl';
-import { ReadAloudProvider, SayButton, useAutoSay } from '@/components/arcade/read-aloud';
-import { AppPage } from '@/components/learn/AppPage';
+import { ReadAloudProvider, useAutoSay } from '@/components/arcade/read-aloud';
+import { StudioFrame } from '@/components/create/fx/StudioFrame';
+import { fx, toy } from '@/components/create/fx/toy';
 import { tr } from '@/lib/i18n-text';
 import { playSound } from '@/lib/sound';
 import { stopSpeaking } from '@/lib/voice';
@@ -74,43 +75,46 @@ export function ColoringApp() {
     playSound('tap');
   };
 
-  const tabBtn = (id: 'pages' | 'gallery', emoji: string, label: string) => (
-    <button
-      type="button"
-      role="tab"
-      aria-selected={tab === id}
-      onClick={() => {
-        setTab(id);
-        playSound('tap');
-      }}
-      className={`relative flex min-h-14 items-center gap-2 rounded-full px-5 font-display text-lg font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky sm:px-7 ${tab === id ? 'text-white' : 'text-text-body hover:bg-white/60 dark:hover:bg-white/10'}`}
-    >
-      {tab === id && <motion.span layoutId="coloring-tab" className="absolute inset-0 rounded-full bg-gradient-to-r from-[#FF7AB8] via-[#B07CFF] to-[#5FB6EA] shadow-lg" transition={{ type: 'spring', duration: 0.45, bounce: 0.25 }} />}
-      <span className="relative text-2xl" aria-hidden="true">
-        {emoji}
-      </span>
-      <span className="relative">{label}</span>
-      {id === 'gallery' && count ? <span className="relative rounded-full bg-white/90 px-2 text-sm text-[#7C3AED]">{count}</span> : null}
-    </button>
-  );
+  const tabBtn = (id: 'pages' | 'gallery', emoji: string, label: string) => {
+    const on = tab === id;
+    return (
+      <button
+        type="button"
+        role="tab"
+        aria-selected={on}
+        onClick={() => {
+          setTab(id);
+          playSound('tap');
+        }}
+        className={`${fx.toy} ${on ? '' : fx.light} flex min-h-14 items-center gap-2 rounded-full px-5 font-display text-lg font-semibold sm:px-7`}
+        style={on ? { ...toy('#B07CFF', { depth: 5 }), '--face': 'linear-gradient(120deg, #FF7AB8, #B07CFF 50%, #5FB6EA)' } as React.CSSProperties : ({ '--depth': '5px' } as React.CSSProperties)}
+      >
+        <span className="text-2xl" aria-hidden="true">
+          {emoji}
+        </span>
+        <span>{label}</span>
+        {id === 'gallery' && count ? <span className="rounded-full bg-white/90 px-2 text-sm text-[#7C3AED] shadow-sm">{count}</span> : null}
+      </button>
+    );
+  };
 
   return (
     <ReadAloudProvider on={reads} little={hydrated && memory.age === 'little'} locale={locale}>
-      <AppPage
-        eyebrow={
-          <>
-            <PaletteIcon size={15} /> {tr(T.eyebrow, locale)}
-          </>
-        }
+      <StudioFrame
+        eyebrow={tr(T.eyebrow, locale)}
+        emoji="🖍️"
         title={tr(T.appName, locale)}
         subtitle={tr(T.subtitle, locale)}
         color="#B07CFF"
+        locale={locale}
+        props={['🖍️', '🎨', '🌈', '✏️']}
+        say={[tr(T.appName, locale), tr(T.homeSay, locale)]}
+        wide
       >
         <HomeVoice locale={locale} quiet={!!open} />
         <div className="flex flex-col items-center gap-4">
           <div className="flex flex-wrap items-center justify-center gap-3">
-            <SayButton texts={[tr(T.appName, locale), tr(T.homeSay, locale)]} locale={locale} size="lg" className="order-2 sm:order-1" />
-            <div role="tablist" aria-label={tr(T.appName, locale)} className="order-1 flex gap-1 rounded-full bg-white/70 p-1.5 shadow-sm ring-1 ring-black/5 backdrop-blur dark:bg-white/5 dark:ring-white/10 max-sm:basis-full max-sm:justify-center sm:order-2">
+            <div role="tablist" aria-label={tr(T.appName, locale)} className="flex gap-2 rounded-full bg-white/70 p-2 shadow-[inset_0_2px_6px_rgba(80,40,140,0.12)] ring-1 ring-black/5 dark:bg-white/5 dark:ring-white/10 max-sm:basis-full max-sm:justify-center">
               {tabBtn('pages', '🖍️', tr(T.tabPages, locale))}
               {tabBtn('gallery', '🖼️', tr(T.tabGallery, locale))}
             </div>
@@ -119,7 +123,8 @@ export function ColoringApp() {
               onClick={toggleRead}
               aria-pressed={reads}
               title={tr(T.readAloud, locale)}
-              className={`order-3 flex min-h-16 items-center gap-2 rounded-full ps-3 pe-5 font-display text-base font-semibold shadow-sm ring-1 transition focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky ${reads ? 'bg-[#22C55E] text-white ring-[#22C55E]' : 'bg-white/80 text-text-muted ring-black/5 dark:bg-white/10'}`}
+              className={`${fx.toy} ${reads ? '' : fx.light} flex min-h-16 items-center gap-2 rounded-full ps-3 pe-5 font-display text-base font-semibold`}
+              style={reads ? toy('#22C55E', { depth: 5 }) : ({ '--depth': '5px' } as React.CSSProperties)}
             >
               <span className={`grid h-10 w-10 place-items-center rounded-full ${reads ? 'bg-white/25' : 'bg-black/5 dark:bg-white/10'}`}>
                 {reads ? <Volume2 size={22} aria-hidden="true" /> : <VolumeX size={22} aria-hidden="true" />}
@@ -145,7 +150,7 @@ export function ColoringApp() {
         <p className="mx-auto mt-12 flex max-w-xl items-center justify-center gap-2 text-center text-sm text-text-muted">
           <Lock size={14} aria-hidden="true" /> {tr(T.privacy, locale)}
         </p>
-      </AppPage>
+      </StudioFrame>
 
       <AnimatePresence>
         {open && <Studio key={open.key} page={open.page} locale={locale} artId={open.artId} initial={open.initial} createdAt={open.createdAt} onExit={exit} />}

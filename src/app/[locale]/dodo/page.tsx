@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { DodoHome } from '@/components/dodo/DodoHome';
 import { alternatesFor } from '@/lib/seo';
+import { readVoiceSummary } from './voice-files';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -22,5 +23,5 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function DodoPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <DodoHome />;
+  return <DodoHome voices={await readVoiceSummary(locale)} />;
 }

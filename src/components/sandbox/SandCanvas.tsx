@@ -5,6 +5,7 @@ import { Sandbox, type SimEvent } from '@/games2d/sandbox/sim';
 import { glowSize, renderGlow, renderPixels } from '@/games2d/sandbox/render';
 import { loadScene, type SceneId } from '@/games2d/sandbox/scenes';
 import type { Tool } from '@/games2d/sandbox/content';
+import { enrich } from './shading';
 
 /** Roughly how many cells the world has (200×120 in landscape, 120×200 in portrait). */
 const CELLS = 24000;
@@ -51,6 +52,7 @@ export function SandCanvas({
 }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
+  const glass = useRef<HTMLDivElement>(null);
   const sim = useRef<Sandbox | null>(null);
   // Everything the animation loop reads, kept in one ref so the loop never restarts.
   const live = useRef({ tool, radius, paused, reduceMotion, onEvents, onPaint });
@@ -105,6 +107,13 @@ export function SandCanvas({
     off.width = w;
     off.height = h;
     const offCtx = off.getContext('2d')!;
+    // Soft shadows cast by solid things, drawn a little lower behind them.
+    const shade = new ImageData(w, h);
+    const shade32 = new Uint32Array(shade.data.buffer);
+    const shadeCanvas = document.createElement('canvas');
+    shadeCanvas.width = w;
+    shadeCanvas.height = h;
+    const shadeCtx = shadeCanvas.getContext('2d')!;
     const { gw, gh } = glowSize(world);
     const glow = new ImageData(gw, gh);
     const glow32 = new Uint32Array(glow.data.buffer);
@@ -133,11 +142,16 @@ export function SandCanvas({
     // Fit the canvas in its box, keeping square cells; crisp backing store at the device pixel ratio.
     const fit = () => {
       const r = box.getBoundingClientRect();
-      const scale = Math.max(0.5, Math.min(r.width / w, r.height / h));
+      // Room for the toy frame around the glass.
+      const scale = Math.max(0.5, Math.min((r.width - 26) / w, (r.height - 30) / h));
       const cssW = Math.floor(w * scale);
       const cssH = Math.floor(h * scale);
       el.style.width = `${cssW}px`;
       el.style.height = `${cssH}px`;
+      if (glass.current) {
+        glass.current.style.width = `${cssW}px`;
+        glass.current.style.height = `${cssH}px`;
+      }
       const dpr = Math.min(2, window.devicePixelRatio || 1);
       el.width = Math.round(cssW * dpr);
       el.height = Math.round(cssH * dpr);
@@ -176,6 +190,10 @@ export function SandCanvas({
         ctx.fillRect(0, 0, W, H);
       }
       renderPixels(world, pix32, now, !live.current.reduceMotion);
+      enrich(world, pix32, shade32, now, !live.current.reduceMotion);
+      shadeCtx.putImageData(shade, 0, 0);
+      ctx.imageSmoothingEnabled = true;
+      ctx.drawImage(shadeCanvas, k * 0.55, k * 0.9, W, H);
       offCtx.putImageData(pixels, 0, 0);
       ctx.imageSmoothingEnabled = false;
       ctx.drawImage(off, 0, 0, W, H);
@@ -343,11 +361,12 @@ export function SandCanvas({
         tabIndex={0}
         aria-label={label}
         aria-describedby="sandbox-help"
-        className="sandbox-canvas touch-none select-none rounded-[22px] outline-none focus-visible:ring-4 focus-visible:ring-white/70"
+        className="sandbox-canvas touch-none select-none rounded-[22px] outline-none focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-[14px] focus-visible:outline-white/80"
         style={{
           imageRendering: 'pixelated',
           background: '#a8d1f6',
-          boxShadow: '0 30px 80px -30px rgba(10,8,40,0.65), 0 0 0 1px rgba(255,255,255,0.18), inset 0 0 0 1px rgba(255,255,255,0.25)',
+          // A moulded toy tank: white lip, sunny plastic rim with its thickness, soft shadow.
+          boxShadow: '0 0 0 4px rgba(255,255,255,0.95), 0 0 0 11px #ffc94a, 0 0 0 12px #f0a92c, 0 9px 0 12px #d4861c, 0 40px 70px -18px rgba(10,8,40,0.75)',
         }}
         onPointerDown={(e) => {
           e.currentTarget.setPointerCapture(e.pointerId);
@@ -368,6 +387,13 @@ export function SandCanvas({
         onBlur={() => Object.assign(input.current, { focused: false, down: false, px: -1 })}
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
+      />
+      {/* Glass reflection over the tank (never catches the pointer). */}
+      <div
+        ref={glass}
+        aria-hidden="true"
+        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[22px]"
+        style={{ background: 'linear-gradient(118deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 18%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 78%, rgba(255,255,255,0.1) 100%)', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -10px 24px -12px rgba(20,10,60,0.35)' }}
       />
       <p id="sandbox-help" className="sr-only">
         {help}

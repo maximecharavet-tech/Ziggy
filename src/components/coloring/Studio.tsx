@@ -21,6 +21,8 @@ import { Palette } from './Palette';
 import { PrintDialog } from './PrintDialog';
 import { Stage, type CommitKind, type StageApi } from './Stage';
 import { IconButton, ZiggyCheer } from './ui';
+import { Ziggy3D } from '@/components/ziggy3d/Ziggy3D';
+import { Burst } from '@/components/create/fx/Burst';
 
 const SIZES: { id: 'S' | 'M' | 'L'; px: number; label: L; dot: number }[] = [
   { id: 'S', px: 8, label: T.small, dot: 10 },
@@ -59,6 +61,9 @@ export function Studio({ page, locale, artId, initial, createdAt, onExit }: { pa
   const [moreOpen, setMoreOpen] = useState(false);
   const [stageSize, setStageSize] = useState(0);
   const [thumb, setThumb] = useState<string | undefined>();
+  const [party, setParty] = useState(0);
+  const [hooray, setHooray] = useState(false);
+  const partyCue = useMemo(() => ({ kind: 'cheer' as const, id: party }), [party]);
 
   const area = useRef<HTMLDivElement>(null);
   const stageApi = useRef<StageApi>(null);
@@ -90,7 +95,7 @@ export function Studio({ page, locale, artId, initial, createdAt, onExit }: { pa
   useEffect(() => {
     const el = area.current;
     if (!el) return;
-    const fit = () => setStageSize(Math.max(160, Math.floor(Math.min(el.clientWidth, el.clientHeight))));
+    const fit = () => setStageSize(Math.max(160, Math.floor(Math.min(el.clientWidth, el.clientHeight)) - 18));
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(el);
@@ -102,6 +107,13 @@ export function Studio({ page, locale, artId, initial, createdAt, onExit }: { pa
     const t = window.setTimeout(() => setToast(null), 3200);
     return () => window.clearTimeout(t);
   }, [toast]);
+
+  // Ziggy pops in to cheer for a finished page, then goes back.
+  useEffect(() => {
+    if (!hooray) return;
+    const t = window.setTimeout(() => setHooray(false), 5200);
+    return () => window.clearTimeout(t);
+  }, [hooray]);
 
   useEffect(() => {
     if (!confirmClear) return;
@@ -117,6 +129,10 @@ export function Studio({ page, locale, artId, initial, createdAt, onExit }: { pa
       setCheer(text);
       say('cheer', text);
       playSound(c.kind === 'done' ? 'win' : 'star');
+      if (c.kind === 'done') {
+        setParty((n) => n + 1);
+        setHooray(true);
+      }
     },
     [regionIds, locale, say]
   );
@@ -403,6 +419,8 @@ export function Studio({ page, locale, artId, initial, createdAt, onExit }: { pa
         {/* The drawing */}
         <section ref={area} className="relative order-1 flex min-h-0 min-w-0 flex-1 items-center justify-center landscape:order-2">
           <div className="relative" style={{ width: stageSize, height: stageSize }}>
+            {/* The drawing board under the paper */}
+            <div aria-hidden="true" className="absolute -inset-[9px] rounded-[2.2rem] bg-[linear-gradient(160deg,#ffffff,#efe6ff)] shadow-[inset_0_2px_0_#fff,0_8px_0_#d9ccf5,0_30px_50px_-24px_rgba(76,52,160,0.55)] dark:bg-[linear-gradient(160deg,#2a2552,#1c1840)] dark:shadow-[0_8px_0_#0e0b22,0_30px_50px_-24px_rgba(0,0,0,0.7)]" />
             {stageSize > 0 && (
               <Stage
                 page={page}
@@ -443,6 +461,21 @@ export function Studio({ page, locale, artId, initial, createdAt, onExit }: { pa
               )}
             </AnimatePresence>
             <ZiggyCheer text={cheer} onDone={() => setCheer(null)} />
+            <Burst fire={party} kind="confetti" count={28} spread={2.2} />
+            <AnimatePresence>
+              {hooray && !aliveOpen ? (
+                <motion.div
+                  key={party}
+                  initial={reduce ? { opacity: 0 } : { y: 120, opacity: 0, rotate: -8 }}
+                  animate={reduce ? { opacity: 1 } : { y: 0, opacity: 1, rotate: 0 }}
+                  exit={reduce ? { opacity: 0 } : { y: 140, opacity: 0 }}
+                  transition={{ type: 'spring', stiffness: 160, damping: 15 }}
+                  className="pointer-events-none absolute -bottom-3 end-2 z-20 h-40 w-32 sm:h-52 sm:w-40"
+                >
+                  <Ziggy3D className="h-full w-full" idle="dance" cue={partyCue} framing="full" fallback="wave" followPointer={false} />
+                </motion.div>
+              ) : null}
+            </AnimatePresence>
             <AnimatePresence>
               {toast && (
                 <motion.div

@@ -1,0 +1,11 @@
+# Build-time only (never shipped with the site). Python 3.11.
+kokoro-onnx==0.6.1      # Kokoro v1.0 vocabulary (config.json) + onnxruntime/phonemizer/espeakng-loader
+onnxruntime==1.31.1
+onnx==1.23.2            # prepare_model.py: expose the phoneme durations of the graph
+misaki==0.9.4           # Kokoro's own G2P (fr: EspeakG2P, en: lexicon + espeak fallback)
+spacy==3.8.18           # misaki's English tokenizer (blank pipeline, no model download)
+num2words==0.5.14
+phonemizer==3.4.0
+espeakng-loader==0.2.4  # espeak-ng (GPL-3.0) as a local build tool only
+numpy==2.4.6
+soundfile==0.14.0

@@ -3,7 +3,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { Download, Printer, Trash2 } from 'lucide-react';
-import { ZiggyAvatar } from '@/components/ziggy/Mascot';
+import type { CSSProperties } from 'react';
+import { MascotCutout } from '@/components/ziggy/Mascot';
+import { fx, toy } from '@/components/create/fx/toy';
 import { tr } from '@/lib/i18n-text';
 import { playSound } from '@/lib/sound';
 import { artStore } from '@/coloring/art-db';
@@ -61,13 +63,14 @@ export function MyGallery({ locale, onOpen, onCount }: { locale: string; onOpen:
 
   if (!items.length)
     return (
-      <div className="mx-auto flex max-w-md flex-col items-center gap-4 rounded-[2rem] bg-white/80 p-8 text-center shadow-sm ring-1 ring-black/5 dark:bg-white/5">
-        <ZiggyAvatar size={88} />
+      <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-[2rem] bg-white/80 p-8 text-center shadow-[0_7px_0_#e2d9f7,0_24px_40px_-24px_rgba(76,52,160,0.5)] ring-1 ring-black/5 dark:bg-white/5 dark:shadow-none">
+        <MascotCutout pose="heart" width={120} className={`w-28 ${fx.float}`} />
         <p className="font-display text-xl font-semibold text-text-body">{tr(T.galleryEmpty, locale)}</p>
       </div>
     );
 
-  const small = 'grid h-14 w-14 place-items-center rounded-full bg-white/90 text-[#5B3FA8] shadow-sm ring-1 ring-black/5 hover:bg-white focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky';
+  const small = `${fx.toy} ${fx.light} grid h-14 w-14 place-items-center rounded-full`;
+  const depth = { '--depth': '4px', '--ink': '#5B3FA8' } as CSSProperties;
 
   return (
     <div>
@@ -80,7 +83,7 @@ export function MyGallery({ locale, onOpen, onCount }: { locale: string; onOpen:
             return (
               <motion.li key={it.id} layout={!reduce} exit={{ opacity: 0, scale: 0.8 }} className="list-none">
                 <TiltCard delay={Math.min(i, 10) * 0.04}>
-                  <div className="overflow-hidden rounded-[1.75rem] bg-white shadow-[0_18px_40px_-24px_rgba(76,52,160,0.6)] ring-1 ring-black/5 dark:bg-[#17142f] dark:ring-white/10">
+                  <div className="overflow-hidden rounded-[1.75rem] bg-white shadow-[inset_0_2px_0_#fff,0_7px_0_#e2d9f7,0_24px_40px_-24px_rgba(76,52,160,0.6)] ring-1 ring-black/5 dark:bg-[#17142f] dark:shadow-[0_7px_0_#0b0920] dark:ring-white/10">
                     <button
                       type="button"
                       onClick={() => void withArt(it.id, (a) => onOpen(a))}
@@ -101,17 +104,19 @@ export function MyGallery({ locale, onOpen, onCount }: { locale: string; onOpen:
                       <button
                         type="button"
                         className={small}
+                        style={depth}
                         aria-label={`${tr(T.download, locale)} : ${title}`}
                         onClick={() => void withArt(it.id, async (a) => downloadCanvas(await renderArtwork(page, a.drawing, 1600), fileName(page.id)))}
                       >
                         <Download size={20} aria-hidden="true" />
                       </button>
-                      <button type="button" className={small} aria-label={`${tr(T.print, locale)} : ${title}`} onClick={() => void withArt(it.id, (a) => printDrawing(page, a.drawing, locale))}>
+                      <button type="button" className={small} style={depth} aria-label={`${tr(T.print, locale)} : ${title}`} onClick={() => void withArt(it.id, (a) => printDrawing(page, a.drawing, locale))}>
                         <Printer size={20} aria-hidden="true" />
                       </button>
                       <button
                         type="button"
-                        className={`${small} ${confirm === it.id ? '!w-auto !bg-[#FFE4E6] px-3 !text-[#BE123C] ring-2 ring-[#FB7185]' : ''}`}
+                        className={`${small} ${confirm === it.id ? '!w-auto px-3' : ''}`}
+                        style={confirm === it.id ? toy('#FFE4E6', { depth: 4, ink: '#BE123C' }) : depth}
                         aria-label={confirm === it.id ? tr(T.deleteSure, locale) : `${tr(T.delete, locale)} : ${title}`}
                         onClick={() => void remove(it.id)}
                       >

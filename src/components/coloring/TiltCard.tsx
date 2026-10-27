@@ -30,9 +30,10 @@ export function TiltCard({ children, className = '', delay = 0 }: { children: Re
   return (
     <motion.div
       className={`group relative [perspective:900px] ${className}`}
-      initial={{ opacity: 0, y: reduce ? 0 : 24, scale: reduce ? 1 : 0.96 }}
-      animate={{ opacity: 1, y: 0, scale: 1 }}
-      transition={{ duration: 0.45, delay, ease: [0.23, 1, 0.32, 1] }}
+      initial={reduce ? { opacity: 0 } : { opacity: 0, y: 34, rotateX: -28, scale: 0.94 }}
+      animate={reduce ? { opacity: 1 } : { opacity: 1, y: 0, rotateX: 0, scale: 1 }}
+      transition={reduce ? { duration: 0.2 } : { type: 'spring', stiffness: 140, damping: 15, delay }}
+      style={{ transformPerspective: 900 }}
       onPointerMove={track}
       onPointerLeave={leave}
       onPointerUp={leave}

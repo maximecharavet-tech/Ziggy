@@ -5,6 +5,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { DODO_STORIES, getDodoStory } from '@/data/dodo';
 import { DodoPlayer } from '@/components/dodo/DodoPlayer';
 import { tr } from '@/lib/i18n-text';
+import { readVoiceTiming } from '../voice-files';
 
 /** Unknown ids are a real 404, not a 200 "not found" page. */
 export const dynamicParams = false;
@@ -32,5 +33,5 @@ export default async function DodoStoryPage({ params }: { params: Promise<{ loca
   const s = getDodoStory(story);
   if (!s) notFound();
   setRequestLocale(locale);
-  return <DodoPlayer story={s} />;
+  return <DodoPlayer story={s} timing={await readVoiceTiming(locale, s.id)} />;
 }

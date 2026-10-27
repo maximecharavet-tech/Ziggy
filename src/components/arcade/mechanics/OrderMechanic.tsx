@@ -5,7 +5,9 @@ import { AnimatePresence, motion } from 'framer-motion';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { isOrderCorrect, orderCorrectPositions, shuffleNotIdentity, swap } from '../logic';
-import { ArcadeButton, Feedback, Hint, POP, Prompt, RoundProgress, SOFT_SHAKE, Stage, alpha, useFinishIfEmpty, useGameRun } from './shared';
+import { ArcadeButton, Feedback, Hint, POP, Prompt, RoundProgress, SOFT_SHAKE, Stage, useFinishIfEmpty, useGameRun } from './shared';
+import { ToyTile, chunkyFace, type TileTone } from '../stage/Toy';
+import { Burst } from '../stage/Burst';
 import { cheer, ui } from '../ui-text';
 import { useSay } from '../read-aloud';
 
@@ -108,49 +110,68 @@ function OrderRound({
       <Prompt text={prompt} color={color} say={[ui('orderHint', locale)]} />
       {!locked && <Hint>{ui('orderHint', locale)}</Hint>}
 
-      <motion.ol key={shakeKey} animate={shakeKey ? SOFT_SHAKE : undefined} className="flex flex-col gap-2.5 max-w-lg mx-auto" dir="ltr">
+      <motion.ol key={shakeKey} animate={shakeKey ? SOFT_SHAKE : undefined} className="mx-auto flex max-w-lg flex-col gap-3" dir="ltr">
         {order.map((stepIndex, pos) => {
           const isSel = selected === pos;
           const ok = checked?.[pos];
+          const tone: TileTone = ok === true ? 'right' : ok === false ? 'oops' : isSel ? 'picked' : 'idle';
           return (
-            <motion.li key={stepIndex} layout transition={POP}>
-              <motion.button
+            <motion.li
+              key={stepIndex}
+              layout
+              initial={{ opacity: 0, x: pos % 2 ? 40 : -40, rotate: pos % 2 ? 3 : -3 }}
+              animate={{ opacity: 1, x: 0, rotate: isSel ? -1.2 : 0, y: isSel ? -6 : 0, scale: isSel ? 1.03 : 1 }}
+              transition={{ ...POP, delay: checked && ok ? pos * 0.06 : 0, layout: { type: 'spring', stiffness: 380, damping: 28 } }}
+              className="relative"
+              style={{ zIndex: isSel ? 2 : 1 }}
+            >
+              <ToyTile
                 id={`order-card-${round}-${pos}`}
-                type="button"
+                color={color}
+                tone={tone}
+                depth={isSel ? 9 : 6}
+                radius="1.35rem"
+                tilt={false}
                 onClick={() => tapCard(pos)}
                 disabled={locked}
                 aria-pressed={isSel}
                 aria-label={`${ui('step', locale)} ${pos + 1}: ${steps[stepIndex]}${isSel ? `, ${ui('selected', locale)}` : ''}`}
-                whileTap={locked ? undefined : { scale: 0.97 }}
-                animate={{ scale: isSel ? 1.03 : 1, y: isSel ? -2 : 0 }}
-                transition={POP}
-                className="w-full min-h-[60px] rounded-3xl px-3 py-2.5 flex items-center gap-3 text-left border-2 bg-bg-card disabled:cursor-default"
-                style={{
-                  borderColor: ok === true ? '#22C55E' : ok === false ? '#FBBF24' : isSel ? color : alpha(color, '2E'),
-                  boxShadow: isSel ? `0 10px 24px ${alpha(color, '33')}` : 'none',
-                  background: isSel ? `linear-gradient(135deg, ${alpha(color, '1C')}, transparent)` : undefined,
-                }}
+                className="w-full"
+                faceClassName="min-h-[62px] !justify-start gap-3 px-3 py-2.5 text-start"
               >
                 <span
-                  className="w-10 h-10 shrink-0 rounded-2xl flex items-center justify-center font-extrabold text-white"
-                  style={{ backgroundColor: ok === true ? '#22C55E' : color }}
+                  className="relative grid h-11 w-11 shrink-0 place-items-center rounded-2xl font-display text-lg font-bold"
+                  style={ok === true ? { background: 'linear-gradient(160deg,#4ADE80,#16A34A)', color: '#fff', boxShadow: '0 3px 0 #15803D, inset 0 2px 0 rgba(255,255,255,0.4)' } : chunkyFace(color)}
                   aria-hidden="true"
                 >
                   {ok === true ? '✓' : pos + 1}
                 </span>
-                <span className="text-base sm:text-lg font-bold text-text-body">{steps[stepIndex]}</span>
-                {isSel && (
-                  <span className="ml-auto text-xl" aria-hidden="true">
+                <span className="relative text-base font-bold sm:text-lg" dir="auto">
+                  {steps[stepIndex]}
+                </span>
+                {isSel ? (
+                  <motion.span className="relative ms-auto text-xl" animate={{ y: [0, -3, 0, 3, 0] }} transition={{ duration: 1.2, repeat: Infinity }} aria-hidden="true">
                     ↕
+                  </motion.span>
+                ) : (
+                  <span className="relative ms-auto me-1 flex flex-col gap-1 opacity-30" aria-hidden="true">
+                    <span className="block h-1 w-5 rounded-full bg-[#8A8399]" />
+                    <span className="block h-1 w-5 rounded-full bg-[#8A8399]" />
+                    <span className="block h-1 w-5 rounded-full bg-[#8A8399]" />
                   </span>
                 )}
-              </motion.button>
+              </ToyTile>
             </motion.li>
           );
         })}
       </motion.ol>
+      {phase === 'right' ? (
+        <div className="relative h-0">
+          <Burst fire={round + 1} color={color} count={18} spread={160} className="!-top-24" />
+        </div>
+      ) : null}
 
-      <div className="mt-4">
+      <div className="mt-5 flex min-h-[72px] flex-wrap items-center justify-center gap-x-4 gap-y-2">
         <Feedback
           tone={phase === 'right' ? 'right' : phase === 'retry' || phase === 'shown' ? 'almost' : null}
           title={phase === 'right' ? cheer(round, locale) : phase === 'shown' ? ui('almost', locale) : phase === 'retry' ? ui('tryAgain', locale) : undefined}
@@ -158,9 +179,6 @@ function OrderRound({
         >
           {phase === 'shown' ? ui('showAnswer', locale) : undefined}
         </Feedback>
-      </div>
-
-      <div className="flex justify-center mt-3 min-h-[56px]">
         <AnimatePresence mode="wait">
           {locked ? (
             <motion.div key="next" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }}>

@@ -20,6 +20,7 @@ import { Celebration, type Celebrate } from './Celebration';
 import { NOTEBOOK_TEXT, Notebook } from './Notebook';
 import { Toolbar } from './Toolbar';
 import { emptySave, loadSave, writeSave, type SandboxSave } from './storage';
+import { fx, toy } from '@/components/create/fx/toy';
 
 const T = {
   title: { fr: 'Le Bac à sable magique', en: 'The Magic Sandbox' },
@@ -200,8 +201,10 @@ export function SandboxGame() {
 
       {/* Top bar. */}
       <header className="relative z-10 flex items-center gap-2 px-3 pb-1 pt-[max(0.75rem,env(safe-area-inset-top))] sm:gap-3 sm:px-5">
-        <Link href="/monde" aria-label={tr(T.back, locale)} title={tr(T.back, locale)} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white/10 text-lg ring-1 ring-white/15 transition hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white">
-          <span aria-hidden="true">←</span>
+        <Link href="/monde" aria-label={tr(T.back, locale)} title={tr(T.back, locale)} className={`${fx.toy} grid h-12 w-12 shrink-0 place-items-center rounded-full text-lg font-black`} style={toy('#4b3fa6', { depth: 4 })}>
+          <span aria-hidden="true" className="rtl:-scale-x-100">
+            ←
+          </span>
         </Link>
         <h1 className="line-clamp-2 min-w-0 font-display text-[17px] font-bold leading-[1.1] sm:text-2xl">
           <span aria-hidden="true" className="hidden sm:inline">
@@ -211,23 +214,24 @@ export function SandboxGame() {
         </h1>
         <SayButton size="sm" texts={[tr(T.title, locale), tr(T.intro, locale)]} locale={locale} className="!bg-white/10 !text-white !ring-white/20" />
         <div className="flex-1" />
-        <motion.button
-          ref={notebookButton}
-          type="button"
-          onClick={() => setDrawer(true)}
-          aria-label={`${tr(NOTEBOOK_TEXT.title, locale)} : ${found}/${DISCOVERIES.length}`}
-          className="relative flex h-11 shrink-0 items-center gap-2 rounded-full bg-white px-3.5 text-sm font-black text-[#2c2470] shadow-lg transition hover:scale-[1.03] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white lg:hidden"
-          animate={current ? { scale: [1, 1.08, 1] } : { scale: 1 }}
-          transition={{ duration: 0.8, repeat: current ? Infinity : 0 }}
-        >
-          <span aria-hidden="true" className="text-lg">
-            📒
-          </span>
-          <span className="hidden min-[400px]:inline">{tr(NOTEBOOK_TEXT.short, locale)}</span>
-          <span className="tabular-nums">
-            {found}/{DISCOVERIES.length}
-          </span>
-        </motion.button>
+        <motion.span className="shrink-0 lg:hidden" animate={current && !reduceMotion ? { scale: [1, 1.08, 1] } : { scale: 1 }} transition={{ duration: 0.8, repeat: current ? Infinity : 0 }}>
+          <button
+            ref={notebookButton}
+            type="button"
+            onClick={() => setDrawer(true)}
+            aria-label={`${tr(NOTEBOOK_TEXT.title, locale)} : ${found}/${DISCOVERIES.length}`}
+            className={`${fx.toy} ${fx.light} flex h-12 items-center gap-2 rounded-full px-3.5 text-sm font-black`}
+            style={{ '--depth': '4px', '--ink': '#2c2470' } as React.CSSProperties}
+          >
+            <span aria-hidden="true" className="text-lg">
+              📒
+            </span>
+            <span className="hidden min-[400px]:inline">{tr(NOTEBOOK_TEXT.short, locale)}</span>
+            <span className="tabular-nums">
+              {found}/{DISCOVERIES.length}
+            </span>
+          </button>
+        </motion.span>
       </header>
 
       {/* The sandbox, with the notebook alongside on large screens. */}
@@ -271,7 +275,7 @@ export function SandboxGame() {
             ) : null}
           </AnimatePresence>
         </div>
-        <aside aria-label={tr(NOTEBOOK_TEXT.title, locale)} className="hidden w-[320px] shrink-0 overflow-hidden rounded-[26px] bg-white/[0.08] ring-1 ring-white/15 backdrop-blur-md lg:flex">
+        <aside aria-label={tr(NOTEBOOK_TEXT.title, locale)} className="hidden w-[320px] shrink-0 overflow-hidden rounded-[26px] bg-[#2a2470]/85 shadow-[inset_0_2px_0_rgba(255,255,255,0.12),0_8px_0_#1a1550,0_30px_50px_-20px_rgba(0,0,0,0.6)] ring-1 ring-white/15 lg:flex">
           <Notebook ref={notebookPanel} save={save} locale={locale} className="w-full" />
         </aside>
       </div>
@@ -307,7 +311,7 @@ export function SandboxGame() {
       <AnimatePresence>
         {drawer ? (
           <motion.div key="drawer" className="fixed inset-0 z-[65] lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-            <button type="button" aria-label={tr(NOTEBOOK_TEXT.close, locale)} className="absolute inset-0 bg-[#0d0b2a]/60 backdrop-blur-sm" onClick={() => setDrawer(false)} />
+            <button type="button" aria-label={tr(NOTEBOOK_TEXT.close, locale)} className="absolute inset-0 bg-[#0d0b2a]/70" onClick={() => setDrawer(false)} />
             <motion.div
               role="dialog"
               aria-modal="true"

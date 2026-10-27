@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import type { ChoiceItem } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
-import { ArcadeButton, Feedback, POP, Prompt, SOFT_SHAKE, alpha } from './shared';
+import { ArcadeButton, Feedback, Prompt, WOBBLE } from './shared';
+import { ToyTile, chunkyFace, type TileTone } from '../stage/Toy';
+import { Burst } from '../stage/Burst';
+
+const ENTER = { type: 'spring', stiffness: 260, damping: 19 } as const;
 import { cheer, ui } from '../ui-text';
 import { CountDots, useReadAloud } from '../read-aloud';
 
@@ -69,65 +73,68 @@ export function ChoiceQuestion({
     <div>
       <Prompt visual={item.visual} text={item.prompt} color={color} say={item.options} onSpeak={(i) => setReading(i && i > 0 ? i - 1 : null)} />
 
-      <div className={`grid grid-cols-1 ${cols} gap-3`} role="group" aria-label={item.prompt}>
+      <div className={`grid grid-cols-1 ${cols} gap-x-3 gap-y-4`} role="group" aria-label={item.prompt}>
         {item.options.map((opt, i) => {
           const isAnswer = i === item.answer;
           const isPicked = i === picked;
           const showRight = answered && isAnswer;
           const dim = answered && !isAnswer && !isPicked;
           const lit = !answered && reading === i;
+          const tone: TileTone = showRight ? 'right' : answered && isPicked ? 'oops' : lit ? 'lit' : 'idle';
+          const pic = little ? pictured(opt) : null;
           return (
-            <motion.button
+            <motion.div
               key={`${i}-${opt}`}
-              type="button"
-              onClick={() => pick(i)}
-              disabled={answered}
-              aria-label={`${ui('option', locale)} ${i + 1}: ${opt}`}
-              aria-pressed={isPicked}
-              initial={{ opacity: 0, y: 12 }}
+              className="relative"
+              initial={{ opacity: 0, y: 26, rotateX: -35 }}
               animate={
                 answered && isPicked && !isAnswer
-                  ? { opacity: 1, y: 0, ...SOFT_SHAKE }
-                  : { opacity: dim ? 0.45 : 1, y: 0, scale: showRight || lit ? 1.05 : 1 }
+                  ? { opacity: 1, y: 0, rotateX: 0, ...WOBBLE }
+                  : { opacity: dim ? 0.5 : 1, y: 0, rotateX: 0, scale: showRight ? [1, 1.08, 1.03] : lit ? 1.04 : dim ? 0.97 : 1 }
               }
-              whileTap={answered ? undefined : { scale: 0.96 }}
-              transition={{ ...POP, delay: answered ? 0 : i * 0.04 }}
-              className="relative min-h-[64px] rounded-3xl px-4 py-3 text-lg sm:text-xl font-extrabold text-text-body border-2 flex items-center justify-center gap-2 text-center disabled:cursor-default"
-              style={{
-                borderColor: showRight ? '#22C55E' : isPicked ? '#FBBF24' : lit ? color : alpha(color, '30'),
-                boxShadow: lit ? `0 0 0 4px ${alpha(color, '40')}` : undefined,
-                background: showRight
-                  ? 'linear-gradient(135deg, #22C55E22, #22C55E0A)'
-                  : `linear-gradient(135deg, ${alpha(color, '12')}, transparent)`,
-              }}
+              transition={showRight ? { duration: 0.45, ease: 'easeOut' } : { ...ENTER, delay: answered ? 0 : 0.08 + i * 0.07 }}
+              style={{ transformPerspective: 700 }}
             >
-              <span
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-7 h-7 rounded-full text-xs flex items-center justify-center font-bold"
-                style={{ backgroundColor: alpha(color, '1A'), color }}
-                aria-hidden="true"
+              <ToyTile
+                color={color}
+                tone={tone}
+                onClick={() => pick(i)}
+                disabled={answered}
+                aria-label={`${ui('option', locale)} ${i + 1}: ${opt}`}
+                aria-pressed={isPicked}
+                className="w-full"
+                faceClassName={`min-h-[68px] px-4 py-3 text-lg sm:text-xl font-extrabold text-center gap-2 ${pic ? 'min-h-[104px]' : ''}`}
               >
-                {showRight ? '✓' : i + 1}
-              </span>
-              <span className="flex flex-col items-center px-8">
-                {little && pictured(opt) ? (
-                  // Pre-readers: the picture is the answer, the word is just a caption.
-                  <>
-                    <span className="text-5xl leading-none" aria-hidden="true">
-                      {pictured(opt)![0]}
-                    </span>
-                    <span className="mt-1 text-base font-bold text-text-muted">{pictured(opt)![1]}</span>
-                  </>
-                ) : (
-                  <span>{opt}</span>
-                )}
-                {little ? <CountDots text={opt} color={color} /> : null}
-              </span>
-            </motion.button>
+                <span
+                  className="absolute start-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-sm font-extrabold"
+                  style={showRight ? { background: 'linear-gradient(160deg,#4ADE80,#16A34A)', color: '#fff', boxShadow: '0 2px 0 #15803D' } : { ...chunkyFace(color), fontSize: 13 }}
+                  aria-hidden="true"
+                >
+                  {showRight ? '✓' : i + 1}
+                </span>
+                <span className="relative flex flex-col items-center px-8" dir="auto">
+                  {pic ? (
+                    // Pre-readers: the picture is the answer, the word is just a caption.
+                    <>
+                      <span className="text-5xl leading-none drop-shadow-[0_3px_2px_rgba(0,0,0,0.15)]" aria-hidden="true">
+                        {pic[0]}
+                      </span>
+                      <span className="mt-1 text-base font-bold text-[#6B6480]">{pic[1]}</span>
+                    </>
+                  ) : (
+                    <span>{opt}</span>
+                  )}
+                  {little ? <CountDots text={opt} color={color} /> : null}
+                </span>
+              </ToyTile>
+              {showRight ? <Burst fire={1} color={color} count={14} spread={120} /> : null}
+            </motion.div>
           );
         })}
       </div>
 
-      <div className="mt-4">
+      {/* Ziggy's word and the way on, side by side (stacked on phones) */}
+      <div className="mt-5 flex min-h-[72px] flex-wrap items-center justify-center gap-x-4 gap-y-2">
         <Feedback
           tone={answered ? (right ? 'right' : 'almost') : null}
           title={answered ? (right ? cheer(round, locale) : ui('almost', locale)) : undefined}
@@ -139,15 +146,14 @@ export function ChoiceQuestion({
               {ui('answerWas', locale)} <strong>{item.options[item.answer]}</strong>
             </>
           )}
-          {answered && item.explain && <span className="block mt-1 font-medium text-text-muted">{item.explain}</span>}
+          {answered && item.explain && <span className="mt-1 block font-medium text-[#5b5470]">{item.explain}</span>}
         </Feedback>
-      </div>
-
-      <div className="flex justify-center mt-3 min-h-[56px]">
         {answered && (
-          <ArcadeButton color={color} onClick={onNext} autoFocus>
-            {isLast ? ui('finish', locale) : ui('next', locale)} →
-          </ArcadeButton>
+          <motion.div initial={{ opacity: 0, scale: 0.7, x: -10 }} animate={{ opacity: 1, scale: 1, x: 0 }} transition={{ type: 'spring', stiffness: 380, damping: 16, delay: 0.15 }}>
+            <ArcadeButton color={color} onClick={onNext} autoFocus>
+              {isLast ? ui('finish', locale) : ui('next', locale)} <span className="rtl:rotate-180" aria-hidden="true">→</span>
+            </ArcadeButton>
+          </motion.div>
         )}
       </div>
     </div>

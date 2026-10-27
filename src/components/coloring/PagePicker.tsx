@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import type { CSSProperties } from 'react';
 import { Printer } from 'lucide-react';
 import { useSay } from '@/components/arcade/read-aloud';
 import { tr } from '@/lib/i18n-text';
@@ -12,55 +12,55 @@ import type { ColoringPage, ThemeId } from '@/coloring/types';
 import { PageArt } from './PageArt';
 import { printBlank } from './PrintDialog';
 import { TiltCard } from './TiltCard';
+import { alpha, fx, toy } from '@/components/create/fx/toy';
+
+const THEMES_LABEL = { fr: 'Thèmes', en: 'Themes' };
 
 /** Theme chips + animated cards of every colouring page. */
 export function PagePicker({ locale, onPick }: { locale: string; onPick: (page: ColoringPage) => void }) {
   const [theme, setTheme] = useState<ThemeId | 'all'>('all');
-  const reduce = useReducedMotion();
   const say = useSay();
   const pages = theme === 'all' ? PAGES : PAGES.filter((p) => p.theme === theme);
 
   const chip = (id: ThemeId | 'all', emoji: string, name: string, color: string) => {
     const on = theme === id;
     return (
-      <motion.button
+      <button
         key={id}
         type="button"
         aria-pressed={on}
-        whileTap={reduce ? undefined : { scale: 0.92 }}
         onClick={() => {
           setTheme(id);
           playSound('tap');
           say('theme', name);
         }}
-        className={`flex min-h-14 shrink-0 items-center gap-2 rounded-full px-4 font-display text-base font-semibold transition-colors focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-sky sm:px-5 sm:text-lg ${
-          on ? 'text-white shadow-lg' : 'bg-white/80 text-text-body ring-1 ring-black/5 hover:bg-white dark:bg-white/10 dark:ring-white/10'
-        }`}
-        style={on ? { backgroundColor: color, boxShadow: `0 10px 24px -12px ${color}` } : undefined}
+        className={`${fx.toy} ${on ? fx.on : fx.light} flex min-h-14 shrink-0 items-center gap-2 rounded-full px-4 font-display text-base font-semibold sm:px-5 sm:text-lg`}
+        style={on ? toy(color, { depth: 5, ring: '#ffffff' }) : ({ '--depth': '5px' } as CSSProperties)}
       >
         <span className="text-2xl" aria-hidden="true">
           {emoji}
         </span>
         {name}
-      </motion.button>
+      </button>
     );
   };
 
   return (
     <div>
-      <div role="group" aria-label="Thèmes" className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-3 pt-1 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
+      <div role="group" aria-label={tr(THEMES_LABEL, locale)} className="-mx-4 flex gap-2.5 overflow-x-auto px-4 pb-4 pt-1 sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0">
         {chip('all', '🎨', tr(T.all, locale), '#8B5CF6')}
         {THEMES.map((t) => chip(t.id, t.emoji, tr(t.name, locale), t.color))}
       </div>
 
-      <motion.ul layout={!reduce} className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-6 lg:grid-cols-4">
+      <ul className="mt-5 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 sm:gap-x-6 sm:gap-y-8 lg:grid-cols-4">
         {pages.map((p, i) => {
           const th = THEMES.find((t) => t.id === p.theme)!;
           const title = tr(p.title, locale);
           return (
-            <motion.li key={p.id} layout={!reduce} className="list-none">
-              <TiltCard delay={Math.min(i, 10) * 0.04} className="h-full">
-                <div className="relative h-full overflow-hidden rounded-[1.75rem] bg-white shadow-[0_18px_40px_-24px_rgba(76,52,160,0.6)] ring-1 ring-black/5 dark:bg-[#17142f] dark:ring-white/10">
+            <li key={`${theme}-${p.id}`} className="list-none">
+              <TiltCard delay={Math.min(i, 10) * 0.05} className="h-full">
+                <div className="relative h-full rounded-[1.75rem] bg-white shadow-[inset_0_2px_0_#fff,0_7px_0_#e2d9f7,0_24px_40px_-24px_rgba(76,52,160,0.6)] ring-1 ring-black/5 dark:bg-[#17142f] dark:shadow-[0_7px_0_#0b0920,0_24px_40px_-24px_rgba(0,0,0,0.7)] dark:ring-white/10">
+                  <span aria-hidden="true" className="pointer-events-none absolute -top-2 left-1/2 z-10 h-5 w-16 -translate-x-1/2 -rotate-3 rounded-[3px] opacity-90 shadow-[0_2px_3px_rgba(0,0,0,0.12)]" style={{ background: `repeating-linear-gradient(45deg, ${alpha(th.color, 0.55)} 0 6px, ${alpha(th.color, 0.35)} 6px 12px)` }} />
                   <button
                     type="button"
                     onClick={() => {
@@ -68,9 +68,9 @@ export function PagePicker({ locale, onPick }: { locale: string; onPick: (page: 
                       onPick(p);
                     }}
                     aria-label={`${tr(T.open, locale)} : ${title}`}
-                    className="block w-full text-start focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-sky"
+                    className="block w-full overflow-hidden rounded-[1.75rem] text-start focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-inset focus-visible:ring-sky"
                   >
-                    <span className="relative block aspect-square overflow-hidden bg-white p-2.5">
+                    <span className="relative block aspect-square overflow-hidden bg-white p-2.5 dark:bg-[#17142f]">
                       <PageArt page={p} className="h-full w-full overflow-hidden rounded-2xl" />
                       <PageArt page={p} model className="absolute inset-2.5 overflow-hidden rounded-2xl opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
                     </span>
@@ -98,10 +98,10 @@ export function PagePicker({ locale, onPick }: { locale: string; onPick: (page: 
                   </button>
                 </div>
               </TiltCard>
-            </motion.li>
+            </li>
           );
         })}
-      </motion.ul>
+      </ul>
     </div>
   );
 }

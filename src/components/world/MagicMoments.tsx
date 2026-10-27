@@ -14,6 +14,8 @@ import { getMemory } from '@/lib/world/store';
 import { readAloudOn } from '@/lib/world/memory';
 import { Confetti } from '@/components/ui/Confetti';
 import { MAGIC_TEXT } from './text';
+import { GameToken, Sunburst, Title3D } from '@/components/arcade/stage/Showpieces';
+import { ToyButton } from '@/components/arcade/stage/Toy';
 
 /** Details for a moment: the world, companion, badge or treasure it is about. */
 function detail(m: MagicMoment, locale: string): { emoji: string; label: string | null } {
@@ -90,27 +92,36 @@ export function MagicMoments({ moments, locale, onDone }: { moments: MagicMoment
           role="dialog"
           aria-modal="true"
           aria-label={tr(MAGIC_TEXT[current.kind], locale)}
-          className="fixed inset-0 z-[80] grid place-items-center bg-bg-dark/70 p-6 backdrop-blur-sm"
+          className="fixed inset-0 z-[80] grid place-items-center p-6"
+          style={{ background: 'radial-gradient(circle at 50% 45%, rgba(60,40,120,0.55), rgba(10,10,26,0.82) 70%)' }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={() => setI((n) => n + 1)}
         >
-          <Confetti trigger />
+          <Confetti trigger count={28} />
+          <Sunburst color="#FBBF24" className="left-1/2 top-1/2 w-[min(900px,160vw)] -translate-x-1/2 -translate-y-1/2 opacity-60" />
           <motion.div
-            initial={{ scale: 0.6, rotate: -6, opacity: 0 }}
-            animate={{ scale: 1, rotate: 0, opacity: 1 }}
-            transition={{ type: 'spring', stiffness: 160, damping: 14 }}
-            className="relative w-full max-w-sm rounded-[2rem] bg-bg-card p-8 text-center shadow-2xl"
+            initial={{ scale: 0.5, rotate: -8, opacity: 0, y: 40 }}
+            animate={{ scale: 1, rotate: 0, opacity: 1, y: 0 }}
+            transition={{ type: 'spring', stiffness: 170, damping: 13 }}
+            className="relative w-full max-w-sm rounded-[2.4rem] p-2"
+            style={{ background: 'linear-gradient(170deg, #FDE68A, #F59E0B)', boxShadow: '0 10px 0 #B45309, 0 40px 80px -20px rgba(0,0,0,0.6), inset 0 3px 0 rgba(255,255,255,0.6)' }}
           >
-            <motion.div className="text-8xl" animate={{ y: [0, -10, 0] }} transition={{ duration: 1.6, repeat: Infinity }} aria-hidden="true">
-              {detail(current, locale).emoji}
-            </motion.div>
-            <h2 className="mt-4 font-display text-3xl font-bold text-text-body">{tr(MAGIC_TEXT[current.kind], locale)}</h2>
-            {detail(current, locale).label ? <p className="mt-2 text-lg font-semibold text-text-muted">{detail(current, locale).label}</p> : null}
-            <button type="button" autoFocus className="mt-6 rounded-full bg-green px-6 py-3 font-bold text-white shadow hover:bg-green-dark focus-visible:outline focus-visible:outline-4 focus-visible:outline-green/40">
-              {locale === 'fr' ? 'Youpi !' : 'Yay!'}
-            </button>
+            <div className="relative rounded-[2rem] bg-bg-card px-6 pb-8 pt-4 text-center" style={{ boxShadow: 'inset 0 6px 14px rgba(146,64,14,0.18)' }}>
+              <motion.div initial={{ y: 30, scale: 0.4 }} animate={{ y: -40, scale: 1 }} transition={{ type: 'spring', stiffness: 220, damping: 12, delay: 0.15 }} className="-mb-6 flex justify-center">
+                <GameToken emoji={detail(current, locale).emoji} color="#F59E0B" size={128} />
+              </motion.div>
+              <div className="flex justify-center">
+                <Title3D as="h2" text={tr(MAGIC_TEXT[current.kind], locale)} color="#F59E0B" className="text-3xl" delay={0.25} />
+              </div>
+              {detail(current, locale).label ? <p className="mt-3 text-lg font-bold text-text-muted">{detail(current, locale).label}</p> : null}
+              <div className="mt-6 flex justify-center">
+                <ToyButton color="#22C55E" size="lg" shine halo autoFocus>
+                  {locale === 'fr' ? 'Youpi !' : 'Yay!'}
+                </ToyButton>
+              </div>
+            </div>
           </motion.div>
         </motion.div>
       ) : null}
@@ -129,12 +140,14 @@ export function MomentChips({ moments, locale }: { moments: MagicMoment[]; local
         return (
           <motion.li
             key={`${m.kind}-${m.ref ?? i}`}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 + i * 0.12 }}
-            className="flex items-center gap-2 rounded-full border border-border/70 bg-bg-card px-3 py-1.5 text-sm font-semibold text-text-body"
+            initial={{ opacity: 0, y: 12, scale: 0.7 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            transition={{ type: 'spring', stiffness: 320, damping: 16, delay: 1.8 + i * 0.12 }}
+            className="flex items-center gap-2 rounded-full border-2 border-[#FDE68A] bg-bg-card py-1 pe-3.5 ps-1 text-sm font-bold text-text-body shadow-[0_3px_0_rgba(217,119,6,0.2)]"
           >
-            <span aria-hidden="true">{d.emoji}</span>
+            <span className="grid h-7 w-7 place-items-center rounded-full bg-[#FEF3C7]" aria-hidden="true">
+              {d.emoji}
+            </span>
             {tr(MAGIC_TEXT[m.kind], locale)}
             {d.label ? <span className="text-text-muted">· {d.label}</span> : null}
           </motion.li>

@@ -5,8 +5,15 @@ import { motion } from 'framer-motion';
 import type { MechanicProps } from '@/lib/arcade/types';
 import type { RunnerScene } from './runner/RunnerScene';
 import { runnerLanes } from '../logic';
-import { ArcadeButton, Feedback, Prompt, RoundProgress, Stage, alpha, useFinishIfEmpty, useGameRun, useTimers } from './shared';
+import { ArcadeButton, Feedback, Prompt, RoundProgress, Stage, useFinishIfEmpty, useGameRun, useTimers } from './shared';
 import { cheer, ui } from '../ui-text';
+import { MascotCutout } from '@/components/ziggy/Mascot';
+import { ToyButton } from '../stage/Toy';
+import { useStageTheme } from '../stage/StageTheme';
+import { darken, lighten, rgba } from '../stage/color';
+
+/** Same lane colours as the arches in the scene. */
+const LANE_COLORS = ['#5FB6EA', '#F9A86B', '#A78BFA', '#4FC9C0'];
 
 type Verdict = { right: boolean; answer: string } | null;
 
@@ -29,6 +36,7 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
   const [verdict, setVerdict] = useState<Verdict>(null);
   const [failed, setFailed] = useState(false);
   const [reading, setReading] = useState<number | null>(null);
+  const theme = useStageTheme(color);
 
   const round = items[index] ? runnerLanes(items[index].options, items[index].answer) : null;
 
@@ -77,7 +85,7 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
             onGate: (l) => onGateRef.current(l),
             onLane: (l) => setLane(l),
           },
-          { color, calm },
+          { color, calm, night: theme.night, sky: { top: theme.skyTop, bottom: theme.skyBottom } },
         );
         game = made.game;
         sceneRef.current = made.scene;
@@ -115,48 +123,47 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
     <Stage color={color} className="!p-3 sm:!p-5">
       <RoundProgress index={index} total={total} color={color} locale={locale} />
       <Prompt visual={item.visual} text={item.prompt} color={color} say={round.options} onSpeak={(i) => setReading(i && i > 0 ? i - 1 : null)} />
-      {/* The gates' answers, in lane order, lit up while Ziggy reads them. */}
-      <div className="-mt-2 mb-3 flex justify-center gap-2" dir="ltr" aria-hidden="true">
-        {round.options.map((o, i) => (
-          <span
-            key={i}
-            className="rounded-2xl border-2 px-3 py-1.5 text-base font-extrabold text-text-body transition"
-            style={{ borderColor: reading === i || lane === i ? color : alpha(color, '30'), transform: reading === i ? 'scale(1.1)' : undefined }}
-          >
-            {i === 0 ? '◀ ' : i === round.options.length - 1 ? '' : '▲ '}
-            {o}
-            {i === round.options.length - 1 && i !== 0 ? ' ▶' : ''}
-          </span>
-        ))}
-      </div>
-
-      <div
-        className="relative w-full h-[380px] sm:h-[440px] rounded-3xl overflow-hidden border-2 touch-none select-none"
-        style={{ borderColor: alpha(color, '30') }}
-      >
-        <div ref={hostRef} className="absolute inset-0" role="img" aria-label={ui('runnerCanvas', locale)} />
-        {!ready && !failed && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-bg-card/80">
-            <motion.span
-              className="text-5xl"
-              animate={{ y: [0, -10, 0] }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-              aria-hidden="true"
-            >
-              👟
-            </motion.span>
-            <span className="text-sm font-bold text-text-muted">{ui('runnerLoading', locale)}</span>
+      <div className="relative w-full rounded-[1.8rem] p-1.5" style={{ background: `linear-gradient(180deg, ${lighten(color, 0.3)}, ${darken(color, 0.1)})`, boxShadow: `0 6px 0 ${darken(color, 0.35)}, 0 22px 36px -18px ${rgba(darken(color, 0.5), 0.6)}` }}>
+        <div className="relative h-[clamp(340px,54vh,470px)] w-full touch-none select-none overflow-hidden rounded-[1.4rem]" style={{ background: `linear-gradient(180deg, ${theme.skyTop}, ${theme.skyBottom} 30%, ${theme.night ? '#211A55' : '#A8E392'} 30%)` }}>
+          <div ref={hostRef} className="absolute inset-0" role="img" aria-label={ui('runnerCanvas', locale)} />
+          {/* The arches' answers, in lane order, lit up while Ziggy reads them. */}
+          <div className="pointer-events-none absolute inset-x-2 top-2 z-10 grid gap-2 sm:inset-x-3 sm:top-3" style={{ gridTemplateColumns: `repeat(${round.options.length}, minmax(0, 1fr))` }} dir="ltr" aria-hidden="true">
+            {round.options.map((o, i) => {
+              const tint = LANE_COLORS[i % LANE_COLORS.length];
+              const on = reading === i || lane === i;
+              return (
+                <motion.span
+                  key={`${index}-${i}`}
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: on ? -3 : 0, scale: reading === i ? 1.08 : 1 }}
+                  transition={{ type: 'spring', stiffness: 420, damping: 20, delay: i * 0.05 }}
+                  className="flex min-h-[44px] items-center justify-center gap-1 rounded-2xl border-[3px] bg-white/95 px-2 py-1 text-center text-base font-extrabold text-[#2A2340] sm:text-lg"
+                  style={{ borderColor: on ? tint : lighten(tint, 0.5), boxShadow: `0 ${on ? 5 : 3}px 0 ${on ? darken(tint, 0.2) : lighten(tint, 0.3)}` }}
+                >
+                  {lane === i ? <span className="text-xs" aria-hidden="true">🏃</span> : null}
+                  <span className="truncate">{o}</span>
+                </motion.span>
+              );
+            })}
           </div>
-        )}
-        {failed && (
-          <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-3 p-4 bg-bg-card">
-            {round.options.map((o, i) => (
-              <ArcadeButton key={i} color={color} variant="soft" onClick={() => pickDirect(i)}>
-                {o}
-              </ArcadeButton>
-            ))}
-          </div>
-        )}
+          {!ready && !failed && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center gap-3">
+              <motion.span className="block h-36 w-24" animate={{ y: [0, -16, 0], scaleY: [1, 1.05, 0.96, 1] }} transition={{ duration: 0.7, repeat: Infinity }} aria-hidden="true">
+                <MascotCutout pose="stand" width={96} glow={false} />
+              </motion.span>
+              <span className="rounded-full bg-white/85 px-4 py-1.5 text-sm font-bold text-[#2A2340]">{ui('runnerLoading', locale)}</span>
+            </div>
+          )}
+          {failed && (
+            <div className="absolute inset-0 flex flex-wrap items-center justify-center gap-3 bg-bg-card p-4">
+              {round.options.map((o, i) => (
+                <ArcadeButton key={i} color={color} variant="soft" onClick={() => pickDirect(i)}>
+                  {o}
+                </ArcadeButton>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Lane controls (touch, mouse, keyboard) + screen-reader view of the gates */}
@@ -168,18 +175,18 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
           </li>
         ))}
       </ul>
-      <div className="flex items-center justify-center gap-4 mt-4" dir="ltr">
-        <ArcadeButton color={color} variant="soft" ariaLabel={ui('left', locale)} onClick={() => sceneRef.current?.moveLane(-1)} className="!px-8 text-2xl">
+      <div className="mt-5 flex items-center justify-center gap-4" dir="ltr">
+        <ToyButton color={color} variant="soft" size="lg" ariaLabel={ui('left', locale)} onClick={() => sceneRef.current?.moveLane(-1)} faceClassName="!px-9 text-2xl">
           ◀
-        </ArcadeButton>
-        <div className="flex gap-1.5" aria-hidden="true">
+        </ToyButton>
+        <div className="flex gap-2" aria-hidden="true">
           {round.options.map((_, i) => (
-            <span key={i} className="w-3 h-3 rounded-full" style={{ backgroundColor: i === lane ? color : alpha(color, '33') }} />
+            <motion.span key={i} animate={{ scale: i === lane ? 1.3 : 1 }} className="h-3.5 w-3.5 rounded-full" style={{ backgroundColor: i === lane ? LANE_COLORS[i % LANE_COLORS.length] : rgba(color, 0.2), boxShadow: i === lane ? `0 2px 0 ${darken(LANE_COLORS[i % LANE_COLORS.length], 0.3)}` : undefined }} />
           ))}
         </div>
-        <ArcadeButton color={color} variant="soft" ariaLabel={ui('right', locale)} onClick={() => sceneRef.current?.moveLane(1)} className="!px-8 text-2xl">
+        <ToyButton color={color} variant="soft" size="lg" ariaLabel={ui('right', locale)} onClick={() => sceneRef.current?.moveLane(1)} faceClassName="!px-9 text-2xl">
           ▶
-        </ArcadeButton>
+        </ToyButton>
       </div>
 
       <div className="mt-3">

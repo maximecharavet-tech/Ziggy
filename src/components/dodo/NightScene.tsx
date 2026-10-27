@@ -1,8 +1,8 @@
 'use client';
 
-import { useMemo } from 'react';
-import { motion } from 'framer-motion';
+import { useMemo, type CSSProperties } from 'react';
 import type { DodoArt, DodoSky } from '@/data/dodo/types';
+import css from './dodo.module.css';
 
 /** Night palettes: deep, low-contrast, warm glow — easy on sleepy eyes. */
 export const SKY: Record<DodoSky, { top: string; bottom: string; glow: string }> = {
@@ -41,6 +41,7 @@ const PARTICLE: Record<DodoArt['ambience'], { glyph: string; drift: number; coun
  * A scene drawn on the device: sky gradient, moon, slow particles, the hero
  * breathing gently in the middle and the props floating around. Shown until
  * the pre-generated illustration exists, and as the offline fallback.
+ * Only CSS animations (transform and opacity): nothing runs in JavaScript per frame.
  */
 export function NightScene({ art, seed, still = false }: { art: DodoArt; seed: number; still?: boolean }) {
   const sky = SKY[art.sky];
@@ -60,12 +61,13 @@ export function NightScene({ art, seed, still = false }: { art: DodoArt; seed: n
     ];
     return art.props.slice(0, 5).map((e, i) => ({ e, ...slots[i], d: 5 + r() * 3, delay: r() * 2 }));
   }, [art.props, seed]);
+  const stop = still ? css.still : '';
 
   return (
     <div className="absolute inset-0 overflow-hidden" style={{ background: `linear-gradient(180deg, ${sky.top} 0%, ${sky.bottom} 100%)` }} aria-hidden="true">
       {/* Moon / sun glow */}
-      <motion.div
-        className="absolute rounded-full"
+      <div
+        className={`${css.nsMoon} ${stop} rounded-full`}
         style={{
           right: '12%',
           top: art.ambience === 'sunrise' ? '58%' : '10%',
@@ -74,19 +76,26 @@ export function NightScene({ art, seed, still = false }: { art: DodoArt; seed: n
           background: `radial-gradient(circle at 35% 35%, #fff, ${sky.glow} 60%, transparent 72%)`,
           boxShadow: `0 0 80px 30px ${sky.glow}40`,
         }}
-        animate={still ? undefined : { scale: [1, 1.04, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
       />
       {dots.map((d, i) => (
-        <motion.span
+        <span
           key={i}
-          className="absolute select-none"
-          style={{ left: `${d.x}%`, top: `${d.y}%`, fontSize: `${d.s}rem`, color: sky.glow }}
-          animate={still ? { opacity: 0.6 } : { opacity: [0.15, 0.85, 0.15], y: p.drift ? [0, p.drift] : 0 }}
-          transition={{ duration: d.d, repeat: Infinity, delay: d.delay, ease: 'easeInOut' }}
+          className={`${css.nsDot} ${stop} select-none`}
+          style={
+            {
+              left: `${d.x}%`,
+              top: `${d.y}%`,
+              fontSize: `${d.s}rem`,
+              color: sky.glow,
+              animationDuration: `${d.d}s`,
+              animationDelay: `${d.delay}s`,
+              '--drift': `${p.drift}px`,
+              opacity: still ? 0.6 : undefined,
+            } as CSSProperties
+          }
         >
           {p.glyph}
-        </motion.span>
+        </span>
       ))}
       {/* Soft hills */}
       <svg className="absolute bottom-0 left-0 h-[34%] w-full" viewBox="0 0 100 30" preserveAspectRatio="none">
@@ -94,24 +103,31 @@ export function NightScene({ art, seed, still = false }: { art: DodoArt; seed: n
         <path d="M0 24 Q25 16 50 22 T100 20 V30 H0Z" fill="#000" opacity="0.35" />
       </svg>
       {props.map((p2, i) => (
-        <motion.span
+        <span
           key={`${p2.e}-${i}`}
-          className="absolute -translate-x-1/2 -translate-y-1/2 select-none"
-          style={{ left: `${p2.x}%`, top: `${p2.y}%`, fontSize: '9vmin', filter: 'drop-shadow(0 6px 18px rgba(0,0,0,.35)) saturate(.85)' }}
-          animate={still ? undefined : { y: [0, -8, 0], rotate: [0, i % 2 ? 4 : -4, 0] }}
-          transition={{ duration: p2.d, repeat: Infinity, delay: p2.delay, ease: 'easeInOut' }}
+          className={`${css.nsProp} ${stop} select-none`}
+          style={
+            {
+              left: `${p2.x}%`,
+              top: `${p2.y}%`,
+              transform: 'translate3d(-50%, -50%, 0)',
+              fontSize: '9vmin',
+              filter: 'drop-shadow(0 6px 18px rgba(0,0,0,.35)) saturate(.85)',
+              animationDuration: `${p2.d}s`,
+              animationDelay: `${p2.delay}s`,
+              '--tilt': `${i % 2 ? 4 : -4}deg`,
+            } as CSSProperties
+          }
         >
           {p2.e}
-        </motion.span>
+        </span>
       ))}
-      <motion.span
-        className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 select-none"
-        style={{ fontSize: '24vmin', filter: `drop-shadow(0 0 40px ${sky.glow}55) saturate(.9)` }}
-        animate={still ? undefined : { scale: [1, 1.035, 1], y: [0, -6, 0] }}
-        transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+      <span
+        className={`${css.nsHero} ${stop} select-none`}
+        style={{ left: '50%', top: '50%', transform: 'translate3d(-50%, -50%, 0)', fontSize: '24vmin', filter: `drop-shadow(0 0 40px ${sky.glow}55) saturate(.9)` }}
       >
         {art.hero}
-      </motion.span>
+      </span>
     </div>
   );
 }

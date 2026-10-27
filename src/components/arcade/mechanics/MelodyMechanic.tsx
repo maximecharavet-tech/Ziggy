@@ -1,11 +1,16 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { cleanSequence } from '../logic';
 import { playPad } from './melody-audio';
-import { ArcadeButton, Feedback, POP, RoundProgress, Stage, alpha, useFinishIfEmpty, useGameRun } from './shared';
+import { ArcadeButton, Feedback, RoundProgress, Stage, alpha, useFinishIfEmpty, useGameRun } from './shared';
+import { Burst } from '../stage/Burst';
+import { darken, lighten, rgba } from '../stage/color';
+
+/** Bar heights, like a real xylophone (scaled down on phones). */
+const PAD_H = [150, 138, 126, 114, 102];
 import { cheer, ui } from '../ui-text';
 
 const PADS = [
@@ -153,52 +158,98 @@ export function MelodyMechanic({ content, color, locale, onFinish, onAnswer }: M
   const tone = phase === 'right' ? 'right' : phase === 'again' || phase === 'shown' || phase === 'demo' ? 'almost' : phase === 'ready' ? null : 'info';
 
   return (
-    <Stage color={color}>
+    <Stage color={color} className="[--k:0.82] sm:[--k:1]">
       <RoundProgress index={index} total={total} color={color} locale={locale} />
 
       {/* Progress through the current tune */}
-      <div className="flex justify-center gap-2 mb-5" dir="ltr" aria-hidden="true">
-        {seq.map((n, i) => (
-          <motion.span
-            key={i}
-            animate={{ scale: i < pos || phase === 'right' ? 1.15 : 1 }}
-            transition={POP}
-            className="w-4 h-4 rounded-full"
-            style={{ backgroundColor: i < pos || phase === 'right' ? PADS[n].color : alpha(color, '26') }}
-          />
-        ))}
-      </div>
-
-      <div className="flex justify-center gap-2 sm:gap-4 mb-5" dir="ltr" role="group" aria-label={ui('yourTurn', locale)}>
-        {PADS.map((pad, i) => {
-          const on = lit === i;
+      <div className="mb-6 flex justify-center gap-2" dir="ltr" aria-hidden="true">
+        {seq.map((n, i) => {
+          const on = i < pos || phase === 'right';
           return (
-            <motion.button
+            <motion.span
               key={i}
-              type="button"
-              onClick={() => tapPad(i)}
-              aria-label={`${ui('pad', locale)} ${i + 1}`}
-              disabled={listening}
-              animate={{ scale: on ? 1.12 : 1, y: on ? -8 : 0 }}
-              whileTap={listening ? undefined : { scale: 0.92 }}
-              transition={{ type: 'spring', stiffness: 520, damping: 18 }}
-              className="relative w-14 h-24 sm:w-20 sm:h-32 rounded-3xl flex items-end justify-center pb-3 text-2xl sm:text-3xl disabled:cursor-default"
-              style={{
-                background: `linear-gradient(180deg, ${pad.color}${on ? 'FF' : 'CC'}, ${pad.color}${on ? 'DD' : '88'})`,
-                boxShadow: on ? `0 0 0 4px ${pad.color}55, 0 14px 34px ${pad.color}88` : `0 6px 16px ${pad.color}44`,
-              }}
+              animate={{ scale: on ? 1 : 0.8, y: on ? [0, -6, 0] : 0 }}
+              transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+              className="grid h-8 w-8 place-items-center rounded-full text-sm font-black text-white"
+              style={
+                on
+                  ? { background: `radial-gradient(circle at 35% 30%, ${lighten(PADS[n].color, 0.4)}, ${PADS[n].color})`, boxShadow: `0 3px 0 ${darken(PADS[n].color, 0.3)}` }
+                  : { background: alpha(color, '1F'), color: alpha(color, '88') }
+              }
             >
-              <span aria-hidden="true">{pad.emoji}</span>
-            </motion.button>
+              ♪
+            </motion.span>
           );
         })}
       </div>
 
-      <Feedback tone={tone} title={title} color={color}>
-        {phase === 'demo' || phase === 'shown' ? ui('showAnswer', locale) : undefined}
-      </Feedback>
+      {/* The flower xylophone */}
+      <div className="relative mx-auto mb-6 w-fit px-2 pb-4 pt-2 sm:px-3" dir="ltr">
+        <span className="absolute inset-x-0 bottom-0 h-6 rounded-full" style={{ background: 'linear-gradient(180deg, #B07A4A, #7A4E2A)', boxShadow: '0 5px 0 #5B3A1E, inset 0 2px 0 rgba(255,255,255,0.3)' }} aria-hidden="true" />
+        <div className="relative flex items-end justify-center gap-1.5 sm:gap-3" role="group" aria-label={ui('yourTurn', locale)}>
+          {PADS.map((pad, i) => {
+            const on = lit === i;
+            const depth = 8;
+            return (
+              <motion.button
+                key={i}
+                type="button"
+                onClick={() => tapPad(i)}
+                aria-label={`${ui('pad', locale)} ${i + 1}`}
+                disabled={listening}
+                initial={{ y: -40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 14, delay: 0.05 * i }}
+                whileTap={listening ? undefined : 'press'}
+                className="relative w-[50px] rounded-[1.4rem] outline-none focus-visible:ring-4 disabled:cursor-default sm:w-[76px]"
+                style={{ height: `calc(${PAD_H[i]}px * var(--k, 1))`, paddingBottom: depth, ['--tw-ring-color' as string]: rgba(pad.color, 0.6) }}
+              >
+                <span className="absolute inset-x-0 bottom-0 rounded-[1.4rem]" style={{ top: depth, background: darken(pad.color, 0.32) }} aria-hidden="true" />
+                <motion.span
+                  variants={{ press: { y: depth - 1 } }}
+                  animate={{ y: on ? depth - 2 : 0 }}
+                  transition={{ type: 'spring', stiffness: 700, damping: 22 }}
+                  className="relative flex h-full w-full flex-col items-center justify-between overflow-hidden rounded-[1.4rem] py-2"
+                  style={{
+                    background: `linear-gradient(180deg, ${lighten(pad.color, on ? 0.45 : 0.25)} 0%, ${pad.color} 60%, ${darken(pad.color, 0.08)} 100%)`,
+                    boxShadow: `inset 0 3px 0 rgba(255,255,255,0.55), inset 0 -4px 0 ${rgba(darken(pad.color, 0.3), 0.3)}${on ? `, 0 0 0 4px ${rgba(pad.color, 0.35)}, 0 0 30px ${rgba(pad.color, 0.8)}` : ''}`,
+                  }}
+                >
+                  <span className="absolute inset-x-2 top-1 h-[30%] rounded-[1rem] bg-gradient-to-b from-white/50 to-white/0" aria-hidden="true" />
+                  <span className="relative h-2.5 w-2.5 rounded-full bg-white/70 shadow-[inset_0_1px_1px_rgba(0,0,0,0.25)]" aria-hidden="true" />
+                  <span className="relative grid h-9 w-9 place-items-center rounded-full bg-white/90 text-xl shadow-[0_2px_0_rgba(0,0,0,0.12)] sm:h-12 sm:w-12 sm:text-3xl" aria-hidden="true">
+                    {pad.emoji}
+                  </span>
+                  <span className="relative h-2.5 w-2.5 rounded-full bg-white/70 shadow-[inset_0_1px_1px_rgba(0,0,0,0.25)]" aria-hidden="true" />
+                </motion.span>
+                {/* A note flies up from the bar */}
+                <AnimatePresence>
+                  {on ? (
+                    <motion.span
+                      key={`n-${i}-${pos}-${phase}`}
+                      className="pointer-events-none absolute left-1/2 top-0 -translate-x-1/2 text-2xl font-black"
+                      style={{ color: darken(pad.color, 0.2) }}
+                      initial={{ y: 0, opacity: 0, scale: 0.6 }}
+                      animate={{ y: -54, opacity: [0, 1, 0], scale: 1.2, rotate: i % 2 ? 15 : -15 }}
+                      exit={{ opacity: 0 }}
+                      transition={{ duration: 0.8, ease: 'easeOut' }}
+                      aria-hidden="true"
+                    >
+                      {i % 2 ? '♫' : '♪'}
+                    </motion.span>
+                  ) : null}
+                </AnimatePresence>
+              </motion.button>
+            );
+          })}
+        </div>
+        {phase === 'right' ? <Burst fire={index + 1} color={color} count={16} spread={150} /> : null}
+      </div>
 
-      <div className="flex justify-center gap-3 mt-3 min-h-[56px]">
+      <div className="mt-5 flex min-h-[72px] flex-wrap items-center justify-center gap-x-4 gap-y-2">
+        <Feedback tone={tone} title={title} color={color}>
+          {phase === 'demo' || phase === 'shown' ? ui('showAnswer', locale) : undefined}
+        </Feedback>
         {phase === 'ready' && (
           <ArcadeButton color={color} onClick={() => show(seq, 'play')} autoFocus>
             ▶ {ui('listen', locale)}

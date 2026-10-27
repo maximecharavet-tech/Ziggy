@@ -6,7 +6,10 @@ import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { Confetti } from '@/components/ui/Confetti';
 import { helpMove, isSolved, moveTile, neighbours, shuffleBoard, slideMistakes, slideShuffleMoves, stepTrail } from '../logic';
-import { ArcadeButton, Feedback, Hint, Stage, alpha, useGameRun } from './shared';
+import { ArcadeButton, Feedback, Hint, Stage, useGameRun } from './shared';
+import { chunkyFace } from '../stage/Toy';
+import { Burst } from '../stage/Burst';
+import { darken, lighten, mix, rgba, strong } from '../stage/color';
 import { ui } from '../ui-text';
 
 export function SlideMechanic({ content, color, locale, onFinish, onAnswer }: MechanicProps) {
@@ -68,21 +71,21 @@ export function SlideMechanic({ content, color, locale, onFinish, onAnswer }: Me
 
   return (
     <Stage color={color}>
-      <Confetti trigger={done} />
-      <div className="flex items-center justify-between gap-3 mb-4" dir="ltr">
+      <Confetti trigger={done} count={28} />
+      <div className="mb-4 flex items-center justify-between gap-3" dir="ltr">
         <div
-          className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex items-center justify-center text-4xl sm:text-5xl"
-          style={{ backgroundColor: alpha(color, '14') }}
+          className="grid h-16 w-16 place-items-center rounded-[1.4rem] text-4xl sm:h-20 sm:w-20 sm:text-5xl"
+          style={{ background: `radial-gradient(circle at 35% 28%, #fff, ${lighten(color, 0.75)})`, boxShadow: `0 5px 0 ${lighten(color, 0.4)}, inset 0 -4px 8px ${rgba(color, 0.18)}` }}
           role="img"
           aria-label={`${ui('picture', locale)}: ${content.picture}`}
         >
           {content.picture}
         </div>
-        <div className="flex flex-col items-center">
+        <div className="flex flex-col items-center rounded-2xl bg-white/70 px-4 py-1.5 shadow-[0_3px_0_rgba(40,30,80,0.06)] dark:bg-white/5">
           <span className="text-xs font-extrabold uppercase tracking-wide text-text-muted">{ui('moves', locale)}</span>
-          <span className="text-2xl font-extrabold tabular-nums" style={{ color }} aria-live="polite">
+          <motion.span key={moves} initial={{ scale: 1.4, y: -4 }} animate={{ scale: 1, y: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 15 }} className="font-display text-2xl font-bold tabular-nums" style={{ color: strong(color) }} aria-live="polite">
             {moves}
-          </span>
+          </motion.span>
         </div>
         <ArcadeButton color={color} variant="soft" onClick={help} disabled={done} ariaLabel={ui('help', locale)}>
           💡 <span className="hidden sm:inline">{ui('help', locale)}</span>
@@ -91,52 +94,57 @@ export function SlideMechanic({ content, color, locale, onFinish, onAnswer }: Me
       {!done && <Hint say={ui('slideHint', locale)}>{ui('slideHint', locale)}</Hint>}
 
       <div
-        className="relative mx-auto w-full max-w-[360px] aspect-square rounded-3xl p-2"
-        style={{ background: `linear-gradient(160deg, ${alpha(color, '22')}, ${alpha(color, '0A')})` }}
+        className="relative mx-auto aspect-square w-full max-w-[380px] rounded-[2rem] p-2.5"
+        style={{
+          background: `linear-gradient(160deg, ${darken(color, 0.15)}, ${darken(color, 0.35)})`,
+          boxShadow: `0 8px 0 ${darken(color, 0.5)}, 0 26px 40px -18px ${rgba(darken(color, 0.5), 0.6)}, inset 0 3px 0 rgba(255,255,255,0.3)`,
+        }}
         dir="ltr"
         role="group"
         aria-label={ui('slideHint', locale)}
       >
-        {board.map((tile, i) => {
-          if (tile === 0) return null;
-          const home = tile - 1;
-          const r = Math.floor(i / size);
-          const c = i % size;
-          const inPlace = home === i;
-          const canMove = movable.has(i) && !done;
-          const pct = 100 / size;
-          return (
-            <motion.button
-              key={tile}
-              type="button"
-              onClick={() => slide(i)}
-              disabled={!canMove}
-              aria-label={`${ui('tile', locale)} ${tile}`}
-              initial={false}
-              animate={{ left: `${c * pct}%`, top: `${r * pct}%`, scale: hinted === i ? [1, 1.08, 1] : 1 }}
-              transition={{ type: 'spring', stiffness: 520, damping: 34 }}
-              whileTap={canMove ? { scale: 0.94 } : undefined}
-              className="absolute p-1 disabled:cursor-default"
-              style={{ width: `${pct}%`, height: `${pct}%` }}
-            >
-              <span
-                className="w-full h-full rounded-2xl flex flex-col items-center justify-center font-extrabold text-white text-2xl sm:text-3xl"
-                style={{
-                  background: done || inPlace ? `linear-gradient(140deg, ${color}, ${alpha(color, 'BB')})` : `linear-gradient(140deg, ${alpha(color, 'CC')}, ${alpha(color, '88')})`,
-                  boxShadow: canMove ? `0 0 0 3px ${alpha(color, '55')}, 0 6px 14px ${alpha(color, '40')}` : `0 4px 10px ${alpha(color, '30')}`,
-                }}
+        <div className="relative h-full w-full rounded-[1.5rem]" style={{ background: darken(color, 0.45), boxShadow: 'inset 0 6px 14px rgba(0,0,0,0.4)' }}>
+          {board.map((tile, i) => {
+            if (tile === 0) return null;
+            const home = tile - 1;
+            const r = Math.floor(i / size);
+            const c = i % size;
+            const inPlace = home === i;
+            const canMove = movable.has(i) && !done;
+            const pct = 100 / size;
+            const tone = done || inPlace ? color : mix(color, '#9CA3AF', 0.35);
+            return (
+              <motion.button
+                key={tile}
+                type="button"
+                onClick={() => slide(i)}
+                disabled={!canMove}
+                aria-label={`${ui('tile', locale)} ${tile}`}
+                initial={false}
+                animate={{ left: `${c * pct}%`, top: `${r * pct}%`, scale: hinted === i ? [1, 1.1, 1] : 1 }}
+                transition={{ type: 'spring', stiffness: 520, damping: 34 }}
+                whileTap={canMove ? { scale: 0.92 } : undefined}
+                whileHover={canMove ? { y: -3 } : undefined}
+                className="absolute p-1 outline-none focus-visible:z-10 focus-visible:ring-4 disabled:cursor-default"
+                style={{ width: `${pct}%`, height: `${pct}%`, ['--tw-ring-color' as string]: rgba('#FFFFFF', 0.8) }}
               >
-                {done ? <span className="text-3xl sm:text-4xl">{content.picture}</span> : tile}
-              </span>
-            </motion.button>
-          );
-        })}
+                <span
+                  className="relative flex h-full w-full flex-col items-center justify-center rounded-[1rem] font-display text-3xl font-bold sm:text-4xl"
+                  style={{ ...chunkyFace(tone), boxShadow: `${chunkyFace(tone).boxShadow}, 0 5px 0 ${darken(strong(tone), 0.4)}${canMove ? `, 0 0 0 3px ${rgba('#FFFFFF', 0.75)}` : ''}` }}
+                >
+                  <span className="absolute inset-x-2 top-1 h-[30%] rounded-[0.8rem] bg-gradient-to-b from-white/40 to-white/0" aria-hidden="true" />
+                  <span className="relative">{done ? <span className="text-3xl sm:text-4xl">{content.picture}</span> : tile}</span>
+                  {inPlace && !done ? <span className="absolute bottom-1 right-1.5 text-[10px] text-white/90" aria-hidden="true">★</span> : null}
+                </span>
+              </motion.button>
+            );
+          })}
+          {done ? <Burst fire={1} color={color} count={22} spread={190} /> : null}
+        </div>
       </div>
 
-      <div className="mt-4">
+      <div className="mt-5 flex min-h-[72px] flex-wrap items-center justify-center gap-x-4 gap-y-2">
         <Feedback tone={done ? 'right' : null} title={done ? ui('solved', locale) : undefined} color={color} />
-      </div>
-      <div className="flex justify-center mt-2 min-h-[56px]">
         {done && (
           <ArcadeButton color={color} onClick={() => run.finish()} autoFocus>
             {ui('continue', locale)} →
