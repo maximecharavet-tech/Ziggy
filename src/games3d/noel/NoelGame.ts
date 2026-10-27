@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Post } from '../kit/post';
 import { createRenderer, studioEnvironment, disposeTree, glow, glowTex, labelSprite, prefersLowPower } from '../kit/look';
 import { makeBigTree, makeGift, makeHouse, makeLamp, makeNightSky, makeOrnament, makePine, makeSnowman, makeZiggy, PALETTE } from '../kit/models';
 import { makeSnowGround, Puffs, Snowfall } from '../kit/world';
@@ -50,6 +51,7 @@ export class NoelGame {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private dropEnv: () => void = () => {};
+  private post!: Post;
   private camera = new THREE.PerspectiveCamera(52, 1, 0.1, 400);
   private clock = new THREE.Clock();
   private raf = 0;
@@ -90,7 +92,8 @@ export class NoelGame {
     private cb: NoelCallbacks
   ) {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
-    this.dropEnv = studioEnvironment(this.renderer, this.ziggy, 0.9);
+    this.dropEnv = studioEnvironment(this.renderer, this.ziggy, 0.5);
+    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.45, radius: 0.5, threshold: 1.25 });
     this.snow = new Snowfall(this.lowPower ? 700 : 1600);
     this.plan = planMission(seed, band, level, 0);
     this.patterns = planPattern(seed, band);
@@ -183,6 +186,7 @@ export class NoelGame {
     const w = el.clientWidth || 800;
     const h = el.clientHeight || 600;
     this.renderer.setSize(w, h, false);
+    this.post?.setSize(w, h);
     this.camera.aspect = w / h;
     // Portrait screens: step back so the village stays visible.
     this.camera.fov = w < h ? 64 : 52;
@@ -398,7 +402,7 @@ export class NoelGame {
     const dt = Math.min(0.05, this.clock.getDelta());
     const t = this.clock.elapsedTime;
     this.step(dt, t);
-    this.renderer.render(this.scene, this.camera);
+    this.post.render(dt);
   };
 
   private step(dt: number, t: number) {
@@ -525,6 +529,7 @@ export class NoelGame {
     this.audio.dispose();
     disposeTree(this.scene);
     this.dropEnv();
+    this.post.dispose();
     this.renderer.dispose();
   }
 }

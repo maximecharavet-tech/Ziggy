@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { Post } from '../kit/post';
 import { createRenderer, studioEnvironment, disposeTree, glow, glowTex, labelSprite, mat, prefersLowPower } from '../kit/look';
 import { makeNightSky, makePine, makeZiggy, PALETTE } from '../kit/models';
 import { Puffs, Snowfall } from '../kit/world';
@@ -75,6 +76,7 @@ export class LugeGame {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private dropEnv: () => void = () => {};
+  private post!: Post;
   private camera = new THREE.PerspectiveCamera(62, 1, 0.1, 300);
   private clock = new THREE.Clock();
   private raf = 0;
@@ -114,7 +116,8 @@ export class LugeGame {
     private cb: LugeCallbacks
   ) {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
-    this.dropEnv = studioEnvironment(this.renderer, this.ziggy, 0.8);
+    this.dropEnv = studioEnvironment(this.renderer, this.ziggy, 0.45);
+    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.4, radius: 0.5, threshold: 1.25 });
     this.snow = new Snowfall(this.lowPower ? 600 : 1300, 50, 20);
     this.qs = planRun(seed, band, level);
     this.speed = speedFor(band, level);
@@ -205,6 +208,7 @@ export class LugeGame {
     const w = el.clientWidth || 800;
     const h = el.clientHeight || 600;
     this.renderer.setSize(w, h, false);
+    this.post?.setSize(w, h);
     this.camera.aspect = w / h;
     this.camera.fov = w < h ? 74 : 62;
     this.camera.updateProjectionMatrix();
@@ -279,7 +283,7 @@ export class LugeGame {
     this.raf = requestAnimationFrame(this.loop);
     const dt = Math.min(0.05, this.clock.getDelta());
     this.step(dt, this.clock.elapsedTime);
-    this.renderer.render(this.scene, this.camera);
+    this.post.render(dt);
   };
 
   private step(dt: number, t: number) {
@@ -423,6 +427,7 @@ export class LugeGame {
     this.audio.dispose();
     disposeTree(this.scene);
     this.dropEnv();
+    this.post.dispose();
     this.renderer.dispose();
   }
 }
