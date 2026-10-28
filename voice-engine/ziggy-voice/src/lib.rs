@@ -1,0 +1,24 @@
+//! Ziggy Voice Engine v2 — the offline narrator of the mode dodo stories.
+pub mod align;
+pub mod analysis;
+pub mod dsp;
+pub mod espeak;
+pub mod g2p_en;
+pub mod g2p_espeak;
+pub mod g2p_fr;
+pub mod generate;
+pub mod kokoro;
+pub mod lab;
+pub mod master;
+pub mod numbers;
+pub mod onnx_patch;
+pub mod output;
+pub mod paths;
+pub mod prepare;
+pub mod prosody;
+pub mod recipe;
+pub mod render;
+pub mod stories;
+pub mod text;
+pub mod visemes;
+pub mod world;

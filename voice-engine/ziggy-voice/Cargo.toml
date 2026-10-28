@@ -1,0 +1,28 @@
+[package]
+name = "ziggy-voice"
+version = "2.0.0"
+edition = "2021"
+description = "Ziggy Voice Engine v2: offline bedtime narrator for the Ziggy mode dodo"
+license = "MIT"
+publish = false
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order"] }
+regex = "1"
+unicode-normalization = "0.1"
+libloading = "0.8"
+ort = { version = "=2.0.0-rc.15", default-features = false, features = ["std", "load-dynamic", "api-24"] }
+rsworld = "0.1"
+rsworld-sys = "0.1"
+rustfft = "6"
+realfft = "3"
+ebur128 = "0.1"
+hound = "3"
+rayon = "1"
+sha2 = "0.10"
+flate2 = "1"
+tar = "0.4"
+zip = { version = "2", default-features = false, features = ["deflate"] }

@@ -1,9 +1,9 @@
 /**
  * Mode dodo — Ziggy's recorded voice (no AI, no API when a child listens).
  *
- * Every story is narrated ONCE, offline, by the generator in
- * `scripts/dodo-voice/` (a local neural voice turned into Ziggy's little
- * robot-child voice) and shipped as static files:
+ * Every story is narrated ONCE, offline, by the Rust voice engine in
+ * `voice-engine/` (ziggy-voice: a local neural voice made into Ziggy's warm,
+ * young storyteller voice) and shipped as static files:
  *
  *   public/dodo/voice/{locale}/{storyId}/{segment}.mp3
  *   public/dodo/voice/{locale}/{storyId}/timing.json   (DodoVoiceTiming)

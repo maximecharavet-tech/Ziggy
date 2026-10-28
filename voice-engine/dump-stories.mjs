@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Dump the bedtime stories (src/data/dodo) to JSON for the voice generator.
+ * Dump the bedtime stories (src/data/dodo) to JSON for the voice engine (ziggy-voice).
  *
  * The stories are TypeScript, so they are bundled on the fly with the esbuild
  * already installed by vite/vitest (no new dependency), then every segment the
@@ -8,14 +8,14 @@
  *
  *   { stories: [{ id, segments: { fr: { title, s1..s6, outro }, en: {...} } }] }
  *
- * Usage: node scripts/dodo-voice/dump-stories.mjs [out.json]   (default: stdout)
+ * Usage: node voice-engine/dump-stories.mjs [out.json]   (default: stdout)
  */
 import { writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { build } from 'esbuild';
 
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
+const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 
 const bundle = await build({
   stdin: {

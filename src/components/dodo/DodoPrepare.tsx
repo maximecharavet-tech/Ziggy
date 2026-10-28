@@ -14,7 +14,7 @@ type Status = {
 /**
  * Owner only: pre-generates every illustration (NVIDIA FLUX or Agnes) once,
  * in small batches, until done. Ziggy's voice is no longer made here: it is
- * recorded offline (scripts/dodo-voice) and shipped as static files.
+ * recorded offline by the Rust voice engine (voice-engine/) and shipped as static files.
  */
 /** Illustrations do not depend on the language; the API still asks for one. */
 const locales = ['fr'];

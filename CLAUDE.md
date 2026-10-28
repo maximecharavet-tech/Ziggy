@@ -17,6 +17,7 @@ Never call something done without a feedback loop:
   1280×800 and 390×844 (see `/smoke`). No page errors, no horizontal overflow,
   no hydration error (also with `reducedMotion: 'reduce'`).
 - 3D change → render it (Playwright + SwiftShader, see `.claude/agents/verify-app.md`).
+- Voice change → `cargo test` in `voice-engine/`, `npx vitest run src/lib/dodo`, and listen-proxy checks (loudness, pitch, spectrograms): see `voice-engine/README.md`.
 - AI content (Hyper Engine) → schema + `src/lib/hyper-engine/verify.ts` + ChildShield.
 
 ## Child-safety red lines (never cross)
@@ -40,9 +41,11 @@ data (reviews, user counts, partners). GDPR for minors.
 - Deploy = fast-forward `main` after `/verify` + `/smoke` (see `/deploy`). Only when the owner asks.
 
 ## Lessons learned
-- `next dev` rewrites `tsconfig.json` and `next-env.d.ts`: run `git checkout tsconfig.json` before committing; keep `next-env.d.ts` on `./.next/types/routes.d.ts`.
+- `next dev` rewrites `tsconfig.json` and `next-env.d.ts`: check `git diff tsconfig.json` before committing and drop only next's additions (`.next-*` includes); keep `next-env.d.ts` on `./.next/types/routes.d.ts`.
 - Several dev servers at once: give each its own `NEXT_DIST_DIR=.next-<name>` and port; never `rm -rf .next` while another one runs.
 - `src/lib/motion.ts` holds shared motion tokens (no `'use client'`): don't overwrite it, add new hooks in their own files.
 - Never touch Supabase project `awvgmkoozerfggdvvubi` (another product's data).
 - Projected decals on a curved mesh must be tessellated first (big flat triangles sink into the surface).
 - The sandbox speed test can fail when the machine is overloaded; rerun it alone before blaming the code.
+- Voice engine (`voice-engine/`, Rust): `cargo clippy --release` deletes the release binary (rebuild after); ONNX Runtime phones home unless `ORT_DISABLE_TELEMETRY=1` (the engine sets it).
+- Regenerated audio under `public/dodo/**` is cached cache-first by `public/sw.js`: bump its `VERSION`, or returning visitors keep the old files.
