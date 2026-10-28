@@ -778,7 +778,12 @@ pub fn tag(toks: &[(String, String)]) -> Vec<String> {
         let low = x.to_lowercase();
         let prev = if k > 0 { toks[k - 1].0.to_lowercase() } else { String::new() };
         let nxt = toks.get(k + 1).map(|t| t.0.to_lowercase()).unwrap_or_default();
-        let t = if let Some(p) = punct(x) {
+        // a hyphen inside a word ("see-through", "Polka-Dot") is spaCy's HYPH,
+        // not a dash: no pause in the middle of a compound
+        let infix = (x == "-" || x == "–") && k > 0 && toks[k - 1].1.is_empty() && toks[k].1.is_empty() && k + 1 < toks.len();
+        let t = if infix {
+            "HYPH".to_string()
+        } else if let Some(p) = punct(x) {
             p.to_string()
         } else if x == "\"" {
             if k == 0 || !toks[k - 1].1.is_empty() {
@@ -1305,5 +1310,7 @@ mod tests {
         assert_eq!(tag(&toks)[1], "VB");
         let toks: Vec<(String, String)> = ["very", "close"].iter().map(|s| (s.to_string(), " ".into())).collect();
         assert_eq!(tag(&toks)[1], "");
+        assert_eq!(tag(&spacy_like("a see-through wing"))[2], "HYPH");
+        assert_eq!(tag(&spacy_like("wait - here"))[1], ":");
     }
 }
