@@ -9,8 +9,7 @@ import type { DodoStory } from '@/data/dodo/types';
 import { VALUE_LABEL } from '@/data/dodo/types';
 import { tr, type L } from '@/lib/i18n-text';
 import { bcp47 } from '@/lib/voice';
-import { SLEEP_SOUNDS } from '@/lib/dodo/sound/catalog';
-import { tokenize, type DodoVoiceTiming } from '@/lib/dodo/voice';
+import { tokenize, visemeAt, type DodoVoiceTiming } from '@/lib/dodo/voice';
 import {
   minutesOf,
   moralTokens,
@@ -28,10 +27,9 @@ import { clearPosition, savePosition, savedPosition, TEXT_SIZES, updateDodo, use
 import { Ziggy3D } from '@/components/ziggy3d/Ziggy3D';
 import { useConductor } from './conductor';
 import { Prompter } from './Prompter';
-import { PlayerOptions, SoundChips, TimerChips } from './PlayerOptions';
+import { PlayerOptions } from './PlayerOptions';
 import { DodoSay } from './DodoSay';
 import { Moon, NightSky, SceneArt, Sparkles } from './Scenery';
-import { useSleepSound } from './useSleepSound';
 import css from './dodo.module.css';
 
 const T = {
@@ -46,10 +44,6 @@ const T = {
     en: 'Ziggy’s voice isn’t recorded for this story yet: the text moves along gently, so you can read it together.',
   },
   deviceVoice: { fr: 'Voix de l’appareil', en: 'Device voice' },
-  sounds: { fr: 'Sons du sommeil', en: 'Sleep sounds' },
-  timer: { fr: 'Après l’histoire', en: 'After the story' },
-  timerOffShort: { fr: 's’arrêtent avec l’histoire', en: 'stop with the story' },
-  change: { fr: 'Changer', en: 'Change' },
   pause: { fr: 'Pause', en: 'Pause' },
   play: { fr: 'Lecture', en: 'Play' },
   prev: { fr: 'Scène précédente', en: 'Previous scene' },
@@ -75,8 +69,6 @@ const T = {
   exhale: { fr: 'Souffle…', en: 'Breathe out…' },
   again: { fr: 'Réécouter', en: 'Listen again' },
   others: { fr: 'Autres histoires', en: 'Other stories' },
-  soundsOn: { fr: '{sound} continue encore {n} min, tout doucement.', en: '{sound} goes on for {n} more min, very softly.' },
-  soundsOff: { fr: 'Les sons s’éteignent doucement.', en: 'The sounds fade away softly.' },
 } satisfies Record<string, L>;
 
 type WakeLock = { release: () => Promise<void> };
@@ -92,8 +84,6 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   const settings = useDodoSettings();
   const manifest = useManifest();
   const reduce = useReducedMotion();
-  const bed = useSleepSound();
-  const { duck, play: playBed, sleepIn, setVolume } = bed;
   const { timing, ready: timingReady } = useTiming(raw, story.id, known);
   const clips = manifest?.audio[story.id]?.[locale] ?? null;
   const plans = useMemo(() => planStory(story, raw, { timing, clips: timing ? null : clips, fallback: settings.fallback }), [story, raw, timing, clips, settings.fallback]);
@@ -129,10 +119,6 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   useEffect(() => {
     c.setRate(settings.speed);
   }, [c, settings.speed]);
-  // The sleep sounds step back while Ziggy speaks.
-  useEffect(() => {
-    duck(snap.speaking);
-  }, [duck, snap.speaking]);
 
   // Fetch what comes next: the first recordings while on the cover, the next picture while telling.
   useEffect(() => {
@@ -172,7 +158,6 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
     const p = pos ? plans[pos.seg] : null;
     const t = pos && p ? sentenceStartTime(p.words, sentenceOf(tokenize(p.text)), pos.t) : 0;
     c.start(pos?.seg ?? 0, t);
-    playBed(settings.sound, settings.volume, minutesOf(total) + settings.timer + 3);
     poke();
     void (navigator as Navigator & { wakeLock?: { request: (t: 'screen') => Promise<WakeLock> } }).wakeLock
       ?.request('screen')
@@ -202,12 +187,11 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
     return () => window.clearInterval(id);
   }, [snap.status, snap.seg, c, count, story.id]);
 
-  // The end: the sleep sounds keep going for the timer, the screen goes to sleep.
+  // The end: silence, and the screen goes to sleep.
   useEffect(() => {
     if (snap.status !== 'done') return;
     clearPosition(story.id);
     setSaved(undefined);
-    sleepIn(settings.timer);
     releaseWake();
     if (!settings.heard.includes(story.id)) updateDodo({ heard: [...settings.heard, story.id] });
     const t = window.setTimeout(() => setSleepy(true), 25_000);
@@ -277,7 +261,6 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
         ? `⭐ ${tr(T.moral, locale)}`
         : `🌙 ${tr(T.sceneOf, locale).replace('{n}', String(scene + 1)).replace('{total}', String(story.scenes.length))}`;
   const titleClip = plans[0].kind === 'voice' ? plans[0].url : null;
-  const sound = SLEEP_SOUNDS.find((s) => s.id === settings.sound);
   const ziggyMode = phase === 'fin' ? 'fin' : phase === 'story' && !settings.showText ? 'solo' : 'panel';
 
   return (
@@ -366,12 +349,13 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
           mood={phase === 'fin' ? 'sleepy' : 'calm'}
           accessory="nightcap"
           talking={snap.speaking}
+          lipSync={plan.kind === 'voice' && plan.visemes && snap.speaking ? () => visemeAt(plan.visemes!, c.time()) : null}
           framing="bust"
           fallback="heart"
         />
       </motion.div>
 
-      {/* Cover: title, sleep sounds, start */}
+      {/* Cover: title, start */}
       <AnimatePresence>
         {phase === 'cover' ? (
           <motion.section key="cover" className={css.coverCard} initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 10 }} transition={{ duration: 0.6 }}>
@@ -420,7 +404,6 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
               </div>
             ) : null}
 
-            <SleepSetup locale={locale} sound={settings.sound} timer={settings.timer} />
           </motion.section>
         ) : null}
       </AnimatePresence>
@@ -541,18 +524,12 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
               <p className="font-display text-2xl text-white/80">{tr(T.night, locale)} 🌙</p>
               <p className="max-w-md rounded-2xl bg-white/[0.06] px-5 py-3 text-white/70 ring-1 ring-amber-100/15">⭐ {tr(story.moral, locale)}</p>
               <Balloon locale={locale} />
-              <p className="text-sm text-white/45">
-                {settings.timer > 0 && sound && sound.id !== 'silence'
-                  ? `${sound.emoji} ${tr(T.soundsOn, locale).replace('{sound}', tr(sound.name, locale)).replace('{n}', String(settings.timer))}`
-                  : tr(T.soundsOff, locale)}
-              </p>
               <div className="mt-2 flex flex-wrap justify-center gap-3 opacity-70 transition hover:opacity-100 focus-within:opacity-100">
                 <button
                   type="button"
                   onClick={() => {
                     setSleepy(false);
                     c.start(0);
-                    playBed(settings.sound, settings.volume, minutesOf(total) + settings.timer + 3);
                   }}
                   className="min-h-11 rounded-full bg-white/10 px-5 py-2 text-sm font-semibold ring-1 ring-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200"
                 >
@@ -583,64 +560,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
             settings={settings}
             recorded={complete || recorded}
             onClose={() => setOptionsOpen(false)}
-            onSound={(sound) => {
-              updateDodo({ sound });
-              if (phase === 'story') playBed(sound, settings.volume, minutesOf(total * (1 - progress)) + settings.timer + 3);
-            }}
-            onVolume={(v) => {
-              updateDodo({ volume: v });
-              setVolume(v);
-            }}
           />
-        ) : null}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-/** Sleep sounds and timer, folded into one quiet line until a grown-up opens it. */
-function SleepSetup({ locale, sound, timer }: { locale: 'fr' | 'en'; sound: string; timer: number }) {
-  const [open, setOpen] = useState(false);
-  const s = SLEEP_SOUNDS.find((x) => x.id === sound);
-  return (
-    <div className="mt-4">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        aria-controls="dodo-sleep-setup"
-        className="flex min-h-11 w-full items-center gap-2 rounded-2xl bg-white/[0.06] px-4 py-2 text-start text-sm font-semibold text-white/80 ring-1 ring-white/10 transition hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200"
-      >
-        <span className="truncate">
-          {s ? `${s.emoji} ${tr(s.name, locale)}` : tr(T.sounds, locale)} · ⏱ {timer ? `+${timer} min` : tr(T.timerOffShort, locale)}
-        </span>
-        <span className="ms-auto text-xs text-white/50">{tr(T.change, locale)}</span>
-        <span aria-hidden="true" className={`text-white/60 transition-transform ${open ? 'rotate-180' : ''}`}>
-          ▾
-        </span>
-      </button>
-      <AnimatePresence initial={false}>
-        {open ? (
-          <motion.div
-            id="dodo-sleep-setup"
-            key="setup"
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="overflow-hidden"
-          >
-            <div className="grid gap-4 pt-4">
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-white/55">{tr(T.sounds, locale)}</p>
-                <SoundChips locale={locale} value={sound} onChange={(id) => updateDodo({ sound: id })} />
-              </div>
-              <div>
-                <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-white/55">⏱ {tr(T.timer, locale)}</p>
-                <TimerChips locale={locale} value={timer} onChange={(t) => updateDodo({ timer: t })} />
-              </div>
-            </div>
-          </motion.div>
         ) : null}
       </AnimatePresence>
     </div>

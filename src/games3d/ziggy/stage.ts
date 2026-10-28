@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { buildZiggy, makeScarf, type ZiggyModel } from './model';
 import { ZiggyRig } from './rig';
+import type { MouthShape } from './face';
 import type { ZiggyAccessory, ZiggyCue, ZiggyFraming, ZiggyIdle, ZiggyMood } from './types';
 
 export interface StageOptions {
@@ -281,6 +282,11 @@ export class ZiggyStage {
 
   setTalking(t: boolean) {
     this.rig.talking = t;
+  }
+
+  /** Mouth shapes in time with a recorded voice (see ZiggyRig.lipSync). */
+  setLipSync(fn: (() => MouthShape | null) | null) {
+    this.rig.lipSync = fn;
   }
 
   cue(c: ZiggyCue) {

@@ -65,6 +65,11 @@ export class ZiggyRig {
   idle: ZiggyIdle = 'calm';
   mood: ZiggyMood = 'happy';
   talking = false;
+  /**
+   * Lip sync: asked every frame for the mouth that matches the sound being
+   * said (from the recorded voice's phonemes); null = no cue, chatter instead.
+   */
+  lipSync: (() => MouthShape | null) | null = null;
   /** 0 = standing, 1 = walking briskly. */
   walk = 0;
   /** Arms held out in front (carrying presents). */
@@ -238,8 +243,12 @@ export class ZiggyRig {
       }
     }
 
-    // --- Talking: the mouth chatters through open shapes.
-    if (this.talking && this.idle !== 'sleep') {
+    // --- Talking: the mouth follows the real sounds (lip sync), else chatters through open shapes.
+    const lip = this.idle !== 'sleep' ? this.lipSync?.() : null;
+    if (lip) {
+      P.mouth = lip;
+      if (lip !== 'smile') P.pitch += Math.sin(t * 9) * 0.015;
+    } else if (this.talking && this.idle !== 'sleep') {
       this.talkT -= dt;
       if (this.talkT <= 0) {
         const shapes: MouthShape[] = ['open', 'o', 'grin', 'smile', 'open', 'small'];

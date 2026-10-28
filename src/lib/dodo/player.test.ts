@@ -11,6 +11,7 @@ import {
   moralTokens,
   paceWords,
   parseTiming,
+  parseVisemes,
   planSeconds,
   planSegment,
   planStory,
@@ -220,8 +221,30 @@ describe('recorded timing', () => {
     expect(parseTiming(null)).toBeNull();
     expect(parseTiming('<html>')).toBeNull();
     expect(parseTiming({ v: 2, segments: {} })).toBeNull();
+    expect(parseTiming({ v: 3, segments: good.segments })).toBeNull();
     expect(parseTiming({ ...good, story: 'other' }, 'lili')).toBeNull();
     expect(parseTiming({ v: 1, segments: { s1: { file: 'a', dur: 1, text: '', words: [] } } })).toBeNull();
+  });
+
+  it('reads the Rust engine timing (v2) with Ziggy\u2019s mouth timeline, and drops a broken one', () => {
+    const v2 = {
+      ...good,
+      v: 2,
+      voice: 'ziggy-v2',
+      segments: {
+        title: { ...good.segments.title, visemes: [[0, 'smile'], [0.2, 'open'], [0.5, 'o'], [0.9, 'small']] },
+        s1: { ...good.segments.s1, visemes: [[0.4, 'open'], [0.1, 'o']] },
+      },
+    };
+    const t = parseTiming(v2, 'lili')!;
+    expect(t.v).toBe(2);
+    expect(t.voice).toBe('ziggy-v2');
+    expect(t.segments.title.visemes).toHaveLength(4);
+    expect(t.segments.s1.visemes).toBeUndefined();
+    const plan = planSegment(lili, 'title', 'fr', { timing: t });
+    expect(plan.kind === 'voice' && plan.visemes?.[1]).toEqual([0.2, 'open']);
+    expect(parseVisemes([[0, 'shout']], 3)).toBeNull();
+    expect(parseVisemes([[5, 'open']], 3)).toBeNull();
   });
 
   it('uses the recording when there is one, else the calm silent pace', () => {

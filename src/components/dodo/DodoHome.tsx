@@ -25,12 +25,12 @@ const T = {
   title1: { fr: 'Ziggy te raconte', en: 'Ziggy tells you' },
   title2: { fr: 'une histoire', en: 'a story' },
   subtitle: {
-    fr: '31 histoires douces pour s’endormir. Ziggy lit avec sa petite voix, les mots s’allument un par un, et les sons du sommeil te bercent.',
-    en: '31 gentle stories to fall asleep to. Ziggy reads in his little voice, the words light up one by one, and sleep sounds rock you gently.',
+    fr: '31 histoires douces pour s’endormir. Ziggy les raconte avec sa voix, ses lèvres bougent avec chaque son, et les mots s’allument un par un pour apprendre à lire.',
+    en: '31 gentle stories to fall asleep to. Ziggy tells them in his own voice, his lips move with every sound, and the words light up one by one to learn to read.',
   },
   f1: { fr: 'La voix de Ziggy', en: 'Ziggy’s voice' },
   f2: { fr: 'Les mots s’allument', en: 'Words light up' },
-  f3: { fr: 'Sons du sommeil', en: 'Sleep sounds' },
+  f3: { fr: 'Il bouge les lèvres', en: 'He moves his lips' },
   tonight: { fr: 'L’histoire de ce soir', en: 'Tonight’s story' },
   listen: { fr: 'Écouter', en: 'Listen' },
   surprise: { fr: 'Une autre, au hasard', en: 'Another one, at random' },
@@ -169,7 +169,7 @@ export function DodoHome({ voices }: { voices?: VoiceSummary }) {
               <DodoSay texts={[`${tr(T.title1, locale)} ${tr(T.title2, locale)}.`, tr(T.subtitle, locale)]} locale={locale} size="sm" className="mt-1" />
             </motion.div>
             <motion.ul initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4, duration: 0.8 }} className="mt-5 flex flex-wrap gap-2 text-sm font-semibold text-white/80">
-              {[`🎙️ ${tr(T.f1, locale)}`, `✨ ${tr(T.f2, locale)}`, `🌧️ ${tr(T.f3, locale)}`].map((f) => (
+              {[`🎙️ ${tr(T.f1, locale)}`, `✨ ${tr(T.f2, locale)}`, `👄 ${tr(T.f3, locale)}`].map((f) => (
                 <li key={f} className="rounded-full bg-white/[0.07] px-3 py-1.5 ring-1 ring-white/10">
                   {f}
                 </li>

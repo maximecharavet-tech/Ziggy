@@ -13,7 +13,7 @@ export interface PlayerSnapshot {
   /** Word being said (-1 before the first). */
   word: number;
   status: PlayerStatus;
-  /** Ziggy's voice is audible right now (his mouth moves, the sleep sounds duck). */
+  /** Ziggy's voice is audible right now (his mouth moves). */
   speaking: boolean;
   /** The browser refused to start the audio on its own: one more tap is needed. */
   blocked: boolean;

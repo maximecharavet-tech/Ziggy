@@ -8,10 +8,6 @@ import { voiceBase, voiceLocale, type DodoVoiceTiming } from './voice';
 /* ── Settings kept on this device ── */
 
 export interface DodoSettings {
-  sound: string;
-  volume: number;
-  /** Minutes the sleep sounds keep playing after the story (0 = stop with the story). */
-  timer: 0 | 10 | 20 | 30 | 45;
   showText: boolean;
   /** Teleprompter text size step (see TEXT_SIZES). */
   textSize: number;
@@ -29,9 +25,6 @@ export interface DodoSettings {
 const KEY = 'ziggy:dodo';
 const EVENT = 'ziggy:dodo';
 const DEFAULTS: DodoSettings = {
-  sound: 'rain',
-  volume: 0.6,
-  timer: 20,
   showText: true,
   textSize: 2,
   highlight: 'word',

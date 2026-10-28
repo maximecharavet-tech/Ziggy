@@ -3,8 +3,6 @@ import { DODO_STORIES, OUTRO_SCENE, getDodoStory, outroText } from './index';
 import { DODO_SKIES, DODO_VALUES } from './types';
 import { classify } from '@/lib/safety/policy';
 import { sentences, storyMinutes, storyOfTheNight } from '@/lib/dodo/client';
-import { SLEEP_SOUNDS, KID_TONE_LEVEL, clampSettings, musicBoxPhrase, settingsFor, timeline } from '@/lib/dodo/sound/catalog';
-import { noise } from '@/lib/dodo/sound/noise';
 import { missing, plannedAssets } from '@/lib/dodo/prepare';
 
 const AMBIENCES = ['stars', 'moon', 'fireflies', 'snow', 'bubbles', 'petals', 'sunrise'];
@@ -65,48 +63,6 @@ describe('Mode dodo stories', () => {
     expect(storyOfTheNight(all, [], new Date(2026, 9, 10))).toBe(first);
     const heardAllButOne = all.slice(1).map((s) => s.id);
     expect(storyOfTheNight(all, heardAllButOne).id).toBe(all[0].id);
-  });
-});
-
-describe('sleep sounds (Hyper Frequencies)', () => {
-  it('keeps tones very quiet for children and noise-only by default', () => {
-    for (const s of SLEEP_SOUNDS) {
-      const st = settingsFor(s, 30, 1);
-      expect(st.toneLevel).toBeLessThanOrEqual(KID_TONE_LEVEL);
-      if (!s.tone) expect(st.toneLevel).toBe(0);
-    }
-    expect(SLEEP_SOUNDS[0].tone).toBeNull();
-    expect(SLEEP_SOUNDS.find((s) => s.id === 'drift')?.headphones).toBe(true);
-  });
-
-  it('glides the sleep program from alpha to delta', () => {
-    const drift = SLEEP_SOUNDS.find((s) => s.id === 'drift')!;
-    const pts = timeline(settingsFor(drift, 30, 1));
-    expect(pts[0].beat).toBe(10);
-    expect(pts[pts.length - 1].beat).toBe(2);
-    expect(pts[pts.length - 1].t).toBe(30 * 60);
-  });
-
-  it('clamps settings to safe ranges', () => {
-    const c = clampSettings({ mode: 'binaural', carrier: 5, beat: 99, noise: 'pink', noiseLevel: 3, toneLevel: -1, minutes: 999 });
-    expect(c.beat).toBe(45);
-    expect(c.carrier).toBeGreaterThanOrEqual(40);
-    expect(c.noiseLevel).toBe(1);
-    expect(c.toneLevel).toBe(0);
-    expect(c.minutes).toBe(120);
-  });
-
-  it('plays a deterministic, gentle music box', () => {
-    const a = musicBoxPhrase(42, 8);
-    expect(a).toEqual(musicBoxPhrase(42, 8));
-    for (let i = 1; i < a.length; i++) expect(a[i].at - a[i - 1].at).toBeGreaterThanOrEqual(1.1);
-  });
-
-  it('generates coloured noise without clipping', () => {
-    for (const k of ['pink', 'brown', 'ocean', 'rain'] as const) {
-      const x = noise(k, 4800, 48000, 3);
-      expect(Math.max(...Array.from(x, Math.abs))).toBeLessThanOrEqual(1);
-    }
   });
 });
 

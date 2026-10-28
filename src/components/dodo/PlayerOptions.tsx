@@ -3,7 +3,6 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { tr, type L } from '@/lib/i18n-text';
-import { SLEEP_SOUNDS } from '@/lib/dodo/sound/catalog';
 import { SPEEDS, TEXT_SIZES, updateDodo, type DodoSettings } from '@/lib/dodo/client';
 
 const T = {
@@ -25,13 +24,7 @@ const T = {
   fallback: { fr: 'Sans enregistrement', en: 'Without a recording' },
   read: { fr: 'Lecture douce', en: 'Quiet reading' },
   device: { fr: 'Voix de l’appareil', en: 'Device voice' },
-  sounds: { fr: 'Sons du sommeil', en: 'Sleep sounds' },
-  volume: { fr: 'Volume des sons', en: 'Sounds volume' },
-  timer: { fr: 'Après l’histoire', en: 'After the story' },
-  timerOff: { fr: 'S’arrêtent avec l’histoire', en: 'Stop with the story' },
 } satisfies Record<string, L>;
-
-export const TIMERS = [0, 10, 20, 30, 45] as const;
 
 /** Grown-up settings, in a calm sheet (bottom sheet on phones, side panel on big screens). */
 export function PlayerOptions({
@@ -39,16 +32,12 @@ export function PlayerOptions({
   settings,
   recorded,
   onClose,
-  onSound,
-  onVolume,
 }: {
   locale: string;
   settings: DodoSettings;
   /** The story has Ziggy's recording (the fallback choice is hidden then). */
   recorded: boolean;
   onClose: () => void;
-  onSound: (id: string) => void;
-  onVolume: (v: number) => void;
 }) {
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -155,19 +144,6 @@ export function PlayerOptions({
           </Group>
         ) : null}
 
-        <Group label={tr(T.sounds, locale)}>
-          <SoundChips locale={locale} value={settings.sound} onChange={onSound} />
-          <label className="mt-3 flex items-center gap-3 text-sm text-white/75">
-            <span aria-hidden="true">🔉</span>
-            <span className="sr-only">{tr(T.volume, locale)}</span>
-            <input type="range" min={0} max={1} step={0.05} value={settings.volume} onChange={(e) => onVolume(Number(e.target.value))} className="h-8 flex-1 accent-amber-200" />
-            <span aria-hidden="true">🔊</span>
-          </label>
-        </Group>
-
-        <Group label={tr(T.timer, locale)}>
-          <TimerChips locale={locale} value={settings.timer} onChange={(timer) => updateDodo({ timer })} />
-        </Group>
       </motion.div>
     </div>
   );
@@ -210,46 +186,6 @@ function Choice<V extends string>({ value, options, onChange, label }: { value: 
           className={`min-h-11 flex-1 rounded-xl px-2 py-2 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200 ${value === o.v ? 'bg-amber-200 text-[#24164a] shadow' : 'text-white/80 hover:bg-white/10'}`}
         >
           {o.label}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export function SoundChips({ locale, value, onChange, className = '' }: { locale: string; value: string; onChange: (id: string) => void; className?: string }) {
-  return (
-    <div className={`flex flex-wrap gap-2 ${className}`} role="radiogroup" aria-label={tr(T.sounds, locale)}>
-      {SLEEP_SOUNDS.map((s) => (
-        <button
-          key={s.id}
-          type="button"
-          role="radio"
-          aria-checked={value === s.id}
-          title={tr(s.about, locale)}
-          onClick={() => onChange(s.id)}
-          className={`min-h-10 rounded-full px-3 py-1.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200 ${value === s.id ? 'bg-amber-200 text-[#24164a]' : 'bg-white/10 text-white/85 hover:bg-white/20'}`}
-        >
-          {s.emoji} {tr(s.name, locale)}
-          {s.headphones ? <span className="ms-1 text-xs opacity-70">🎧</span> : null}
-        </button>
-      ))}
-    </div>
-  );
-}
-
-export function TimerChips({ locale, value, onChange, className = '' }: { locale: string; value: number; onChange: (v: (typeof TIMERS)[number]) => void; className?: string }) {
-  return (
-    <div className={`flex flex-wrap gap-2 ${className}`} role="radiogroup" aria-label={tr(T.timer, locale)}>
-      {TIMERS.map((t) => (
-        <button
-          key={t}
-          type="button"
-          role="radio"
-          aria-checked={value === t}
-          onClick={() => onChange(t)}
-          className={`min-h-10 rounded-full px-3 py-1.5 text-sm font-semibold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200 ${value === t ? 'bg-white text-[#24164a]' : 'bg-white/10 text-white/80 hover:bg-white/20'}`}
-        >
-          {t === 0 ? tr(T.timerOff, locale) : `+${t} min`}
         </button>
       ))}
     </div>

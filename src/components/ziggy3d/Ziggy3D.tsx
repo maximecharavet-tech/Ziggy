@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import { MascotCutout } from '@/components/ziggy/Mascot';
 import type { CutoutPose } from '@/lib/mascot';
 import type { ZiggyAccessory, ZiggyCue, ZiggyFraming, ZiggyIdle, ZiggyMood } from '@/games3d/ziggy/types';
+import type { MouthShape } from '@/games3d/ziggy/face';
 
 export type { ZiggyAccessory, ZiggyCue, ZiggyFraming, ZiggyIdle, ZiggyMood };
 
@@ -17,6 +18,8 @@ export interface Ziggy3DProps {
   cue?: { kind: ZiggyCue; id: number } | null;
   /** Mouth moves while true (while Ziggy's voice speaks). */
   talking?: boolean;
+  /** Lip sync: called every frame for the mouth matching the sound being said (null = none). */
+  lipSync?: (() => MouthShape | null) | null;
   /** Head and eyes follow the pointer. */
   followPointer?: boolean;
   framing?: ZiggyFraming;
@@ -44,6 +47,7 @@ export function Ziggy3D({
   mood = 'happy',
   cue = null,
   talking = false,
+  lipSync = null,
   followPointer = true,
   framing = 'full',
   accessory = 'none',
@@ -134,6 +138,10 @@ export function Ziggy3D({
   useEffect(() => stageRef.current?.setMood(mood), [mood, ready]);
   useEffect(() => stageRef.current?.setIdle(idle), [idle, ready]);
   useEffect(() => stageRef.current?.setTalking(talking), [talking, ready]);
+  // One stable function for the stage; it reads the latest lip-sync source.
+  const lipRef = useRef(lipSync);
+  lipRef.current = lipSync;
+  useEffect(() => stageRef.current?.setLipSync(() => lipRef.current?.() ?? null), [ready]);
   useEffect(() => {
     if (cue) stageRef.current?.cue(cue.kind);
   }, [cue, ready]);

@@ -10,7 +10,7 @@
  */
 import type { DodoStory } from '@/data/dodo/types';
 import { outroText } from '@/data/dodo';
-import { tokenize, voiceBase, wordAt, type DodoSegmentId, type DodoVoiceSegment, type DodoVoiceTiming } from './voice';
+import { tokenize, voiceBase, wordAt, type DodoSegmentId, type DodoVoiceSegment, type DodoVoiceTiming, type VisemeShape } from './voice';
 
 export type TextLocale = 'fr' | 'en';
 
@@ -207,7 +207,7 @@ export function moralTokens(story: DodoStory, locale: string): number {
 export function parseTiming(json: unknown, storyId?: string): DodoVoiceTiming | null {
   if (!json || typeof json !== 'object') return null;
   const j = json as Partial<DodoVoiceTiming>;
-  if (j.v !== 1 || !j.segments || typeof j.segments !== 'object') return null;
+  if ((j.v !== 1 && j.v !== 2) || !j.segments || typeof j.segments !== 'object') return null;
   if (storyId && j.story && j.story !== storyId) return null;
   const segments: Record<string, DodoVoiceSegment> = {};
   for (const [id, raw] of Object.entries(j.segments)) {
@@ -222,10 +222,23 @@ export function parseTiming(json: unknown, storyId?: string): DodoVoiceTiming | 
       const pace = paceWords(s.text);
       words = scaleWords(pace.words, pace.dur, s.dur);
     }
-    segments[id] = { file: s.file, dur: s.dur, text: s.text, words };
+    const visemes = parseVisemes(s.visemes, s.dur);
+    segments[id] = { file: s.file, dur: s.dur, text: s.text, words, ...(visemes ? { visemes } : {}) };
   }
   if (!Object.keys(segments).length) return null;
-  return { v: 1, locale: j.locale === 'fr' ? 'fr' : 'en', story: j.story ?? storyId ?? '', segments };
+  return { v: j.v, ...(typeof j.voice === 'string' ? { voice: j.voice } : {}), locale: j.locale === 'fr' ? 'fr' : 'en', story: j.story ?? storyId ?? '', segments };
+}
+
+const VISEMES: readonly VisemeShape[] = ['smile', 'small', 'open', 'o', 'grin'];
+
+/** Ziggy's mouth timeline, checked: sorted times within the audio and known shapes, else none. */
+export function parseVisemes(raw: unknown, dur: number): [number, VisemeShape][] | null {
+  if (!Array.isArray(raw) || !raw.length) return null;
+  const ok = raw.every(
+    (v, k, a) =>
+      Array.isArray(v) && typeof v[0] === 'number' && v[0] >= 0 && v[0] <= dur + 0.05 && VISEMES.includes(v[1]) && (k === 0 || v[0] >= (a[k - 1] as [number])[0])
+  );
+  return ok ? (raw as [number, VisemeShape][]) : null;
 }
 
 /** The timing covers the whole story (every segment recorded). */
@@ -237,7 +250,7 @@ export function timingComplete(timing: DodoVoiceTiming | null, sceneCount: numbe
 
 export type SegmentPlan =
   /** Ziggy's recorded voice with exact word timings. */
-  | { kind: 'voice'; id: DodoSegmentId; text: string; words: number[]; dur: number; url: string }
+  | { kind: 'voice'; id: DodoSegmentId; text: string; words: number[]; dur: number; url: string; visemes?: [number, VisemeShape][] }
   /** A pre-generated narration without timings: words are re-paced once its length is known. */
   | { kind: 'clip'; id: DodoSegmentId; text: string; words: number[]; dur: number; url: string }
   /** The device's own voice (offline speech synthesis), opt-in. */
@@ -255,7 +268,7 @@ export function planSegment(
 ): SegmentPlan {
   const rec = opts.timing?.segments[id];
   if (rec) {
-    return { kind: 'voice', id, text: rec.text, words: rec.words, dur: rec.dur, url: `${voiceBase(locale, story.id)}/${rec.file}` };
+    return { kind: 'voice', id, text: rec.text, words: rec.words, dur: rec.dur, url: `${voiceBase(locale, story.id)}/${rec.file}`, ...(rec.visemes ? { visemes: rec.visemes } : {}) };
   }
   const text = segmentText(story, id, locale);
   const pace = paceWords(text);
