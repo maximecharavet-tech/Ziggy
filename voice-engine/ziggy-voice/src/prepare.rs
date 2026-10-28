@@ -12,7 +12,7 @@
 //! Downloads go through the `npm` and `curl` command-line tools so that the
 //! machine's proxy and certificates apply.
 
-use crate::onnx_patch::{patch_model, Patch};
+use crate::onnx_patch::{patch_model, prune, Patch};
 use crate::paths::Cache;
 use anyhow::{bail, Context, Result};
 use sha2::{Digest, Sha256};
@@ -211,14 +211,17 @@ pub fn prepare(cache: &Cache) -> Result<()> {
         }
     }
     eprintln!("  model ok {MODEL_SHA256}");
-    if !cache.model().exists() {
+    if !cache.model().exists() || !cache.predictor().exists() {
         let bytes = fs::read(&base)?;
-        let patched = patch_model(&bytes, Patch::Full)?;
-        let tmp = cache.model().with_extension("partial");
-        fs::write(&tmp, patched)?;
-        fs::rename(&tmp, cache.model())?;
+        let patched = patch_model(&bytes, Patch::V3)?;
+        let predictor = prune(&patched, &["duration", "f0_pred", "n_pred"])?;
+        for (path, data) in [(cache.model(), patched), (cache.predictor(), predictor)] {
+            let tmp = path.with_extension("partial");
+            fs::write(&tmp, data)?;
+            fs::rename(&tmp, path)?;
+        }
     }
-    eprintln!("  patched graph: {}", cache.model().display());
+    eprintln!("  patched graph: {} (+ predictor)", cache.model().display());
 
     // 2. Libraries and dictionaries from PyPI wheels
     for (name, version) in WHEELS {

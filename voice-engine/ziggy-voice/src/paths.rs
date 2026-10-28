@@ -40,9 +40,13 @@ impl Cache {
     pub fn base_model(&self) -> PathBuf {
         self.root.join("kokoro-fp32.onnx")
     }
-    /// Ziggy's patched graph (durations + in-network pitch controls).
+    /// Ziggy's patched graph (durations, pitch, energy controls).
     pub fn model(&self) -> PathBuf {
-        self.root.join("kokoro-ziggy-v2.onnx")
+        self.root.join("kokoro-ziggy-v3.onnx")
+    }
+    /// The same graph cut before the decoder (planning pass).
+    pub fn predictor(&self) -> PathBuf {
+        self.root.join("kokoro-ziggy-v3-predictor.onnx")
     }
     pub fn voices(&self) -> PathBuf {
         self.root.join("voices")

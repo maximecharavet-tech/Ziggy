@@ -242,3 +242,106 @@ pub fn pitch_set(voice: &str, speed: f32) -> Vec<Candidate> {
     }
     v
 }
+
+/// v3 controls probe: identity round trip, speed of the planning pass, and
+/// what energy offsets and pitch overrides do.
+pub fn probe(k: &Kokoro, ps: &str, voice: &str, speed: f32, out: &Path) -> Result<()> {
+    use crate::kokoro::Controls;
+    let (ids, _, _) = encode(ps);
+    let style = k.style(&Blend::single(voice), ids.len())?;
+    let t = std::time::Instant::now();
+    let a = k.synth(&ids, &style, speed, PitchCtl::default())?;
+    let t_full = t.elapsed();
+    let t = std::time::Instant::now();
+    let p = k.predict(&ids, &style, speed, &[])?;
+    let t_pred = t.elapsed();
+    println!("full synthesis {t_full:?}, planning pass {t_pred:?}");
+    let frames: Vec<f32> = p.durations.iter().map(|&d| d as f32).collect();
+    let same = Controls { dur_frames: frames.clone(), f0: p.f0.clone(), n: p.n.clone(), ..Default::default() };
+    let b = k.synth_with(&ids, &style, speed, PitchCtl::default(), &same)?;
+    let diff = a.audio.iter().zip(&b.audio).map(|(x, y)| (x - y).abs()).fold(0f32, f32::max);
+    println!("identity round trip: len {} vs {}, max |diff| {diff:.2e}, durations equal {}", a.audio.len(), b.audio.len(), a.durations == b.durations);
+    let n_stats = |v: &[f32]| {
+        let mut s = v.to_vec();
+        s.sort_by(|x, y| x.partial_cmp(y).unwrap());
+        (s[0], s[s.len() / 2], s[s.len() - 1])
+    };
+    println!("n_pred min/median/max {:?}  f0 voiced frames {}", n_stats(&p.n), p.f0.iter().filter(|&&f| f > 10.0).count());
+    let rms = |x: &[f32]| 10.0 * (x.iter().map(|v| (*v as f64).powi(2)).sum::<f64>() / x.len() as f64).log10();
+    for d in [-1.5f32, -1.0, -0.5, 0.5, 1.0] {
+        let ctl = Controls { dur_frames: frames.clone(), n: p.n.iter().map(|v| v + d).collect(), ..Default::default() };
+        let y = k.synth_with(&ids, &style, speed, PitchCtl::default(), &ctl)?;
+        let m = crate::analysis::measure(&y.audio, SR);
+        println!("N {d:+.1}: level {:+.2} dB  hnrLo {:.1} hnrHi {:.1} flat {:.3}", rms(&y.audio) - rms(&a.audio), m.hnr_low_db, m.hnr_high_db, m.flatness);
+        write_wav(&out.join(format!("n{d:+.1}.wav")), &y.audio, SR)?;
+    }
+    // pitch override: the model's curve +3 semitones on voiced frames
+    let up: Vec<f32> = p.f0.iter().map(|&f| if f > 10.0 { f * 2f32.powf(3.0 / 12.0) } else { f }).collect();
+    let ctl = Controls { dur_frames: frames.clone(), f0: up, ..Default::default() };
+    let y = k.synth_with(&ids, &style, speed, PitchCtl::default(), &ctl)?;
+    let ma = crate::analysis::measure(&a.audio, SR);
+    let my = crate::analysis::measure(&y.audio, SR);
+    println!("F0 override +3 st: median {:.0} → {:.0} Hz (×{:.3}); jitter {:.2} → {:.2}", ma.f0_median, my.f0_median, my.f0_median / ma.f0_median, ma.jitter_pct, my.jitter_pct);
+    // durations ×1.3 on every token
+    let ctl = Controls { dur_scale: vec![1.3; ids.len() + 2], ..Default::default() };
+    let q = k.predict(&ids, &style, speed, &ctl.dur_scale)?;
+    let sum = |d: &[i64]| d.iter().sum::<i64>();
+    println!("dur_scale 1.3: frames {} → {}", sum(&p.durations), sum(&q.durations));
+    write_wav(&out.join("ref.wav"), &a.audio, SR)?;
+    Ok(())
+}
+
+/// Colour drift: the same words with the style rows of utterances of
+/// different lengths, timbre length-indexed (v2) or fixed (v3). Returns the
+/// spread (dB) of the long-term spectral shape across renders.
+pub fn drift(k: &Kokoro, ps: &str, blend: &Blend, speed: f32, rows: &[usize], fixed: Option<usize>) -> Result<(f64, f64)> {
+    let (ids, _, _) = encode(ps);
+    let mut shapes: Vec<Vec<f64>> = Vec::new();
+    let mut medians: Vec<f64> = Vec::new();
+    for &r in rows {
+        let style = match fixed {
+            Some(t) => k.style_fixed_timbre(blend, r, t)?,
+            None => k.style(blend, r)?,
+        };
+        let take = match fixed {
+            // v3 also draws every utterance around the role's reference pitch
+            Some(_) => {
+                let p = k.predict(&ids, &style, speed, &[])?;
+                let mut v: Vec<f32> = p.f0.iter().copied().filter(|&f| f > 10.0).collect();
+                v.sort_by(|a, b| a.partial_cmp(b).unwrap());
+                let med = v.get(v.len() / 2).copied().unwrap_or(200.0);
+                let f0: Vec<f32> = p.f0.iter().map(|&f| if f > 10.0 { f * 200.0 / med } else { f }).collect();
+                let ctl = crate::kokoro::Controls {
+                    dur_frames: p.durations.iter().map(|&d| d as f32).collect(),
+                    f0,
+                    ..Default::default()
+                };
+                k.synth_with(&ids, &style, speed, PitchCtl::default(), &ctl)?
+            }
+            None => k.synth(&ids, &style, speed, PitchCtl::default())?,
+        };
+        let mut v: Vec<f64> = take.f0.iter().filter(|&&f| f > 10.0).map(|&f| f as f64).collect();
+        v.sort_by(|a, b| a.partial_cmp(b).unwrap());
+        medians.push(12.0 * (v.get(v.len() / 2).copied().unwrap_or(200.0) / 200.0).log2());
+        let frames = crate::analysis::mel_frames(&take.audio, SR);
+        // long-term shape over frames with energy (mel_frames removes each frame's level)
+        let n = frames.len().max(1) as f64;
+        let mut avg = vec![0.0; frames.first().map_or(0, |f| f.len())];
+        for f in &frames {
+            for (a, v) in avg.iter_mut().zip(f) {
+                *a += v / n;
+            }
+        }
+        shapes.push(avg);
+    }
+    let bands = shapes[0].len();
+    let mean: Vec<f64> = (0..bands).map(|b| shapes.iter().map(|s| s[b]).sum::<f64>() / shapes.len() as f64).collect();
+    let spread = shapes
+        .iter()
+        .map(|s| (s.iter().zip(&mean).map(|(a, m)| (a - m).powi(2)).sum::<f64>() / bands as f64).sqrt())
+        .sum::<f64>()
+        / shapes.len() as f64;
+    let mm = medians.iter().sum::<f64>() / medians.len() as f64;
+    let pitch_sd = (medians.iter().map(|m| (m - mm).powi(2)).sum::<f64>() / medians.len() as f64).sqrt();
+    Ok((spread, pitch_sd))
+}

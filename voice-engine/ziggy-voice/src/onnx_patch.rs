@@ -13,6 +13,12 @@
 //!   the network before the decoder renders it — `f0 = ref·(f0_pred/ref)^γ·scale`
 //!   on voiced frames — so the neural vocoder itself sings the melody (no
 //!   pitch-shifting artefact). The rendered curve is exposed as `f0`.
+//! * [`Patch::V3`] — v2 plus explicit prosody: per-phoneme duration scales
+//!   (`dur_scale`) or exact frame counts (`dur_frames`, `dur_mix`), and the
+//!   pitch and energy curves given to the decoder (`f0_override`/`f0_mix`,
+//!   `n_override`/`n_mix`); the predicted energy is exposed as `n_pred`.
+//!   [`prune`] then cuts a predictor-only graph (durations, `f0_pred`,
+//!   `n_pred`) for the planning pass, without the costly decoder.
 
 use anyhow::{bail, Context, Result};
 
@@ -22,11 +28,19 @@ pub const DURATION_TENSOR: &str = "/encoder/Gather_output_0";
 pub const F0_TENSOR: &str = "/encoder/Reshape_output_0";
 /// The decoder node that consumes [`F0_TENSOR`] (F0_conv + harmonic source).
 pub const F0_CONSUMER: &str = "/decoder/decoder/Unsqueeze";
+/// Predicted durations (frames, float, after `speed`), before rounding.
+pub const DUR_FLOAT: &str = "/encoder/Div_output_0";
+/// The node that rounds them.
+pub const DUR_CONSUMER: &str = "/encoder/Round";
+/// Energy curve given to the decoder (2 values per duration frame).
+pub const N_TENSOR: &str = "/encoder/Reshape_1_output_0";
+pub const N_CONSUMER: &str = "/decoder/decoder/Unsqueeze_1";
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Patch {
     DurationOnly,
     Full,
+    V3,
 }
 
 // ── wire format ────────────────────────────────────────────────────────────
@@ -196,7 +210,7 @@ pub enum Dim<'a> {
 }
 
 /// The nodes that turn `f0_pred` into the rendered `f0`.
-fn f0_nodes() -> Vec<Vec<u8>> {
+fn f0_nodes(out: &str) -> Vec<Vec<u8>> {
     let c = |name: &str, v: f32| node("Constant", name, &[], &[name], &[attr_float_tensor(v)]);
     vec![
         c("zv_one", 1.0),
@@ -209,9 +223,32 @@ fn f0_nodes() -> Vec<Vec<u8>> {
         node("Mul", "zv_wide", &[F0_TENSOR, "zv_widen"], &["zv_wide"], &[]),
         node("Mul", "zv_scaled", &["zv_wide", "f0_scale"], &["zv_scaled"], &[]),
         node("Greater", "zv_is_voiced", &[F0_TENSOR, "zv_voiced"], &["zv_is_voiced"], &[]),
-        node("Where", "zv_f0", &["zv_is_voiced", "zv_scaled", F0_TENSOR], &["f0"], &[]),
+        node("Where", "zv_f0", &["zv_is_voiced", "zv_scaled", F0_TENSOR], &[out], &[]),
         node("Identity", "expose_f0_pred", &[F0_TENSOR], &["f0_pred"], &[]),
     ]
+}
+
+/// `out = a·(1 − mix) + b·mix` (b may be [1, 1]: then nothing changes at mix 0).
+fn mix_nodes(tag: &str, a: &str, b: &str, mix: &str, out: &str) -> Vec<Vec<u8>> {
+    let one = format!("zv_{tag}_one");
+    let inv = format!("zv_{tag}_inv");
+    let keep = format!("zv_{tag}_keep");
+    let take = format!("zv_{tag}_take");
+    vec![
+        node("Constant", &one, &[], &[&one], &[attr_float_tensor(1.0)]),
+        node("Sub", &inv, &[&one, mix], &[&inv], &[]),
+        node("Mul", &keep, &[a, &inv], &[&keep], &[]),
+        node("Mul", &take, &[b, mix], &[&take], &[]),
+        node("Add", &format!("zv_{tag}_mix"), &[&keep, &take], &[out], &[]),
+    ]
+}
+
+/// v3 duration control: `frames = dur_frames·mix + predicted·dur_scale·(1 − mix)`,
+/// then the model's own rounding and ≥ 1 clip.
+fn dur_nodes() -> Vec<Vec<u8>> {
+    let mut v = vec![node("Mul", "zv_dur_scaled", &[DUR_FLOAT, "dur_scale"], &["zv_dur_scaled"], &[])];
+    v.extend(mix_nodes("dur", "zv_dur_scaled", "dur_frames", "dur_mix", "zv_dur"));
+    v
 }
 
 /// Rewrite one input name of a serialized NodeProto.
@@ -262,35 +299,145 @@ pub fn patch_model(model: &[u8], patch: Patch) -> Result<Vec<u8>> {
     let last_node = gf.iter().rposition(|f| f.num == 1).context("no node")?;
     let last_input = gf.iter().rposition(|f| f.num == 11).context("no input")?;
     let last_output = gf.iter().rposition(|f| f.num == 12).context("no output")?;
+    let v3 = patch == Patch::V3;
+    let controls = patch != Patch::DurationOnly;
 
     let mut g = Vec::with_capacity(graph.payload.len() + 4096);
+    let mut seen = [false; 3];
     for (k, f) in gf.iter().enumerate() {
-        if patch == Patch::Full && f.num == 1 && get_str(f.payload, 3)?.first() == Some(&F0_CONSUMER) {
-            for n in f0_nodes() {
-                put_len(&mut g, 1, &n);
+        let name = if f.num == 1 { get_str(f.payload, 3)?.first().map(|s| s.to_string()) } else { None };
+        match name.as_deref() {
+            Some(n) if controls && n == F0_CONSUMER => {
+                seen[0] = true;
+                let f0_v2 = if v3 { "zv_f0_v2" } else { "f0" };
+                for x in f0_nodes(f0_v2) {
+                    put_len(&mut g, 1, &x);
+                }
+                if v3 {
+                    for x in mix_nodes("f0o", "zv_f0_v2", "f0_override", "f0_mix", "f0") {
+                        put_len(&mut g, 1, &x);
+                    }
+                }
+                put_len(&mut g, 1, &rename_input(f.payload, F0_TENSOR, "f0")?);
             }
-            put_len(&mut g, 1, &rename_input(f.payload, F0_TENSOR, "f0")?);
-        } else {
-            g.extend_from_slice(f.raw);
+            Some(n) if v3 && n == DUR_CONSUMER => {
+                seen[1] = true;
+                for x in dur_nodes() {
+                    put_len(&mut g, 1, &x);
+                }
+                put_len(&mut g, 1, &rename_input(f.payload, DUR_FLOAT, "zv_dur")?);
+            }
+            Some(n) if v3 && n == N_CONSUMER => {
+                seen[2] = true;
+                for x in mix_nodes("n", N_TENSOR, "n_override", "n_mix", "zv_n") {
+                    put_len(&mut g, 1, &x);
+                }
+                put_len(&mut g, 1, &node("Identity", "expose_n_pred", &[N_TENSOR], &["n_pred"], &[]));
+                put_len(&mut g, 1, &rename_input(f.payload, N_TENSOR, "zv_n")?);
+            }
+            _ => g.extend_from_slice(f.raw),
         }
         if k == last_node {
             put_len(&mut g, 1, &node("Identity", "expose_duration", &[DURATION_TENSOR], &["duration"], &[]));
         }
-        if k == last_input && patch == Patch::Full {
+        if k == last_input && controls {
             for name in ["f0_scale", "f0_gamma", "f0_ref"] {
                 put_len(&mut g, 11, &value_info(name, FLOAT, &[Dim::Fixed(1)]));
+            }
+            if v3 {
+                // each input has its own symbolic length: a control left
+                // out is fed as [1, 1] while another one is full length
+                for (name, per) in [
+                    ("dur_scale", Some("dur_scale_len")),
+                    ("dur_frames", Some("dur_frames_len")),
+                    ("dur_mix", None),
+                    ("f0_override", Some("f0_override_len")),
+                    ("f0_mix", None),
+                    ("n_override", Some("n_override_len")),
+                    ("n_mix", None),
+                ] {
+                    let dims: Vec<Dim> = match per {
+                        Some(p) => vec![Dim::Fixed(1), Dim::Param(p)],
+                        None => vec![Dim::Fixed(1)],
+                    };
+                    put_len(&mut g, 11, &value_info(name, FLOAT, &dims));
+                }
             }
         }
         if k == last_output {
             put_len(&mut g, 12, &value_info("duration", INT64, &[Dim::Param("sequence_length")]));
-            if patch == Patch::Full {
+            if controls {
                 put_len(&mut g, 12, &value_info("f0", FLOAT, &[Dim::Fixed(1), Dim::Param("f0_frames")]));
                 put_len(&mut g, 12, &value_info("f0_pred", FLOAT, &[Dim::Fixed(1), Dim::Param("f0_frames")]));
             }
+            if v3 {
+                put_len(&mut g, 12, &value_info("n_pred", FLOAT, &[Dim::Fixed(1), Dim::Param("f0_frames")]));
+            }
         }
+    }
+    if controls && !seen[0] || v3 && !(seen[1] && seen[2]) {
+        bail!("an expected node of Kokoro's graph was not found");
     }
 
     let mut out = Vec::with_capacity(model.len() + g.len() - graph.payload.len() + 16);
+    for f in &top {
+        if std::ptr::eq(f.raw.as_ptr(), graph.raw.as_ptr()) {
+            put_len(&mut out, 7, &g);
+        } else {
+            out.extend_from_slice(f.raw);
+        }
+    }
+    Ok(out)
+}
+
+/// Keep only what computes `outputs` (backward reachability; Kokoro's graph
+/// has no control flow, so no subgraph captures outer tensors). Unused
+/// initializers, inputs and value infos are dropped.
+pub fn prune(model: &[u8], outputs: &[&str]) -> Result<Vec<u8>> {
+    let top = fields(model)?;
+    let graph = top.iter().find(|f| f.num == 7 && f.wire == 2).context("no graph in the model")?;
+    let gf = fields(graph.payload)?;
+    let mut needed: std::collections::HashSet<String> = outputs.iter().map(|s| s.to_string()).collect();
+    let mut keep = vec![false; gf.len()];
+    for (k, f) in gf.iter().enumerate().rev() {
+        if f.num != 1 {
+            continue;
+        }
+        let outs = get_str(f.payload, 2)?;
+        if outs.iter().any(|o| needed.contains(*o)) {
+            keep[k] = true;
+            for i in get_str(f.payload, 1)? {
+                if !i.is_empty() {
+                    needed.insert(i.to_string());
+                }
+            }
+        }
+    }
+    let mut g = Vec::with_capacity(graph.payload.len());
+    let mut found = 0;
+    for (k, f) in gf.iter().enumerate() {
+        let named = |num: u32| -> Result<Option<String>> {
+            Ok(get_str(f.payload, num)?.first().map(|s| s.to_string()))
+        };
+        let take = match f.num {
+            1 => keep[k],
+            5 => named(8)?.is_some_and(|n| needed.contains(&n)), // initializer (TensorProto.name = 8)
+            11 | 13 => named(1)?.is_some_and(|n| needed.contains(&n)), // input, value_info
+            12 => {
+                let ok = named(1)?.is_some_and(|n| outputs.contains(&n.as_str()));
+                found += usize::from(ok);
+                ok
+            }
+            _ => true,
+        };
+        if take {
+            g.extend_from_slice(f.raw);
+        }
+    }
+    if found != outputs.len() {
+        bail!("prune: {} of {} outputs found", found, outputs.len());
+    }
+    let mut out = Vec::with_capacity(g.len() + 1024);
     for f in &top {
         if std::ptr::eq(f.raw.as_ptr(), graph.raw.as_ptr()) {
             put_len(&mut out, 7, &g);
@@ -329,6 +476,72 @@ mod tests {
         put_varint(&mut m, 1, 8);
         put_len(&mut m, 7, &g);
         m
+    }
+
+    /// The v3 toy: durations rounded, F0 and N both reaching the decoder.
+    fn toy_v3() -> Vec<u8> {
+        let mut g = Vec::new();
+        put_len(&mut g, 1, &node("Div", "/encoder/Div", &["sum", "speed"], &[DUR_FLOAT], &[]));
+        put_len(&mut g, 1, &node("Round", DUR_CONSUMER, &[DUR_FLOAT], &["r"], &[]));
+        put_len(&mut g, 1, &node("Gather", "/encoder/Gather", &["r", "b"], &[DURATION_TENSOR], &[]));
+        put_len(&mut g, 1, &node("Reshape", "/encoder/Reshape", &[DURATION_TENSOR, "d"], &[F0_TENSOR], &[]));
+        put_len(&mut g, 1, &node("Reshape", "/encoder/Reshape_1", &[DURATION_TENSOR, "d"], &[N_TENSOR], &[]));
+        put_len(&mut g, 1, &node("Unsqueeze", F0_CONSUMER, &[F0_TENSOR, "k"], &["u"], &[]));
+        put_len(&mut g, 1, &node("Unsqueeze", N_CONSUMER, &[N_TENSOR, "k"], &["u2"], &[]));
+        put_len(&mut g, 1, &node("Add", "/decoder/out", &["u", "u2"], &["waveform"], &[]));
+        put_str(&mut g, 2, "main_graph");
+        let mut init = Vec::new();
+        put_varint(&mut init, 1, 1);
+        put_str(&mut init, 8, "decoder.weight");
+        put_len(&mut g, 5, &init);
+        put_len(&mut g, 11, &value_info("input_ids", INT64, &[Dim::Fixed(1), Dim::Param("n")]));
+        put_len(&mut g, 12, &value_info("waveform", FLOAT, &[Dim::Param("t")]));
+        let mut m = Vec::new();
+        put_varint(&mut m, 1, 8);
+        put_len(&mut m, 7, &g);
+        m
+    }
+
+    fn graph_of(m: &[u8]) -> Vec<(u32, Vec<String>)> {
+        let top = fields(m).unwrap();
+        let g = top.iter().find(|f| f.num == 7).unwrap();
+        fields(g.payload)
+            .unwrap()
+            .iter()
+            .map(|f| {
+                let key = match f.num {
+                    1 => 3,
+                    5 => 8,
+                    _ => 1,
+                };
+                (f.num, get_str(f.payload, key).unwrap_or_default().iter().map(|s| s.to_string()).collect())
+            })
+            .collect()
+    }
+
+    #[test]
+    fn v3_patch_and_predictor_prune() {
+        let p = patch_model(&toy_v3(), Patch::V3).unwrap();
+        let g = graph_of(&p);
+        let names: Vec<String> = g.iter().filter(|x| x.0 == 1).filter_map(|x| x.1.first().cloned()).collect();
+        let pos = |n: &str| names.iter().position(|x| x == n).unwrap();
+        assert!(pos("zv_dur_mix") < pos(DUR_CONSUMER));
+        assert!(pos("zv_f0o_mix") < pos(F0_CONSUMER));
+        assert!(pos("zv_n_mix") < pos(N_CONSUMER));
+        let inputs: Vec<String> = g.iter().filter(|x| x.0 == 11).filter_map(|x| x.1.first().cloned()).collect();
+        for i in ["dur_scale", "dur_frames", "dur_mix", "f0_override", "f0_mix", "n_override", "n_mix"] {
+            assert!(inputs.iter().any(|x| x == i), "{i}");
+        }
+        // prune to the planning outputs: the decoder goes, its weights too
+        let q = prune(&p, &["duration", "f0_pred", "n_pred"]).unwrap();
+        let g = graph_of(&q);
+        let names: Vec<String> = g.iter().filter(|x| x.0 == 1).filter_map(|x| x.1.first().cloned()).collect();
+        assert!(!names.iter().any(|n| n == "/decoder/out" || n == F0_CONSUMER || n == N_CONSUMER));
+        assert!(names.iter().any(|n| n == "zv_dur_mix"));
+        assert!(!g.iter().any(|x| x.0 == 5), "unused initializer dropped");
+        let outs: Vec<String> = g.iter().filter(|x| x.0 == 12).filter_map(|x| x.1.first().cloned()).collect();
+        assert_eq!(outs, ["duration", "f0_pred", "n_pred"]);
+        assert!(prune(&p, &["nope"]).is_err());
     }
 
     #[test]

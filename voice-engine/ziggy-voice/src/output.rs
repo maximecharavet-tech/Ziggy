@@ -116,7 +116,7 @@ mod tests {
         let s = serde_json::to_string(&t).unwrap();
         assert_eq!(
             s,
-            r#"{"v":2,"voice":"ziggy-v2","locale":"fr","story":"lili","segments":{"title":{"file":"title.mp3","dur":2.5,"text":"Bonjour","words":[0.1],"visemes":[[0.0,"smile"],[0.12,"small"]]}}}"#
+            r#"{"v":2,"voice":"ziggy-v3","locale":"fr","story":"lili","segments":{"title":{"file":"title.mp3","dur":2.5,"text":"Bonjour","words":[0.1],"visemes":[[0.0,"smile"],[0.12,"small"]]}}}"#
         );
     }
 }

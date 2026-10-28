@@ -260,11 +260,16 @@ pub struct Take {
     pub f0: Vec<f32>,
     /// Pitch the predictor produced, before Ziggy's controls.
     pub f0_pred: Vec<f32>,
+    /// Frames per input token (boundaries included).
+    pub durations: Vec<i64>,
 }
 
 pub struct Kokoro {
     _env: ort::environment::Environment,
     session: Mutex<Session>,
+    /// The same graph cut before the decoder: durations, pitch and energy
+    /// for the planning pass (≈ 4× cheaper than a full synthesis).
+    predictor: Mutex<Session>,
     packs: Mutex<HashMap<String, Pack>>,
     voices_dir: std::path::PathBuf,
 }
@@ -286,25 +291,29 @@ impl Kokoro {
             .with_telemetry(false) // nothing leaves the build machine
             .build()
             .map_err(|e| anyhow::anyhow!("ort env: {e}"))?;
-        let model = cache.model();
-        if !model.exists() {
-            bail!("{} missing — run `ziggy-voice prepare`", model.display());
-        }
-        let session = Session::builder(&env)
-            .map_err(|e| anyhow::anyhow!("{e}"))?
-            .with_optimization_level(GraphOptimizationLevel::Level3)
-            .map_err(|e| anyhow::anyhow!("{e}"))?
-            .with_intra_threads(threads.max(1))
-            .map_err(|e| anyhow::anyhow!("{e}"))?
-            .with_inter_threads(1)
-            .map_err(|e| anyhow::anyhow!("{e}"))?
-            .with_intra_op_spinning(false)
-            .map_err(|e| anyhow::anyhow!("{e}"))?
-            .commit_from_file(&model)
-            .map_err(|e| anyhow::anyhow!("load {}: {e}", model.display()))?;
+        let open = |path: &Path| -> Result<Session> {
+            if !path.exists() {
+                bail!("{} missing — run `ziggy-voice prepare`", path.display());
+            }
+            Session::builder(&env)
+                .map_err(|e| anyhow::anyhow!("{e}"))?
+                .with_optimization_level(GraphOptimizationLevel::Level3)
+                .map_err(|e| anyhow::anyhow!("{e}"))?
+                .with_intra_threads(threads.max(1))
+                .map_err(|e| anyhow::anyhow!("{e}"))?
+                .with_inter_threads(1)
+                .map_err(|e| anyhow::anyhow!("{e}"))?
+                .with_intra_op_spinning(false)
+                .map_err(|e| anyhow::anyhow!("{e}"))?
+                .commit_from_file(path)
+                .map_err(|e| anyhow::anyhow!("load {}: {e}", path.display()))
+        };
+        let session = open(&cache.model())?;
+        let predictor = open(&cache.predictor())?;
         Ok(Self {
             _env: env,
             session: Mutex::new(session),
+            predictor: Mutex::new(predictor),
             packs: Mutex::new(HashMap::new()),
             voices_dir: cache.voices(),
         })
@@ -318,6 +327,21 @@ impl Kokoro {
         let p = Pack::load(&self.voices_dir.join(format!("{name}.bin")))?;
         packs.insert(name.to_string(), p.clone());
         Ok(p)
+    }
+
+    /// v3: the timbre half from one fixed row (the same colour for every
+    /// utterance of a role), the prosody half by length as Kokoro does.
+    pub fn style_fixed_timbre(&self, blend: &Blend, n_tokens: usize, timbre_row: usize) -> Result<[f32; STYLE_DIM]> {
+        let mut s = [0f32; STYLE_DIM];
+        for (half, mix, n) in [(TIMBRE, &blend.timbre, timbre_row), (PROSODY, &blend.prosody, n_tokens)] {
+            for (name, w) in mix {
+                let row = self.pack(name)?.row(n);
+                for k in half.clone() {
+                    s[k] += w * row[k];
+                }
+            }
+        }
+        Ok(s)
     }
 
     /// The style vector of a blend for an utterance of `n_tokens` phonemes.
@@ -334,31 +358,40 @@ impl Kokoro {
         Ok(s)
     }
 
-    /// Synthesize one utterance (ids without the boundary 0s).
+    /// Synthesize one utterance (ids without the boundary 0s), v2 style: the
+    /// model's own durations, pitch transformed by `pitch`.
     pub fn synth(&self, ids: &[i64], style: &[f32; STYLE_DIM], speed: f32, pitch: PitchCtl) -> Result<Take> {
-        if ids.is_empty() || ids.len() > MAX_TOKENS - 2 {
-            bail!("utterance of {} tokens", ids.len());
-        }
-        let mut input = Vec::with_capacity(ids.len() + 2);
-        input.push(0);
-        input.extend_from_slice(ids);
-        input.push(0);
-        let n = input.len() as i64;
+        self.synth_with(ids, style, speed, pitch, &Controls::default())
+    }
+
+    /// The planning pass: what the model would do with these duration scales
+    /// (per input token, boundaries included; empty = ×1).
+    pub fn predict(&self, ids: &[i64], style: &[f32; STYLE_DIM], speed: f32, dur_scale: &[f32]) -> Result<Prediction> {
+        let ctl = Controls { dur_scale: dur_scale.to_vec(), ..Default::default() };
+        let inputs = feeds(ids, style, speed, PitchCtl::default(), &ctl, false)?;
         let err = |e: ort::Error| anyhow::anyhow!("{e}");
-        let t_ids = Tensor::from_array((vec![1i64, n], input)).map_err(err)?;
-        let t_style = Tensor::from_array((vec![1i64, STYLE_DIM as i64], style.to_vec())).map_err(err)?;
-        let one = |v: f32| Tensor::from_array((vec![1i64], vec![v]));
+        let mut session = self.predictor.lock().unwrap();
+        let out = session.run(inputs).map_err(err)?;
+        let (_, dur) = out["duration"].try_extract_tensor::<i64>().map_err(err)?;
+        let (_, f0) = out["f0_pred"].try_extract_tensor::<f32>().map_err(err)?;
+        let (_, n) = out["n_pred"].try_extract_tensor::<f32>().map_err(err)?;
+        Ok(Prediction { durations: dur.to_vec(), f0: f0.to_vec(), n: n.to_vec() })
+    }
+
+    /// Synthesize with explicit controls (v3): exact durations, pitch and
+    /// energy curves given to the decoder.
+    pub fn synth_with(
+        &self,
+        ids: &[i64],
+        style: &[f32; STYLE_DIM],
+        speed: f32,
+        pitch: PitchCtl,
+        ctl: &Controls,
+    ) -> Result<Take> {
+        let inputs = feeds(ids, style, speed, pitch, ctl, true)?;
+        let err = |e: ort::Error| anyhow::anyhow!("{e}");
         let mut session = self.session.lock().unwrap();
-        let out = session
-            .run(ort::inputs![
-                "input_ids" => t_ids,
-                "style" => t_style,
-                "speed" => one(speed).map_err(err)?,
-                "f0_scale" => one(pitch.scale).map_err(err)?,
-                "f0_gamma" => one(pitch.gamma).map_err(err)?,
-                "f0_ref" => one(pitch.reference).map_err(err)?,
-            ])
-            .map_err(err)?;
+        let out = session.run(inputs).map_err(err)?;
         let (_, wav) = out["waveform"].try_extract_tensor::<f32>().map_err(err)?;
         let (_, dur) = out["duration"].try_extract_tensor::<i64>().map_err(err)?;
         let (_, f0) = out["f0"].try_extract_tensor::<f32>().map_err(err)?;
@@ -377,8 +410,75 @@ impl Kokoro {
         // edges[k] = start of input token k (token 0 = the leading boundary);
         // drop the boundary so edges[k] = start of ids[k].
         let edges = edges[1..].to_vec();
-        Ok(Take { audio, edges, f0: f0.to_vec(), f0_pred: f0p.to_vec() })
+        Ok(Take { audio, edges, f0: f0.to_vec(), f0_pred: f0p.to_vec(), durations: dur.to_vec() })
     }
+}
+
+/// Explicit prosody for one utterance (all optional: empty = the model's own).
+#[derive(Clone, Debug, Default, PartialEq)]
+pub struct Controls {
+    /// Per input token (boundaries included): multiply the predicted duration.
+    pub dur_scale: Vec<f32>,
+    /// Per input token: exact frame counts (overrides `dur_scale`).
+    pub dur_frames: Vec<f32>,
+    /// Pitch curve for the decoder (Hz, `F0_HOP` samples per value; ≤ 10 = unvoiced).
+    pub f0: Vec<f32>,
+    /// Energy curve for the decoder (same grid as `f0`).
+    pub n: Vec<f32>,
+}
+
+/// What the predictor plans for an utterance.
+#[derive(Clone, Debug)]
+pub struct Prediction {
+    /// Frames per input token, boundaries included.
+    pub durations: Vec<i64>,
+    pub f0: Vec<f32>,
+    pub n: Vec<f32>,
+}
+
+type Feeds = Vec<(std::borrow::Cow<'static, str>, ort::session::SessionInputValue<'static>)>;
+
+fn feeds(ids: &[i64], style: &[f32; STYLE_DIM], speed: f32, pitch: PitchCtl, ctl: &Controls, full: bool) -> Result<Feeds> {
+    if ids.is_empty() || ids.len() > MAX_TOKENS - 2 {
+        bail!("utterance of {} tokens", ids.len());
+    }
+    let mut input = Vec::with_capacity(ids.len() + 2);
+    input.push(0);
+    input.extend_from_slice(ids);
+    input.push(0);
+    let n = input.len();
+    let err = |e: ort::Error| anyhow::anyhow!("{e}");
+    let row = |v: &[f32], len: usize, fill: f32| -> Result<Tensor<f32>> {
+        if v.is_empty() {
+            return Tensor::from_array((vec![1i64, 1], vec![fill])).map_err(err);
+        }
+        if len > 0 && v.len() != len {
+            bail!("control of length {} for {} tokens", v.len(), len);
+        }
+        Tensor::from_array((vec![1i64, v.len() as i64], v.to_vec())).map_err(err)
+    };
+    let one = |v: f32| Tensor::from_array((vec![1i64], vec![v])).map_err(err);
+    let mix = |v: &[f32]| one(if v.is_empty() { 0.0 } else { 1.0 });
+    let mut f: Feeds = vec![
+        ("input_ids".into(), Tensor::from_array((vec![1i64, n as i64], input)).map_err(err)?.into()),
+        ("style".into(), Tensor::from_array((vec![1i64, STYLE_DIM as i64], style.to_vec())).map_err(err)?.into()),
+        ("speed".into(), one(speed)?.into()),
+        ("dur_scale".into(), row(&ctl.dur_scale, n, 1.0)?.into()),
+        ("dur_frames".into(), row(&ctl.dur_frames, n, 0.0)?.into()),
+        ("dur_mix".into(), mix(&ctl.dur_frames)?.into()),
+    ];
+    if full {
+        f.extend([
+            ("f0_scale".into(), one(pitch.scale)?.into()),
+            ("f0_gamma".into(), one(pitch.gamma)?.into()),
+            ("f0_ref".into(), one(pitch.reference)?.into()),
+            ("f0_override".into(), row(&ctl.f0, 0, 0.0)?.into()),
+            ("f0_mix".into(), mix(&ctl.f0)?.into()),
+            ("n_override".into(), row(&ctl.n, 0, 0.0)?.into()),
+            ("n_mix".into(), mix(&ctl.n)?.into()),
+        ]);
+    }
+    Ok(f)
 }
 
 #[cfg(test)]

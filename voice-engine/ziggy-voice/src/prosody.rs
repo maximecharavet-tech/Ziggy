@@ -6,6 +6,8 @@
 //! (voice blend, speed, melody, vocal-tract size, level) and the pause that
 //! follows it. Everything here is text-only, deterministic and unit-tested.
 
+use crate::contour::feeling_tempo;
+use crate::intonation::{analyse, key_words, Intonation, PieceInfo, StoryContext};
 use crate::recipe::{character, narrator, Delivery, Pauses, Variant};
 use crate::text::{quote_flags, sentences, speakable, split_core, tokenize, SentenceSpan, CLOSERS};
 
@@ -32,6 +34,8 @@ pub struct Piece {
     pub pause_after: f32,
     /// Add a full stop when the piece has no final punctuation (titles).
     pub closing_period: bool,
+    /// How a storyteller reads it (v3): type, phrases, emphasis, feeling.
+    pub intonation: Intonation,
 }
 
 #[derive(Clone, Debug)]
@@ -785,10 +789,11 @@ fn pause_for(mark: Option<char>) -> f32 {
 }
 
 /// Plan one segment. `index`/`count` locate a scene among the scenes.
-pub fn plan_segment(locale: &str, id: &str, text: &str, cast: &mut Cast) -> SegmentPlan {
+pub fn plan_segment(locale: &str, id: &str, text: &str, cast: &mut Cast, ctx: &mut StoryContext) -> SegmentPlan {
     let tokens = tokenize(text);
     let sents: Vec<SentenceSpan> = sentences(&tokens);
     let qf = quote_flags(&tokens);
+    ctx.key_used.clear(); // key words: once per scene
     let is_title = id == "title";
     let is_outro = id == "outro";
     let scene: Option<u32> = id.strip_prefix('s').and_then(|n| n.parse().ok());
@@ -1103,6 +1108,7 @@ pub fn plan_segment(locale: &str, id: &str, text: &str, cast: &mut Cast) -> Segm
             if sp.key.as_deref() == Some(ZIGGY) {
                 d = narrator(locale);
                 d.pitch.gamma = 1.2;
+                d.range = 1.15;
             }
             (Role::Dialogue, d, sp.key.clone(), Some(v), sp.whisper)
         } else if is_tag {
@@ -1135,6 +1141,22 @@ pub fn plan_segment(locale: &str, id: &str, text: &str, cast: &mut Cast) -> Segm
             d.speed *= 1.04;
         }
         let closing = n_sent >= 2 && si == n_sent - 1;
+        let landing = (scene.is_some() && closing) || is_outro || (last_scene && n_sent >= 3 && si + 2 >= n_sent);
+        let continues = i + 1 < n && merged[i + 1].2 == si;
+        let info = PieceInfo {
+            locale,
+            toks: &tokens[s..e],
+            sentence: &tokens[sents[si].start..sents[si].end],
+            continues,
+            landing,
+            tag: role == Role::Tag,
+            whisper,
+        };
+        let intonation = analyse(&info, ctx);
+        // the feeling sets the pace (the landing is already slower)
+        if !landing && !is_title {
+            d.speed *= feeling_tempo(intonation.emotion);
+        }
         if scene.is_some() && !last_scene && closing {
             d.speed *= 0.95;
             d.gain_db -= 1.0;
@@ -1174,6 +1196,10 @@ pub fn plan_segment(locale: &str, id: &str, text: &str, cast: &mut Cast) -> Segm
         } else {
             let mut p = pause_for(mark);
             let next = merged[i + 1].2;
+            // a little breath before a long sentence
+            if words_in(next) >= 18 {
+                p += Pauses::BEFORE_LONG;
+            }
             if scene.is_some() && n_sent >= 3 && next == n_sent - 1 {
                 p += Pauses::BEFORE_LAST;
             } else if words_in(next) <= 4 && words_in(si) >= 8 && !merged[i + 1].3 {
@@ -1193,6 +1219,7 @@ pub fn plan_segment(locale: &str, id: &str, text: &str, cast: &mut Cast) -> Segm
             delivery: d,
             pause_after: pause,
             closing_period: is_title || !has_end && i + 1 == n,
+            intonation,
         });
     }
     SegmentPlan { id: id.to_string(), text: text.to_string(), tokens, pieces, lead: Pauses::LEAD }
@@ -1201,11 +1228,35 @@ pub fn plan_segment(locale: &str, id: &str, text: &str, cast: &mut Cast) -> Segm
 /// Plan every segment of a story (characters keep their voice across scenes).
 pub fn plan_story(locale: &str, story: &crate::stories::Story) -> Vec<SegmentPlan> {
     let mut cast = Cast::default();
-    story
-        .segment_ids(locale)
-        .iter()
-        .filter_map(|id| story.text(locale, id).map(|t| plan_segment(locale, id, t, &mut cast)))
-        .collect()
+    let ids = story.segment_ids(locale);
+    let text = |id: &str| story.text(locale, id).unwrap_or("");
+    let scenes: Vec<&str> = ids.iter().filter(|i| i.starts_with('s')).map(|i| text(i)).collect();
+    let mut ctx = StoryContext { key_words: key_words(text("title"), &scenes, text("outro")), ..Default::default() };
+    ids.iter().filter_map(|id| story.text(locale, id).map(|t| plan_segment(locale, id, t, &mut cast, &mut ctx))).collect()
+}
+
+/// The piece's words with its phrasing: `/` continuation, `↗` list item,
+/// `↘`/`↗?` the final tone, `*word*` emphasis.
+fn reading(p: &SegmentPlan, x: &Piece) -> String {
+    let toks = &p.tokens[x.start..x.end];
+    let mut out = Vec::new();
+    for ph in &x.intonation.phrases {
+        let mut words: Vec<String> = (ph.start..ph.end)
+            .map(|k| if x.intonation.focus.iter().any(|f| f.0 == k) { format!("*{}*", toks[k]) } else { toks[k].clone() })
+            .collect();
+        let tone = match ph.boundary {
+            crate::intonation::Boundary::Continuation => "/",
+            crate::intonation::Boundary::ListItem => "↗",
+            crate::intonation::Boundary::Final => match x.intonation.kind {
+                crate::intonation::Kind::YesNo => "↗?",
+                crate::intonation::Kind::Suspension => "→",
+                _ => "↘",
+            },
+        };
+        words.push(tone.into());
+        out.push(words.join(" "));
+    }
+    out.join(" ")
 }
 
 /// One line per piece, for `ziggy-voice plan`.
@@ -1222,15 +1273,16 @@ pub fn describe(p: &SegmentPlan) -> String {
             (r, _) => format!("{r:?}"),
         };
         out.push_str(&format!(
-            "  {:<4} {:<28} spd {:.3} f0×{:.3} γ{:.2} fmt {:.2} {:+.1}dB | {} | +{:.2}s\n",
+            "  {:<4} {:<28} spd {:.3} f0×{:.3} fmt {:.2} {:+.1}dB {:?}/{:?} | {} | +{:.2}s\n",
             p.id,
             who,
             x.delivery.speed,
             x.delivery.pitch.scale,
-            x.delivery.pitch.gamma,
             x.delivery.formant,
             x.delivery.gain_db,
-            p.tokens[x.start..x.end].join(" "),
+            x.intonation.kind,
+            x.intonation.emotion,
+            reading(p, x),
             x.pause_after
         ));
     }
@@ -1242,7 +1294,7 @@ mod tests {
     use super::*;
 
     fn plan(text: &str, id: &str) -> SegmentPlan {
-        plan_segment("fr", id, text, &mut Cast::default())
+        plan_segment("fr", id, text, &mut Cast::default(), &mut StoryContext::default())
     }
 
     fn words(p: &SegmentPlan, x: &Piece) -> String {
@@ -1270,13 +1322,13 @@ mod tests {
     #[test]
     fn speaker_before_and_elders() {
         let mut cast = Cast::default();
-        let p = plan_segment("fr", "s2", "Un soir, la vieille bibliothécaire murmura : « On dit que notre royaume cache mille secrets. » Les yeux de Lili brillèrent. « Mille secrets ? Allons-y ! » proposa Lili.", &mut cast);
+        let p = plan_segment("fr", "s2", "Un soir, la vieille bibliothécaire murmura : « On dit que notre royaume cache mille secrets. » Les yeux de Lili brillèrent. « Mille secrets ? Allons-y ! » proposa Lili.", &mut cast, &mut StoryContext::default());
         let q: Vec<&Piece> = p.pieces.iter().filter(|x| x.role == Role::Dialogue).collect();
         assert_eq!(q[0].variant, Some(Variant::Warm));
         assert!(q[0].whisper);
         assert_eq!(q[1].speaker.as_deref(), Some("lili"));
         assert_eq!(q[1].variant, Some(Variant::ChildA));
-        let p2 = plan_segment("en", "s3", "“Hello!” said Pico. “Hi!” said Lili.", &mut cast);
+        let p2 = plan_segment("en", "s3", "“Hello!” said Pico. “Hi!” said Lili.", &mut cast, &mut StoryContext::default());
         let v: Vec<Option<Variant>> =
             p2.pieces.iter().filter(|x| x.role == Role::Dialogue).map(|x| x.variant).collect();
         assert_eq!(v, [Some(Variant::ChildB), Some(Variant::ChildA)], "Lili keeps her voice across segments");
@@ -1295,7 +1347,7 @@ mod tests {
         let p = plan("« Pas de ballon dans la maison », disait souvent grand-mère. « Chut », dit-il.", "s2");
         let q: Vec<&Piece> = p.pieces.iter().filter(|x| x.role == Role::Dialogue).collect();
         assert_eq!(q[0].variant, Some(Variant::Warm));
-        let p = plan_segment("en", "s1", "“Look!” Lili whispered. “Shh,” she said.", &mut Cast::default());
+        let p = plan_segment("en", "s1", "“Look!” Lili whispered. “Shh,” she said.", &mut Cast::default(), &mut StoryContext::default());
         let q: Vec<&Piece> = p.pieces.iter().filter(|x| x.role == Role::Dialogue).collect();
         assert_eq!(q[0].speaker.as_deref(), Some("lili"));
         assert!(q[0].whisper);
@@ -1305,7 +1357,7 @@ mod tests {
     fn notes_and_cross_sentence_tags() {
         let p = plan("Il y avait un mot qui disait « Merci ». Fin du mot.", "s3");
         assert!(p.pieces.iter().all(|x| x.role == Role::Narration));
-        let p = plan_segment("en", "s2", "Amina ran to see Grandpa Samir. “Grandpa, the bee is tired!” Grandpa Samir smiled gently. “She is looking for flowers.” “Exactly,” said Grandpa. “They are friends.”", &mut Cast::default());
+        let p = plan_segment("en", "s2", "Amina ran to see Grandpa Samir. “Grandpa, the bee is tired!” Grandpa Samir smiled gently. “She is looking for flowers.” “Exactly,” said Grandpa. “They are friends.”", &mut Cast::default(), &mut StoryContext::default());
         let q: Vec<(Option<String>, Option<Variant>)> =
             p.pieces.iter().filter(|x| x.role == Role::Dialogue).map(|x| (x.speaker.clone(), x.variant)).collect();
         assert_eq!(q[0].0.as_deref(), Some("amina"));
@@ -1351,18 +1403,19 @@ mod tests {
             "s4",
             "“Wow! And you, Lumi, what are you?” asked Sacha. “Me?” laughed Lumi. “I’m a tiny pebble.” “Why?” asked Sacha. “Because.”",
             &mut Cast::default(),
+            &mut StoryContext::default(),
         );
         let q: Vec<Option<String>> =
             p.pieces.iter().filter(|x| x.role == Role::Dialogue).map(|x| x.speaker.clone()).collect();
         let q: Vec<&str> = q.iter().map(|x| x.as_deref().unwrap_or("?")).collect();
         assert_eq!(q, ["sacha", "sacha", "lumi", "lumi", "sacha", "lumi"]); // "Wow!" + "And you…" = 2 pieces
                                                                             // a pronoun tag in the middle: the rest of the quotation names the speaker
-        let p = plan_segment("en", "s2", "“Good evening, Sacha,” she said. “My name is Lumi.”", &mut Cast::default());
+        let p = plan_segment("en", "s2", "“Good evening, Sacha,” she said. “My name is Lumi.”", &mut Cast::default(), &mut StoryContext::default());
         assert!(p.pieces.iter().filter(|x| x.role == Role::Dialogue).all(|x| x.speaker.as_deref() == Some("lumi")));
         // "Pardon, Nuna." with nobody named: the other character of the story
         let mut cast = Cast::default();
-        plan_segment("fr", "s2", "« Ici ! » dit Kiko. « Non, là ! » dit Nuna.", &mut cast);
-        let p = plan_segment("fr", "s5", "« Pardon, Nuna. Je me suis fâché. » « Pardon, Kiko. Moi aussi. »", &mut cast);
+        plan_segment("fr", "s2", "« Ici ! » dit Kiko. « Non, là ! » dit Nuna.", &mut cast, &mut StoryContext::default());
+        let p = plan_segment("fr", "s5", "« Pardon, Nuna. Je me suis fâché. » « Pardon, Kiko. Moi aussi. »", &mut cast, &mut StoryContext::default());
         let q: Vec<Option<String>> =
             p.pieces.iter().filter(|x| x.role == Role::Dialogue).map(|x| x.speaker.clone()).collect();
         assert_eq!(q.first().unwrap().as_deref(), Some("kiko"));

@@ -10,7 +10,14 @@
 
 use crate::kokoro::{Blend, PitchCtl};
 
-pub const RECIPE_ID: &str = "ziggy-v2";
+pub const RECIPE_ID: &str = "ziggy-v3";
+
+/// Kokoro picks a style row by utterance length; the timbre half of the rows
+/// drifts with it (row 20 vs 250 of ff_siwis differ by 55 % of the norm), so
+/// a short quote and a long sentence did not sound like the same Ziggy. v3
+/// takes the timbre half from one row for every utterance (the corpus median
+/// length, ≈ 37 phonemes); the prosody half stays length-indexed.
+pub const TIMBRE_ROW: usize = 40;
 
 /// One delivery of the voice (narrator, a character, a whisper…).
 #[derive(Clone, Debug, PartialEq)]
@@ -22,6 +29,8 @@ pub struct Delivery {
     /// Vocal-tract scale applied with the CheapTrick envelope filter.
     pub formant: f32,
     pub gain_db: f32,
+    /// Melody excursions (v3 contours): narrator 1, characters livelier.
+    pub range: f32,
 }
 
 fn mix(v: &[(&str, f32)]) -> Vec<(String, f32)> {
@@ -42,6 +51,7 @@ pub fn narrator(locale: &str) -> Delivery {
             pitch: PitchCtl { scale: 1.22, gamma: 1.15, reference: 200.0 },
             formant: 1.09,
             gain_db: 0.0,
+            range: 1.0,
         }
     } else {
         Delivery {
@@ -50,6 +60,7 @@ pub fn narrator(locale: &str) -> Delivery {
             pitch: PitchCtl { scale: 1.22, gamma: 1.12, reference: 190.0 },
             formant: 1.09,
             gain_db: 0.0,
+            range: 1.0,
         }
     }
 }
@@ -69,6 +80,7 @@ pub enum Variant {
 
 pub fn character(locale: &str, v: Variant) -> Delivery {
     let mut d = narrator(locale);
+    d.range = if v == Variant::Warm { 1.05 } else { 1.2 };
     let base_timbre = d.blend.timbre.clone();
     let add = |extra: &str, amount: f32| -> Vec<(String, f32)> {
         let mut t: Vec<(String, f32)> = base_timbre.iter().map(|(n, w)| (n.clone(), w * (1.0 - amount))).collect();
@@ -127,6 +139,8 @@ impl Pauses {
     pub const BEFORE_LAST: f32 = 0.15;
     /// Extra breath before a short "reveal" sentence.
     pub const BEFORE_REVEAL: f32 = 0.12;
+    /// A little breath before a long sentence (≥ 18 words).
+    pub const BEFORE_LONG: f32 = 0.12;
 }
 
 /// The words a child would hear lit 0.10 s before the phoneme slot: Kokoro's

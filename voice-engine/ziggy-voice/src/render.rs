@@ -3,10 +3,12 @@
 use crate::align::PUNCT_PS;
 use crate::g2p_en::EnglishG2P;
 use crate::g2p_fr::{FrenchG2P, Phonemized};
-use crate::kokoro::{encode, Kokoro, PitchCtl, Take, F0_HOP, MAX_TOKENS, SR};
+use crate::contour::{curves, dur_scale, Layout, Voice};
+use crate::intonation::Intonation;
+use crate::kokoro::{encode, Controls, Kokoro, PitchCtl, Take, F0_HOP, MAX_TOKENS, SR};
 use crate::numbers::spoken;
 use crate::prosody::{Piece, SegmentPlan};
-use crate::recipe::{Delivery, ONSET_SHIFT, VISEME_SHIFT};
+use crate::recipe::{Delivery, ONSET_SHIFT, TIMBRE_ROW, VISEME_SHIFT};
 use crate::text::speakable;
 use crate::visemes::{cues, Shape};
 use crate::world::formant_filter;
@@ -65,19 +67,39 @@ pub struct Renderer<'a> {
     pub take_cache: Option<PathBuf>,
 }
 
-fn take_key(ids: &[i64], style: &[f32], speed: f32, p: PitchCtl) -> String {
+fn take_key_v3(ids: &[i64], style: &[f32], speed: f32, ctl: &Controls) -> String {
     let mut h = Sha256::new();
-    h.update(b"kokoro-ziggy-v2/1");
+    h.update(b"kokoro-ziggy-v3/1");
     for i in ids {
         h.update(i.to_le_bytes());
     }
-    for s in style {
-        h.update(s.to_le_bytes());
-    }
-    for v in [speed, p.scale, p.gamma, p.reference] {
+    for v in style.iter().chain([speed].iter()).chain(&ctl.dur_scale).chain(&ctl.dur_frames).chain(&ctl.f0).chain(&ctl.n) {
         h.update(v.to_le_bytes());
     }
+    h.update((ctl.f0.len() as u64).to_le_bytes());
     h.finalize().iter().take(16).map(|b| format!("{b:02x}")).collect()
+}
+
+/// Emphasis loudness: a smooth gain over the units' samples (30 ms ramps).
+pub fn apply_gains(audio: &mut [f32], edges: &[f64], gains: &[(usize, usize, f32)]) {
+    let ramp = 0.03 * SR as f64;
+    for &(a, b, db) in gains {
+        let (Some(&s0), Some(&s1)) = (edges.get(a), edges.get(b)) else { continue };
+        let g = 10f64.powf(db as f64 / 20.0) - 1.0;
+        let lo = (s0 - ramp).max(0.0) as usize;
+        let hi = ((s1 + ramp) as usize).min(audio.len());
+        for (i, x) in audio.iter_mut().enumerate().take(hi).skip(lo) {
+            let t = i as f64;
+            let w = if t < s0 {
+                0.5 - 0.5 * (std::f64::consts::PI * (t - (s0 - ramp)) / ramp).cos()
+            } else if t > s1 {
+                0.5 + 0.5 * (std::f64::consts::PI * (t - s1) / ramp).cos()
+            } else {
+                1.0
+            };
+            *x *= (1.0 + g * w) as f32;
+        }
+    }
 }
 
 fn write_take(path: &PathBuf, t: &Take) -> Result<()> {
@@ -91,6 +113,10 @@ fn write_take(path: &PathBuf, t: &Take) -> Result<()> {
     }
     b.extend((t.edges.len() as u64).to_le_bytes());
     for v in &t.edges {
+        b.extend(v.to_le_bytes());
+    }
+    b.extend((t.durations.len() as u64).to_le_bytes());
+    for v in &t.durations {
         b.extend(v.to_le_bytes());
     }
     let tmp = path.with_extension("partial");
@@ -122,7 +148,11 @@ fn read_take(path: &PathBuf) -> Option<Take> {
     let n = u64_at(&mut p)?;
     let s = b.get(p..p + 8 * n)?;
     let edges = s.chunks_exact(8).map(|c| f64::from_le_bytes(c.try_into().unwrap())).collect();
-    Some(Take { audio, edges, f0, f0_pred })
+    p += 8 * n;
+    let n = u64_at(&mut p)?;
+    let s = b.get(p..p + 8 * n)?;
+    let durations = s.chunks_exact(8).map(|c| i64::from_le_bytes(c.try_into().unwrap())).collect();
+    Some(Take { audio, edges, f0, f0_pred, durations })
 }
 
 /// Silence trimming like v1: 10 ms RMS windows against −38 dB of the
@@ -148,20 +178,43 @@ pub fn trim_bounds(audio: &[f32]) -> (usize, usize) {
 }
 
 impl<'a> Renderer<'a> {
-    fn synth(&self, ids: &[i64], d: &Delivery) -> Result<Take> {
-        let style = self.kokoro.style(&d.blend, ids.len())?;
-        let key = take_key(ids, &style, d.speed, d.pitch);
+    /// v3: plan (durations), predict, draw the contour, render with it.
+    /// Returns the take and the emphasis gains (unit range, dB).
+    fn synth_v3(
+        &self,
+        ids: &[i64],
+        layout: &Layout,
+        reading: &Intonation,
+        toks: &[String],
+        d: &Delivery,
+    ) -> Result<(Take, Vec<(usize, usize, f32)>)> {
+        let french = self.g2p.locale() == "fr";
+        let style = self.kokoro.style_fixed_timbre(&d.blend, ids.len(), TIMBRE_ROW)?;
+        let ds = dur_scale(layout, reading, toks, french);
+        let pred = self.kokoro.predict(ids, &style, d.speed, &ds)?;
+        let voice = Voice { french, reference_hz: d.pitch.reference * d.pitch.scale, range: d.range };
+        let c = curves(layout, reading, toks, &pred, voice);
+        let ctl = Controls {
+            dur_frames: pred.durations.iter().map(|&x| x as f32).collect(),
+            f0: c.f0,
+            n: c.n,
+            ..Default::default()
+        };
+        let key = take_key_v3(ids, &style, d.speed, &ctl);
         let path = self.take_cache.as_ref().map(|c| c.join(&key[..2]).join(format!("{key}.take")));
         if let Some(p) = &path {
             if let Some(t) = read_take(p) {
-                return Ok(t);
+                return Ok((t, c.gains));
             }
         }
-        let t = self.kokoro.synth(ids, &style, d.speed, d.pitch)?;
+        let t = self.kokoro.synth_with(ids, &style, d.speed, PitchCtl::default(), &ctl)?;
+        if t.durations != pred.durations {
+            bail!("the rendering pass did not keep the planned durations");
+        }
         if let Some(p) = &path {
             write_take(p, &t)?;
         }
-        Ok(t)
+        Ok((t, c.gains))
     }
 
     /// Phonemes of a piece, cut at the comma nearest the middle when it is
@@ -196,7 +249,9 @@ impl<'a> Renderer<'a> {
         let mut phones = Vec::new();
         let mut phonemes = Vec::new();
         let gain = 10f32.powf(d.gain_db / 20.0);
-        for (s, _e, u) in self.utterances(toks, piece.closing_period)? {
+        let parts = self.utterances(toks, piece.closing_period)?;
+        let n_parts = parts.len();
+        for (pi, (s, e, u)) in parts.into_iter().enumerate() {
             if !audio.is_empty() {
                 audio.extend(std::iter::repeat_n(0.0, (0.18 * SR as f64) as usize));
             }
@@ -204,7 +259,10 @@ impl<'a> Renderer<'a> {
             if ids.is_empty() {
                 continue;
             }
-            let take = self.synth(&ids, d)?;
+            let reading = if n_parts == 1 { piece.intonation.clone() } else { piece.intonation.slice(s, e, pi + 1 == n_parts) };
+            let layout = Layout::new(&kept, &at, &u.starts);
+            let (mut take, gains) = self.synth_v3(&ids, &layout, &reading, &toks[s..e], d)?;
+            apply_gains(&mut take.audio, &take.edges, &gains);
             let shaped = formant_filter(&take.audio, SR, d.formant as f64, 9000.0, Some((&take.f0, F0_HOP)));
             let (lo, hi) = trim_bounds(&shaped);
             let off = audio.len() as f64 / SR as f64;
@@ -337,7 +395,13 @@ mod tests {
 
     #[test]
     fn take_cache_round_trip() {
-        let t = Take { audio: vec![0.1, -0.2], edges: vec![0.0, 600.0, 1200.0], f0: vec![210.0], f0_pred: vec![200.0] };
+        let t = Take {
+            audio: vec![0.1, -0.2],
+            edges: vec![0.0, 600.0, 1200.0],
+            f0: vec![210.0],
+            f0_pred: vec![200.0],
+            durations: vec![3, 1, 2],
+        };
         let p = std::env::temp_dir().join(format!("zv-take-{}/ab/x.take", std::process::id()));
         write_take(&p, &t).unwrap();
         let r = read_take(&p).unwrap();
@@ -345,6 +409,7 @@ mod tests {
         assert_eq!(r.edges, t.edges);
         assert_eq!(r.f0, t.f0);
         assert_eq!(r.f0_pred, t.f0_pred);
+        assert_eq!(r.durations, t.durations);
         fs::remove_dir_all(p.parent().unwrap().parent().unwrap()).unwrap();
     }
 }

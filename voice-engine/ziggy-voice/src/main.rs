@@ -61,6 +61,26 @@ enum Cmd {
         #[arg(long)]
         json: bool,
     },
+    /// Phonemes of single words (to check names before adding them to lexicon.json).
+    Words {
+        #[arg(long, default_value = "fr")]
+        locale: String,
+        words: Vec<String>,
+    },
+    /// Pitch track of an audio file (Harvest, 5 ms, Hz; 0 = unvoiced) as JSON.
+    Pitch { file: String },
+    /// Measure how the published voice realises the reading (contours, smoothness).
+    CheckProsody {
+        /// Voice folder (default public/dodo/voice).
+        #[arg(long)]
+        dir: Option<String>,
+        #[arg(long, default_value = "fr,en")]
+        locale: String,
+        #[arg(long, default_value = "")]
+        story: String,
+        #[arg(long)]
+        json: bool,
+    },
     /// Print the storytelling plan (voices, speeds, pauses) of stories.
     Plan {
         #[arg(long, default_value = "fr")]
@@ -179,6 +199,20 @@ fn main() -> Result<()> {
             let out = std::path::PathBuf::from(out);
             std::fs::create_dir_all(&out)?;
             let k = kokoro::Kokoro::new(&Cache::new(), 4)?;
+            if set == "drift" {
+                let rows = [17usize, 25, 37, 50, 69];
+                let blend = ziggy_voice::recipe::narrator(if voice.starts_with('f') { "fr" } else { "en" }).blend;
+                let v2 = ziggy_voice::lab::drift(&k, &ps, &blend, speed, &rows, None)?;
+                let v3 = ziggy_voice::lab::drift(&k, &ps, &blend, speed, &rows, Some(ziggy_voice::recipe::TIMBRE_ROW))?;
+                println!(
+                    "across style rows {rows:?}: spectral-shape spread v2 {:.2} dB → v3 {:.2} dB; pitch-level spread v2 {:.2} st → v3 {:.2} st",
+                    v2.0, v3.0, v2.1, v3.1
+                );
+                return Ok(());
+            }
+            if set == "probe" {
+                return ziggy_voice::lab::probe(&k, &ps, &voice, speed, &out);
+            }
             let cands = if set == "pitch" {
                 ziggy_voice::lab::pitch_set(&voice, speed)
             } else if set == "voices" {
@@ -229,6 +263,41 @@ fn main() -> Result<()> {
                     m.clipped,
                     m.seconds
                 );
+            }
+            Ok(())
+        }
+        Cmd::Words { locale, words } => {
+            let cache = Cache::new();
+            let es = ziggy_voice::espeak::Espeak::load(&cache.espeak_lib(), &cache.espeak_data())?;
+            let lex = ziggy_voice::stories::lexicon()?;
+            for w in words {
+                let ps = if locale == "fr" {
+                    ziggy_voice::g2p_fr::FrenchG2P::new(&es, lex["fr"].clone()).word(&w)?
+                } else {
+                    ziggy_voice::g2p_en::EnglishG2P::new(&es, &cache.misaki(), lex["en"].clone())?.word(&w)?
+                };
+                println!("{w}\t{ps}");
+            }
+            Ok(())
+        }
+        Cmd::Pitch { file } => {
+            let y = ziggy_voice::lab::decode(std::path::Path::new(&file), kokoro::SR)?;
+            let yd: Vec<f64> = y.iter().map(|&v| v as f64).collect();
+            let f0: Vec<f64> = ziggy_voice::world::harvest(&yd, kokoro::SR).iter().map(|v| (v * 10.0).round() / 10.0).collect();
+            println!("{}", serde_json::to_string(&f0)?);
+            Ok(())
+        }
+        Cmd::CheckProsody { dir, locale, story, json } => {
+            let dir = dir.map(std::path::PathBuf::from).unwrap_or_else(ziggy_voice::paths::voice_out);
+            let want: Vec<&str> = story.split(',').filter(|s| !s.is_empty()).collect();
+            let stories: Vec<ziggy_voice::stories::Story> =
+                ziggy_voice::stories::load(None)?.into_iter().filter(|s| want.is_empty() || want.contains(&s.id.as_str())).collect();
+            let locales: Vec<String> = locale.split(',').map(str::to_string).collect();
+            let rep = ziggy_voice::prosody_check::check(&dir, &stories, &locales)?;
+            if json {
+                println!("{}", serde_json::to_string_pretty(&rep)?);
+            } else {
+                ziggy_voice::prosody_check::print(&rep);
             }
             Ok(())
         }
