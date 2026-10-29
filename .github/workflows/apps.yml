@@ -165,9 +165,10 @@ jobs:
   publish-android:
     name: Publish the Android download (ziggy-ai.fr/apk)
     # The site's page /telecharger and the short address /apk point at the APK of the
-    # latest release: published for every Android build of main, or on demand.
+    # latest release: published for every Android build of main, or on demand (Run workflow
+    # with "publish", or "[apk]" in the message of a pushed commit that touches the apps).
     needs: android
-    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.publish)
+    if: (github.event_name == 'push' && (github.ref == 'refs/heads/main' || contains(github.event.head_commit.message, '[apk]'))) || (github.event_name == 'workflow_dispatch' && inputs.publish)
     runs-on: ubuntu-latest
     permissions:
       contents: write

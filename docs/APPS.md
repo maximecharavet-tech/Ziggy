@@ -88,7 +88,7 @@ vers l'APK de la dernière « release » GitHub (onglet **Releases** du dépôt)
 
 Cette release est publiée automatiquement par le CI (job « Publish the Android download ») à chaque fabrication
 Android sur `main`, c'est-à-dire quand `apps/ziggy-app/` change. À la main : Actions → **Apps** → **Run
-workflow**, case « Publish » cochée. Tant que la clé de signature n'est pas configurée, l'APK publié est signé avec
+workflow**, case « Publish » cochée, ou pousser un commit qui touche `apps/` avec `[apk]` dans son message. Tant que la clé de signature n'est pas configurée, l'APK publié est signé avec
 une clé de test qui change à chaque fabrication : pour passer à une nouvelle version, il faut désinstaller
 l'ancienne. Dès que les secrets `ANDROID_*` existent, l'APK publié est signé avec ta clé.
 
