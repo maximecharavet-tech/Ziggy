@@ -750,7 +750,7 @@ fn inner_incise(tokens: &[String], k: usize, e: usize) -> Option<usize> {
     if !FR_SPEECH.contains(&verb_of(&core_lower(&tokens[k])).as_str()) {
         return None; // English closes the quotation before its tag
     }
-    tokens[k..(k + 4).min(e)]
+    tokens[k..(k + 7).min(e)]
         .iter()
         .position(|t| t.trim_end_matches(['»', '”', '"']).ends_with([',', '.', ';', '!', '?']))
         .map(|j| k + j + 1)
@@ -1393,6 +1393,13 @@ mod tests {
         let q = plan("« Bonsoir, Sacha, dit-elle. Je m’appelle Lumi. »", "s2");
         assert_eq!(q.pieces[1].role, Role::Tag);
         assert!(q.pieces.iter().filter(|x| x.role == Role::Dialogue).all(|x| x.speaker.as_deref() == Some("lumi")));
+        // a longer incise is the narrator's too
+        let r = plan(
+            "« Plante-la, prends-en soin, et tu verras, dit-elle avec un clin d’œil. Elle a une surprise pour toi. »",
+            "s1",
+        );
+        let ws: Vec<(String, Role)> = r.pieces.iter().map(|x| (words(&r, x), x.role.clone())).collect();
+        assert!(ws.contains(&("dit-elle avec un clin d’œil.".to_string(), Role::Tag)), "{ws:?}");
     }
 
     #[test]

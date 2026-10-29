@@ -553,7 +553,16 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
         let Some(s) = l.emphasis_nucleus(k, v.french) else { continue };
         let scale = (range / p.widen).clamp(0.6, 1.3);
         let base = if f == Focus::Contrast { p.emphasis * 0.6 } else { p.emphasis } * scale;
-        let here = peak_over(at(s), at(s + 1), &corr);
+        // French lifts the word from its first syllable (initial accent) to
+        // its last vowel, so « SEcrets » does not hang on a weak schwa;
+        // English lifts its stressed syllable
+        let (fa, fb) = if v.french {
+            let last = l.words[k].and_then(|(a, b)| l.nuclei(a, b).last().copied()).unwrap_or(s);
+            (at(s) - 2.0, mid(last).max(at(s + 1)))
+        } else {
+            (at(s), at(s + 1))
+        };
+        let here = peak_over(fa, fb, &corr);
         // the higher of the two neighbouring words: (peak, its unit span)
         let around = [k.checked_sub(1), Some(k + 1)]
             .into_iter()
@@ -565,22 +574,15 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
             (Some(h), Some(n)) => n.0 + p.emphasis_over * scale - h.0,
             _ => 0.0,
         };
-        add_bump(&mut corr, mid(s), 14.0, base.max(need).min(p.emphasis_max));
+        let amp = base.max(need).min(p.emphasis_max);
+        if v.french {
+            add_plateau(&mut corr, fa, fb, amp, 6.0);
+        } else {
+            add_bump(&mut corr, mid(s), 14.0, amp);
+        }
         // what the lift cannot give, a quieter neighbour does (de-accenting)
         if let Some((_, a, b)) = around.filter(|_| need > p.emphasis_max) {
-            let amp = -(need - p.emphasis_max).min(p.deaccent_max);
-            let (fa, fb) = (at(a), at(b));
-            for (j, c) in corr.iter_mut().enumerate() {
-                let x = j as f64;
-                let w = if x < fa {
-                    smoothstep(1.0 - (fa - x) / 4.0)
-                } else if x > fb {
-                    smoothstep(1.0 - (x - fb) / 4.0)
-                } else {
-                    1.0
-                };
-                *c += amp * w;
-            }
+            add_plateau(&mut corr, at(a), at(b), -(need - p.emphasis_max).min(p.deaccent_max), 4.0);
         }
         if let Some((a, b)) = l.words[k] {
             gains.push((a, b, p.emphasis_db));
@@ -634,6 +636,21 @@ fn knee(d: f64, k: f64, lim: f64) -> f64 {
         d
     } else {
         d.signum() * (k + (lim - k) * ((d.abs() - k) / (lim - k)).tanh())
+    }
+}
+
+/// `amp` from `a` to `b` (pitch values), with smooth ramps of `ramp` outside.
+fn add_plateau(exc: &mut [f64], a: f64, b: f64, amp: f64, ramp: f64) {
+    for (j, e) in exc.iter_mut().enumerate() {
+        let x = j as f64;
+        let w = if x < a {
+            smoothstep(1.0 - (a - x) / ramp)
+        } else if x > b {
+            smoothstep(1.0 - (x - b) / ramp)
+        } else {
+            1.0
+        };
+        *e += amp * w;
     }
 }
 

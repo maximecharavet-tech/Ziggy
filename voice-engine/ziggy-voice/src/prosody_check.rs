@@ -113,7 +113,8 @@ pub fn check(dir: &Path, stories: &[Story], locales: &[String]) -> Result<Report
                             .map(|j| {
                                 let a = (j * hop).saturating_sub(hop);
                                 let b = ((j + 1) * hop + hop).min(yd.len());
-                                let e = yd[a.min(b)..b].iter().map(|x| x * x).sum::<f64>() / (b - a.min(b)).max(1) as f64;
+                                let e =
+                                    yd[a.min(b)..b].iter().map(|x| x * x).sum::<f64>() / (b - a.min(b)).max(1) as f64;
                                 10.0 * (e + 1e-12).log10()
                             })
                             .collect();
