@@ -25,12 +25,11 @@ use tauri_plugin_opener::OpenerExt;
 /// The app's only window.
 const MAIN: &str = "main";
 
-/// Event sent to the site when the back button reaches the root of the history. The site
-/// answers with `back_handled` (e.g. it closed a panel) or lets the app go to the background.
+/// Event sent to the site when the Android back button reaches the root of the web history
+/// (contract: `src/lib/app-bridge.ts`, `onAppBack`). The site then closes a panel, goes to
+/// the app's home, or asks "Leave Ziggy?" and calls `exit_app`.
 #[cfg_attr(not(target_os = "android"), allow(dead_code))]
-const BACK_AT_ROOT_EVENT: &str = "ziggy:back-at-root";
-#[cfg_attr(not(target_os = "android"), allow(dead_code))]
-const BACK_ANSWER_DELAY: Duration = Duration::from_millis(300);
+const BACK_EVENT: &str = "ziggy://back";
 
 /// Injected at document start in every page (site and bundled pages): removes web
 /// artefacts and keeps the status bar readable. See `shell.js`.
@@ -38,7 +37,6 @@ const SHELL_JS: &str = include_str!("shell.js");
 
 struct Shell {
     info: AppInfo,
-    back_handled: AtomicBool,
     /// The next site page that finishes loading forgets the launch page behind it.
     forget_launch_page: AtomicBool,
 }
@@ -108,13 +106,7 @@ fn open_external(app: AppHandle, url: String) -> Result<(), String> {
     app.opener().open_url(url.as_str(), None::<&str>).map_err(|e| e.to_string())
 }
 
-/// The site handled the back button itself (answer to `ziggy:back-at-root`).
-#[tauri::command]
-fn back_handled(shell: State<'_, Shell>) {
-    shell.back_handled.store(true, Ordering::SeqCst);
-}
-
-/// "Quitter" on Android (e.g. a TV exit button). iOS apps never quit themselves.
+/// "Quitter" ("Leave Ziggy?" in the site, Android). iOS apps never quit themselves.
 #[tauri::command]
 fn exit_app(app: AppHandle, shell: State<'_, Shell>) -> Result<(), String> {
     if shell.info.platform == Platform::Ios {
@@ -124,21 +116,19 @@ fn exit_app(app: AppHandle, shell: State<'_, Shell>) -> Result<(), String> {
     Ok(())
 }
 
-/// The back button reached the root of the history (Android, see `MainActivity.kt`):
-/// the site gets a moment to use it (close a panel...), otherwise the app goes to the
-/// background like any Android app.
+/// The back button reached the root of the web history (Android, see `MainActivity.kt`).
+/// On a page of the site, the site decides (`ziggy://back`); on the bundled launch or
+/// offline page, the app goes to the background like any Android app.
 #[cfg_attr(not(target_os = "android"), allow(dead_code))]
 pub(crate) fn back_at_root() {
-    let Some(app) = APP.get() else { return };
-    app.state::<Shell>().back_handled.store(false, Ordering::SeqCst);
-    let _ = app.emit_to(MAIN, BACK_AT_ROOT_EVENT, ());
-    let app = app.clone();
+    let Some(app) = APP.get().cloned() else { return };
+    // Off the UI thread: reading the webview's address waits for the UI thread.
     std::thread::spawn(move || {
-        std::thread::sleep(BACK_ANSWER_DELAY);
-        if !app.state::<Shell>().back_handled.swap(false, Ordering::SeqCst) {
-            if let Some(window) = app.get_webview_window(MAIN) {
-                platform::leave_app(&window);
-            }
+        let Some(window) = app.get_webview_window(MAIN) else { return };
+        if window.url().is_ok_and(|url| shell::is_site_url(&url)) {
+            let _ = app.emit_to(MAIN, BACK_EVENT, ());
+        } else {
+            platform::leave_app(&window);
         }
     });
 }
@@ -181,23 +171,11 @@ pub fn run() {
         // Rust API only: no opener permission is granted to any page, and links are not
         // intercepted (the site's grown-up gate decides, then calls `open_external`).
         .plugin(tauri_plugin_opener::Builder::new().open_js_links_on_click(false).build())
-        .invoke_handler(tauri::generate_handler![
-            launch,
-            app_info,
-            set_bar_style,
-            haptic,
-            open_external,
-            back_handled,
-            exit_app
-        ])
+        .invoke_handler(tauri::generate_handler![launch, app_info, set_bar_style, haptic, open_external, exit_app])
         .setup(|app| {
             let version = app.package_info().version.to_string();
             let info = AppInfo::new(Platform::current(), platform::television(), version);
-            app.manage(Shell {
-                info,
-                back_handled: AtomicBool::new(false),
-                forget_launch_page: AtomicBool::new(false),
-            });
+            app.manage(Shell { info, forget_launch_page: AtomicBool::new(false) });
             let _ = APP.set(app.handle().clone());
             platform::init_audio();
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- The site's page background (src/app/globals.css, --color-bg). -->
+    <!-- The site's page background (src/app/globals.css: color-bg). -->
     <color name="ziggy_background">#FFFAFBFC</color>
     <color name="ziggy_green">#FF22C55E</color>
 </resources>

@@ -1,0 +1,7 @@
+[package]
+name = "dom_query"
+version = "0.28.0"
+edition = "2021"
+license = "MIT"
+description = "Ziggy drop-in for the part of dom_query 0.28 used by wry on Android (no MPL-2.0 CSS parser)"
+publish = false

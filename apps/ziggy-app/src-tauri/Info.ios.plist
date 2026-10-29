@@ -33,6 +33,10 @@
 	<false/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
+	<!-- The photo picker of the avatar page (parents only, with consent) offers "Take Photo".
+	     No microphone key: voice input is switched off in the app (shell.js). -->
+	<key>NSCameraUsageDescription</key>
+	<string>Un adulte peut prendre une photo pour créer l'avatar de l'enfant ; elle n'est jamais enregistrée. / A grown-up can take a photo to create the child's avatar; it is never stored.</string>
 	<!-- Only standard HTTPS: exempt from export compliance paperwork. -->
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>

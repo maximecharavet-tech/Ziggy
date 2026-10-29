@@ -7,7 +7,6 @@ fn main() {
         "set_bar_style",
         "haptic",
         "open_external",
-        "back_handled",
         "exit_app",
     ])))
     .expect("failed to run tauri-build");

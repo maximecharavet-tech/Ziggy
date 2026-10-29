@@ -58,6 +58,12 @@ jobs:
           cargo clippy --all-targets -- -D warnings
           cargo test
 
+      - name: Licence drop-ins (patches/, MIT replacements of MPL-2.0 crates)
+        run: |
+          for p in patches/*/; do
+            (cd "$p" && CARGO_TARGET_DIR=../../target cargo clippy --all-targets -- -D warnings && CARGO_TARGET_DIR=../../target cargo test)
+          done
+
       - name: Clippy (Android)
         run: cargo clippy --target aarch64-linux-android -- -D warnings
 
@@ -150,8 +156,9 @@ jobs:
 
   ios:
     name: iPhone + iPad (Simulator build, unsigned)
-    # macOS minutes are expensive on private repositories: only on demand.
-    if: github.event_name == 'workflow_dispatch' && inputs.ios
+    # macOS minutes are expensive on private repositories: only on demand, from the
+    # Actions tab (Run workflow) or with "[ios]" in the message of the pushed commit.
+    if: (github.event_name == 'workflow_dispatch' && inputs.ios) || (github.event_name == 'push' && contains(github.event.head_commit.message, '[ios]'))
     runs-on: macos-latest
     permissions:
       contents: write # to publish a freshly generated Xcode project on a side branch (see below)

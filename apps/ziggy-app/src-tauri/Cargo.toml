@@ -38,3 +38,8 @@ codegen-units = 1
 lto = true
 opt-level = "s"
 strip = true
+
+# Keep the shipped code MIT / Apache-2.0 / BSD (see patches/README.md and CLAUDE.md).
+[patch.crates-io]
+option-ext = { path = "patches/option-ext" }
+dom_query = { path = "patches/dom_query" }

@@ -1,5 +1,6 @@
 // Ziggy shell, injected by the app (lib.rs) at document start in every page it shows.
 // It never changes the site's DOM or layout: it only
+//  0. switches off speech recognition and microphone/camera capture (child safety);
 //  1. removes web artefacts (tap highlight, long-press menus and selection on UI,
 //     pinch/double-tap zoom, rubber-band overscroll), with a constructed stylesheet;
 //  2. keeps the status bar icons readable: it reads the tone of the page under the
@@ -9,6 +10,24 @@
 (() => {
   if (window.__ziggyShell) return;
   window.__ziggyShell = true;
+
+  // No child's voice leaves the app: speech recognition (sent to Google or Apple by the
+  // system) and microphone capture are switched off, so the site hides voice input.
+  for (const name of ['SpeechRecognition', 'webkitSpeechRecognition']) {
+    try {
+      Object.defineProperty(window, name, { value: undefined, configurable: false, writable: false });
+    } catch {
+      /* already locked */
+    }
+  }
+  if (navigator.mediaDevices) {
+    const refuse = () => Promise.reject(new DOMException('No microphone or camera in the Ziggy app', 'NotAllowedError'));
+    try {
+      Object.defineProperty(navigator.mediaDevices, 'getUserMedia', { value: refuse, configurable: false });
+    } catch {
+      /* ignore */
+    }
+  }
 
   const CSS = `
 html{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none;touch-action:pan-x pan-y}

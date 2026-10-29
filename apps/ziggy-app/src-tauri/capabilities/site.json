@@ -12,7 +12,6 @@
     "allow-set-bar-style",
     "allow-haptic",
     "allow-open-external",
-    "allow-back-handled",
     "allow-exit-app",
     "core:event:allow-listen",
     "core:event:allow-unlisten"
