@@ -1,0 +1,230 @@
+# Ziggy AI native apps (apps/ziggy-app, Tauri 2 + Rust): Android / Android TV and iOS / iPadOS.
+# See docs/APPS.md. The site itself is built by ci.yml.
+name: Apps
+
+on:
+  push:
+    paths:
+      - 'apps/**'
+      - '.github/workflows/apps.yml'
+  workflow_dispatch:
+    inputs:
+      ios:
+        description: 'Also build the iPhone/iPad app (macOS runner: its minutes cost 10x)'
+        type: boolean
+        default: true
+
+concurrency:
+  group: apps-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  CARGO_TERM_COLOR: always
+  CARGO_INCREMENTAL: 0
+
+jobs:
+  rust:
+    name: Rust checks (fmt, clippy Android + iOS + host, unit tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/ziggy-app/src-tauri
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+          targets: aarch64-linux-android, aarch64-apple-ios
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/ziggy-app/src-tauri -> target
+          key: checks
+
+      - name: System libraries for the desktop test build
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -yq --no-install-recommends libwebkit2gtk-4.1-dev libgtk-3-dev libsoup-3.0-dev librsvg2-dev
+
+      - name: Format
+        run: cargo fmt --check
+
+      - name: Clippy (host) and unit tests
+        run: |
+          cargo clippy --all-targets -- -D warnings
+          cargo test
+
+      - name: Clippy (Android)
+        run: cargo clippy --target aarch64-linux-android -- -D warnings
+
+      - name: Clippy (iOS, checked on Linux)
+        run: bash ../scripts/check-ios-on-linux.sh
+
+  android:
+    name: Android + Android TV (APK, AAB)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' || github.event_name == 'workflow_dispatch'
+    defaults:
+      run:
+        working-directory: apps/ziggy-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/ziggy-app/package-lock.json
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-linux-android, armv7-linux-androideabi, x86_64-linux-android, i686-linux-android
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/ziggy-app/src-tauri -> target
+          key: android
+
+      - name: Install the Tauri CLI
+        run: npm ci
+
+      - name: Upload key (only when the signing secrets exist)
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/upload.jks"
+            {
+              echo "storeFile=$RUNNER_TEMP/upload.jks"
+              echo "password=$ANDROID_KEYSTORE_PASSWORD"
+              echo "keyAlias=$ANDROID_KEY_ALIAS"
+              echo "keyPassword=${ANDROID_KEY_PASSWORD:-$ANDROID_KEYSTORE_PASSWORD}"
+            } > src-tauri/gen/android/keystore.properties
+            echo "SIGNED=upload" >> "$GITHUB_ENV"
+          else
+            echo "No signing secrets: the release build is signed with the debug key (tests only)."
+            echo "SIGNED=debug" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build (arm64 phones, armv7 TVs and older phones, x86_64 emulators/Chromebooks)
+        run: |
+          export NDK_HOME="$ANDROID_NDK_LATEST_HOME"
+          echo "NDK: $NDK_HOME"
+          npx tauri android build --ci --apk --aab --target aarch64 armv7 x86_64
+
+      - name: Collect
+        run: |
+          out=src-tauri/gen/android/app/build/outputs
+          mkdir -p "$RUNNER_TEMP/dist"
+          if [ "$SIGNED" = upload ]; then
+            cp "$out/apk/universal/release/app-universal-release.apk" "$RUNNER_TEMP/dist/ziggy-ai-android.apk"
+            cp "$out/bundle/universalRelease/app-universal-release.aab" "$RUNNER_TEMP/dist/ziggy-ai-android.aab"
+          else
+            cp "$out/apk/universal/release/app-universal-release.apk" "$RUNNER_TEMP/dist/ziggy-ai-android-debug.apk"
+            cp "$out/bundle/universalRelease/app-universal-release.aab" "$RUNNER_TEMP/dist/ziggy-ai-android-debug-signed.aab"
+          fi
+          ls -la "$RUNNER_TEMP/dist"
+          "$ANDROID_HOME"/build-tools/*/aapt2 dump badging "$RUNNER_TEMP"/dist/*.apk 2>/dev/null \
+            | grep -E "^(package|sdkVersion|targetSdkVersion|uses-permission|uses-feature|leanback-launchable|native-code)" || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ziggy-ai-android
+          path: ${{ runner.temp }}/dist/*
+          if-no-files-found: error
+          retention-days: 30
+
+  ios:
+    name: iPhone + iPad (Simulator build, unsigned)
+    # macOS minutes are expensive on private repositories: only on demand.
+    if: github.event_name == 'workflow_dispatch' && inputs.ios
+    runs-on: macos-latest
+    permissions:
+      contents: write # to publish a freshly generated Xcode project on a side branch (see below)
+    defaults:
+      run:
+        working-directory: apps/ziggy-app
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: apps/ziggy-app/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: aarch64-apple-ios, aarch64-apple-ios-sim
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: apps/ziggy-app/src-tauri -> target
+          key: ios
+
+      - name: Install the Tauri CLI and XcodeGen
+        run: |
+          npm ci
+          command -v xcodegen || brew install xcodegen
+
+      - name: Xcode project (generated once, then committed)
+        run: |
+          if [ ! -f src-tauri/gen/apple/project.yml ]; then
+            npx tauri ios init --ci
+            echo "GENERATED_APPLE=1" >> "$GITHUB_ENV"
+          fi
+          bash scripts/ios-overlay.sh
+
+      - name: Build for the iOS Simulator (no signing needed)
+        run: npx tauri ios build --ci --debug --no-sign --target aarch64-sim
+
+      - name: Collect
+        run: |
+          app=$(find src-tauri/gen/apple/build -name '*.app' -type d -path '*sim*' | head -1)
+          [ -n "$app" ] || app=$(find src-tauri/gen/apple/build -name '*.app' -type d | head -1)
+          echo "App: $app"
+          /usr/libexec/PlistBuddy -c Print "$app/Info.plist" | grep -E "CFBundle(DisplayName|Identifier|ShortVersionString|Version)|UIBackgroundModes|audio|Orientation" || true
+          ls "$app" | grep -i privacy || true
+          mkdir -p "$RUNNER_TEMP/dist"
+          (cd "$(dirname "$app")" && ditto -c -k --keepParent "$(basename "$app")" "$RUNNER_TEMP/dist/ziggy-ai-ios-simulator.app.zip")
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ziggy-ai-ios-simulator
+          path: ${{ runner.temp }}/dist/*
+          if-no-files-found: error
+          retention-days: 30
+
+      # First run only: the Xcode project can only be generated on a Mac. It is pushed to a
+      # side branch so it can be reviewed and committed into apps/ziggy-app/src-tauri/gen/apple.
+      - name: Publish the generated Xcode project
+        if: env.GENERATED_APPLE == '1'
+        working-directory: .
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -B ci/ziggy-app-gen-apple
+          git add -f apps/ziggy-app/src-tauri/gen/apple ':!apps/ziggy-app/src-tauri/gen/apple/build' ':!apps/ziggy-app/src-tauri/gen/apple/Externals'
+          git commit -m "Generated Xcode project for the Ziggy AI iOS app (tauri ios init + scripts/ios-overlay.sh)"
+          git push -f origin ci/ziggy-app-gen-apple
+
+  # Signed App Store / TestFlight build, for later (see docs/APPS.md, "iPhone et iPad"):
+  # needs the Apple Developer Program and these secrets: IOS_CERTIFICATE (base64 .p12),
+  # IOS_CERTIFICATE_PASSWORD, IOS_MOBILE_PROVISION (base64), APPLE_API_KEY_ID,
+  # APPLE_API_ISSUER, APPLE_API_KEY (base64 .p8). Then:
+  #   npx tauri ios build --export-method app-store-connect
+  #   xcrun altool --upload-app -f <ipa> --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_API_ISSUER"

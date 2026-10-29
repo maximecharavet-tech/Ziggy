@@ -4,35 +4,31 @@
   "version": "1.0.0",
   "identifier": "fr.ziggyai.app",
   "build": {
-    "frontendDist": "../www",
-    "devUrl": "https://ziggy-ai.fr"
+    "frontendDist": "../www"
   },
   "app": {
-    "windows": [
-      {
-        "title": "Ziggy AI",
-        "width": 800,
-        "height": 600,
-        "resizable": true,
-        "fullscreen": false
-      }
-    ],
+    "withGlobalTauri": true,
+    "windows": [],
     "security": {
-      "csp": null
+      "csp": "default-src 'self' ipc: http://ipc.localhost; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self' ipc: http://ipc.localhost https://ziggy-ai.fr",
+      "freezePrototype": false
     }
   },
   "bundle": {
     "active": true,
     "targets": "all",
-    "icon": [
-      "icons/32x32.png",
-      "icons/128x128.png",
-      "icons/128x128@2x.png",
-      "icons/icon.icns",
-      "icons/icon.ico"
-    ],
+    "category": "Education",
+    "shortDescription": "Ziggy AI",
+    "longDescription": "Ziggy AI: learning games, stories and bedtime tales for children aged 4 to 12, with Ziggy the plush robot.",
+    "copyright": "© Ziggy AI",
+    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.png"],
     "android": {
-      "debugApplicationIdSuffix": ".debug"
+      "minSdkVersion": 24,
+      "versionCode": 1
+    },
+    "iOS": {
+      "minimumSystemVersion": "15.0",
+      "bundleVersion": "1"
     }
   }
 }

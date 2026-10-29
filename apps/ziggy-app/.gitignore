@@ -1,0 +1,7 @@
+node_modules/
+# Signing material never goes into git (see docs/APPS.md).
+*.jks
+*.keystore
+*.p12
+*.mobileprovision
+keystore.properties

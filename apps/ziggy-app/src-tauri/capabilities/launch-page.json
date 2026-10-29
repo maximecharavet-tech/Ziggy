@@ -1,0 +1,8 @@
+{
+  "$schema": "../gen/schemas/mobile-schema.json",
+  "identifier": "launch-page",
+  "description": "The bundled launch / offline page: it may start the site and read the app facts.",
+  "windows": ["main"],
+  "platforms": ["android", "iOS", "linux", "macOS", "windows"],
+  "permissions": ["allow-launch", "allow-app-info", "allow-set-bar-style"]
+}

@@ -1,1 +1,38 @@
-<!doctype html><title>x</title>
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="color-scheme" content="light dark" />
+    <title>Ziggy AI</title>
+    <link rel="stylesheet" href="launch.css" />
+    <script src="launch.js" defer></script>
+  </head>
+  <!-- The app's bundled page. It continues the system splash (Ziggy on the site's
+       background colour, same size, same place), asks the app to open the site, and
+       becomes Ziggy's offline page when there is no network. -->
+  <body data-state="loading">
+    <main>
+      <div class="ziggy">
+        <picture>
+          <source srcset="splash-dark.webp" media="(prefers-color-scheme: dark)" />
+          <img src="splash-light.webp" width="288" height="288" alt="Ziggy" />
+        </picture>
+      </div>
+
+      <div class="loading" aria-hidden="true"><span></span><span></span><span></span></div>
+
+      <section class="offline" role="status" aria-live="polite">
+        <h1 data-fr="Pas d'Internet pour le moment" data-en="No internet right now"></h1>
+        <p
+          data-fr="Ziggy t'attend ! Demande à un grand de vérifier le Wi-Fi."
+          data-en="Ziggy is waiting for you! Ask a grown-up to check the Wi-Fi."
+        ></p>
+        <div class="actions">
+          <button type="button" class="retry" data-fr="Réessayer" data-en="Try again"></button>
+          <button type="button" class="say" hidden data-label-fr="Écouter" data-label-en="Listen">🔊</button>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

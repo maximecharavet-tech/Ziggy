@@ -19,3 +19,7 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+# MainActivity.backAtRoot() is implemented in Rust (Java_fr_ziggyai_app_MainActivity_backAtRoot).
+-keepclasseswithmembernames class fr.ziggyai.app.MainActivity {
+    native <methods>;
+}

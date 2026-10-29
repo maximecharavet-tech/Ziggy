@@ -1,0 +1,20 @@
+{
+  "$schema": "../gen/schemas/mobile-schema.json",
+  "identifier": "site",
+  "description": "What https://ziggy-ai.fr may ask of the app. Nothing else is reachable from the web: no file system, no shell, no other plugin.",
+  "windows": ["main"],
+  "platforms": ["android", "iOS", "linux", "macOS", "windows"],
+  "remote": {
+    "urls": ["https://ziggy-ai.fr/*", "https://www.ziggy-ai.fr/*"]
+  },
+  "permissions": [
+    "allow-app-info",
+    "allow-set-bar-style",
+    "allow-haptic",
+    "allow-open-external",
+    "allow-back-handled",
+    "allow-exit-app",
+    "core:event:allow-listen",
+    "core:event:allow-unlisten"
+  ]
+}

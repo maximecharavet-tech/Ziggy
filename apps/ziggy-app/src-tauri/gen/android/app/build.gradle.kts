@@ -1,3 +1,4 @@
+import java.io.FileInputStream
 import java.util.Properties
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -14,6 +15,17 @@ val tauriProperties = Properties().apply {
     }
 }
 
+// Upload key for Google Play (see docs/APPS.md): gen/android/keystore.properties with
+// storeFile, password, keyAlias (written by CI from GitHub secrets, never committed).
+// Without it, release builds are signed with the debug key: installable for tests only.
+val keystoreProperties = Properties().apply {
+    val file = rootProject.file("keystore.properties")
+    if (file.exists()) {
+        FileInputStream(file).use { load(it) }
+    }
+}
+val hasUploadKey = keystoreProperties.getProperty("storeFile") != null
+
 android {
     compileSdk = 37
     namespace = "fr.ziggyai.app"
@@ -24,6 +36,16 @@ android {
         targetSdk = 37
         versionCode = tauriProperties.getProperty("tauri.android.versionCode", "1").toInt()
         versionName = tauriProperties.getProperty("tauri.android.versionName", "1.0")
+    }
+    signingConfigs {
+        if (hasUploadKey) {
+            create("upload") {
+                storeFile = file(keystoreProperties.getProperty("storeFile"))
+                storePassword = keystoreProperties.getProperty("password")
+                keyAlias = keystoreProperties.getProperty("keyAlias")
+                keyPassword = keystoreProperties.getProperty("keyPassword") ?: keystoreProperties.getProperty("password")
+            }
+        }
     }
     buildTypes {
         getByName("debug") {
@@ -40,6 +62,7 @@ android {
             }
         }
         getByName("release") {
+            signingConfig = signingConfigs.getByName(if (hasUploadKey) "upload" else "debug")
             optimization {
                enable = true
             }

@@ -5,7 +5,11 @@
   "description": "Ziggy AI native apps (Android, Android TV, iPhone, iPad): a Tauri 2 shell around https://ziggy-ai.fr",
   "license": "UNLICENSED",
   "scripts": {
-    "tauri": "tauri"
+    "tauri": "tauri",
+    "android:build": "tauri android build --apk --aab --target aarch64 armv7 x86_64",
+    "ios:build:sim": "tauri ios build --debug --no-sign --target aarch64-sim",
+    "assets": "node scripts/assets/make-assets.mjs",
+    "check": "cd src-tauri && cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test && cargo clippy --target aarch64-linux-android -- -D warnings && bash ../scripts/check-ios-on-linux.sh"
   },
   "devDependencies": {
     "@tauri-apps/cli": "2.12.4"
