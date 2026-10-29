@@ -141,7 +141,7 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
           <button
             type="button"
             onClick={() => setCalling(true)}
-            className="press inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-white shadow-md"
+            className="web-only press inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-white shadow-md"
             style={{ background: `linear-gradient(135deg, ${color}, color-mix(in srgb, ${color} 75%, #000))` }}
             aria-label={t('call', { name: identity.name })}
           >

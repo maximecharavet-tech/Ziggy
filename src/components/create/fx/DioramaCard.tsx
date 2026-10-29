@@ -19,6 +19,7 @@ export function DioramaCard({
   window: scene,
   children,
   className = '',
+  windowClassName = 'h-44 sm:h-48',
   index = 0,
   corner,
 }: {
@@ -32,6 +33,8 @@ export function DioramaCard({
   window: ReactNode;
   children: ReactNode;
   className?: string;
+  /** Height of the little scene window. */
+  windowClassName?: string;
   index?: number;
 }) {
   const box = useRef<HTMLDivElement>(null);
@@ -70,7 +73,7 @@ export function DioramaCard({
         >
           <DepthProvider x={p.x} y={p.y}>
             <div
-              className="relative h-44 overflow-hidden rounded-[1.6rem] sm:h-48"
+              className={`relative overflow-hidden rounded-[1.6rem] ${windowClassName}`}
               style={{ boxShadow: 'inset 0 3px 10px rgba(30,10,60,0.28), inset 0 0 0 2px rgba(255,255,255,0.35)' }}
             >
               {scene}

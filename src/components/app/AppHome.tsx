@@ -74,6 +74,13 @@ export function AppHome() {
   const welcome = hydrated && !memory.age;
 
   useEffect(() => {
+    const d = document.documentElement;
+    if (welcome) d.setAttribute('data-welcome', '');
+    else d.removeAttribute('data-welcome');
+    return () => d.removeAttribute('data-welcome');
+  }, [welcome]);
+
+  useEffect(() => {
     const h = new Date().getHours();
     setGreeting(h >= 18 || h < 5 ? { fr: 'Bonsoir !', en: 'Good evening!' } : h < 12 ? { fr: 'Bonjour !', en: 'Good morning!' } : T.hello);
   }, []);
@@ -90,27 +97,29 @@ export function AppHome() {
         ) : welcome ? (
           <Welcome key="welcome" locale={locale} />
         ) : (
-          <motion.div key="hub" className="relative mx-auto max-w-6xl md:flex md:min-h-[calc(100dvh-var(--tabbar-h,0px)-8rem)] md:flex-col md:justify-center" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
-            <header className="flex items-center gap-3 sm:gap-5">
-              <div className="relative h-36 w-28 shrink-0 sm:h-48 sm:w-36 md:h-60 md:w-44">
+          <motion.div key="hub" className="relative mx-auto max-w-6xl md:flex md:min-h-[calc(100dvh-var(--tabbar-h,0px)-8rem)] md:flex-col md:justify-center md:px-4 xl:max-w-[88rem]" initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+            <header className="flex items-center gap-3 sm:gap-5 md:gap-8">
+              <div className="relative h-36 w-28 shrink-0 sm:h-48 sm:w-36 md:h-72 md:w-52 xl:h-[min(20rem,22vh)] xl:w-[min(15rem,16.5vh)]">
                 <div className="absolute inset-x-0 bottom-1 mx-auto h-5 w-24 rounded-full bg-[#6b4a2b]/15 blur-md" aria-hidden="true" />
                 <Ziggy3D className="h-full w-full" idle="wave" mood="happy" framing="full" fallback="wave" label={locale === 'fr' ? 'Ziggy te fait coucou' : 'Ziggy waves at you'} />
               </div>
               <div className="min-w-0">
-                <div className="relative w-fit rounded-[1.6rem] rounded-es-md bg-bg-card px-5 py-3 shadow-[0_14px_30px_-16px_rgba(107,74,43,0.5)] ring-1 ring-border/70">
-                  <h1 className="font-display text-[1.75rem] font-bold leading-tight text-text-body sm:text-4xl md:text-5xl">{tr(greeting, locale)}</h1>
-                  <p className="font-display text-lg font-semibold text-text-muted sm:text-2xl md:text-3xl">{tr(T.ask, locale)}</p>
+                <div className="relative w-fit rounded-[1.6rem] rounded-es-md bg-bg-card px-5 py-3 shadow-[0_14px_30px_-16px_rgba(107,74,43,0.5)] ring-1 ring-border/70 md:rounded-[2.2rem] md:px-9 md:py-6">
+                  <h1 className="font-display text-[1.75rem] font-bold leading-tight text-text-body sm:text-4xl md:text-6xl">{tr(greeting, locale)}</h1>
+                  <p className="font-display text-lg font-semibold text-text-muted sm:text-2xl md:mt-1 md:text-[2rem]">{tr(T.ask, locale)}</p>
                 </div>
-                <SayButton texts={[tr(greeting, locale), tr(T.ask, locale)]} locale={locale} size="md" className="mt-3" />
+                <SayButton texts={[tr(greeting, locale), tr(T.ask, locale)]} locale={locale} size="lg" className="mt-3 md:mt-5" />
               </div>
             </header>
 
-            <ul className="mt-7 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
+            {/* Phones: one column. Tablets: Ziggy World wide on top, the two others side by side. Wide tablets and computers: three. */}
+            <ul className="mt-7 grid gap-x-6 gap-y-8 sm:grid-cols-2 md:mt-10 md:gap-x-8 md:gap-y-10 xl:grid-cols-3">
               {TILES.map((t, i) => {
                 const title = tr(t.title, locale);
                 return (
-                  <li key={t.href} className={i === 0 ? 'sm:col-span-2 lg:col-span-1' : ''}>
+                  <li key={t.href} className={i === 0 ? 'sm:col-span-2 xl:col-span-1' : ''}>
                     <DioramaCard
+                      windowClassName={i === 0 ? 'h-44 sm:h-56 md:h-72 xl:h-[min(20rem,26vh)]' : 'h-44 sm:h-48 md:h-64 xl:h-[min(20rem,26vh)]'}
                       href={t.href}
                       label={`${title}. ${tr(t.text, locale)}`}
                       from={t.from}
@@ -119,11 +128,11 @@ export function AppHome() {
                       window={t.scene}
                       corner={<SayButton texts={[title, tr(t.text, locale)]} locale={locale} size="md" className="!bg-white/90 !text-[#5FB6EA] shadow-[0_4px_0_rgba(0,0,0,0.12)] !ring-white" />}
                     >
-                      <span className="flex flex-1 flex-col px-1.5 pb-1.5 pt-4">
-                        <span className="font-display text-[1.75rem] font-bold leading-tight [text-shadow:0_2px_0_rgba(0,0,0,0.14)]">{title}</span>
-                        <span className="mt-1.5 flex-1 text-[1rem] leading-snug text-white/90">{tr(t.text, locale)}</span>
+                      <span className="flex flex-1 flex-col px-1.5 pb-1.5 pt-4 md:px-3 md:pb-3 md:pt-6">
+                        <span className="font-display text-[1.75rem] font-bold leading-tight [text-shadow:0_2px_0_rgba(0,0,0,0.14)] md:text-[2.5rem]">{title}</span>
+                        <span className="mt-1.5 flex-1 text-[1rem] leading-snug text-white/90 md:mt-2 md:text-xl">{tr(t.text, locale)}</span>
                         <span
-                          className={`${fx.toy} ${fx.light} ${fx.sheen} mt-5 inline-flex min-h-14 w-fit items-center gap-2 rounded-full px-7 font-display text-xl font-bold`}
+                          className={`${fx.toy} ${fx.light} ${fx.sheen} mt-5 inline-flex min-h-14 w-fit items-center gap-2 rounded-full px-7 font-display text-xl font-bold md:mt-7 md:min-h-[4.5rem] md:px-10 md:text-[1.7rem]`}
                           style={{ '--ink': shade(t.to, -0.35), '--delay': `${1 + i * 0.7}s` } as CSSProperties}
                         >
                           <span aria-hidden="true">▶</span> {tr(t.cta, locale)}
@@ -145,27 +154,27 @@ export function AppHome() {
 function Welcome({ locale }: { locale: string }) {
   return (
     <motion.section
-      className="relative mx-auto flex max-w-3xl flex-col items-center text-center"
+      className="relative mx-auto flex max-w-3xl flex-col items-center text-center md:min-h-[calc(100dvh-10rem)] md:max-w-5xl md:justify-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0, y: -12 }}
       transition={{ duration: 0.5 }}
       aria-labelledby="welcome-title"
     >
-      <div className="relative h-56 w-44 sm:h-72 sm:w-56">
+      <div className="relative h-56 w-44 sm:h-72 sm:w-56 md:h-[min(24rem,28vh)] md:w-[min(18rem,21vh)]">
         <div className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,#FFE7C2_0%,rgba(255,217,160,0.35)_55%,transparent_72%)]" aria-hidden="true" />
         <Ziggy3D className="h-full w-full" idle="wave" mood="happy" framing="full" fallback="wave" label={locale === 'fr' ? 'Ziggy te fait coucou' : 'Ziggy waves at you'} />
       </div>
       <div className="mt-2 flex items-center gap-3">
-        <h1 id="welcome-title" className="font-display text-4xl font-bold text-text-body sm:text-5xl">
+        <h1 id="welcome-title" className="font-display text-4xl font-bold text-text-body sm:text-5xl md:text-6xl">
           {tr(T.welcome, locale)}
         </h1>
         <SayButton texts={[tr(T.welcome, locale), tr(T.welcomeSub, locale), tr(T.who, locale), ...AGE_CHOICES.map((a) => tr(a.title, locale))]} locale={locale} size="lg" />
       </div>
-      <p className="mt-2 text-lg text-text-muted sm:text-xl">{tr(T.welcomeSub, locale)}</p>
+      <p className="mt-2 text-lg text-text-muted sm:text-xl md:text-2xl">{tr(T.welcomeSub, locale)}</p>
 
-      <h2 className="mt-8 font-display text-2xl font-bold text-text-body sm:text-3xl">{tr(T.who, locale)}</h2>
-      <div className="mt-5 grid w-full gap-4 sm:grid-cols-3">
+      <h2 className="mt-8 font-display text-2xl font-bold text-text-body sm:text-3xl md:mt-[min(3rem,4vh)] md:text-4xl">{tr(T.who, locale)}</h2>
+      <div className="mt-5 grid w-full gap-4 sm:grid-cols-3 md:mt-8 md:gap-6">
         {AGE_CHOICES.map((a, i) => (
           <motion.button
             key={a.id}
@@ -180,20 +189,20 @@ function Welcome({ locale }: { locale: string }) {
               chooseAge(a.id);
               if (a.id !== 'big') void speakSequence('age-chosen', [tr(T.chosen, locale)], locale);
             }}
-            className="flex min-h-[7.5rem] items-center gap-4 rounded-[1.75rem] border-[3px] bg-bg-card p-4 text-start shadow-[0_6px_0_rgba(40,30,80,0.06)] sm:flex-col sm:justify-center sm:p-5 sm:text-center"
+            className="flex min-h-[7.5rem] items-center gap-4 rounded-[1.75rem] border-[3px] bg-bg-card p-4 text-start shadow-[0_6px_0_rgba(40,30,80,0.06)] sm:flex-col sm:justify-center sm:p-5 sm:text-center md:min-h-[min(18rem,26vh)] md:gap-5 md:rounded-[2.25rem] md:border-4 md:p-8"
             style={{ borderColor: `${a.color}88`, backgroundImage: `linear-gradient(180deg, ${a.color}1f, ${a.color}0a)` }}
           >
-            <span className="text-6xl leading-none sm:text-7xl" aria-hidden="true">
+            <span className="text-6xl leading-none sm:text-7xl md:text-[6.5rem]" aria-hidden="true">
               {a.emoji}
             </span>
-            <span className="flex flex-col gap-1">
-              <span className="font-display text-xl font-bold leading-tight text-text-body">{tr(a.title, locale)}</span>
-              <span className="text-sm text-text-muted">{tr(a.detail, locale)}</span>
+            <span className="flex flex-col gap-1 md:gap-2">
+              <span className="font-display text-xl font-bold leading-tight text-text-body md:text-[1.75rem]">{tr(a.title, locale)}</span>
+              <span className="text-sm text-text-muted md:text-lg">{tr(a.detail, locale)}</span>
             </span>
           </motion.button>
         ))}
       </div>
-      <p className="mt-5 text-sm text-text-muted">{tr(T.whoNote, locale)}</p>
+      <p className="mt-5 text-sm text-text-muted md:mt-8 md:text-base">{tr(T.whoNote, locale)}</p>
     </motion.section>
   );
 }

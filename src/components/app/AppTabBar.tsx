@@ -27,9 +27,9 @@ export function AppTabBar() {
   return (
     <nav
       aria-label={locale === 'fr' ? 'Menu principal' : 'Main menu'}
-      className="app-touch-only fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 ps-[max(0.75rem,env(safe-area-inset-left))] pe-[max(0.75rem,env(safe-area-inset-right))]"
+      className="app-touch-only app-tabbar fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 ps-[max(0.75rem,env(safe-area-inset-left))] pe-[max(0.75rem,env(safe-area-inset-right))]"
     >
-      <ul className="mx-auto grid h-[calc(var(--tabbar-h,4.5rem)-0.5rem)] max-w-lg grid-cols-4 gap-1 rounded-[1.75rem] bg-bg-card/85 p-1.5 shadow-[0_18px_40px_-18px_rgba(40,30,80,0.45)] ring-1 ring-border/70 backdrop-blur-xl backdrop-saturate-150">
+      <ul className="mx-auto grid h-[calc(var(--tabbar-h,4.5rem)-0.5rem)] max-w-lg grid-cols-4 gap-1 rounded-[1.75rem] md:max-w-3xl md:gap-2 md:rounded-[2.25rem] md:p-2 bg-bg-card/85 p-1.5 shadow-[0_18px_40px_-18px_rgba(40,30,80,0.45)] ring-1 ring-border/70 backdrop-blur-xl backdrop-saturate-150">
         {TABS.map((t, i) => {
           const on = i === active;
           return (
@@ -37,7 +37,7 @@ export function AppTabBar() {
               {on ? (
                 <motion.span
                   layoutId="app-tab"
-                  className="absolute inset-0 rounded-[1.35rem]"
+                  className="absolute inset-0 rounded-[1.35rem] md:rounded-[1.75rem]"
                   style={{ background: `color-mix(in srgb, ${t.color} 16%, transparent)`, boxShadow: `inset 0 0 0 1.5px color-mix(in srgb, ${t.color} 35%, transparent)` }}
                   transition={{ type: 'spring', stiffness: 420, damping: 34 }}
                 />
@@ -48,10 +48,10 @@ export function AppTabBar() {
                 onClick={() => haptic('light')}
                 className="relative flex h-full flex-col items-center justify-center gap-0.5 rounded-[1.35rem] transition-transform active:scale-[0.94]"
               >
-                <span className={`text-[1.6rem] leading-none transition-transform duration-300 ${on ? '-translate-y-px scale-110' : 'opacity-80 grayscale-[35%]'}`} aria-hidden="true">
+                <span className={`text-[1.6rem] leading-none transition-transform duration-300 md:text-[2.2rem] ${on ? '-translate-y-px scale-110' : 'opacity-80 grayscale-[35%]'}`} aria-hidden="true">
                   {t.emoji}
                 </span>
-                <span className={`text-[0.72rem] font-bold leading-none ${on ? '' : 'text-text-muted'}`} style={on ? { color: `color-mix(in srgb, ${t.color} 70%, var(--color-text-body))` } : undefined}>
+                <span className={`text-[0.72rem] font-bold leading-none md:text-[0.95rem] ${on ? '' : 'text-text-muted'}`} style={on ? { color: `color-mix(in srgb, ${t.color} 70%, var(--color-text-body))` } : undefined}>
                   {tr(t.label, locale)}
                 </span>
               </Link>
