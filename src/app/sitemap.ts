@@ -7,7 +7,7 @@ import { DODO_STORIES } from '@/data/dodo';
 import { GAMES } from '@/lib/games';
 
 // Public, indexable pages only (no login, account or owner pages).
-const MAIN = ['', '/monde', '/monde/arcade', '/creer', '/coloriage', '/dodo', '/apprendre', '/lab', '/games', '/agents', '/privacy', '/terms', '/cookies'];
+const MAIN = ['', '/monde', '/monde/arcade', '/creer', '/coloriage', '/dodo', '/apprendre', '/lab', '/telecharger', '/games', '/agents', '/privacy', '/terms', '/cookies'];
 const PLAY = [
   '/monde/3d/noel',
   '/monde/3d/luge',

@@ -10,11 +10,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     ...(locale === 'fr'
       ? {
           title: 'Mode dodo — Ziggy te raconte une histoire',
-          description: '31 histoires du soir pleines de valeurs, racontées par Ziggy, avec des sons du sommeil.',
+          description: '31 histoires du soir pleines de valeurs, racontées par la voix de Ziggy.',
         }
       : {
           title: 'Bedtime mode — Ziggy tells you a story',
-          description: '31 bedtime stories full of values, told by Ziggy, with sleep sounds.',
+          description: '31 bedtime stories full of values, told in Ziggy’s own voice.',
         }),
     alternates: alternatesFor(locale, '/dodo'),
   };

@@ -1,5 +1,6 @@
 import { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
+import { APK_PATH, APK_RELEASE_URL } from './src/lib/downloads';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -28,6 +29,10 @@ const nextConfig: NextConfig = {
   },
   images: {
     formats: ['image/avif', 'image/webp'],
+  },
+  // ziggy-ai.fr/apk: the Android app of the latest release (short enough to type with a TV remote).
+  async redirects() {
+    return [{ source: APK_PATH, destination: APK_RELEASE_URL, permanent: false }];
   },
   async headers() {
     return [

@@ -19,6 +19,7 @@ export function Footer() {
 
   const companyLinks = [
     { label: tn('demo'), href: '/demo' as const },
+    { label: tn('apps'), href: '/telecharger' as const },
     { label: tn('pricing'), href: '#pricing' },
     { label: tn('account'), href: '/account' as const },
   ];

@@ -13,6 +13,10 @@ on:
         description: 'Also build the iPhone/iPad app (macOS runner: its minutes cost 10x)'
         type: boolean
         default: true
+      publish:
+        description: 'Publish the Android build as the download of ziggy-ai.fr/apk (GitHub release), from any branch'
+        type: boolean
+        default: false
 
 concurrency:
   group: apps-${{ github.ref }}
@@ -157,6 +161,50 @@ jobs:
           path: ${{ runner.temp }}/dist/*
           if-no-files-found: error
           retention-days: 30
+
+  publish-android:
+    name: Publish the Android download (ziggy-ai.fr/apk)
+    # The site's page /telecharger and the short address /apk point at the APK of the
+    # latest release: published for every Android build of main, or on demand.
+    needs: android
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && inputs.publish)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: apps/ziggy-app/src-tauri/tauri.conf.json
+          sparse-checkout-cone-mode: false
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ziggy-ai-android
+          path: dist
+
+      - name: GitHub release with the APK (stable file name, marked latest)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          version=$(jq -r .version apps/ziggy-app/src-tauri/tauri.conf.json)
+          apk=$(ls dist/*.apk | head -1)
+          cp "$apk" ziggy-ai-android.apk
+          sha256sum ziggy-ai-android.apk > ziggy-ai-android.apk.sha256
+          case "$apk" in
+            *debug*) signed="clé de test (avant la clé Google Play : désinstaller l'ancienne version avant de mettre à jour)" ;;
+            *) signed="clé d'envoi de Ziggy" ;;
+          esac
+          cat > notes.md <<EOF
+          L'appli **Ziggy AI** pour Android : téléphones, tablettes, Android TV, Google TV et Fire TV (Android 7 ou plus récent).
+
+          - Installer : ouvrir **ziggy-ai.fr/telecharger** sur l'appareil, ou taper **ziggy-ai.fr/apk** dans l'appli Downloader sur une télé.
+          - Signature : ${signed}.
+          - SHA-256 : \`$(cut -d' ' -f1 ziggy-ai-android.apk.sha256)\`
+          EOF
+          tag="android-v${version}-${GITHUB_RUN_NUMBER}"
+          gh release create "$tag" ziggy-ai-android.apk ziggy-ai-android.apk.sha256 \
+            --repo "$GITHUB_REPOSITORY" --target "$GITHUB_SHA" --latest \
+            --title "Ziggy AI ${version} pour Android (build ${GITHUB_RUN_NUMBER})" --notes-file notes.md
 
   ios:
     name: iPhone + iPad (Simulator build, unsigned)

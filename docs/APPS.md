@@ -79,7 +79,20 @@ Rien d'autre n'est accessible depuis le web : ni fichiers, ni autres modules.
 
 ## 2. Tester l'application
 
-### Télécharger le fichier de test (APK)
+### Le plus simple : la page « Applis » du site
+
+**ziggy-ai.fr/telecharger** (onglet « Applis » du menu, lien en bas de page) : un bouton « Télécharger pour
+Android », les étapes pour la télé, l'iPhone et l'iPad, et un QR code pour passer de l'ordinateur au téléphone.
+Le bouton pointe sur **ziggy-ai.fr/apk**, une adresse courte à taper sur une télé (appli Downloader), qui renvoie
+vers l'APK de la dernière « release » GitHub (onglet **Releases** du dépôt).
+
+Cette release est publiée automatiquement par le CI (job « Publish the Android download ») à chaque fabrication
+Android sur `main`, c'est-à-dire quand `apps/ziggy-app/` change. À la main : Actions → **Apps** → **Run
+workflow**, case « Publish » cochée. Tant que la clé de signature n'est pas configurée, l'APK publié est signé avec
+une clé de test qui change à chaque fabrication : pour passer à une nouvelle version, il faut désinstaller
+l'ancienne. Dès que les secrets `ANDROID_*` existent, l'APK publié est signé avec ta clé.
+
+### Télécharger le fichier de test (APK) depuis le CI
 
 1. Sur GitHub : onglet **Actions** → workflow **Apps** → la dernière exécution verte.
 2. En bas de la page, section **Artifacts** : télécharger **ziggy-ai-android** (un .zip).

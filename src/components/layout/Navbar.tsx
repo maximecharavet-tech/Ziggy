@@ -50,13 +50,14 @@ export function Navbar() {
 
   // Section anchors live on the home page, so they point there from any page.
   // Child-first menu: play, create, sleep, learn. (The business agents and the chat demo stay reachable from the home page.)
-  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde' | '/dodo' | '/creer' | '/monde/arcade'; label: string; key: string }[] = [
+  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde' | '/dodo' | '/creer' | '/monde/arcade' | '/telecharger'; label: string; key: string }[] = [
     { key: 'world', path: '/monde', label: t('world') },
     { key: 'games', path: '/monde/arcade', label: t('games') },
     { key: 'create', path: '/creer', label: t('create') },
     { key: 'dodo', path: '/dodo', label: `🌙 ${t('dodo')}` },
     { key: 'learn', path: '/apprendre', label: t('learn') },
     { key: 'lab', path: '/lab', label: t('lab') },
+    { key: 'apps', path: '/telecharger', label: t('apps') },
     { key: 'pricing', hash: 'pricing', label: t('pricing') },
   ];
   const hrefOf = (l: (typeof navLinks)[number]) => (l.path ? l.path : { pathname: '/' as const, hash: l.hash });
@@ -86,7 +87,7 @@ export function Navbar() {
               href={hrefOf(link)}
               onMouseEnter={() => setHovered(link.key)}
               onFocus={() => setHovered(link.key)}
-              className="relative whitespace-nowrap px-3 xl:px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
+              className="relative whitespace-nowrap px-2.5 xl:px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
             >
               {hovered === link.key && (
                 <motion.span
@@ -96,7 +97,8 @@ export function Navbar() {
                 />
               )}
               {link.label}
-              {link.key === 'create' && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
+              {/* The "new" tag only where the bar has room (8 links fit from 1024 px). */}
+              {link.key === 'create' && <span className="ms-1 hidden xl:inline rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
             </Link>
           ))}
         </div>
