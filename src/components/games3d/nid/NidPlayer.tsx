@@ -5,9 +5,9 @@ import { useLocale } from 'next-intl';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Link } from '@/i18n/navigation';
-import { COMPANIONS } from '@/data/companions';
-import type { CompanionId } from '@/data/types';
 import type { NidGame, NidProgress } from '@/games3d/nid/NidGame';
+import { ZIGGY_COLORS } from '@/games3d/ziggy/model';
+import { MascotCutout, ZiggyAvatar } from '@/components/ziggy/Mascot';
 import {
   DECOR,
   DECOR_INFO,
@@ -37,21 +37,20 @@ import {
   type NeedId,
   type NidSave,
 } from '@/games3d/nid/logic';
-import { getMemory, setMemory, useHydrated, useWorldMemory } from '@/lib/world/store';
+import { getMemory, useHydrated, useWorldMemory } from '@/lib/world/store';
 import { maxDifficulty, readAloudOn } from '@/lib/world/memory';
-import { unlockedCompanions } from '@/lib/world/engine';
 import { finishExtraGame } from '@/lib/world/play';
 import { speakSequence, stopSpeaking, unlockAudio } from '@/lib/voice';
 import { tr, type L } from '@/lib/i18n-text';
 import { SayButton } from '@/components/arcade/read-aloud';
 
 const T = {
-  title: { fr: 'Le Nid de mon compagnon', en: 'My Companion’s Nest' },
+  title: { fr: 'Le jardin de Ziggy', en: 'Ziggy’s Garden' },
   teaser: {
-    fr: 'Ton compagnon vit dans un petit jardin. Prends soin de lui avec de petits défis : il grandit quand tu apprends !',
-    en: 'Your companion lives in a little garden. Look after it with tiny challenges: it grows when you learn!',
+    fr: 'Ziggy vit dans un petit jardin. Prends soin de lui avec de petits défis : il grandit quand tu apprends !',
+    en: 'Ziggy lives in a little garden. Look after him with tiny challenges: he grows when you learn!',
   },
-  enter: { fr: 'Entrer dans le nid', en: 'Enter the nest' },
+  enter: { fr: 'Entrer dans le jardin', en: 'Enter the garden' },
   loading: { fr: 'On prépare le jardin…', en: 'Getting the garden ready…' },
   back: { fr: 'Retour', en: 'Back' },
   noWebgl: {
@@ -68,15 +67,22 @@ const T = {
   },
   erase: { fr: 'Enlever', en: 'Remove' },
   done: { fr: 'Fini', en: 'Done' },
-  friends: { fr: 'Compagnon', en: 'Companion' },
-  chooseFriend: { fr: 'Choisis ton compagnon', en: 'Choose your companion' },
   goodNight: { fr: 'Bonne nuit', en: 'Good night' },
   wake: { fr: 'Réveiller', en: 'Wake up' },
   dodo: { fr: 'Une histoire pour s’endormir', en: 'A bedtime story' },
-  party: { fr: 'Fête du nid !', en: 'Nest party!' },
+  party: { fr: 'Fête du jardin !', en: 'Garden party!' },
   stage: { fr: 'Taille', en: 'Size' },
   locked: { fr: 'à débloquer', en: 'to unlock' },
 } satisfies Record<string, L>;
+
+/** What Ziggy says when the child taps him. */
+const TAP_LINES: L[] = [
+  { fr: 'Hihi ! Ça chatouille !', en: 'Hee hee! That tickles!' },
+  { fr: 'Bip bip ! Je suis trop content de te voir !', en: 'Beep beep! I’m so happy to see you!' },
+  { fr: 'Mon cœur brille quand tu es là !', en: 'My heart glows when you’re here!' },
+  { fr: 'On fait une super équipe, toi et moi !', en: 'We make a great team, you and me!' },
+  { fr: 'Encore ! Encore !', en: 'Again! Again!' },
+];
 
 const SKILL_EMOJI: Partial<Record<string, string>> = {
   counting: '🔢',
@@ -110,7 +116,7 @@ function storeSave(s: NidSave) {
   }
 }
 
-type Mode = 'home' | 'care' | 'decor' | 'friends' | 'night';
+type Mode = 'home' | 'care' | 'decor' | 'night';
 
 export function NidPlayer() {
   const raw = useLocale();
@@ -144,11 +150,9 @@ export function NidPlayer() {
   }, []);
 
   const band: Band = (memory.age ?? 'middle') as Band;
-  const companion = COMPANIONS.find((c) => c.id === memory.companion) ?? COMPANIONS[0];
-  const fullName = tr(companion.name, locale);
-  const short = fullName.split(' ')[0];
+  // Ziggy himself lives in the garden.
+  const short = 'Ziggy';
   const growth = useMemo(() => growthOf(memory), [memory]);
-  const unlocked = useMemo(() => new Set(unlockedCompanions(memory, COMPANIONS)), [memory]);
 
   const say = useCallback(
     (lines: string[], opts: { force?: boolean; bedtime?: boolean; id?: string } = {}) => {
@@ -179,9 +183,7 @@ export function NidPlayer() {
   const start = async () => {
     unlockAudio();
     setPhase('loading');
-    const current = () => COMPANIONS.find((c) => c.id === getMemory().companion) ?? COMPANIONS[0];
     const m = getMemory();
-    const comp = current();
     game.current?.dispose();
     game.current = null;
     let created: NidGame;
@@ -190,16 +192,15 @@ export function NidPlayer() {
       created = new NidGame(
         canvas.current!,
         {
-          companion: comp.id,
-          color: comp.color,
+          companion: 'ziggy',
+          color: ZIGGY_COLORS.felt,
           stage: growthOf(m).index,
           decor: saveRef.current.decor,
           locale,
         },
         {
           onCompanionTap: () => {
-            const lines = current().reactions.success;
-            const line = tr(lines[Math.floor(Math.random() * lines.length)], locale);
+            const line = tr(TAP_LINES[Math.floor(Math.random() * TAP_LINES.length)], locale);
             showToast(line);
             say([line], { id: 'nid-tap' });
           },
@@ -271,15 +272,7 @@ export function NidPlayer() {
     []
   );
 
-  // The companion changes (picker here, or elsewhere in Ziggy World).
-  const lastCompanion = useRef<CompanionId | null>(null);
-  useEffect(() => {
-    if (phase !== 'play') return;
-    if (lastCompanion.current && lastCompanion.current !== companion.id) game.current?.setCompanion(companion.id, companion.color);
-    lastCompanion.current = companion.id;
-  }, [companion, phase]);
-
-  // Growth: learning in Ziggy World (or here) makes the companion grow.
+  // Growth: learning in Ziggy World (or here) makes Ziggy grow.
   const lastStage = useRef<number | null>(null);
   useEffect(() => {
     if (phase !== 'play') return;
@@ -379,19 +372,9 @@ export function NidPlayer() {
     if (!allFull(save.needs)) return;
     persist(celebrate(save));
     game.current?.party();
-    const text = locale === 'fr' ? `C’est la fête du nid ! Merci de si bien t’occuper de ${short} !` : `It’s a nest party! Thank you for looking after ${short} so well!`;
+    const text = locale === 'fr' ? `C’est la fête du jardin ! Merci de si bien t’occuper de ${short} !` : `It’s a garden party! Thank you for looking after ${short} so well!`;
     showToast(text);
     say([text]);
-  };
-
-  const chooseCompanion = (id: CompanionId) => {
-    if (!unlocked.has(id)) return;
-    setMemory({
-      ...getMemory(),
-      companion: id,
-      updatedAt: new Date().toISOString(),
-    });
-    setMode('home');
   };
 
   /* ── Render ── */
@@ -420,26 +403,14 @@ export function NidPlayer() {
               >
                 ←
               </Link>
-              <div className="grid h-11 w-11 shrink-0 place-items-center rounded-full text-2xl shadow-inner" style={{ backgroundColor: `${companion.color}33` }} aria-hidden="true">
-                {companion.emoji}
-              </div>
+              <ZiggyAvatar size={44} className="shrink-0" />
               <div className="min-w-0 flex-1 leading-tight">
-                <p className="truncate font-display text-base font-bold sm:text-lg">
-                  <span className="sm:hidden">{short}</span>
-                  <span className="hidden sm:inline">{fullName}</span>
-                </p>
+                <p className="truncate font-display text-base font-bold sm:text-lg">{short}</p>
                 <p className="flex items-center gap-1 text-xs font-semibold text-[#6b5a86]">
                   <span aria-hidden="true">{STAGE_INFO[growth.stage].emoji}</span>
                   <span className="truncate">{tr(STAGE_INFO[growth.stage].label, locale)}</span>
                 </p>
               </div>
-              <TopButton
-                label={tr(T.friends, locale)}
-                emoji="🐾"
-                active={mode === 'friends'}
-                disabled={mode === 'care' || mode === 'night'}
-                onClick={() => setMode(mode === 'friends' ? 'home' : 'friends')}
-              />
               <TopButton
                 label={tr(T.decorate, locale)}
                 emoji="🎨"
@@ -512,7 +483,7 @@ export function NidPlayer() {
                   role="status"
                   className="pointer-events-none relative max-w-md rounded-3xl bg-white px-4 py-2.5 text-center text-sm font-bold shadow-xl ring-2 ring-[#ffd6e8] sm:text-base"
                 >
-                  <span aria-hidden="true">{companion.emoji} </span>
+                  <ZiggyAvatar size={26} ring={false} className="me-1.5 inline-block align-middle" />
                   {toast.text}
                   <span className="absolute -bottom-2 left-1/2 h-4 w-4 -translate-x-1/2 rotate-45 bg-white ring-0" aria-hidden="true" />
                 </motion.div>
@@ -631,61 +602,6 @@ export function NidPlayer() {
             ) : null}
           </div>
 
-          {/* Companion picker */}
-          <AnimatePresence>
-            {mode === 'friends' ? (
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                className="absolute inset-0 flex items-end justify-center bg-[#33264a]/30 p-3 sm:items-center"
-                onClick={() => setMode('home')}
-              >
-                <motion.div
-                  initial={{ y: 30 }}
-                  animate={{ y: 0 }}
-                  className="w-full max-w-lg rounded-[2rem] bg-white p-4 shadow-2xl"
-                  onClick={(e) => e.stopPropagation()}
-                  role="dialog"
-                  aria-label={tr(T.chooseFriend, locale)}
-                >
-                  <div className="mb-3 flex items-center gap-2">
-                    <h2 className="flex-1 font-display text-xl font-bold">🐾 {tr(T.chooseFriend, locale)}</h2>
-                    <button type="button" onClick={() => setMode('home')} className="grid h-11 w-11 place-items-center rounded-full bg-[#f3ecff] font-bold" aria-label={tr(T.done, locale)}>
-                      ✕
-                    </button>
-                  </div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {COMPANIONS.map((c) => {
-                      const open = unlocked.has(c.id);
-                      const current = c.id === companion.id;
-                      return (
-                        <button
-                          key={c.id}
-                          type="button"
-                          disabled={!open}
-                          onClick={() => chooseCompanion(c.id)}
-                          aria-pressed={current}
-                          aria-label={tr(c.name, locale)}
-                          className={`flex flex-col items-center gap-0.5 rounded-2xl p-2 text-[11px] font-bold transition ${current ? 'ring-4' : 'ring-1 ring-[#eee6fa]'} ${open ? 'hover:scale-105' : 'opacity-45 grayscale'}`}
-                          style={{
-                            backgroundColor: `${c.color}22`,
-                            ...(current ? { boxShadow: `0 0 0 4px ${c.color}` } : {}),
-                          }}
-                        >
-                          <span className="text-4xl" aria-hidden="true">
-                            {c.emoji}
-                          </span>
-                          <span className="leading-tight">{tr(c.name, locale).split(' ')[0]}</span>
-                          {!open ? <span className="text-[10px] font-semibold">🔒 ⭐ {c.unlockStars}</span> : null}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              </motion.div>
-            ) : null}
-          </AnimatePresence>
         </>
       ) : null}
 
@@ -694,13 +610,15 @@ export function NidPlayer() {
         <div className="absolute inset-0 [&>*:not(:first-child)]:relative flex flex-col items-center justify-center gap-4 bg-gradient-to-b from-[#9fd8ff] via-[#d9efff] to-[#ffe8c2] p-6 text-center">
           <Floaters reduce={Boolean(reduce)} />
           <motion.div
-            className="relative grid h-36 w-36 place-items-center rounded-full bg-white/70 text-8xl shadow-[0_20px_60px_rgba(255,150,200,.45)] ring-8 ring-white/70"
+            className="relative h-40 w-40"
             animate={reduce ? undefined : { y: [0, -12, 0], rotate: [0, -3, 3, 0] }}
             transition={{ duration: 3, repeat: Infinity }}
             aria-hidden="true"
           >
-            {companion.emoji}
-            <span className="absolute -bottom-2 -right-2 text-4xl">🪺</span>
+            <div className="grid h-full w-full place-items-end justify-center overflow-hidden rounded-full bg-white/70 shadow-[0_20px_60px_rgba(255,150,200,.45)] ring-8 ring-white/70">
+              <MascotCutout pose="wave" width={128} glow={false} className="translate-y-3" />
+            </div>
+            <span className="absolute -bottom-1 -right-1 text-4xl">🏡</span>
           </motion.div>
           <h1 className="font-display text-4xl font-bold text-[#3b2a5a] drop-shadow-sm sm:text-6xl">{tr(T.title, locale)}</h1>
           <p className="max-w-lg text-lg font-semibold text-[#5b4a78]">{tr(T.teaser, locale)}</p>

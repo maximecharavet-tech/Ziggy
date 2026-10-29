@@ -41,8 +41,8 @@ const APPS: App[] = [
   },
   {
     href: '/monde/nid',
-    title: { fr: 'Le Nid de mon compagnon', en: 'My Companion’s Nest' },
-    text: { fr: 'Prends soin de ton compagnon en 3D : il grandit quand toi tu apprends.', en: 'Care for your companion in 3D: it grows as you learn.' },
+    title: { fr: 'Le jardin de Ziggy', en: 'Ziggy’s Garden' },
+    text: { fr: 'Prends soin de Ziggy en 3D : il grandit quand toi tu apprends.', en: 'Care for Ziggy in 3D: he grows as you learn.' },
     from: '#6fdc8c',
     to: '#2fa865',
     tag: { fr: '3D · soin', en: '3D · care' },

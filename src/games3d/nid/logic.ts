@@ -1,5 +1,5 @@
 /**
- * Le Nid de mon compagnon — pure logic (no three.js, no DOM).
+ * Le jardin de Ziggy (the nest game, formerly the companion's nest) — pure logic (no three.js, no DOM).
  *
  * Child-safety rules, enforced here:
  *  - The companion is never sick, never sad, never hungry "because you left".
@@ -64,7 +64,7 @@ export const MASTERY_THRESHOLD = 0.6;
 export const POINTS_PER_SKILL = 3;
 
 export const STAGE_INFO: Record<StageId, { label: L; emoji: string; scale: number }> = {
-  baby: { label: { fr: 'bébé', en: 'baby' }, emoji: '🥚', scale: 0.74 },
+  baby: { label: { fr: 'bébé', en: 'baby' }, emoji: '🍼', scale: 0.74 },
   small: { label: { fr: 'petit', en: 'little one' }, emoji: '🌱', scale: 0.88 },
   big: { label: { fr: 'grand', en: 'big' }, emoji: '🌳', scale: 1.02 },
   legend: { label: { fr: 'légendaire', en: 'legendary' }, emoji: '👑', scale: 1.14 },
@@ -109,7 +109,7 @@ export function growthOf(m: WorldMemory): Growth {
 
 export function nextStageHint(g: Growth, locale: string): string {
   if (!g.next || g.missing === null)
-    return tr({ fr: 'Ton compagnon est légendaire ! Merci pour tout ce que tu as appris.', en: 'Your companion is legendary! Thank you for everything you learned.' }, locale);
+    return tr({ fr: 'Ziggy est légendaire ! Merci pour tout ce que tu as appris.', en: 'Ziggy is legendary! Thank you for everything you learned.' }, locale);
   const n = g.missing;
   const stage = tr(STAGE_INFO[g.next].label, locale);
   return locale === 'fr' ? `Encore ${n} étoile${n > 1 ? 's' : ''} dans Ziggy World pour devenir ${stage} !` : `${n} more star${n > 1 ? 's' : ''} in Ziggy World to become ${stage}!`;
@@ -446,7 +446,7 @@ export function hintText(ch: Challenge, reason: HintReason, locale: string, ctx:
       return fr ? `Presque ! Cherche le cerceau ${rd?.answer ?? ''}.` : `Almost! Look for hoop ${rd?.answer ?? ''}.`;
     }
     case 'rub':
-      return fr ? 'Tout doucement… frotte sur ton compagnon.' : 'Gently… rub on your companion.';
+      return fr ? 'Tout doucement… frotte sur Ziggy.' : 'Gently… rub on Ziggy.';
     case 'bubbles': {
       const nextLabel = ch.order[(ctx.popped ?? []).length];
       if (ch.mode === 'word') return fr ? `Presque ! La lettre suivante est ${nextLabel}.` : `Almost! The next letter is ${nextLabel}.`;

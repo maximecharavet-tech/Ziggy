@@ -4,6 +4,7 @@ import { createRenderer, disposeTree, glowTex, labelSprite, prefersLowPower } fr
 import { Puffs } from '../kit/world';
 import { GameAudio } from '../kit/music';
 import { makeCompanion, makeCrown, makeFlowerCrown, makeScarf, type CompanionRig } from './companions3d';
+import { makeZiggyCompanion } from './ziggy-companion';
 import {
   SPOT,
   heartTex,
@@ -53,7 +54,8 @@ export interface NidCallbacks {
 }
 
 export interface NidOptions {
-  companion: CompanionId;
+  /** Who lives in the garden: Ziggy, or one of the companions. */
+  companion: CompanionId | 'ziggy';
   color: string;
   stage: number;
   decor: (DecorId | null)[];
@@ -345,13 +347,13 @@ export class NidGame {
     return this.comp?.aquatic ? SPOT.pond.clone().add(new THREE.Vector3(-0.2, 0, 0.3)) : SPOT.home.clone();
   }
 
-  setCompanion(id: CompanionId, color: string) {
+  setCompanion(id: CompanionId | 'ziggy', color: string) {
     const night = this.nightTarget > 0.5;
     if (this.comp) {
       this.scene.remove(this.comp.root);
       disposeTree(this.comp.root);
     }
-    this.comp = makeCompanion(id, color);
+    this.comp = id === 'ziggy' ? makeZiggyCompanion({ lowPower: this.lowPower, reduceMotion: this.reduceMotion }) : makeCompanion(id, color);
     this.comp.hitbox.userData.tap = { kind: 'companion' } satisfies TapInfo;
     this.accessories = [];
     this.scene.add(this.comp.root);
@@ -385,6 +387,10 @@ export class NidGame {
       disposeTree(a);
     }
     this.accessories = [];
+    if (this.comp.dress) {
+      this.accessories = this.comp.dress(this.stage);
+      return;
+    }
     if (this.stage >= 1) {
       const scarf = makeScarf(this.comp.neck.userData.r ?? 0.4, this.stage >= 3 ? '#9b6be8' : '#ff6f91');
       this.comp.neck.add(scarf);
@@ -419,6 +425,7 @@ export class NidGame {
     this.c.jump = 1;
     this.c.jumpH = (big ? 1.3 : 0.9) * (this.reduceMotion ? 0.5 : 1) * (this.comp.aquatic ? 1.6 : 1);
     if (big && !this.reduceMotion) this.c.spin = Math.PI * 2;
+    this.comp.react?.(big ? 'bigJoy' : 'joy');
     this.audio.chime('pick');
     this.hearts.emit(this.mouthWorld().add(new THREE.Vector3(0, 0.6, 0)), { color: '#ffffff', count: big ? 8 : 4, spread: 1.6, up: 1.4, life: 1.4, size: 0.42 });
   }
@@ -705,6 +712,8 @@ export class NidGame {
     this.busy = true;
     this.later(500, () => {
       this.joy(true);
+      // A cuddle ends in a hug back.
+      if (ch.kind === 'rub') this.comp.react?.('love');
       this.audio.chime('star');
       this.sparkles.emit(this.c.pos.clone().add(new THREE.Vector3(0, 1.5, 0)), { color: '#ffe066', count: this.lowPower ? 14 : 30, spread: 3, up: 2.4, life: 1.4, size: 0.42, additive: true });
       this.cb.onDone(stats);
@@ -1083,8 +1092,11 @@ export class NidGame {
         f.done?.();
       }
     }
-    // Carried ball follows the companion's mouth.
-    if (this.c.carry) this.c.carry.position.copy(this.mouthWorld().add(new THREE.Vector3(0, 0.05, 0.05)));
+    // A carried ball follows the companion's mouth (Ziggy's hands).
+    if (this.c.carry) {
+      if (this.comp.carryAt) this.comp.carryAt.getWorldPosition(this.c.carry.position);
+      else this.c.carry.position.copy(this.mouthWorld().add(new THREE.Vector3(0, 0.05, 0.05)));
+    }
     // Wobbles (gentle "not this one" shake).
     for (const [o, w] of this.wobbles) {
       const nw = Math.max(0, w - dt * 1.8);
@@ -1333,6 +1345,8 @@ export class NidGame {
     head.rotation.y += (tyaw - head.rotation.y) * Math.min(1, dt * 6);
     head.rotation.x += (tpitch - head.rotation.x) * Math.min(1, dt * 6);
     head.rotation.z += (c.sleep * 0.3 - head.rotation.z) * Math.min(1, dt * 3);
+
+    rig.tick?.(dt, { walking, sleeping: c.sleep > 0.5, party: this.partyT > 0, carrying: Boolean(c.carry) });
   }
 
   private applyNight(k: number, t: number) {

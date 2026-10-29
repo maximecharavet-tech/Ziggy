@@ -9,8 +9,19 @@ import { glow, glowMat, mat } from '../kit/look';
  *   root ─ body (breathing, squash) ─ head (looks at the pointer, blinks)
  * plus "wiggles" (tail, wings, ears) and anchors for the growth accessories.
  */
+/** What the garden tells a rig with its own animation (Ziggy), every frame. */
+export interface RigState {
+  walking: boolean;
+  sleeping: boolean;
+  party: boolean;
+  carrying: boolean;
+}
+
+/** One-shot reactions of a rig with its own animation. */
+export type RigReaction = 'joy' | 'bigJoy' | 'love';
+
 export interface CompanionRig {
-  id: CompanionId;
+  id: CompanionId | 'ziggy';
   root: THREE.Group;
   body: THREE.Group;
   head: THREE.Group;
@@ -30,6 +41,13 @@ export interface CompanionRig {
   hitbox: THREE.Mesh;
   /** Turn a little when facing the child, so a four-legged body shows in 3/4 view. */
   idleYaw?: number;
+  /** Rigs with their own animation (Ziggy): run after the shared motion, every frame. */
+  tick?: (dt: number, state: RigState) => void;
+  react?: (kind: RigReaction) => void;
+  /** Own growth outfits instead of the shared scarf and crowns; returns what it added. */
+  dress?: (stage: number) => THREE.Object3D[];
+  /** Where a carried ball goes (in the hands); the mouth when absent. */
+  carryAt?: THREE.Object3D;
 }
 
 const Z = new THREE.Vector3(0, 0, 1);

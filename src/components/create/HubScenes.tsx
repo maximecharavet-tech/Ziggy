@@ -4,6 +4,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { flatSvg } from '@/coloring/svg';
 import { ziggy } from '@/coloring/pages/ziggy';
 import { AvatarPreview } from '@/components/world/AvatarPreview';
+import { MascotCutout } from '@/components/ziggy/Mascot';
 import { Twinkle } from './fx/Burst';
 import { Layer } from './fx/Parallax';
 import { fx, loop } from './fx/toy';
@@ -206,8 +207,10 @@ export function NestScene() {
           🌳
         </Prop>
       </Layer>
-      <Layer depth={20} className="bottom-[8%] left-[34%] text-[2.8rem]">
-        <Prop style={loop({ dur: 1.8, amp: -8, tilt: 5 })}>🐣</Prop>
+      <Layer depth={20} className="bottom-[6%] left-[32%]">
+        <Prop style={loop({ dur: 1.8, amp: -8, tilt: 5 })}>
+          <MascotCutout pose="wave" width={58} glow={false} />
+        </Prop>
       </Layer>
       {[0, 1].map((i) => (
         <Layer key={i} depth={22} className="bottom-[40%] text-xl text-[#ff7ab8]" style={{ left: `${36 + i * 8}%` }}>

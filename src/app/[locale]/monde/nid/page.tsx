@@ -8,12 +8,12 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'Le Nid de mon compagnon — jeu 3D',
-          description: 'Prends soin de ton compagnon dans son petit jardin en 3D : il grandit quand tu apprends.',
+          title: 'Le jardin de Ziggy — jeu 3D',
+          description: 'Prends soin de Ziggy dans son petit jardin en 3D : il grandit quand tu apprends.',
         }
       : {
-          title: 'My Companion’s Nest — 3D game',
-          description: 'Look after your companion in its little 3D garden: it grows when you learn.',
+          title: 'Ziggy’s Garden — 3D game',
+          description: 'Look after Ziggy in his little 3D garden: he grows when you learn.',
         }),
     alternates: alternatesFor(locale, '/monde/nid'),
   };
