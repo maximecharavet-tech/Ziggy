@@ -20,15 +20,23 @@
     "category": "Education",
     "shortDescription": "Ziggy AI",
     "longDescription": "Ziggy AI: learning games, stories and bedtime tales for children aged 4 to 12, with Ziggy the plush robot.",
-    "copyright": "© Ziggy AI",
-    "icon": ["icons/32x32.png", "icons/128x128.png", "icons/128x128@2x.png", "icons/icon.png"],
+    "copyright": "\u00a9 Ziggy AI",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ],
     "android": {
       "minSdkVersion": 24,
       "versionCode": 1
     },
     "iOS": {
       "minimumSystemVersion": "15.0",
-      "bundleVersion": "1"
+      "bundleVersion": "1",
+      "frameworks": [
+        "AVFAudio"
+      ]
     }
   }
 }

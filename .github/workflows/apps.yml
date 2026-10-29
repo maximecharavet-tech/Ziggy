@@ -144,8 +144,9 @@ jobs:
             cp "$out/bundle/universalRelease/app-universal-release.aab" "$RUNNER_TEMP/dist/ziggy-ai-android-debug-signed.aab"
           fi
           ls -la "$RUNNER_TEMP/dist"
-          "$ANDROID_HOME"/build-tools/*/aapt2 dump badging "$RUNNER_TEMP"/dist/*.apk 2>/dev/null \
-            | grep -E "^(package|sdkVersion|targetSdkVersion|uses-permission|uses-feature|leanback-launchable|native-code)" || true
+          aapt2="$(ls -d "$ANDROID_HOME"/build-tools/*/ | sort -V | tail -1)aapt2"
+          "$aapt2" dump badging "$RUNNER_TEMP"/dist/*.apk \
+            | grep -E "^(package|sdkVersion|targetSdkVersion|uses-permission|uses-feature|leanback-launchable|launchable|native-code|application-label:|application-icon-640)" || true
 
       - uses: actions/upload-artifact@v4
         with:
