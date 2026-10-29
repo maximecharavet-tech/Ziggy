@@ -32,5 +32,7 @@ if ! grep -q 'PrivacyInfo.xcprivacy' "$apple/project.yml"; then
 fi
 grep -q 'PrivacyInfo.xcprivacy' "$apple/project.yml" || { echo "could not add PrivacyInfo.xcprivacy to project.yml" >&2; exit 1; }
 
+# Folders the project lists but git does not keep (filled by `tauri ios build`).
+mkdir -p "$apple/assets" "$apple/Externals"
 (cd "$apple" && xcodegen generate --spec project.yml)
 echo "iOS overlay applied to $apple"

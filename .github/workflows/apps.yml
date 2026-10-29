@@ -70,6 +70,9 @@ jobs:
       - name: Clippy (iOS, checked on Linux)
         run: bash ../scripts/check-ios-on-linux.sh
 
+      - name: Licences of the shipped crates (no copyleft)
+        run: node ../scripts/licenses.mjs
+
   android:
     name: Android + Android TV (APK, AAB)
     runs-on: ubuntu-latest
@@ -230,9 +233,10 @@ jobs:
           git commit -m "Generated Xcode project for the Ziggy AI iOS app (tauri ios init + scripts/ios-overlay.sh)"
           git push -f origin ci/ziggy-app-gen-apple
 
-  # Signed App Store / TestFlight build, for later (see docs/APPS.md, "iPhone et iPad"):
-  # needs the Apple Developer Program and these secrets: IOS_CERTIFICATE (base64 .p12),
-  # IOS_CERTIFICATE_PASSWORD, IOS_MOBILE_PROVISION (base64), APPLE_API_KEY_ID,
-  # APPLE_API_ISSUER, APPLE_API_KEY (base64 .p8). Then:
-  #   npx tauri ios build --export-method app-store-connect
-  #   xcrun altool --upload-app -f <ipa> --apiKey "$APPLE_API_KEY_ID" --apiIssuer "$APPLE_API_ISSUER"
+  # Signed App Store / TestFlight build, for later (see docs/APPS.md, "Publier sur l'App Store"):
+  # needs the Apple Developer Program and these secrets, read by the Tauri CLI:
+  # APPLE_DEVELOPMENT_TEAM, IOS_CERTIFICATE (base64 .p12), IOS_CERTIFICATE_PASSWORD,
+  # IOS_MOBILE_PROVISION (base64 .mobileprovision), and for the upload APPLE_API_KEY,
+  # APPLE_API_ISSUER and the .p8 key written to a file named in APPLE_API_KEY_PATH. Then:
+  #   npx tauri ios build --ci --export-method app-store-connect
+  #   xcrun altool --upload-app --type ios -f <ipa> --apiKey "$APPLE_API_KEY" --apiIssuer "$APPLE_API_ISSUER"

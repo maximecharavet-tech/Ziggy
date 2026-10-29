@@ -49,3 +49,4 @@ data (reviews, user counts, partners). GDPR for minors.
 - The sandbox speed test can fail when the machine is overloaded; rerun it alone before blaming the code.
 - Voice engine (`voice-engine/`, Rust): `cargo clippy --release` deletes the release binary (rebuild after); ONNX Runtime phones home unless `ORT_DISABLE_TELEMETRY=1` (the engine sets it).
 - Regenerated audio under `public/dodo/**` is cached cache-first by `public/sw.js`: bump its `VERSION`, or returning visitors keep the old files.
+- Native apps (`apps/ziggy-app/`, Tauri): Android resource XML comments must not contain `--` (aapt2 fails); an Apple framework used from Rust (objc2) must be listed in `tauri.conf.json` `bundle.iOS.frameworks` (Xcode does not see the staticlib's link flags); run `node apps/ziggy-app/scripts/licenses.mjs` after any crate change (no MPL in the binary).
