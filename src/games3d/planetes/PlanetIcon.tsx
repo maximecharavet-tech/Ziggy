@@ -118,7 +118,7 @@ export function PlanetIcon({ body, size = 64, className = '' }: { body: BodyId |
             </>,
             27
           )}
-          <path d="M8 58 A46 13 -14 0 0 92 37" transform="rotate(0)" fill="none" stroke="#efe0b6" strokeWidth="7" strokeLinecap="round" />
+          <path d="M5.4 63.1 A46 13 -14 0 0 94.6 40.9" fill="none" stroke="#efe0b6" strokeWidth="7" strokeLinecap="round" />
         </>
       );
       break;
