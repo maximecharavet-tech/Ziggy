@@ -2,26 +2,12 @@
   "name": "ziggy-app",
   "version": "1.0.0",
   "private": true,
-  "description": "Ziggy AI native shell (Android, Android TV, iPhone, iPad) around https://ziggy-ai.fr",
+  "description": "Ziggy AI native apps (Android, Android TV, iPhone, iPad): a Tauri 2 shell around https://ziggy-ai.fr",
   "license": "UNLICENSED",
   "scripts": {
-    "sync": "cap sync",
-    "sync:android": "cap sync android",
-    "sync:ios": "cap sync ios",
-    "open:android": "cap open android",
-    "open:ios": "cap open ios"
-  },
-  "dependencies": {
-    "@capacitor/android": "8.6.0",
-    "@capacitor/app": "8.1.2",
-    "@capacitor/core": "8.6.0",
-    "@capacitor/haptics": "8.0.2",
-    "@capacitor/ios": "8.6.0",
-    "@capacitor/splash-screen": "8.0.2",
-    "@capacitor/status-bar": "8.0.4"
+    "tauri": "tauri"
   },
   "devDependencies": {
-    "@capacitor/cli": "8.6.0",
-    "typescript": "^5.8.0"
+    "@tauri-apps/cli": "2.12.4"
   }
 }
