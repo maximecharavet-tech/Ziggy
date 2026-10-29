@@ -14,6 +14,9 @@ export const APK_PATH = '/apk';
 /** The APK of the latest release (stable name, see apps.yml "publish-android"). */
 export const APK_RELEASE_URL = 'https://github.com/maximecharavet-tech/Ziggy/releases/latest/download/ziggy-ai-android.apk';
 
+/** Size of the APK in MB (universal build: arm64, armv7, x86_64; GitHub release android-v1.0.0-7). */
+export const APK_SIZE_MB = 18;
+
 /** Oldest Android the app runs on (minSdk 24). */
 export const ANDROID_MIN = '7';
 

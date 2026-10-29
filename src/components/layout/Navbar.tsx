@@ -80,14 +80,15 @@ export function Navbar() {
           <ZiggyLogo size={96} className="transition-transform duration-300 group-hover:-rotate-1" />
         </Link>
 
-        <div className="web-only relative z-10 hidden lg:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
+        {/* Eight links and the controls fit in every language from 1280 px; the menu button below that. */}
+        <div className="web-only relative z-10 hidden xl:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
           {navLinks.map((link) => (
             <Link
               key={link.key}
               href={hrefOf(link)}
               onMouseEnter={() => setHovered(link.key)}
               onFocus={() => setHovered(link.key)}
-              className="relative whitespace-nowrap px-2.5 xl:px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
+              className="relative whitespace-nowrap px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
             >
               {hovered === link.key && (
                 <motion.span
@@ -97,8 +98,7 @@ export function Navbar() {
                 />
               )}
               {link.label}
-              {/* The "new" tag only where the bar has room (8 links fit from 1024 px). */}
-              {link.key === 'create' && <span className="ms-1 hidden xl:inline rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
+              {link.key === 'create' && <span className="ms-1 rounded-full bg-sky/15 px-1.5 py-0.5 text-[10px] font-bold text-sky align-middle">{t('new')}</span>}
             </Link>
           ))}
         </div>
@@ -108,7 +108,7 @@ export function Navbar() {
           <ParentsButton />
         </div>
 
-        <div className="web-only relative z-10 hidden lg:flex items-center gap-3">
+        <div className="web-only relative z-10 hidden xl:flex items-center gap-3">
           <SoundToggle />
           <ThemeToggle />
           <LanguageSwitcher />
@@ -119,7 +119,7 @@ export function Navbar() {
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-controls="mobile-menu"
-          className="web-only relative z-10 lg:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
+          className="web-only relative z-10 xl:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
           aria-label={isOpen ? menuLabel.close : menuLabel.open}
         >
           {isOpen ? <X size={22} /> : <Menu size={22} />}
@@ -135,7 +135,7 @@ export function Navbar() {
             exit={{ opacity: 0, y: -12, scale: 0.98 }}
             transition={{ duration: 0.22, ease: 'easeOut' }}
             // Solid (not see-through) and not clipped, so the language list can open.
-            className="lg:hidden mx-3 mt-2 max-h-[calc(100dvh-5.5rem)] overflow-y-auto rounded-3xl border border-border/60 bg-bg-card/[0.97] shadow-2xl backdrop-blur-xl"
+            className="xl:hidden mx-3 mt-2 max-h-[calc(100dvh-5.5rem)] overflow-y-auto rounded-3xl border border-border/60 bg-bg-card/[0.97] shadow-2xl backdrop-blur-xl"
           >
             <div className="px-4 py-5 space-y-1">
               {navLinks.map((link, i) => (

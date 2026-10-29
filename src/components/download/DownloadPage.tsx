@@ -8,7 +8,7 @@ import { ArrowRight, Ban, Check, ChevronDown, Download, Lock, Monitor, RefreshCw
 import { Link } from '@/i18n/navigation';
 import { EASE_OUT } from '@/lib/motion';
 import { tr, type L } from '@/lib/i18n-text';
-import { ANDROID_MIN, APK_PATH, detectDevice, type Device } from '@/lib/downloads';
+import { ANDROID_MIN, APK_PATH, APK_SIZE_MB, detectDevice, type Device } from '@/lib/downloads';
 
 const T = {
   badge: { fr: 'Les applis Ziggy', en: 'The Ziggy apps' },
@@ -20,7 +20,10 @@ const T = {
   ctaAndroid: { fr: 'Télécharger pour Android', en: 'Download for Android' },
   ctaIos: { fr: 'Installer sur iPhone et iPad', en: 'Install on iPhone and iPad' },
   ctaAll: { fr: 'Tous les appareils', en: 'All devices' },
-  meta: { fr: `Téléchargement gratuit · Android ${ANDROID_MIN} ou plus récent`, en: `Free download · Android ${ANDROID_MIN} or newer` },
+  meta: {
+    fr: `Téléchargement gratuit · ${APK_SIZE_MB} Mo · Android ${ANDROID_MIN} ou plus récent`,
+    en: `Free download · ${APK_SIZE_MB} MB · Android ${ANDROID_MIN} or newer`,
+  },
   inApp: { fr: 'Vous êtes déjà dans l’appli Ziggy 🎉', en: 'You are already in the Ziggy app 🎉' },
   shotTv: { fr: 'L’appli Ziggy sur une télévision : l’histoire du jour et les histoires du soir', en: 'The Ziggy app on a TV: the story of the day and bedtime stories' },
   shotPhone: { fr: 'L’appli Ziggy sur un téléphone : Ziggy dit bonjour', en: 'The Ziggy app on a phone: Ziggy says hello' },
