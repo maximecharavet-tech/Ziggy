@@ -23,7 +23,10 @@ pub struct Options {
     pub out: PathBuf,
     pub threads: usize,
     pub jobs: usize,
-    pub skip_existing: bool,
+    /// Re-render stories that are already up to date (same recipe, texts).
+    pub force: bool,
+    /// Append one line per finished story here (to resume after a restart).
+    pub progress: Option<PathBuf>,
     pub stories_json: Option<PathBuf>,
     /// `story:segment` → render only that into `sample_out`.
     pub sample: Option<String>,
@@ -72,6 +75,44 @@ fn render_one(r: &Renderer, plan: &SegmentPlan, mp3: &std::path::Path) -> Result
         phonemes: seg.phonemes.clone(),
     };
     Ok((done, seg.audio, mastered))
+}
+
+/// `dir`'s staging twin (hidden, same parent: renames stay atomic).
+fn staging(dir: &std::path::Path) -> PathBuf {
+    let name = dir.file_name().unwrap().to_string_lossy();
+    dir.with_file_name(format!(".{name}.partial"))
+}
+
+fn retired(dir: &std::path::Path) -> PathBuf {
+    let name = dir.file_name().unwrap().to_string_lossy();
+    dir.with_file_name(format!(".{name}.old"))
+}
+
+/// Replace `dir` by the finished `stage` (two renames).
+fn swap_in(stage: &std::path::Path, dir: &std::path::Path) -> Result<()> {
+    let old = retired(dir);
+    let _ = std::fs::remove_dir_all(&old);
+    if dir.exists() {
+        std::fs::rename(dir, &old)?;
+    }
+    std::fs::rename(stage, dir)?;
+    let _ = std::fs::remove_dir_all(&old);
+    Ok(())
+}
+
+/// After an interruption: drop a half-rendered stage, and put back the
+/// previous story if the swap was cut between its two renames.
+fn recover(dir: &std::path::Path) -> Result<()> {
+    let _ = std::fs::remove_dir_all(staging(dir));
+    let old = retired(dir);
+    if old.exists() {
+        if dir.exists() {
+            std::fs::remove_dir_all(&old)?;
+        } else {
+            std::fs::rename(&old, dir)?;
+        }
+    }
+    Ok(())
 }
 
 fn up_to_date(dir: &std::path::Path, locale: &str, story: &Story) -> bool {
@@ -140,15 +181,21 @@ pub fn run(opts: Options) -> Result<()> {
                 continue;
             }
             let dir = opts.out.join(locale).join(&story.id);
-            if opts.skip_existing && up_to_date(&dir, locale, story) {
+            recover(&dir)?;
+            if !opts.force && up_to_date(&dir, locale, story) {
                 println!("= {locale}/{} up to date", story.id);
                 continue;
             }
+            // render the whole story into a staging folder next to it, then
+            // swap folders: an interruption never mixes old and new files
+            let stage = staging(&dir);
+            let _ = std::fs::remove_dir_all(&stage);
+            std::fs::create_dir_all(&stage)?;
             let t0 = Instant::now();
             let results: Vec<Result<Done>> = pool.install(|| {
                 plans
                     .par_iter()
-                    .map(|p| render_one(&renderer, p, &dir.join(format!("{}.mp3", p.id))).map(|r| r.0))
+                    .map(|p| render_one(&renderer, p, &stage.join(format!("{}.mp3", p.id))).map(|r| r.0))
                     .collect()
             });
             let mut timing = TimingJson::new(locale, &story.id);
@@ -180,8 +227,14 @@ pub fn run(opts: Options) -> Result<()> {
                     },
                 )?;
             }
-            timing.write(&dir.join("timing.json"))?;
+            timing.write(&stage.join("timing.json"))?;
+            swap_in(&stage, &dir)?;
             total += secs;
+            if let Some(p) = &opts.progress {
+                use std::io::Write;
+                let mut f = std::fs::OpenOptions::new().create(true).append(true).open(p)?;
+                writeln!(f, "{} {locale}/{} {:.0}s ok", crate::recipe::RECIPE_ID, story.id, secs)?;
+            }
             println!(
                 "✓ {locale}/{}: {:.0}s of voice in {:.0}s (LUFS {:.1}…{:.1}, peak ≤ {:.1} dBTP)",
                 story.id,
@@ -236,4 +289,31 @@ fn check_story(g2p: &G2p, locale: &str, story: &Story, plans: &[SegmentPlan]) ->
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn story_swap_is_atomic_and_recoverable() {
+        let root = std::env::temp_dir().join(format!("zv-swap-{}", std::process::id()));
+        let dir = root.join("fr").join("d01");
+        std::fs::create_dir_all(&dir).unwrap();
+        std::fs::write(dir.join("timing.json"), "v2").unwrap();
+        // a finished stage replaces the story
+        let stage = staging(&dir);
+        std::fs::create_dir_all(&stage).unwrap();
+        std::fs::write(stage.join("timing.json"), "v3").unwrap();
+        swap_in(&stage, &dir).unwrap();
+        assert_eq!(std::fs::read_to_string(dir.join("timing.json")).unwrap(), "v3");
+        assert!(!stage.exists() && !retired(&dir).exists());
+        // interrupted between the two renames: the previous story comes back
+        std::fs::rename(&dir, retired(&dir)).unwrap();
+        std::fs::create_dir_all(staging(&dir)).unwrap();
+        recover(&dir).unwrap();
+        assert_eq!(std::fs::read_to_string(dir.join("timing.json")).unwrap(), "v3");
+        assert!(!staging(&dir).exists());
+        std::fs::remove_dir_all(root).unwrap();
+    }
 }

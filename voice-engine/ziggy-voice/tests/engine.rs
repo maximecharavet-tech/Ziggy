@@ -4,7 +4,8 @@
 use ziggy_voice::espeak::Espeak;
 use ziggy_voice::g2p_en::EnglishG2P;
 use ziggy_voice::g2p_fr::FrenchG2P;
-use ziggy_voice::kokoro::{encode, Blend, Kokoro, PitchCtl, F0_HOP, SR};
+use ziggy_voice::intonation::StoryContext;
+use ziggy_voice::kokoro::{encode, Blend, Controls, Kokoro, PitchCtl, F0_HOP, SR};
 use ziggy_voice::paths::Cache;
 use ziggy_voice::prosody::{plan_segment, Cast};
 use ziggy_voice::render::{G2p, Renderer};
@@ -72,11 +73,33 @@ fn engine_end_to_end() {
     let c = k.synth(&ids, &style, 0.6, PitchCtl::default()).unwrap();
     assert!(c.audio.len() > a.audio.len());
 
+    // v3 controls: the predictor pass sees what the full graph would do;
+    // exact durations and a pitch contour are then followed as given
+    let pred = k.predict(&ids, &style, 0.8, &[]).unwrap();
+    assert_eq!(pred.durations, a.durations, "predictor pass = full graph");
+    assert_eq!(pred.f0, a.f0_pred);
+    let mut frames: Vec<f32> = pred.durations.iter().map(|&d| d as f32).collect();
+    frames[3] += 4.0; // one phoneme 100 ms longer
+    let total: usize = frames.iter().map(|&d| d as usize).sum();
+    let f0: Vec<f32> =
+        (0..total * 2).map(|j| if j < pred.f0.len() && pred.f0[j] > 10.0 { pred.f0[j] * 1.1 } else { 0.0 }).collect();
+    let d = k
+        .synth_with(
+            &ids,
+            &style,
+            0.8,
+            PitchCtl::default(),
+            &Controls { dur_frames: frames.clone(), f0: f0.clone(), ..Default::default() },
+        )
+        .unwrap();
+    assert_eq!(d.durations, frames.iter().map(|&x| x as i64).collect::<Vec<_>>());
+    assert_eq!(d.f0, f0, "the pitch override reaches the decoder");
+
     // a whole segment: words, visemes, loudness
     let g2p = G2p::Fr(fr);
     let r = Renderer { kokoro: &k, g2p: &g2p, take_cache: None };
     let text = "« Oh ! » chuchota Lili. Le chat dort.";
-    let plan = plan_segment("fr", "s3", text, &mut Cast::default());
+    let plan = plan_segment("fr", "s3", text, &mut Cast::default(), &mut StoryContext::default());
     let seg = r.render_segment(&plan).unwrap();
     let dur = seg.audio.len() as f64 / SR as f64;
     assert_eq!(seg.words.len(), tokenize(text).len());

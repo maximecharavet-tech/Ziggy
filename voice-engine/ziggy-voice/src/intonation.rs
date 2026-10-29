@@ -124,21 +124,87 @@ fn low(tok: &str) -> String {
     core.replace('’', "'").to_lowercase()
 }
 
+/// The punctuation after a token's word (a lone « : » counts as its own).
 fn post(tok: &str) -> &str {
-    split_core(tok).2
+    if speakable(tok) {
+        split_core(tok).2
+    } else {
+        tok
+    }
 }
 
 const WH_FR: &[&str] = &[
-    "qui", "que", "quoi", "où", "quand", "comment", "pourquoi", "combien", "quel", "quelle", "quels", "quelles",
-    "lequel", "laquelle", "qu'est-ce", "d'où",
+    "qui",
+    "que",
+    "quoi",
+    "où",
+    "quand",
+    "comment",
+    "pourquoi",
+    "combien",
+    "quel",
+    "quelle",
+    "quels",
+    "quelles",
+    "lequel",
+    "laquelle",
+    "qu'est-ce",
+    "d'où",
 ];
 const WH_EN: &[&str] = &["who", "what", "where", "when", "why", "how", "which", "whose", "whom", "what's", "where's"];
 const IMPERATIVE: &[&str] = &[
-    "regarde", "regardez", "viens", "venez", "écoute", "écoutez", "dors", "ferme", "fermez", "respire", "respirez",
-    "attends", "attendez", "allons", "fais", "faites", "dis", "dites", "prends", "prenez", "va", "allez", "pense",
-    "pensez", "imagine", "souviens-toi", "tiens", "tiens-toi", "approche", "chut", "plante-la", "regardez-moi",
-    "asseyez-vous", "look", "come", "listen", "sleep", "close", "breathe", "wait", "let's", "go", "take", "think",
-    "imagine", "hold", "sit", "remember", "shh", "plant", "watch", "see",
+    "regarde",
+    "regardez",
+    "viens",
+    "venez",
+    "écoute",
+    "écoutez",
+    "dors",
+    "ferme",
+    "fermez",
+    "respire",
+    "respirez",
+    "attends",
+    "attendez",
+    "allons",
+    "fais",
+    "faites",
+    "dis",
+    "dites",
+    "prends",
+    "prenez",
+    "va",
+    "allez",
+    "pense",
+    "pensez",
+    "imagine",
+    "souviens-toi",
+    "tiens",
+    "tiens-toi",
+    "approche",
+    "chut",
+    "plante-la",
+    "regardez-moi",
+    "asseyez-vous",
+    "look",
+    "come",
+    "listen",
+    "sleep",
+    "close",
+    "breathe",
+    "wait",
+    "let's",
+    "go",
+    "take",
+    "think",
+    "imagine",
+    "hold",
+    "sit",
+    "remember",
+    "shh",
+    "plant",
+    "watch",
+    "see",
 ];
 const ONOMATOPOEIA: &[&str] = &[
     "plic", "ploc", "plouf", "boing", "cling", "clink", "ding", "dong", "splash", "boum", "boom", "toc", "tic", "tac",
@@ -148,15 +214,63 @@ const ONOMATOPOEIA: &[&str] = &[
     "gri", "glouglou", "tchou", "toot", "whoosh", "swoosh", "ploup", "pouf", "paf", "pif",
 ];
 const INTENSIFIERS: &[&str] = &[
-    "très", "tellement", "trop", "vraiment", "super", "si", "tout", "toute", "toutes", "tant", "plein", "so", "very",
-    "really", "too", "such", "super", "all",
+    "très",
+    "tellement",
+    "trop",
+    "vraiment",
+    "super",
+    "si",
+    "tout",
+    "toute",
+    "toutes",
+    "tant",
+    "plein",
+    "so",
+    "very",
+    "really",
+    "too",
+    "such",
+    "super",
+    "all",
 ];
-const NOT_AFTER_SI: &[&str] =
-    &["je", "j'", "tu", "il", "elle", "on", "nous", "vous", "ils", "elles", "le", "la", "les", "l'", "un", "une", "c'est"];
+const NOT_AFTER_SI: &[&str] = &[
+    "je", "j'", "tu", "il", "elle", "on", "nous", "vous", "ils", "elles", "le", "la", "les", "l'", "un", "une", "c'est",
+];
 const NUMBERS: &[&str] = &[
-    "deux", "trois", "quatre", "cinq", "six", "sept", "huit", "neuf", "dix", "douze", "vingt", "cent", "cents", "mille",
-    "million", "millions", "two", "three", "four", "five", "six", "seven", "eight", "nine", "ten", "twelve", "twenty",
-    "hundred", "thousand", "million", "millions", "premier", "première", "first",
+    "deux",
+    "trois",
+    "quatre",
+    "cinq",
+    "six",
+    "sept",
+    "huit",
+    "neuf",
+    "dix",
+    "douze",
+    "vingt",
+    "cent",
+    "cents",
+    "mille",
+    "million",
+    "millions",
+    "two",
+    "three",
+    "four",
+    "five",
+    "six",
+    "seven",
+    "eight",
+    "nine",
+    "ten",
+    "twelve",
+    "twenty",
+    "hundred",
+    "thousand",
+    "million",
+    "millions",
+    "premier",
+    "première",
+    "first",
 ];
 const CONTRAST: &[&str] = &["mais", "pourtant", "cependant", "but", "however", "yet"];
 /// Words before which a long phrase splits (clauses).
@@ -167,10 +281,103 @@ const CLAUSE_START: &[&str] = &[
 ];
 const RELATIVES: &[&str] = &["qui", "que", "qu'", "dont", "où", "who", "which", "that", "where", "whose"];
 const LIST_LAST: &[&str] = &["et", "ou", "ni", "and", "or", "nor"];
-const PREPOSITIONS: &[&str] = &[
-    "dans", "sur", "sous", "avec", "pour", "vers", "chez", "contre", "derrière", "devant", "entre", "par", "près",
-    "in", "on", "under", "with", "for", "towards", "behind", "between", "into", "over", "through", "across", "near",
+/// Words that open a noun phrase: list items look alike.
+const DETERMINERS: &[&str] = &[
+    "le", "la", "les", "un", "une", "des", "du", "de", "ses", "sa", "son", "mes", "ma", "mon", "tes", "ta", "ton",
+    "leur", "leurs", "nos", "vos", "notre", "votre", "ce", "cet", "cette", "ces", "deux", "trois", "quelques", "a",
+    "an", "the", "his", "her", "their", "my", "your", "our", "its", "some", "two", "three", "this", "that", "these",
+    "those",
 ];
+/// Fixed pairs that are not lists ("safe and sound").
+const PAIRS: &[(&str, &str)] =
+    &[("nice", "warm"), ("safe", "sound"), ("sain", "sauf"), ("peu", "peu"), ("little", "little"), ("bien", "bien")];
+const PREPOSITIONS: &[&str] = &[
+    "dans",
+    "sur",
+    "sous",
+    "avec",
+    "pour",
+    "vers",
+    "chez",
+    "contre",
+    "derrière",
+    "devant",
+    "entre",
+    "par",
+    "près",
+    "in",
+    "on",
+    "under",
+    "with",
+    "for",
+    "towards",
+    "behind",
+    "between",
+    "into",
+    "over",
+    "through",
+    "across",
+    "near",
+];
+/// Frequent words that are never a story's key word.
+const NOT_KEY: &[&str] = &[
+    "quand",
+    "comme",
+    "alors",
+    "aussi",
+    "encore",
+    "toujours",
+    "jamais",
+    "chaque",
+    "quelque",
+    "parce",
+    "pendant",
+    "était",
+    "avait",
+    "étaient",
+    "avaient",
+    "sommes",
+    "êtes",
+    "peut",
+    "faire",
+    "fait",
+    "faites",
+    "petit",
+    "petite",
+    "petits",
+    "petites",
+    "grand",
+    "grande",
+    "beaux",
+    "belles",
+    "belle",
+    "plus",
+    "moins",
+    "tellement",
+    "every",
+    "always",
+    "never",
+    "there",
+    "their",
+    "about",
+    "would",
+    "could",
+    "should",
+    "because",
+    "while",
+    "little",
+    "great",
+    "really",
+    "after",
+    "before",
+    "where",
+    "which",
+    "these",
+    "those",
+    "other",
+    "things",
+];
+
 pub const FUNCTION_WORDS: &[&str] = &[
     "le", "la", "les", "l'", "un", "une", "des", "du", "de", "d'", "au", "aux", "à", "et", "ou", "mais", "ce", "cet",
     "cette", "ces", "son", "sa", "ses", "mon", "ma", "mes", "ton", "ta", "tes", "leur", "leurs", "notre", "votre",
@@ -178,43 +385,237 @@ pub const FUNCTION_WORDS: &[&str] = &[
     "y", "en", "ne", "n'", "pas", "que", "qu'", "qui", "dont", "où", "si", "est", "sont", "a", "ont", "c'est", "dans",
     "sur", "sous", "avec", "pour", "par", "the", "a", "an", "of", "to", "in", "on", "at", "and", "or", "but", "is",
     "are", "was", "were", "be", "it", "its", "he", "she", "they", "we", "you", "i", "his", "her", "their", "my",
-    "your", "our", "this", "that", "with", "for", "from", "by", "as", "not", "do", "did", "does", "has", "had",
-    "have", "him", "them", "me", "us", "so", "very", "too",
+    "your", "our", "this", "that", "with", "for", "from", "by", "as", "not", "do", "did", "does", "has", "had", "have",
+    "him", "them", "me", "us", "so", "very", "too",
 ];
 
 const JOY: &[&str] = &[
-    "rit", "riait", "rire", "rires", "joie", "joyeux", "joyeuse", "content", "contente", "contents", "heureux",
-    "heureuse", "sourire", "sourit", "souriait", "bravo", "youpi", "hourra", "fête", "dansa", "dansaient", "danse",
-    "chanta", "chantait", "jouer", "jouaient", "amusant", "génial", "laughed", "laugh", "laughing", "giggled", "joy",
-    "happy", "glad", "smiled", "smile", "smiling", "hooray", "party", "danced", "sang", "played", "fun", "great",
+    "rit",
+    "riait",
+    "rire",
+    "rires",
+    "joie",
+    "joyeux",
+    "joyeuse",
+    "content",
+    "contente",
+    "contents",
+    "heureux",
+    "heureuse",
+    "sourire",
+    "sourit",
+    "souriait",
+    "bravo",
+    "youpi",
+    "hourra",
+    "fête",
+    "dansa",
+    "dansaient",
+    "danse",
+    "chanta",
+    "chantait",
+    "jouer",
+    "jouaient",
+    "amusant",
+    "génial",
+    "laughed",
+    "laugh",
+    "laughing",
+    "giggled",
+    "joy",
+    "happy",
+    "glad",
+    "smiled",
+    "smile",
+    "smiling",
+    "hooray",
+    "party",
+    "danced",
+    "sang",
+    "played",
+    "fun",
+    "great",
 ];
 const WONDER: &[&str] = &[
-    "waouh", "oh", "magnifique", "merveilleux", "merveilleuse", "magique", "brillait", "brillaient", "brille",
-    "scintillait", "scintillaient", "étoiles", "étoile", "incroyable", "extraordinaire", "mystère", "mystères",
-    "secret", "secrets", "émerveillé", "émerveillée", "lumière", "arc-en-ciel", "wow", "wonderful", "amazing",
-    "magic", "magical", "sparkled", "sparkling", "shone", "shining", "glowed", "stars", "star", "beautiful",
-    "mystery", "mysteries", "secret", "secrets", "rainbow", "marvel", "incredible",
+    "waouh",
+    "oh",
+    "magnifique",
+    "merveilleux",
+    "merveilleuse",
+    "magique",
+    "brillait",
+    "brillaient",
+    "brille",
+    "scintillait",
+    "scintillaient",
+    "étoiles",
+    "étoile",
+    "incroyable",
+    "extraordinaire",
+    "mystère",
+    "mystères",
+    "secret",
+    "secrets",
+    "émerveillé",
+    "émerveillée",
+    "lumière",
+    "arc-en-ciel",
+    "wow",
+    "wonderful",
+    "amazing",
+    "magic",
+    "magical",
+    "sparkled",
+    "sparkling",
+    "shone",
+    "shining",
+    "glowed",
+    "stars",
+    "star",
+    "beautiful",
+    "mystery",
+    "mysteries",
+    "secret",
+    "secrets",
+    "rainbow",
+    "marvel",
+    "incredible",
 ];
 const TENDER: &[&str] = &[
-    "doux", "douce", "doucement", "câlin", "câlins", "tendre", "tendrement", "bisou", "bisous", "gentil", "gentille",
-    "gentillesse", "gentillesses", "cœur", "aime", "aimait", "amour", "amis", "ami", "amie", "serra", "blottit",
-    "caresse", "consoler", "merci", "soft", "softly", "gently", "gentle", "hug", "hugged", "kind", "kindness",
-    "kindnesses", "love", "loved", "heart", "friend", "friends", "cuddled", "snuggled", "thank", "thanks",
+    "doux",
+    "douce",
+    "doucement",
+    "câlin",
+    "câlins",
+    "tendre",
+    "tendrement",
+    "bisou",
+    "bisous",
+    "gentil",
+    "gentille",
+    "gentillesse",
+    "gentillesses",
+    "cœur",
+    "aime",
+    "aimait",
+    "amour",
+    "amis",
+    "ami",
+    "amie",
+    "serra",
+    "blottit",
+    "caresse",
+    "consoler",
+    "merci",
+    "soft",
+    "softly",
+    "gently",
+    "gentle",
+    "hug",
+    "hugged",
+    "kind",
+    "kindness",
+    "kindnesses",
+    "love",
+    "loved",
+    "heart",
+    "friend",
+    "friends",
+    "cuddled",
+    "snuggled",
+    "thank",
+    "thanks",
 ];
 const WORRY: &[&str] = &[
-    "peur", "inquiet", "inquiète", "seul", "seule", "perdu", "perdue", "pleurait", "pleure", "larme", "larmes",
-    "cassé", "cassée", "fatigué", "fatiguée", "soif", "fâché", "fâchée", "fâchait", "colère", "triste", "tremblait",
-    "afraid", "scared", "worried", "alone", "lost", "cried", "crying", "tear", "tears", "broken", "tired", "thirsty",
-    "angry", "cross", "sad", "trembled", "shaking", "sighed",
+    "peur",
+    "inquiet",
+    "inquiète",
+    "seul",
+    "seule",
+    "perdu",
+    "perdue",
+    "pleurait",
+    "pleure",
+    "larme",
+    "larmes",
+    "cassé",
+    "cassée",
+    "fatigué",
+    "fatiguée",
+    "soif",
+    "fâché",
+    "fâchée",
+    "fâchait",
+    "colère",
+    "triste",
+    "tremblait",
+    "afraid",
+    "scared",
+    "worried",
+    "alone",
+    "lost",
+    "cried",
+    "crying",
+    "tear",
+    "tears",
+    "broken",
+    "tired",
+    "thirsty",
+    "angry",
+    "cross",
+    "sad",
+    "trembled",
+    "shaking",
+    "sighed",
 ];
 const CALM: &[&str] = &[
-    "calme", "paisible", "silence", "tranquille", "lentement", "respira", "respire", "respirer", "souffle", "vagues",
-    "calm", "peaceful", "quiet", "quietly", "slowly", "breathed", "breathe", "breath", "waves", "still",
+    "calme",
+    "paisible",
+    "silence",
+    "tranquille",
+    "lentement",
+    "respira",
+    "respire",
+    "respirer",
+    "souffle",
+    "vagues",
+    "calm",
+    "peaceful",
+    "quiet",
+    "quietly",
+    "slowly",
+    "breathed",
+    "breathe",
+    "breath",
+    "waves",
+    "still",
 ];
 const SLEEPY: &[&str] = &[
-    "dormir", "dort", "dormait", "endormit", "endormi", "endormie", "sommeil", "bâilla", "bâillant", "bâiller",
-    "rêves", "rêve", "rêver", "couette", "dodo", "sleep", "sleeping", "asleep", "slept", "yawn", "yawned", "yawning",
-    "dream", "dreams", "duvet",
+    "dormir",
+    "dort",
+    "dormait",
+    "endormit",
+    "endormi",
+    "endormie",
+    "sommeil",
+    "bâilla",
+    "bâillant",
+    "bâiller",
+    "rêves",
+    "rêve",
+    "rêver",
+    "couette",
+    "dodo",
+    "sleep",
+    "sleeping",
+    "asleep",
+    "slept",
+    "yawn",
+    "yawned",
+    "yawning",
+    "dream",
+    "dreams",
+    "duvet",
 ];
 /// Bedtime words that only make a sentence sleepy at the end of a scene.
 const SLEEPY_SOFT: &[&str] =
@@ -236,7 +637,9 @@ pub fn is_onomatopoeia(tok: &str) -> bool {
     }
     // a hyphenated echo (« toc-toc », « Hou-lou-lou »)
     let parts: Vec<&str> = w.split('-').collect();
-    parts.len() >= 2 && parts.iter().all(|p| ONOMATOPOEIA.contains(p) || p.len() <= 4) && parts.windows(2).any(|p| p[0].ends_with(&p[1][p[1].len().saturating_sub(2)..]))
+    parts.len() >= 2
+        && parts.iter().all(|p| ONOMATOPOEIA.contains(p) || p.len() <= 4)
+        && parts.windows(2).any(|p| p[0].ends_with(&p[1][p[1].len().saturating_sub(2)..]))
 }
 
 fn is_function(w: &str) -> bool {
@@ -250,7 +653,9 @@ pub fn sentence_kind(locale: &str, toks: &[String]) -> Kind {
         .iter()
         .rev()
         .find_map(|t| t.trim_end_matches(['»', '”', '"', '’']).chars().last().filter(|c| ".!?…".contains(*c)));
-    if !words.is_empty() && words.iter().filter(|w| ONOMATOPOEIA.contains(&w.as_str()) || is_onomatopoeia(w)).count() * 2 >= words.len() {
+    if !words.is_empty()
+        && words.iter().filter(|w| ONOMATOPOEIA.contains(&w.as_str()) || is_onomatopoeia(w)).count() * 2 >= words.len()
+    {
         return Kind::Onomatopoeia;
     }
     match last_mark {
@@ -311,9 +716,12 @@ pub fn emotion(toks: &[String], landing: bool) -> Emotion {
     let words: Vec<String> = toks.iter().filter(|t| speakable(t)).map(|t| low(t)).collect();
     // « pas triste », "not sad": a negated word does not count
     let negated = |k: usize| {
-        words[k.saturating_sub(2)..k].iter().any(|w| ["pas", "plus", "jamais", "not", "never", "no"].contains(&w.as_str()) || w.ends_with("n't"))
+        words[k.saturating_sub(2)..k]
+            .iter()
+            .any(|w| ["pas", "plus", "jamais", "not", "never", "no"].contains(&w.as_str()) || w.ends_with("n't"))
     };
-    let count = |lex: &[&str]| words.iter().enumerate().filter(|(k, w)| lex.contains(&w.as_str()) && !negated(*k)).count();
+    let count =
+        |lex: &[&str]| words.iter().enumerate().filter(|(k, w)| lex.contains(&w.as_str()) && !negated(*k)).count();
     let sleepy = count(SLEEPY) + if landing { count(SLEEPY_SOFT) } else { 0 };
     // first wins on a tie: the feelings a bedtime story leans on
     let scores = [
@@ -355,7 +763,8 @@ pub fn phrases(toks: &[String]) -> Vec<Phrase> {
         // before a clause word / relative in a long stretch
         if k > start && k + 1 < n {
             let w = low(&toks[k]);
-            let clause = CLAUSE_START.contains(&w.as_str()) || (RELATIVES.contains(&w.as_str()) && !is_function(&low(&toks[k - 1])));
+            let clause = CLAUSE_START.contains(&w.as_str())
+                || (RELATIVES.contains(&w.as_str()) && !is_function(&low(&toks[k - 1])));
             if clause && words_between(start, k) >= 4 && words_between(k, n) >= 4 {
                 cuts.push(k);
                 start = k;
@@ -385,7 +794,8 @@ pub fn phrases(toks: &[String]) -> Vec<Phrase> {
         last.boundary = Boundary::Final;
     }
     // lists: ≥ 2 short comma groups then a group opened by et/ou/and/or
-    let first_word = |p: &Phrase| (p.start..p.end).find(|&k| speakable(&toks[k])).map(|k| low(&toks[k])).unwrap_or_default();
+    let first_word =
+        |p: &Phrase| (p.start..p.end).find(|&k| speakable(&toks[k])).map(|k| low(&toks[k])).unwrap_or_default();
     let short = |p: &Phrase| words_between(p.start, p.end) <= 6;
     let mut i = 0;
     while i < out.len() {
@@ -406,10 +816,26 @@ pub fn phrases(toks: &[String]) -> Vec<Phrase> {
             continue;
         }
         // "des coquelicots, des marguerites et des boutons d’or": cut "B et C"
+        // (with a single group before, B and C must look like list items:
+        // « D’habitude, Tilou était gentil et tranquille » is no list)
         if j > i && j < out.len() && short(&out[j]) {
             let inner = (out[j].start + 1..out[j].end).find(|&k| LIST_LAST.contains(&low(&toks[k]).as_str()));
             if let Some(k) = inner {
-                if words_between(k, out[j].end) >= 2 {
+                let (b, c) = (spoken(&toks[out[j].start..k]), spoken(&toks[k + 1..out[j].end]));
+                let det = |w: &str| {
+                    DETERMINERS.contains(&w) || w.starts_with("l’") || w.starts_with("l'") || w.starts_with("d’")
+                };
+                let alike = match (b.first(), c.first()) {
+                    (Some(x), Some(y)) => {
+                        let fixed =
+                            b.len() == 1 && c.len() == 1 && (x == y || PAIRS.contains(&(x.as_str(), y.as_str())));
+                        !fixed
+                            && ((b.len() <= 2 && c.len() <= 2 && !det(x) && !det(y))
+                                || (b.len() <= 3 && c.len() <= 3 && det(x) && det(y)))
+                    }
+                    _ => false,
+                };
+                if words_between(k, out[j].end) >= 2 && (j - i >= 2 || alike) {
                     let end = out[j].end;
                     let b = out[j].boundary;
                     out[j].end = k;
@@ -428,8 +854,19 @@ pub fn phrases(toks: &[String]) -> Vec<Phrase> {
     out
 }
 
+/// The spoken words of a stretch, lowercased.
+fn spoken(toks: &[String]) -> Vec<String> {
+    toks.iter().filter(|t| speakable(t)).map(|t| low(t)).collect()
+}
+
 /// Words to bring out, at most one per phrase and two per piece.
-pub fn focus(locale: &str, toks: &[String], phrases: &[Phrase], ctx: &mut StoryContext, kind: Kind) -> Vec<(usize, Focus)> {
+pub fn focus(
+    locale: &str,
+    toks: &[String],
+    phrases: &[Phrase],
+    ctx: &mut StoryContext,
+    kind: Kind,
+) -> Vec<(usize, Focus)> {
     let _ = locale;
     let mut cands: Vec<(usize, Focus)> = Vec::new();
     // Title Case ("The Little Cloud Who…"): capitals say nothing about names
@@ -512,7 +949,12 @@ pub fn focus(locale: &str, toks: &[String], phrases: &[Phrase], ctx: &mut StoryC
 /// The story's key words: content words of the moral (the outro's first
 /// sentence) that also appear in the title or at least twice in the scenes.
 pub fn key_words(title: &str, scenes: &[&str], moral: &str) -> HashSet<String> {
-    let words = |s: &str| -> Vec<String> { s.split_whitespace().map(low).filter(|w| w.chars().count() >= 5 && !is_function(w)).collect() };
+    let words = |s: &str| -> Vec<String> {
+        s.split_whitespace()
+            .map(low)
+            .filter(|w| w.chars().count() >= 5 && !is_function(w) && !NOT_KEY.contains(&w.as_str()))
+            .collect()
+    };
     let first_sentence = moral.split(['.', '!', '?']).next().unwrap_or(moral);
     let title_words: HashSet<String> = words(title).into_iter().collect();
     let mut out = HashSet::new();
@@ -553,11 +995,20 @@ pub fn analyse(p: &PieceInfo, ctx: &mut StoryContext) -> Intonation {
     }
     let fo = if p.tag { Vec::new() } else { focus(p.locale, p.toks, &ph, ctx, kind) };
     let emo = emotion(p.sentence, p.landing);
-    let breath_after = (!p.tag)
-        .then(|| p.toks.iter().position(|t| speakable(t)))
-        .flatten()
-        .filter(|&k| CONTRAST.contains(&low(&p.toks[k]).as_str()) && post(&p.toks[k]).is_empty() && k + 1 < p.toks.len());
-    Intonation { kind, phrases: ph, focus: fo, emotion: emo, continues: p.continues, landing: p.landing, tag: p.tag, whisper: p.whisper, breath_after }
+    let breath_after = (!p.tag).then(|| p.toks.iter().position(|t| speakable(t))).flatten().filter(|&k| {
+        CONTRAST.contains(&low(&p.toks[k]).as_str()) && post(&p.toks[k]).is_empty() && k + 1 < p.toks.len()
+    });
+    Intonation {
+        kind,
+        phrases: ph,
+        focus: fo,
+        emotion: emo,
+        continues: p.continues,
+        landing: p.landing,
+        tag: p.tag,
+        whisper: p.whisper,
+        breath_after,
+    }
 }
 
 /// Is the token a content word (for accents)?
@@ -611,7 +1062,23 @@ mod tests {
         assert_eq!(b[2].0, "et des boutons d’or.");
         let b = bounds("Il avait abrité des écureuils, des hiboux, des enfants et des chats.");
         assert_eq!(b.iter().filter(|x| x.1 == Boundary::ListItem).count(), 3, "{b:?}");
+        let b = bounds("Tout était grand, bleu et salé !");
+        assert_eq!(b.iter().filter(|x| x.1 == Boundary::ListItem).count(), 2, "{b:?}");
+        // an opening adverbial, a pair or a fixed phrase is no list
+        for s in [
+            "D’habitude, Tilou était gentil et tranquille.",
+            "Là-haut, l’air était frais et doux.",
+            "One day, Amina and Malik came running up.",
+            "All the boats were home, safe and sound.",
+            "The sun rose and set, again and again.",
+        ] {
+            let b = bounds(s);
+            assert!(b.iter().all(|x| x.1 != Boundary::ListItem), "{b:?}");
+        }
         // a clause word cuts a long stretch
+        // French spacing: a lone « : » ends a phrase too
+        let b = bounds("Ses amis ne la quittaient jamais : Mauve, un bébé dragon, et Pousse, un robot.");
+        assert_eq!(b[0].0, "Ses amis ne la quittaient jamais :", "{b:?}");
         let b = bounds("Mauve battit de ses petites ailes et Pousse fit clignoter son sourire bleu.");
         assert_eq!(b.len(), 2, "{b:?}");
         assert!(b[1].0.starts_with("et Pousse"));

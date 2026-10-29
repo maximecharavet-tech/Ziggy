@@ -416,9 +416,8 @@ pub fn prune(model: &[u8], outputs: &[&str]) -> Result<Vec<u8>> {
     let mut g = Vec::with_capacity(graph.payload.len());
     let mut found = 0;
     for (k, f) in gf.iter().enumerate() {
-        let named = |num: u32| -> Result<Option<String>> {
-            Ok(get_str(f.payload, num)?.first().map(|s| s.to_string()))
-        };
+        let named =
+            |num: u32| -> Result<Option<String>> { Ok(get_str(f.payload, num)?.first().map(|s| s.to_string())) };
         let take = match f.num {
             1 => keep[k],
             5 => named(8)?.is_some_and(|n| needed.contains(&n)), // initializer (TensorProto.name = 8)

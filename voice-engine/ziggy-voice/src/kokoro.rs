@@ -438,7 +438,14 @@ pub struct Prediction {
 
 type Feeds = Vec<(std::borrow::Cow<'static, str>, ort::session::SessionInputValue<'static>)>;
 
-fn feeds(ids: &[i64], style: &[f32; STYLE_DIM], speed: f32, pitch: PitchCtl, ctl: &Controls, full: bool) -> Result<Feeds> {
+fn feeds(
+    ids: &[i64],
+    style: &[f32; STYLE_DIM],
+    speed: f32,
+    pitch: PitchCtl,
+    ctl: &Controls,
+    full: bool,
+) -> Result<Feeds> {
     if ids.is_empty() || ids.len() > MAX_TOKENS - 2 {
         bail!("utterance of {} tokens", ids.len());
     }

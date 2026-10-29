@@ -67,6 +67,13 @@ enum Cmd {
         locale: String,
         words: Vec<String>,
     },
+    /// Debug: the planner's view of the pieces of one segment.
+    Explain {
+        #[arg(long, default_value = "fr")]
+        locale: String,
+        /// story:segment
+        seg: String,
+    },
     /// Pitch track of an audio file (Harvest, 5 ms, Hz; 0 = unvoiced) as JSON.
     Pitch { file: String },
     /// Measure how the published voice realises the reading (contours, smoothness).
@@ -96,9 +103,13 @@ enum Cmd {
         /// Story ids, comma-separated (default: all).
         #[arg(long, default_value = "")]
         story: String,
-        /// Keep stories whose timing.json (v2, same texts) is complete.
+        /// Re-render stories even when they are already at this recipe with
+        /// the same texts (by default they are skipped: runs are resumable).
         #[arg(long)]
-        skip_existing: bool,
+        force: bool,
+        /// Append one line per finished story to this file.
+        #[arg(long)]
+        progress: Option<String>,
         /// ONNX Runtime threads.
         #[arg(long, default_value_t = 3)]
         threads: usize,
@@ -134,7 +145,7 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.cmd {
         Cmd::Prepare => prepare::prepare(&Cache::new()),
-        Cmd::Generate { locale, story, skip_existing, threads, jobs, stories_json, sample, out, check } => {
+        Cmd::Generate { locale, story, force, progress, threads, jobs, stories_json, sample, out, check } => {
             let sample_out = if sample.is_some() {
                 Some(std::path::PathBuf::from(out.clone().ok_or_else(|| anyhow::anyhow!("--sample needs --out"))?))
             } else {
@@ -146,7 +157,8 @@ fn main() -> Result<()> {
                 out: out.map(std::path::PathBuf::from).unwrap_or_else(ziggy_voice::paths::voice_out),
                 threads,
                 jobs,
-                skip_existing,
+                force,
+                progress: progress.map(std::path::PathBuf::from),
                 stories_json: stories_json.map(std::path::PathBuf::from),
                 sample,
                 sample_out,
@@ -280,18 +292,51 @@ fn main() -> Result<()> {
             }
             Ok(())
         }
+        Cmd::Explain { locale, seg } => {
+            let (sid, segid) = seg.split_once(':').ok_or_else(|| anyhow::anyhow!("story:segment"))?;
+            let cache = Cache::new();
+            let es = ziggy_voice::espeak::Espeak::load(&cache.espeak_lib(), &cache.espeak_data())?;
+            let lex = ziggy_voice::stories::lexicon()?;
+            let g2p = if locale == "fr" {
+                ziggy_voice::render::G2p::Fr(ziggy_voice::g2p_fr::FrenchG2P::new(&es, lex["fr"].clone()))
+            } else {
+                ziggy_voice::render::G2p::En(ziggy_voice::g2p_en::EnglishG2P::new(
+                    &es,
+                    &cache.misaki(),
+                    lex["en"].clone(),
+                )?)
+            };
+            let k = kokoro::Kokoro::new(&cache, 4)?;
+            let r = ziggy_voice::render::Renderer { kokoro: &k, g2p: &g2p, take_cache: None };
+            let st = ziggy_voice::stories::load(None)?
+                .into_iter()
+                .find(|s| s.id == sid)
+                .ok_or_else(|| anyhow::anyhow!("no story"))?;
+            let plan = ziggy_voice::prosody::plan_story(&locale, &st)
+                .into_iter()
+                .find(|p| p.id == segid)
+                .ok_or_else(|| anyhow::anyhow!("no segment"))?;
+            for piece in &plan.pieces {
+                println!("── {}", plan.tokens[piece.start..piece.end].join(" "));
+                print!("{}", r.explain_piece(&plan.tokens, piece)?);
+            }
+            Ok(())
+        }
         Cmd::Pitch { file } => {
             let y = ziggy_voice::lab::decode(std::path::Path::new(&file), kokoro::SR)?;
             let yd: Vec<f64> = y.iter().map(|&v| v as f64).collect();
-            let f0: Vec<f64> = ziggy_voice::world::harvest(&yd, kokoro::SR).iter().map(|v| (v * 10.0).round() / 10.0).collect();
+            let f0: Vec<f64> =
+                ziggy_voice::world::harvest(&yd, kokoro::SR).iter().map(|v| (v * 10.0).round() / 10.0).collect();
             println!("{}", serde_json::to_string(&f0)?);
             Ok(())
         }
         Cmd::CheckProsody { dir, locale, story, json } => {
             let dir = dir.map(std::path::PathBuf::from).unwrap_or_else(ziggy_voice::paths::voice_out);
             let want: Vec<&str> = story.split(',').filter(|s| !s.is_empty()).collect();
-            let stories: Vec<ziggy_voice::stories::Story> =
-                ziggy_voice::stories::load(None)?.into_iter().filter(|s| want.is_empty() || want.contains(&s.id.as_str())).collect();
+            let stories: Vec<ziggy_voice::stories::Story> = ziggy_voice::stories::load(None)?
+                .into_iter()
+                .filter(|s| want.is_empty() || want.contains(&s.id.as_str()))
+                .collect();
             let locales: Vec<String> = locale.split(',').map(str::to_string).collect();
             let rep = ziggy_voice::prosody_check::check(&dir, &stories, &locales)?;
             if json {

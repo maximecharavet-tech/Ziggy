@@ -260,19 +260,34 @@ pub fn probe(k: &Kokoro, ps: &str, voice: &str, speed: f32, out: &Path) -> Resul
     let same = Controls { dur_frames: frames.clone(), f0: p.f0.clone(), n: p.n.clone(), ..Default::default() };
     let b = k.synth_with(&ids, &style, speed, PitchCtl::default(), &same)?;
     let diff = a.audio.iter().zip(&b.audio).map(|(x, y)| (x - y).abs()).fold(0f32, f32::max);
-    println!("identity round trip: len {} vs {}, max |diff| {diff:.2e}, durations equal {}", a.audio.len(), b.audio.len(), a.durations == b.durations);
+    println!(
+        "identity round trip: len {} vs {}, max |diff| {diff:.2e}, durations equal {}",
+        a.audio.len(),
+        b.audio.len(),
+        a.durations == b.durations
+    );
     let n_stats = |v: &[f32]| {
         let mut s = v.to_vec();
         s.sort_by(|x, y| x.partial_cmp(y).unwrap());
         (s[0], s[s.len() / 2], s[s.len() - 1])
     };
-    println!("n_pred min/median/max {:?}  f0 voiced frames {}", n_stats(&p.n), p.f0.iter().filter(|&&f| f > 10.0).count());
+    println!(
+        "n_pred min/median/max {:?}  f0 voiced frames {}",
+        n_stats(&p.n),
+        p.f0.iter().filter(|&&f| f > 10.0).count()
+    );
     let rms = |x: &[f32]| 10.0 * (x.iter().map(|v| (*v as f64).powi(2)).sum::<f64>() / x.len() as f64).log10();
     for d in [-1.5f32, -1.0, -0.5, 0.5, 1.0] {
         let ctl = Controls { dur_frames: frames.clone(), n: p.n.iter().map(|v| v + d).collect(), ..Default::default() };
         let y = k.synth_with(&ids, &style, speed, PitchCtl::default(), &ctl)?;
         let m = crate::analysis::measure(&y.audio, SR);
-        println!("N {d:+.1}: level {:+.2} dB  hnrLo {:.1} hnrHi {:.1} flat {:.3}", rms(&y.audio) - rms(&a.audio), m.hnr_low_db, m.hnr_high_db, m.flatness);
+        println!(
+            "N {d:+.1}: level {:+.2} dB  hnrLo {:.1} hnrHi {:.1} flat {:.3}",
+            rms(&y.audio) - rms(&a.audio),
+            m.hnr_low_db,
+            m.hnr_high_db,
+            m.flatness
+        );
         write_wav(&out.join(format!("n{d:+.1}.wav")), &y.audio, SR)?;
     }
     // pitch override: the model's curve +3 semitones on voiced frames
@@ -281,7 +296,14 @@ pub fn probe(k: &Kokoro, ps: &str, voice: &str, speed: f32, out: &Path) -> Resul
     let y = k.synth_with(&ids, &style, speed, PitchCtl::default(), &ctl)?;
     let ma = crate::analysis::measure(&a.audio, SR);
     let my = crate::analysis::measure(&y.audio, SR);
-    println!("F0 override +3 st: median {:.0} → {:.0} Hz (×{:.3}); jitter {:.2} → {:.2}", ma.f0_median, my.f0_median, my.f0_median / ma.f0_median, ma.jitter_pct, my.jitter_pct);
+    println!(
+        "F0 override +3 st: median {:.0} → {:.0} Hz (×{:.3}); jitter {:.2} → {:.2}",
+        ma.f0_median,
+        my.f0_median,
+        my.f0_median / ma.f0_median,
+        ma.jitter_pct,
+        my.jitter_pct
+    );
     // durations ×1.3 on every token
     let ctl = Controls { dur_scale: vec![1.3; ids.len() + 2], ..Default::default() };
     let q = k.predict(&ids, &style, speed, &ctl.dur_scale)?;
@@ -294,7 +316,14 @@ pub fn probe(k: &Kokoro, ps: &str, voice: &str, speed: f32, out: &Path) -> Resul
 /// Colour drift: the same words with the style rows of utterances of
 /// different lengths, timbre length-indexed (v2) or fixed (v3). Returns the
 /// spread (dB) of the long-term spectral shape across renders.
-pub fn drift(k: &Kokoro, ps: &str, blend: &Blend, speed: f32, rows: &[usize], fixed: Option<usize>) -> Result<(f64, f64)> {
+pub fn drift(
+    k: &Kokoro,
+    ps: &str,
+    blend: &Blend,
+    speed: f32,
+    rows: &[usize],
+    fixed: Option<usize>,
+) -> Result<(f64, f64)> {
     let (ids, _, _) = encode(ps);
     let mut shapes: Vec<Vec<f64>> = Vec::new();
     let mut medians: Vec<f64> = Vec::new();

@@ -48,12 +48,30 @@ struct Seg {
 }
 
 impl Seg {
+    /// Voiced values between t0 and t1, in order, without stray blips: only
+    /// runs of at least 40 ms count (a word's span runs into the pause after
+    /// it, where the tracker may catch breath or noise).
     fn frames(&self, t0: f64, t1: f64) -> Vec<f64> {
         let (a, b) = ((t0 / 0.005).max(0.0) as usize, ((t1 / 0.005) as usize).min(self.st.len()));
         if a >= b {
             return vec![];
         }
-        self.st[a..b].iter().copied().filter(|v| v.is_finite()).collect()
+        let mut out = Vec::new();
+        let mut run: Vec<f64> = Vec::new();
+        for &v in &self.st[a..b] {
+            if v.is_finite() {
+                run.push(v);
+            } else {
+                if run.len() >= 8 {
+                    out.append(&mut run);
+                }
+                run.clear();
+            }
+        }
+        if run.len() >= 8 {
+            out.append(&mut run);
+        }
+        out
     }
 }
 
@@ -87,7 +105,28 @@ pub fn check(dir: &Path, stories: &[Story], locales: &[String]) -> Result<Report
                         let dur = s["dur"].as_f64().unwrap_or(0.0);
                         let y = crate::lab::decode(&tdir.join(format!("{}.mp3", p.id)), SR)?;
                         let yd: Vec<f64> = y.iter().map(|&v| v as f64).collect();
-                        let f0 = crate::world::harvest(&yd, SR);
+                        let mut f0 = crate::world::harvest(&yd, SR);
+                        // the tracker also "hears" a pitch in breath and in the
+                        // quiet tails of words: only frames with real voice count
+                        let hop = (SR as f64 * 0.005) as usize;
+                        let db: Vec<f64> = (0..f0.len())
+                            .map(|j| {
+                                let a = (j * hop).saturating_sub(hop);
+                                let b = ((j + 1) * hop + hop).min(yd.len());
+                                let e = yd[a.min(b)..b].iter().map(|x| x * x).sum::<f64>() / (b - a.min(b)).max(1) as f64;
+                                10.0 * (e + 1e-12).log10()
+                            })
+                            .collect();
+                        let loud = {
+                            let mut d = db.clone();
+                            d.sort_by(|a, b| a.partial_cmp(b).unwrap());
+                            d[d.len() * 95 / 100]
+                        };
+                        for (f, d) in f0.iter_mut().zip(&db) {
+                            if *d < loud - 25.0 {
+                                *f = 0.0;
+                            }
+                        }
                         let mut v: Vec<f64> = f0.iter().copied().filter(|&f| f > 0.0).collect();
                         v.sort_by(|a, b| a.partial_cmp(b).unwrap());
                         let med = v.get(v.len() / 2).copied().unwrap_or(200.0);
@@ -127,16 +166,21 @@ pub fn check(dir: &Path, stories: &[Story], locales: &[String]) -> Result<Report
                     let first = toks[0];
                     let last = *toks.last().unwrap();
                     let wmean = |k: usize| mean(&seg.frames(span(k).0, span(k).1));
-                    // the last syllable ≈ the last 40 % of the last word
+                    // the last syllable ≈ the last 40 % of the word's voiced sound
                     let tail = |k: usize| {
                         let (a, b) = span(k);
-                        mean(&seg.frames(a + 0.6 * (b - a), b))
+                        let v = seg.frames(a, b);
+                        let n = (v.len() * 2 / 5).max(4).min(v.len());
+                        mean(&v[v.len() - n..])
                     };
-                    let mut add = |name: &str, ok: bool, v: f64| rep.checks.entry(name.to_string()).or_default().add(ok, v);
+                    let mut add =
+                        |name: &str, ok: bool, v: f64| rep.checks.entry(name.to_string()).or_default().add(ok, v);
                     if !r.tag {
                         if let (Some(a), Some(b)) = (wmean(first), tail(last)) {
                             match r.kind {
-                                Kind::Declarative | Kind::Imperative if !r.continues => add("statement ends lower than it starts", b < a - 1.0, a - b),
+                                Kind::Declarative | Kind::Imperative if !r.continues => {
+                                    add("statement ends lower than it starts", b < a - 1.0, a - b)
+                                }
                                 Kind::YesNo => add("yes/no question ends higher than it starts", b > a + 1.0, b - a),
                                 Kind::Wh => add("wh-question starts higher than it ends", a > b + 1.0, a - b),
                                 _ => {}
@@ -145,7 +189,8 @@ pub fn check(dir: &Path, stories: &[Story], locales: &[String]) -> Result<Report
                     }
                     // list items rise
                     for ph in &r.phrases {
-                        let ws: Vec<usize> = (piece.start + ph.start..piece.start + ph.end).filter(|&k| spoken(k)).collect();
+                        let ws: Vec<usize> =
+                            (piece.start + ph.start..piece.start + ph.end).filter(|&k| spoken(k)).collect();
                         if ws.is_empty() {
                             continue;
                         }
@@ -154,7 +199,11 @@ pub fn check(dir: &Path, stories: &[Story], locales: &[String]) -> Result<Report
                                 add("list item ends higher than it starts", b > a + 0.5, b - a);
                             }
                         }
-                        if ph.boundary == Boundary::Continuation && !r.tag && ws.len() >= 2 && piece.start + ph.end < piece.end {
+                        if ph.boundary == Boundary::Continuation
+                            && !r.tag
+                            && ws.len() >= 2
+                            && piece.start + ph.end < piece.end
+                        {
                             if let (Some(a), Some(b)) = (wmean(*ws.last().unwrap()), wmean(ws[ws.len() - 2])) {
                                 add("continuation: phrase end not lower than before", a > b - 0.5, a - b);
                             }
@@ -188,7 +237,14 @@ pub fn check(dir: &Path, stories: &[Story], locales: &[String]) -> Result<Report
 
 pub fn print(rep: &Report) {
     for (k, t) in &rep.checks {
-        println!("{:<52} {:>4}/{:<4} ({:>5.1} %)  mean {:+.2} st", k, t.pass, t.n, 100.0 * t.pass as f64 / t.n.max(1) as f64, t.mean);
+        println!(
+            "{:<52} {:>4}/{:<4} ({:>5.1} %)  mean {:+.2} st",
+            k,
+            t.pass,
+            t.n,
+            100.0 * t.pass as f64 / t.n.max(1) as f64,
+            t.mean
+        );
     }
     println!(
         "pitch smoothness: p99 {:.2} st / 5 ms, max {:.1} st, jumps > 1 st: {:.1} per voiced minute ({:.1} voiced min)",

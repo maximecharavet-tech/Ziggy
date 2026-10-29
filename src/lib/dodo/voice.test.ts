@@ -44,9 +44,10 @@ describe('Ziggy recorded voice (public/dodo/voice)', () => {
         const path = file(`${base}/timing.json`);
         expect(existsSync(path), `${path} is missing — run voice-engine (ziggy-voice generate)`).toBe(true);
         const timing = JSON.parse(readFileSync(path, 'utf8')) as DodoVoiceTiming;
-        // v2 = the Rust voice engine (voice-engine/), with Ziggy's mouth timeline.
+        // v2 = the Rust voice engine (voice-engine/), with Ziggy's mouth timeline;
+        // "ziggy-v3" = its storyteller reading (intonation, emphasis, rhythm).
         expect(timing.v).toBe(2);
-        expect(timing.voice).toBe('ziggy-v2');
+        expect(timing.voice).toBe('ziggy-v3');
         expect(timing.locale).toBe(locale);
         expect(timing.story).toBe(story.id);
 

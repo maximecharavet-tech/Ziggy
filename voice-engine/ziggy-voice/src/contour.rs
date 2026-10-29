@@ -53,7 +53,8 @@ impl Layout {
     /// `starts`: per token, its first char in the phoneme string.
     pub fn new(kept: &[char], at: &[usize], starts: &[Option<usize>]) -> Self {
         let n = kept.len();
-        let first: Vec<Option<usize>> = starts.iter().map(|s| s.map(|c| at.get(c).copied().unwrap_or(n).min(n))).collect();
+        let first: Vec<Option<usize>> =
+            starts.iter().map(|s| s.map(|c| at.get(c).copied().unwrap_or(n).min(n))).collect();
         let mut words = vec![None; starts.len()];
         for (k, f) in first.iter().enumerate() {
             let Some(a) = *f else { continue };
@@ -115,7 +116,10 @@ impl Layout {
         if french {
             return nuc.last().copied();
         }
-        (a..b).find(|&i| self.units[i].c == 'ˈ').and_then(|s| nuc.iter().copied().find(|&v| v > s)).or(nuc.first().copied())
+        (a..b)
+            .find(|&i| self.units[i].c == 'ˈ')
+            .and_then(|s| nuc.iter().copied().find(|&v| v > s))
+            .or(nuc.first().copied())
     }
 
     /// Nucleus that carries emphasis (French: initial accent, the first one).
@@ -130,7 +134,10 @@ impl Layout {
 
     /// The last syllable of a token range: (onset start, nucleus, end).
     pub fn last_syllable(&self, toks: std::ops::Range<usize>) -> Option<(usize, usize, usize)> {
-        let k = toks.clone().rev().find(|&k| self.words.get(k).copied().flatten().is_some_and(|(a, b)| !self.nuclei(a, b).is_empty()))?;
+        let k = toks
+            .clone()
+            .rev()
+            .find(|&k| self.words.get(k).copied().flatten().is_some_and(|(a, b)| !self.nuclei(a, b).is_empty()))?;
         let (a, b) = self.words[k]?;
         let v = *self.nuclei(a, b).last()?;
         Some(self.syllable(a, b, v))
@@ -180,8 +187,11 @@ pub fn feeling_tempo(e: Emotion) -> f32 {
 
 fn clause_word(tok: &str) -> bool {
     let w = crate::text::split_core(tok).1.to_lowercase();
-    ["et", "mais", "car", "puis", "alors", "donc", "qui", "que", "qu’", "dont", "où", "quand", "parce", "and", "but", "so", "because", "when", "while", "who", "which", "that", "then"]
-        .contains(&w.as_str())
+    [
+        "et", "mais", "car", "puis", "alors", "donc", "qui", "que", "qu’", "dont", "où", "quand", "parce", "and",
+        "but", "so", "because", "when", "while", "who", "which", "that", "then",
+    ]
+    .contains(&w.as_str())
 }
 
 /// Planning pass: duration scale per model input (boundary tokens included).
@@ -218,8 +228,12 @@ pub fn dur_scale(l: &Layout, i: &Intonation, toks: &[String], french: bool) -> V
         // pause hierarchy on the punctuation that closes the phrase
         if !last {
             let next_clause = toks.get(p.end).is_some_and(|t| clause_word(t));
-            let k = p.end - 1;
-            let post = crate::text::split_core(&toks[k]).2;
+            // the phrase's last word (a lone « : » after it is part of its punctuation)
+            let Some(k) = (p.start..p.end).rev().find(|&k| l.words.get(k).copied().flatten().is_some()) else {
+                continue;
+            };
+            let post: String =
+                toks[k + 1..p.end].iter().fold(crate::text::split_core(&toks[k]).2.to_string(), |a, t| a + t);
             let pf = if post.contains(['…']) {
                 1.5
             } else if post.contains([':', ';', '—']) {
@@ -283,11 +297,14 @@ fn smoothstep(u: f64) -> f64 {
 pub struct Curves {
     pub f0: Vec<f32>,
     pub n: Vec<f32>,
-    /// (first unit, end unit, dB): emphasis loudness, applied on the audio.
-    pub gains: Vec<(usize, usize, f32)>,
+    /// Emphasis loudness, applied on the audio.
+    pub gains: Gains,
     /// The rule contour in semitones (for checks), per pitch value.
     pub target_st: Vec<f64>,
 }
+
+/// (first unit, end unit, dB) spans of extra loudness.
+pub type Gains = Vec<(usize, usize, f32)>;
 
 pub struct Params {
     /// Model melody smoothing for the "macro" contour (pitch values, σ).
@@ -296,6 +313,11 @@ pub struct Params {
     pub max_slope: f64,
     /// Storyteller widening of the model's own excursions (narration).
     pub widen: f64,
+    /// Excursions stay linear up to `knee` st, then saturate softly at `limit`.
+    pub knee: f64,
+    pub limit: f64,
+    /// The model's fast pitch detail (around the macro contour) is kept up to this (st).
+    pub micro: f64,
     pub emphasis: f64,
     pub emphasis_db: f32,
     pub emphasis_n: f32,
@@ -307,8 +329,19 @@ pub struct Params {
     /// Statements end at least this far below the phrase mean.
     pub final_fall: f64,
     pub landing_fall: f64,
-    /// Yes/no questions end at least this far above it.
+    /// Yes/no questions end at least this far above it, and this far above
+    /// their first word; the end of the vowel climbs a little more.
     pub yes_no_rise: f64,
+    pub yes_no_over_head: f64,
+    pub question_lift: f64,
+    /// Emphasis: the syllable peaks this far above the words around it
+    /// (never more than `emphasis_max` added).
+    pub emphasis_over: f64,
+    pub emphasis_max: f64,
+    /// …beyond that, the higher neighbour is lowered by up to this.
+    pub deaccent_max: f64,
+    /// Fast pitch detail allowed on a rising boundary syllable (st).
+    pub micro_rise: f64,
     /// Wh-questions and exclamations: the first word at least this high.
     pub wh_head: f64,
     pub exclaim_head: f64,
@@ -322,7 +355,10 @@ pub struct Params {
 pub const PARAMS: Params = Params {
     macro_sigma: 6.0,
     max_slope: 1.0,
-    widen: 1.12,
+    widen: 1.15,
+    knee: 4.5,
+    limit: 9.0,
+    micro: 2.5,
     emphasis: 2.5,
     emphasis_db: 1.5,
     emphasis_n: 0.8,
@@ -332,6 +368,12 @@ pub const PARAMS: Params = Params {
     final_fall: 3.0,
     landing_fall: 4.0,
     yes_no_rise: 4.0,
+    yes_no_over_head: 2.0,
+    question_lift: 1.5,
+    emphasis_over: 1.5,
+    emphasis_max: 4.0,
+    deaccent_max: 2.0,
+    micro_rise: 0.8,
     wh_head: 2.0,
     exclaim_head: 3.0,
     suspension_floor: -0.5,
@@ -364,11 +406,16 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
         v.sort_by(|a, b| a.partial_cmp(b).unwrap());
         v.get(v.len() / 2).copied().unwrap_or(v.first().copied().unwrap_or(200.0))
     };
-    let m: Vec<f64> = pred.f0.iter().map(|&f| if f > 10.0 { 12.0 * (f as f64 / median).log2() } else { f64::NAN }).collect();
+    let m: Vec<f64> =
+        pred.f0.iter().map(|&f| if f > 10.0 { 12.0 * (f as f64 / median).log2() } else { f64::NAN }).collect();
     let macro_ = smooth_voiced(&m, &voiced, p.macro_sigma);
     let mean_m = {
         let v: Vec<f64> = macro_.iter().zip(&voiced).filter(|(_, &b)| b).map(|(x, _)| *x).collect();
-        if v.is_empty() { 0.0 } else { v.iter().sum::<f64>() / v.len() as f64 }
+        if v.is_empty() {
+            0.0
+        } else {
+            v.iter().sum::<f64>() / v.len() as f64
+        }
     };
 
     let (level, emo_range, emo_n) = feeling(i.emotion);
@@ -386,8 +433,10 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
         range *= 1.2;
     }
     let level = level + if i.landing { -1.0 } else { 0.0 } + if i.tag { -1.5 } else { 0.0 };
-    // the widened model melody (the "expressive" contour), unvoiced filled
-    let expressive: Vec<f64> = macro_.iter().map(|x| mean_m + range * (x - mean_m)).collect();
+    // the widened model melody (the "expressive" contour), unvoiced filled;
+    // linear up to a knee, then soft: a creaky final fall of the model is
+    // never deepened, and big excursions stay musical
+    let expressive: Vec<f64> = macro_.iter().map(|x| mean_m + knee(range * (x - mean_m), p.knee, p.limit)).collect();
     let mut corr = vec![0.0f64; n_f0];
     let mean_over = |a: f64, b: f64, src: &[f64]| -> Option<f64> {
         let (a, b) = (a.max(0.0) as usize, (b as usize).min(n_f0));
@@ -395,6 +444,14 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
         (!v.is_empty()).then(|| v.iter().sum::<f64>() / v.len() as f64)
     };
 
+    let mut micro_lim = vec![p.micro; n_f0];
+    // where the piece begins (a question must end above it)
+    let head = i
+        .phrases
+        .first()
+        .and_then(|ph| (ph.start..ph.end).find_map(|k| l.words[k]))
+        .and_then(|(a, b)| mean_over(at(a), at(b), &expressive))
+        .unwrap_or(0.0);
     let nph = i.phrases.len();
     for (pi, ph) in i.phrases.iter().enumerate() {
         let Some((ua, ub)) = l.span(ph.start..ph.end) else { continue };
@@ -406,7 +463,8 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
         } else {
             l.span(next_start..next_start + 1).map(|x| at(x.0)).unwrap_or(fb)
         };
-        let words: Vec<usize> = (ph.start..ph.end).filter(|&k| l.words[k].is_some() && content_word(&toks[k])).collect();
+        let words: Vec<usize> =
+            (ph.start..ph.end).filter(|&k| l.words[k].is_some() && content_word(&toks[k])).collect();
 
         // heads: wh-questions and exclamations start high
         if pi == 0 && !i.tag {
@@ -428,56 +486,102 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
             }
         }
 
-        // the boundary tone: enforce the target on the last syllable
+        // the boundary tone: the last syllable is brought to its target. The
+        // model's own melody is kept wherever it already does the job; where
+        // it misses (a creaky fall at a question's end…), the contour follows
+        // a smooth glide from the syllable before to the target.
         let Some((o, nuc, end)) = l.last_syllable(ph.start..ph.end) else { continue };
-        let tail = mean_over(at(nuc), at(end), &expressive).or_else(|| mean_over(at(o), at(end), &expressive));
-        let Some(tail) = tail else { continue };
-        enum Want {
-            AtLeast(f64),
-            AtMost(f64),
-            Floor(f64),
-        }
-        let want = match ph.boundary {
-            Boundary::Continuation if i.tag => Want::Floor(f64::MIN),
-            Boundary::Continuation => Want::AtLeast(reference + if v.french { p.continuation_fr } else { p.continuation_en }),
-            Boundary::ListItem => Want::AtLeast(reference + p.list_rise),
+        let question = ph.boundary == Boundary::Final && i.kind == Kind::YesNo;
+        let (goal, falling) = match ph.boundary {
+            Boundary::Continuation if i.tag => continue,
+            Boundary::Continuation => (reference + if v.french { p.continuation_fr } else { p.continuation_en }, false),
+            Boundary::ListItem => (reference + p.list_rise, false),
             Boundary::Final => match i.kind {
-                Kind::YesNo => Want::AtLeast(reference + p.yes_no_rise),
-                Kind::Suspension => Want::Floor(reference + p.suspension_floor),
-                _ if i.landing => Want::AtMost(reference - p.landing_fall),
-                _ => Want::AtMost(reference - p.final_fall),
+                // a yes/no question ends above where it began
+                Kind::YesNo => ((reference + p.yes_no_rise).max(head + p.yes_no_over_head), false),
+                Kind::Suspension => (reference + p.suspension_floor, false),
+                _ if i.landing => (reference - p.landing_fall, true),
+                _ => (reference - p.final_fall, true),
             },
         };
-        let delta = match want {
-            Want::AtLeast(t) => (t - tail).max(0.0),
-            Want::AtMost(t) => (t - tail).min(0.0),
-            Want::Floor(t) => (t - tail).max(0.0),
-        };
-        if delta.abs() < 1e-6 {
-            continue;
-        }
-        // rises on the last syllable; falls from the syllable before
-        let r0 = if delta < 0.0 {
-            let span_start = l.span(ph.start..ph.end).map_or(0, |x| x.0);
-            l.nuclei(span_start, nuc).last().map(|&pv| mid(pv)).unwrap_or(at(o)).max(fa)
-        } else {
-            at(nuc).max(fa)
-        };
-        let s1 = at(end).max(r0 + 4.0);
-        for (j, c) in corr.iter_mut().enumerate().take((fend as usize).min(n_f0)) {
+        // the glide starts on the syllable before (questions, falls) or at the
+        // last syllable's onset (continuations), and reaches its target in
+        // the middle of the last vowel, so it is heard on voiced sound
+        let span_start = l.span(ph.start..ph.end).map_or(0, |x| x.0);
+        let prev = l.nuclei(span_start, nuc).last().map(|&pv| mid(pv));
+        let r0 = if falling || question { prev.unwrap_or(at(o)) } else { at(o) }.max(fa).min(n_f0 as f64 - 1.0);
+        // (a question is up there as its last vowel begins, and climbs on)
+        let s1 = if question { at(nuc) + 2.0 } else { mid(nuc) }.max(r0 + 4.0);
+        let hold_end = at(end).max(s1);
+        let j0 = r0.max(0.0) as usize;
+        let from = expressive[j0] + corr[j0];
+        let mut reached: Option<f64> = None; // the level at the target point
+        for j in j0..(fend as usize).min(n_f0) {
             let x = j as f64;
-            if x >= r0 {
-                let hold = if x > s1 && ph.boundary != Boundary::Final { 1.0 - smoothstep((x - s1) / 4.0) } else { 1.0 };
-                *c += delta * smoothstep((x - r0) / (s1 - r0)) * hold;
+            let mut g = from + (goal - from) * smoothstep((x - r0) / (s1 - r0));
+            // questions keep climbing to the end of the vowel
+            if question && x > s1 {
+                let extra = p.question_lift * ((x - s1) / (hold_end - s1).max(1.0)).min(1.0);
+                g = g.max(reached.unwrap_or(g)) + extra;
+            }
+            let now = expressive[j] + corr[j];
+            let d = if falling { (g - now).min(0.0) } else { (g - now).max(0.0) };
+            let hold = if x > hold_end && ph.boundary != Boundary::Final {
+                1.0 - smoothstep((x - hold_end) / 4.0)
+            } else {
+                1.0
+            };
+            corr[j] += d * hold;
+            if x >= s1 && reached.is_none() {
+                reached = Some(expressive[j] + corr[j]);
+            }
+            // the model's fast detail (a creaky end) must not drag a rise down
+            if !falling && x >= s1 - 2.0 && (x <= hold_end || ph.boundary == Boundary::Final) {
+                micro_lim[j] = p.micro_rise;
             }
         }
     }
-    // emphasis (initial accent in French, stressed syllable in English)
+    // emphasis (initial accent in French, stressed syllable in English): the
+    // syllable peaks clearly above the words around it
     let mut gains = Vec::new();
+    // (highest value, where) over voiced values a..b
+    let peak_over = |a: f64, b: f64, corr: &[f64]| -> Option<(f64, usize)> {
+        let (a, b) = (a.max(0.0) as usize, (b as usize).min(n_f0));
+        (a..b).filter(|&j| voiced[j]).map(|j| (expressive[j] + corr[j], j)).reduce(|x, y| if y.0 > x.0 { y } else { x })
+    };
     for &(k, f) in &i.focus {
         let Some(s) = l.emphasis_nucleus(k, v.french) else { continue };
-        let amp = if f == Focus::Contrast { p.emphasis * 0.6 } else { p.emphasis } * (range / p.widen).clamp(0.6, 1.3);
-        add_bump(&mut corr, mid(s), 16.0, amp);
+        let scale = (range / p.widen).clamp(0.6, 1.3);
+        let base = if f == Focus::Contrast { p.emphasis * 0.6 } else { p.emphasis } * scale;
+        let here = peak_over(at(s), at(s + 1), &corr);
+        // the higher of the two neighbouring words: (peak, its unit span)
+        let around = [k.checked_sub(1), Some(k + 1)]
+            .into_iter()
+            .flatten()
+            .filter_map(|j| l.words.get(j).copied().flatten())
+            .filter_map(|(a, b)| peak_over(at(a), at(b), &corr).map(|x| (x.0, a, b)))
+            .reduce(|x, y| if y.0 > x.0 { y } else { x });
+        let need = match (here, around) {
+            (Some(h), Some(n)) => n.0 + p.emphasis_over * scale - h.0,
+            _ => 0.0,
+        };
+        add_bump(&mut corr, mid(s), 14.0, base.max(need).min(p.emphasis_max));
+        // what the lift cannot give, a quieter neighbour does (de-accenting)
+        if let Some((_, a, b)) = around.filter(|_| need > p.emphasis_max) {
+            let amp = -(need - p.emphasis_max).min(p.deaccent_max);
+            let (fa, fb) = (at(a), at(b));
+            for (j, c) in corr.iter_mut().enumerate() {
+                let x = j as f64;
+                let w = if x < fa {
+                    smoothstep(1.0 - (fa - x) / 4.0)
+                } else if x > fb {
+                    smoothstep(1.0 - (x - fb) / 4.0)
+                } else {
+                    1.0
+                };
+                *c += amp * w;
+            }
+        }
         if let Some((a, b)) = l.words[k] {
             gains.push((a, b, p.emphasis_db));
         }
@@ -485,7 +589,13 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
 
     let target_st: Vec<f64> = (0..n_f0).map(|j| (level + expressive[j] + corr[j]).clamp(p.floor, p.ceiling)).collect();
     let mut out_st: Vec<f64> = (0..n_f0)
-        .map(|j| if voiced[j] { (target_st[j] + (m[j] - macro_[j]).clamp(-1.5, 1.5)).clamp(p.floor, p.ceiling) } else { f64::NAN })
+        .map(|j| {
+            if voiced[j] {
+                (target_st[j] + (m[j] - macro_[j]).clamp(-micro_lim[j], micro_lim[j])).clamp(p.floor, p.ceiling)
+            } else {
+                f64::NAN
+            }
+        })
         .collect();
     limit_slope(&mut out_st, p.max_slope);
     let f0: Vec<f32> = (0..n_f0)
@@ -493,17 +603,38 @@ pub fn curves(l: &Layout, i: &Intonation, toks: &[String], pred: &Prediction, v:
         .collect();
 
     // energy: breath and effort
-    let mut n_off = vec![emo_n + if i.whisper { -2.0 } else { 0.0 } + if i.landing { -0.6 } else { 0.0 } + if i.tag { -0.4 } else { 0.0 }; n_f0];
+    let mut n_off = vec![
+        emo_n
+            + if i.whisper { -2.0 } else { 0.0 }
+            + if i.landing { -0.6 } else { 0.0 }
+            + if i.tag { -0.4 } else { 0.0 };
+        n_f0
+    ];
     for &(a, b, _) in &gains {
         let (fa, fb) = (at(a), at(b));
         for (j, x) in n_off.iter_mut().enumerate() {
             let jf = j as f64;
-            let w = if jf < fa { smoothstep(1.0 - (fa - jf) / 4.0) } else if jf > fb { smoothstep(1.0 - (jf - fb) / 4.0) } else { 1.0 };
+            let w = if jf < fa {
+                smoothstep(1.0 - (fa - jf) / 4.0)
+            } else if jf > fb {
+                smoothstep(1.0 - (jf - fb) / 4.0)
+            } else {
+                1.0
+            };
             *x += p.emphasis_n * w as f32;
         }
     }
     let n: Vec<f32> = pred.n.iter().zip(&n_off).map(|(a, b)| a + b).collect();
     Curves { f0, n, gains, target_st }
+}
+
+/// Linear up to ±`k`, then a soft approach to ±`lim`.
+fn knee(d: f64, k: f64, lim: f64) -> f64 {
+    if d.abs() <= k {
+        d
+    } else {
+        d.signum() * (k + (lim - k) * ((d.abs() - k) / (lim - k)).tanh())
+    }
 }
 
 fn add_bump(exc: &mut [f64], centre: f64, half: f64, amp: f64) {
@@ -679,6 +810,31 @@ mod tests {
         let c = curves(&l, &i, &toks, &pred, V);
         let end = *c.target_st.iter().rev().find(|x| x.is_finite()).unwrap();
         assert!(end > c.target_st[10] + 2.0, "a yes/no question ends high: {end}");
+
+        // the model starts high and ends in a creaky fall: the question still
+        // ends above its first word, and its last vowel climbs
+        let toks = tokenize("Et si nous ajoutions un secret ?");
+        let (l, mut pred) = fake(&["e", "si", "nu", "aʒutjˈɔ̃", "œ̃", "səkʁˈɛ", "?"], &toks);
+        let n = pred.f0.len();
+        for (j, f) in pred.f0.iter_mut().enumerate() {
+            if *f > 10.0 {
+                let x = j as f32 / n as f32;
+                *f = if x < 0.2 { 260.0 } else { 260.0 * (1.0 - 0.6 * (x - 0.2)) };
+            }
+        }
+        let i = analyse(&info(&toks), &mut StoryContext::default());
+        assert_eq!(i.kind, Kind::YesNo);
+        let c = curves(&l, &i, &toks, &pred, V);
+        let first = st_edge(&l, &pred, &c, 0, false);
+        let last = st_edge(&l, &pred, &c, 5, true);
+        assert!(last > first + 1.5, "ends above its start: {first:.1} → {last:.1}");
+        // the values of the last word (its vowel ends it)
+        let (a, b) = l.words[5].unwrap();
+        let first_val: usize = pred.durations[..=a].iter().sum::<i64>() as usize * 2;
+        let end_val: usize = pred.durations[..=b].iter().sum::<i64>() as usize * 2;
+        let word: Vec<f64> = (first_val..end_val).map(|j| 12.0 * (c.f0[j] as f64 / 244.0).log2()).collect();
+        let tail = &word[word.len() - 6..];
+        assert!(tail.windows(2).all(|w| w[1] >= w[0] - 0.05), "the last vowel climbs: {tail:?}");
     }
 
     #[test]
@@ -702,6 +858,21 @@ mod tests {
         let c = curves(&l, &i, &toks, &pred, V);
         assert!(st_peak(&l, &pred, &c, 2) > st_peak(&l, &pred, &c, 1) + 2.0, "the emphasised word peaks");
         assert!(!c.gains.is_empty());
+        // even where the model sat higher on the word before
+        let (l, mut pred) = fake(&["il", "maʁʃ", "tʁˈɛ", "lɔ̃tˈɑ̃."], &toks);
+        let (a, b) = l.words[1].unwrap();
+        let mut acc = pred.durations[0] as usize;
+        for u in 0..l.units.len() {
+            let len = pred.durations[u + 1] as usize;
+            if u >= a && u < b {
+                for f in &mut pred.f0[acc * 2..(acc + len) * 2] {
+                    *f = 250.0; // +3.9 st
+                }
+            }
+            acc += len;
+        }
+        let c = curves(&l, &i, &toks, &pred, V);
+        assert!(st_peak(&l, &pred, &c, 2) > st_peak(&l, &pred, &c, 1) + 0.5, "it still stands out");
     }
 
     #[test]
@@ -719,7 +890,8 @@ mod tests {
         let st: Vec<f64> = c.f0.iter().map(|&f| 12.0 * (f as f64 / 244.0).log2()).collect();
         for j in 1..st.len() {
             if c.f0[j] > 10.0 && c.f0[j - 1] > 10.0 {
-                assert!((st[j] - st[j - 1]).abs() <= PARAMS.max_slope + 1e-4, "jump at {j}"); // f32 round trip
+                assert!((st[j] - st[j - 1]).abs() <= PARAMS.max_slope + 1e-4, "jump at {j}");
+                // f32 round trip
             }
         }
     }

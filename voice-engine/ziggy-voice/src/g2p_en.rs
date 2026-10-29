@@ -780,7 +780,8 @@ pub fn tag(toks: &[(String, String)]) -> Vec<String> {
         let nxt = toks.get(k + 1).map(|t| t.0.to_lowercase()).unwrap_or_default();
         // a hyphen inside a word ("see-through", "Polka-Dot") is spaCy's HYPH,
         // not a dash: no pause in the middle of a compound
-        let infix = (x == "-" || x == "–") && k > 0 && toks[k - 1].1.is_empty() && toks[k].1.is_empty() && k + 1 < toks.len();
+        let infix =
+            (x == "-" || x == "–") && k > 0 && toks[k - 1].1.is_empty() && toks[k].1.is_empty() && k + 1 < toks.len();
         let t = if infix {
             "HYPH".to_string()
         } else if let Some(p) = punct(x) {

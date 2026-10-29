@@ -1,9 +1,9 @@
 //! From a segment plan to finished audio + word times + visemes.
 
 use crate::align::PUNCT_PS;
+use crate::contour::{curves, dur_scale, Layout, Voice};
 use crate::g2p_en::EnglishG2P;
 use crate::g2p_fr::{FrenchG2P, Phonemized};
-use crate::contour::{curves, dur_scale, Layout, Voice};
 use crate::intonation::Intonation;
 use crate::kokoro::{encode, Controls, Kokoro, PitchCtl, Take, F0_HOP, MAX_TOKENS, SR};
 use crate::numbers::spoken;
@@ -73,7 +73,9 @@ fn take_key_v3(ids: &[i64], style: &[f32], speed: f32, ctl: &Controls) -> String
     for i in ids {
         h.update(i.to_le_bytes());
     }
-    for v in style.iter().chain([speed].iter()).chain(&ctl.dur_scale).chain(&ctl.dur_frames).chain(&ctl.f0).chain(&ctl.n) {
+    for v in
+        style.iter().chain([speed].iter()).chain(&ctl.dur_scale).chain(&ctl.dur_frames).chain(&ctl.f0).chain(&ctl.n)
+    {
         h.update(v.to_le_bytes());
     }
     h.update((ctl.f0.len() as u64).to_le_bytes());
@@ -187,7 +189,7 @@ impl<'a> Renderer<'a> {
         reading: &Intonation,
         toks: &[String],
         d: &Delivery,
-    ) -> Result<(Take, Vec<(usize, usize, f32)>)> {
+    ) -> Result<(Take, crate::contour::Gains)> {
         let french = self.g2p.locale() == "fr";
         let style = self.kokoro.style_fixed_timbre(&d.blend, ids.len(), TIMBRE_ROW)?;
         let ds = dur_scale(layout, reading, toks, french);
@@ -215,6 +217,57 @@ impl<'a> Renderer<'a> {
             write_take(p, &t)?;
         }
         Ok((t, c.gains))
+    }
+
+    /// Debug: the planner's view of one piece, per word: model pitch, the
+    /// planned contour and what is sent to the decoder (semitones re. the
+    /// role's reference).
+    pub fn explain_piece(&self, tokens: &[String], piece: &Piece) -> Result<String> {
+        let toks = &tokens[piece.start..piece.end];
+        let d = &piece.delivery;
+        let mut out = format!("{:?}\n", piece.intonation);
+        for (s, e, u) in self.utterances(toks, piece.closing_period)? {
+            let (ids, at, kept) = encode(&u.ps);
+            let layout = Layout::new(&kept, &at, &u.starts);
+            let reading = piece.intonation.slice(s, e, e == toks.len());
+            let french = self.g2p.locale() == "fr";
+            let style = self.kokoro.style_fixed_timbre(&d.blend, ids.len(), TIMBRE_ROW)?;
+            let ds = dur_scale(&layout, &reading, &toks[s..e], french);
+            let pred = self.kokoro.predict(&ids, &style, d.speed, &ds)?;
+            let r = d.pitch.reference * d.pitch.scale;
+            let c = curves(&layout, &reading, &toks[s..e], &pred, Voice { french, reference_hz: r, range: d.range });
+            let mut acc = pred.durations[0] as usize;
+            let mut starts = vec![];
+            for u in 0..layout.units.len() {
+                starts.push(acc * 2);
+                acc += pred.durations[u + 1] as usize;
+            }
+            starts.push(acc * 2);
+            let st = |f: f32| if f > 10.0 { 12.0 * (f as f64 / r as f64).log2() } else { f64::NAN };
+            for (k, w) in layout.words.iter().enumerate() {
+                let Some((a, b)) = w else { continue };
+                let (fa, fb) = (starts[*a], starts[*b]);
+                let avg = |v: &dyn Fn(usize) -> f64| {
+                    let x: Vec<f64> = (fa..fb).map(v).filter(|x| x.is_finite()).collect();
+                    if x.is_empty() {
+                        f64::NAN
+                    } else {
+                        x.iter().sum::<f64>() / x.len() as f64
+                    }
+                };
+                let last = |v: &dyn Fn(usize) -> f64| (fa..fb).rev().map(v).find(|x| x.is_finite()).unwrap_or(f64::NAN);
+                out += &format!(
+                    "  {:<14} model {:+5.1} | target {:+5.1} (end {:+5.1}) | sent {:+5.1} (end {:+5.1})\n",
+                    toks[s + k],
+                    avg(&|j| st(pred.f0[j])),
+                    avg(&|j| if pred.f0[j] > 10.0 { c.target_st[j] } else { f64::NAN }),
+                    last(&|j| if pred.f0[j] > 10.0 { c.target_st[j] } else { f64::NAN }),
+                    avg(&|j| st(c.f0[j])),
+                    last(&|j| st(c.f0[j])),
+                );
+            }
+        }
+        Ok(out)
     }
 
     /// Phonemes of a piece, cut at the comma nearest the middle when it is
@@ -259,7 +312,8 @@ impl<'a> Renderer<'a> {
             if ids.is_empty() {
                 continue;
             }
-            let reading = if n_parts == 1 { piece.intonation.clone() } else { piece.intonation.slice(s, e, pi + 1 == n_parts) };
+            let reading =
+                if n_parts == 1 { piece.intonation.clone() } else { piece.intonation.slice(s, e, pi + 1 == n_parts) };
             let layout = Layout::new(&kept, &at, &u.starts);
             let (mut take, gains) = self.synth_v3(&ids, &layout, &reading, &toks[s..e], d)?;
             apply_gains(&mut take.audio, &take.edges, &gains);

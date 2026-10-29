@@ -1232,7 +1232,9 @@ pub fn plan_story(locale: &str, story: &crate::stories::Story) -> Vec<SegmentPla
     let text = |id: &str| story.text(locale, id).unwrap_or("");
     let scenes: Vec<&str> = ids.iter().filter(|i| i.starts_with('s')).map(|i| text(i)).collect();
     let mut ctx = StoryContext { key_words: key_words(text("title"), &scenes, text("outro")), ..Default::default() };
-    ids.iter().filter_map(|id| story.text(locale, id).map(|t| plan_segment(locale, id, t, &mut cast, &mut ctx))).collect()
+    ids.iter()
+        .filter_map(|id| story.text(locale, id).map(|t| plan_segment(locale, id, t, &mut cast, &mut ctx)))
+        .collect()
 }
 
 /// The piece's words with its phrasing: `/` continuation, `↗` list item,
@@ -1241,9 +1243,16 @@ fn reading(p: &SegmentPlan, x: &Piece) -> String {
     let toks = &p.tokens[x.start..x.end];
     let mut out = Vec::new();
     for ph in &x.intonation.phrases {
-        let mut words: Vec<String> = (ph.start..ph.end)
-            .map(|k| if x.intonation.focus.iter().any(|f| f.0 == k) { format!("*{}*", toks[k]) } else { toks[k].clone() })
-            .collect();
+        let mut words: Vec<String> =
+            (ph.start..ph.end)
+                .map(|k| {
+                    if x.intonation.focus.iter().any(|f| f.0 == k) {
+                        format!("*{}*", toks[k])
+                    } else {
+                        toks[k].clone()
+                    }
+                })
+                .collect();
         let tone = match ph.boundary {
             crate::intonation::Boundary::Continuation => "/",
             crate::intonation::Boundary::ListItem => "↗",
@@ -1328,7 +1337,8 @@ mod tests {
         assert!(q[0].whisper);
         assert_eq!(q[1].speaker.as_deref(), Some("lili"));
         assert_eq!(q[1].variant, Some(Variant::ChildA));
-        let p2 = plan_segment("en", "s3", "“Hello!” said Pico. “Hi!” said Lili.", &mut cast, &mut StoryContext::default());
+        let p2 =
+            plan_segment("en", "s3", "“Hello!” said Pico. “Hi!” said Lili.", &mut cast, &mut StoryContext::default());
         let v: Vec<Option<Variant>> =
             p2.pieces.iter().filter(|x| x.role == Role::Dialogue).map(|x| x.variant).collect();
         assert_eq!(v, [Some(Variant::ChildB), Some(Variant::ChildA)], "Lili keeps her voice across segments");
@@ -1347,7 +1357,13 @@ mod tests {
         let p = plan("« Pas de ballon dans la maison », disait souvent grand-mère. « Chut », dit-il.", "s2");
         let q: Vec<&Piece> = p.pieces.iter().filter(|x| x.role == Role::Dialogue).collect();
         assert_eq!(q[0].variant, Some(Variant::Warm));
-        let p = plan_segment("en", "s1", "“Look!” Lili whispered. “Shh,” she said.", &mut Cast::default(), &mut StoryContext::default());
+        let p = plan_segment(
+            "en",
+            "s1",
+            "“Look!” Lili whispered. “Shh,” she said.",
+            &mut Cast::default(),
+            &mut StoryContext::default(),
+        );
         let q: Vec<&Piece> = p.pieces.iter().filter(|x| x.role == Role::Dialogue).collect();
         assert_eq!(q[0].speaker.as_deref(), Some("lili"));
         assert!(q[0].whisper);
@@ -1410,12 +1426,30 @@ mod tests {
         let q: Vec<&str> = q.iter().map(|x| x.as_deref().unwrap_or("?")).collect();
         assert_eq!(q, ["sacha", "sacha", "lumi", "lumi", "sacha", "lumi"]); // "Wow!" + "And you…" = 2 pieces
                                                                             // a pronoun tag in the middle: the rest of the quotation names the speaker
-        let p = plan_segment("en", "s2", "“Good evening, Sacha,” she said. “My name is Lumi.”", &mut Cast::default(), &mut StoryContext::default());
+        let p = plan_segment(
+            "en",
+            "s2",
+            "“Good evening, Sacha,” she said. “My name is Lumi.”",
+            &mut Cast::default(),
+            &mut StoryContext::default(),
+        );
         assert!(p.pieces.iter().filter(|x| x.role == Role::Dialogue).all(|x| x.speaker.as_deref() == Some("lumi")));
         // "Pardon, Nuna." with nobody named: the other character of the story
         let mut cast = Cast::default();
-        plan_segment("fr", "s2", "« Ici ! » dit Kiko. « Non, là ! » dit Nuna.", &mut cast, &mut StoryContext::default());
-        let p = plan_segment("fr", "s5", "« Pardon, Nuna. Je me suis fâché. » « Pardon, Kiko. Moi aussi. »", &mut cast, &mut StoryContext::default());
+        plan_segment(
+            "fr",
+            "s2",
+            "« Ici ! » dit Kiko. « Non, là ! » dit Nuna.",
+            &mut cast,
+            &mut StoryContext::default(),
+        );
+        let p = plan_segment(
+            "fr",
+            "s5",
+            "« Pardon, Nuna. Je me suis fâché. » « Pardon, Kiko. Moi aussi. »",
+            &mut cast,
+            &mut StoryContext::default(),
+        );
         let q: Vec<Option<String>> =
             p.pieces.iter().filter(|x| x.role == Role::Dialogue).map(|x| x.speaker.clone()).collect();
         assert_eq!(q.first().unwrap().as_deref(), Some("kiko"));
