@@ -2,7 +2,8 @@
 // It never changes the site's DOM or layout: it only
 //  0. switches off speech recognition and microphone/camera capture (child safety);
 //  1. removes web artefacts (tap highlight, long-press menus and selection on UI,
-//     pinch/double-tap zoom, rubber-band overscroll), with a constructed stylesheet;
+//     pinch/double-tap zoom, rubber-band overscroll), with a constructed stylesheet
+//     (overscroll-behavior on <html> only: on <body> it stops touch scrolling in Chromium);
 //  2. keeps the status bar icons readable: it reads the tone of the page under the
 //     status bar and tells the app (`set_bar_style`). A page can force it with
 //     <html data-app-bars="dark"> (dark page, light icons) or "light".
@@ -31,7 +32,7 @@
 
   const CSS = `
 html{-webkit-tap-highlight-color:transparent;-webkit-touch-callout:none;-webkit-text-size-adjust:100%;text-size-adjust:100%;overscroll-behavior:none;touch-action:pan-x pan-y}
-body{-webkit-user-select:none;user-select:none;overscroll-behavior:none}
+body{-webkit-user-select:none;user-select:none}
 input,textarea,select,[contenteditable]:not([contenteditable="false"]),[contenteditable]:not([contenteditable="false"]) *{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 img,a,svg,video{-webkit-user-drag:none}`;
 

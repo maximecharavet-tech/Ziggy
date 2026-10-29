@@ -690,7 +690,10 @@ html[data-app] {
   overscroll-behavior: none;
   touch-action: manipulation;
 }
-html[data-app] body { overscroll-behavior: none; }
+/* Never on the body: in Chromium (the Android WebView) `overscroll-behavior: none`
+   on the body stops the finger from scrolling the page. "auto" also overrides the
+   same rule in the shell stylesheet of the first APKs (android-v1.0.0-7 and -8). */
+html[data-app] body { overscroll-behavior: auto; }
 html[data-app] :is(input, textarea, [contenteditable='true'], .selectable) {
   -webkit-user-select: text;
   user-select: text;
