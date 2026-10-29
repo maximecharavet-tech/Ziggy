@@ -25,6 +25,8 @@ import {
 } from '@/lib/dodo/player';
 import { clearPosition, savePosition, savedPosition, TEXT_SIZES, updateDodo, useDodoSettings, useManifest, useTiming } from '@/lib/dodo/client';
 import { Ziggy3D } from '@/components/ziggy3d/Ziggy3D';
+import { useAppShell } from '@/lib/use-app-shell';
+import { useBackLayer } from '@/lib/back-layer';
 import { useConductor } from './conductor';
 import { Prompter } from './Prompter';
 import { PlayerOptions } from './PlayerOptions';
@@ -84,6 +86,8 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   const settings = useDodoSettings();
   const manifest = useManifest();
   const reduce = useReducedMotion();
+  // On TV the remote's arrows move between the controls (OK presses them), so the arrows don't change scenes here.
+  const { tv } = useAppShell();
   const { timing, ready: timingReady } = useTiming(raw, story.id, known);
   const clips = manifest?.audio[story.id]?.[locale] ?? null;
   const plans = useMemo(() => planStory(story, raw, { timing, clips: timing ? null : clips, fallback: settings.fallback }), [story, raw, timing, clips, settings.fallback]);
@@ -95,6 +99,8 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
 
   const [saved, setSaved] = useState<DodoPosition | undefined>(undefined);
   const [optionsOpen, setOptionsOpen] = useState(false);
+  // The phone's Back button closes the settings sheet first.
+  useBackLayer(optionsOpen, () => setOptionsOpen(false));
   const [uiShown, setUiShown] = useState(true);
   const [sleepy, setSleepy] = useState(false);
   const idle = useRef<number | null>(null);
@@ -212,17 +218,19 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
       const el = e.target as HTMLElement | null;
       if (el?.closest('input, select, textarea, [contenteditable="true"]')) return;
       if (e.key === 'Escape' && optionsOpen) {
+        e.preventDefault();
         setOptionsOpen(false);
         return;
       }
       if (optionsOpen) return;
+      if (tv) poke(); // any key of the remote brings the controls back
       if (e.key === ' ' || e.code === 'Space') {
         if (el?.closest('button, a, [role="radio"]')) return;
         e.preventDefault();
         if (phase === 'cover') begin(true);
         else if (phase === 'story') c.toggle();
         poke();
-      } else if (phase === 'story' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
+      } else if (!tv && phase === 'story' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
         e.preventDefault();
         c.go(c.get().seg + (e.key === 'ArrowRight' ? 1 : -1));
         poke();
@@ -265,6 +273,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
 
   return (
     <div
+      data-tv-scope=""
       className={`${css.player} fixed inset-0 z-[60] overflow-hidden bg-[#060818] text-white`}
       onPointerDown={phase !== 'cover' ? poke : undefined}
       onPointerMove={phase === 'story' ? (e) => e.pointerType === 'mouse' && poke() : undefined}
@@ -287,7 +296,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
         style={{ pointerEvents: uiVisible ? 'auto' : 'none' }}
       >
         <Link
-          href="/dodo"
+          href={tv ? '/tv' : '/dodo'}
           aria-label={tr(T.close, locale)}
           title={tr(T.close, locale)}
           className="grid h-12 w-12 place-items-center rounded-full bg-[#070a22]/60 text-lg ring-1 ring-white/15 transition hover:bg-[#070a22]/80 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200"
@@ -377,7 +386,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
             <div className="mt-5 flex flex-wrap items-center gap-3">
               {resumable(saved, count) ? (
                 <>
-                  <BigButton onClick={() => begin(true)}>
+                  <BigButton onClick={() => begin(true)} autoFocusTv>
                     ▶ {tr(T.resume, locale)} ·{' '}
                     {plans[saved.seg]?.id === 'outro' ? tr(T.goOutro, locale) : plans[saved.seg]?.id === 'title' ? tr(T.goTitle, locale) : tr(T.goScene, locale).replace('{n}', String(saved.seg))}
                   </BigButton>
@@ -390,7 +399,9 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                   </button>
                 </>
               ) : (
-                <BigButton onClick={() => begin(false)}>🌙 {tr(T.listen, locale)}</BigButton>
+                <BigButton onClick={() => begin(false)} autoFocusTv>
+                  🌙 {tr(T.listen, locale)}
+                </BigButton>
               )}
             </div>
 
@@ -476,7 +487,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
             <Ctl label={tr(T.prev, locale)} onClick={() => c.go(snap.seg - 1)} disabled={snap.seg <= 0}>
               ⏮
             </Ctl>
-            <Ctl big label={snap.status === 'paused' ? tr(T.play, locale) : tr(T.pause, locale)} onClick={() => c.toggle()}>
+            <Ctl big autoFocusTv label={snap.status === 'paused' ? tr(T.play, locale) : tr(T.pause, locale)} onClick={() => c.toggle()}>
               {snap.status === 'paused' ? <span className="ms-1">▶</span> : '❚❚'}
             </Ctl>
             <Ctl label={tr(T.next, locale)} onClick={() => c.go(snap.seg + 1)} disabled={snap.seg >= count - 1}>
@@ -535,7 +546,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                 >
                   ↺ {tr(T.again, locale)}
                 </button>
-                <Link href="/dodo" className="min-h-11 rounded-full bg-white/10 px-5 py-2.5 text-sm font-semibold ring-1 ring-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200">
+                <Link href={tv ? '/tv' : '/dodo'} className="min-h-11 rounded-full bg-white/10 px-5 py-2.5 text-sm font-semibold ring-1 ring-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200">
                   📚 {tr(T.others, locale)}
                 </Link>
               </div>
@@ -571,11 +582,12 @@ function Pill({ children }: { children: ReactNode }) {
   return <span className="rounded-full bg-white/10 px-3 py-1.5 text-white/85 ring-1 ring-white/10">{children}</span>;
 }
 
-function BigButton({ children, onClick }: { children: ReactNode; onClick: () => void }) {
+function BigButton({ children, onClick, autoFocusTv }: { children: ReactNode; onClick: () => void; autoFocusTv?: boolean }) {
   return (
     <motion.button
       type="button"
       onClick={onClick}
+      data-tv-autofocus={autoFocusTv ? '' : undefined}
       whileTap={{ scale: 0.96 }}
       className="relative min-h-14 rounded-full bg-gradient-to-r from-amber-200 via-amber-100 to-pink-200 px-8 py-4 text-lg font-bold text-[#24164a] shadow-[0_10px_30px_rgba(255,200,140,.25)] focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-2 focus-visible:outline-white/70"
     >
@@ -599,12 +611,13 @@ function SizeButton({ children, label, onClick, disabled }: { children: ReactNod
   );
 }
 
-function Ctl({ children, label, onClick, big, disabled }: { children: ReactNode; label: string; onClick: () => void; big?: boolean; disabled?: boolean }) {
+function Ctl({ children, label, onClick, big, disabled, autoFocusTv }: { children: ReactNode; label: string; onClick: () => void; big?: boolean; disabled?: boolean; autoFocusTv?: boolean }) {
   return (
     <motion.button
       type="button"
       whileTap={{ scale: 0.92 }}
       onClick={onClick}
+      data-tv-autofocus={autoFocusTv ? '' : undefined}
       disabled={disabled}
       aria-label={label}
       title={label}

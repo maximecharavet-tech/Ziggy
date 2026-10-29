@@ -54,7 +54,7 @@ const T = {
 } satisfies Record<string, L>;
 
 /** A little picture for each value, for children who cannot read yet. */
-const VALUE_EMOJI: Record<DodoValue, string> = {
+export const VALUE_EMOJI: Record<DodoValue, string> = {
   kindness: '💛',
   sharing: '🤲',
   honesty: '🪞',
@@ -200,7 +200,7 @@ export function DodoHome({ voices }: { voices?: VoiceSummary }) {
             </h2>
             <article className="group relative grid overflow-hidden rounded-[2rem] bg-[#0d1138]/85 shadow-[0_30px_80px_rgba(2,3,14,.55)] ring-1 ring-white/10 transition focus-within:ring-2 focus-within:ring-amber-200/60 md:grid-cols-[1.35fr_1fr]">
               <Link href={`/dodo/${tonight.id}`} tabIndex={-1} aria-hidden="true" className="relative block aspect-[16/10] overflow-hidden md:aspect-auto md:min-h-[24rem]">
-                <Cover story={tonight} manifest={manifest} big />
+                <DodoCover story={tonight} manifest={manifest} big />
                 <Sparkles seed={9} count={reduce ? 4 : 10} />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0d1138] via-transparent to-transparent md:bg-gradient-to-r md:from-transparent md:via-transparent md:to-[#0d1138]" />
               </Link>
@@ -386,7 +386,7 @@ function Chip({
 }
 
 /** First scene illustration (or the story's own cover); the drawn night scene until it exists. */
-function Cover({ story, manifest, big }: { story: DodoStory; manifest: DodoManifest | null; big?: boolean }) {
+export function DodoCover({ story, manifest, big }: { story: DodoStory; manifest: DodoManifest | null; big?: boolean }) {
   const image = story.cover ?? manifest?.images[story.id]?.[1] ?? null;
   const [failed, setFailed] = useState(false);
   if (!image && !manifest) {
@@ -448,7 +448,7 @@ function StoryCard({
   return (
     <article className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] bg-[#0d1138]/85 ring-1 ring-white/10 transition duration-500 focus-within:ring-2 focus-within:ring-amber-200/70 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(2,3,14,.55)] hover:ring-amber-200/35">
       <div className={`relative overflow-hidden ${wide ? 'aspect-[16/10] sm:aspect-[21/9]' : 'aspect-[16/10]'}`}>
-        <Cover story={story} manifest={manifest} />
+        <DodoCover story={story} manifest={manifest} />
         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0d1138] via-[#0d1138]/10 to-transparent" />
         {wide ? (
           <span className="absolute left-4 top-4 rounded-full bg-gradient-to-r from-pink-200 to-amber-200 px-3 py-1 text-xs font-bold text-[#24164a] shadow">✨ {tr(T.special, locale)}</span>

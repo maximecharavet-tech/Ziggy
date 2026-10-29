@@ -7,6 +7,14 @@ their licenses is audited in `docs/evolution/INVENTORY.md`.)
 |---|---|---|---|---|
 | three.js | https://github.com/mrdoob/three.js | MIT | © 2010–2026 three.js authors | 0.186.1 |
 | @types/three (dev only) | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | © Microsoft Corporation | 0.186.0 |
+| wasm-bindgen (Rust crate compiled into `src/lib/tv/wasm/`, and its generated JS glue) | https://github.com/rustwasm/wasm-bindgen | MIT OR Apache-2.0 | © The wasm-bindgen Developers | 0.2.129 |
+
+TV spatial navigation (`rust/ziggy-tv-nav/`, compiled to `src/lib/tv/wasm/`, and its TypeScript twin
+`src/lib/tv/spatial-nav.ts`): the direction scoring is a port of the ideas of **Norigin Spatial Navigation**
+(https://github.com/NoriginMedia/Norigin-Spatial-Navigation, MIT, © 2022 NoriginMedia) — cut-off at the edge
+being left, "adjacent slice" preference, `5 × main + other` weighting, container-first navigation and
+last-focused-child memory. No Norigin code or package is shipped; the algorithm is re-implemented in Rust.
+`wasm-bindgen-cli` 0.2.129 (MIT OR Apache-2.0) builds the glue on the developer's machine (`scripts/build-tv-nav.sh`).
 
 Content:
 - "Jingle Bells" melody (James Lord Pierpont, 1857) — public domain; arranged as a music box in `src/games3d/kit/music.ts`.

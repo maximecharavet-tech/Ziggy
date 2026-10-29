@@ -34,6 +34,7 @@ import { darken, lighten, rgba, strong } from '@/components/arcade/stage/color';
 import { CompanionBuddy } from './CompanionBuddy';
 import { MagicMoments, MomentChips } from './MagicMoments';
 import { wt } from './text';
+import { useAppShell } from '@/lib/use-app-shell';
 
 type Stage = 'intro' | 'loading' | 'playing' | 'saving' | 'result';
 
@@ -70,6 +71,8 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
   const companion = COMPANIONS.find((c) => c.id === memory.companion) ?? COMPANIONS[0];
   const color = world?.colors.accent ?? game.color;
   const reads = hydrated && readAloudOn(memory);
+  // On TV the way back is the TV home (games are opened from there).
+  const { tv } = useAppShell();
   const little = hydrated && memory.age === 'little';
 
   const palette = useMemo(
@@ -205,13 +208,13 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
       <GameScene palette={palette} motifs={motifs} horizon="60vh" startOnly={stage === 'playing' || stage === 'saving'} />
       <div className="relative mx-auto max-w-5xl">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <Link href={world ? `/monde/${world.id}` : '/monde/arcade'} className={PILL}>
+          <Link href={tv ? '/tv' : world ? `/monde/${world.id}` : '/monde/arcade'} className={`${PILL} no-tv`}>
             <span aria-hidden="true" className="rtl:rotate-180">
               ←
             </span>{' '}
-            {world ? tr(world.name, locale) : wt('arcade', locale)}
+            {tv ? (locale === 'fr' ? 'Accueil' : 'Home') : world ? tr(world.name, locale) : wt('arcade', locale)}
           </Link>
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="ms-auto flex flex-wrap items-center gap-2">
             {session && stage === 'playing' ? (
               <span className="hidden rounded-full bg-white/70 px-3 py-1.5 text-xs font-bold text-text-muted shadow-sm sm:inline-block dark:bg-bg-card/80">
                 {wt('difficulty', locale)} {session.difficulty}/5 · {session.source === 'ai' ? '✨ ' + wt('aiMade', locale) : wt('localMade', locale)}
@@ -290,7 +293,7 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
                   ) : null}
                 </div>
                 <motion.div className="order-1 lg:order-3 lg:mt-2" initial={{ opacity: 0, scale: 0.7, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} transition={{ delay: 0.45, type: 'spring', stiffness: 260, damping: 14 }}>
-                  <ToyButton color={color} size="xl" shine halo={stage !== 'loading'} onClick={() => void start()} disabled={stage === 'loading' || !hydrated} faceClassName="!px-8 sm:!px-10">
+                  <ToyButton color={color} size="xl" shine halo={stage !== 'loading'} tvAutofocus onClick={() => void start()} disabled={stage === 'loading' || !hydrated} faceClassName="!px-8 sm:!px-10">
                     <span className="grid h-11 w-11 place-items-center rounded-full bg-white/95 text-xl shadow-[inset_0_-3px_0_rgba(0,0,0,0.08)]" style={{ color: strong(color) }} aria-hidden="true">
                       {stage === 'loading' ? <LoadingDots color={strong(color)} /> : <span className="ms-1">▶</span>}
                     </span>
@@ -399,7 +402,7 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
                   <CompanionBuddy profile={companion} mood={buddy.mood} locale={locale} line={line} size={52} side="left" />
                 </div>
                 <motion.div className="mt-6 flex flex-wrap items-end justify-center gap-3" initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }}>
-                  <ToyButton color={color} variant="white" onClick={() => void start()}>
+                  <ToyButton color={color} variant="white" tvAutofocus onClick={() => void start()}>
                     ↻ {wt('again', locale)}
                   </ToyButton>
                   {world ? (

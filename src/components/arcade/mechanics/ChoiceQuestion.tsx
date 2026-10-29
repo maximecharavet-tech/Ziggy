@@ -100,6 +100,7 @@ export function ChoiceQuestion({
                 tone={tone}
                 onClick={() => pick(i)}
                 disabled={answered}
+                data-tv-autofocus={i === 0 && !answered ? '' : undefined}
                 aria-label={`${ui('option', locale)} ${i + 1}: ${opt}`}
                 aria-pressed={isPicked}
                 className="w-full"

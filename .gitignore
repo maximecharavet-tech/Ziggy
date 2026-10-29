@@ -9,3 +9,4 @@ next-env.d.ts
 # Ziggy voice engine (Rust): build output and the local model/library cache
 /voice-engine/target/
 /voice-engine/.cache/
+/rust/ziggy-tv-nav/target/

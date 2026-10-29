@@ -1,4 +1,5 @@
-@import "tailwindcss";
+/* Class names are looked for in src/ only (not in the native apps, the voice engine or their build output). */
+@import "tailwindcss" source("../");
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -661,4 +662,82 @@ html[data-intro='1'] .ziggy-intro {
 .dodo-twinkle { animation: dodo-twinkle 3s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
   .dodo-twinkle { animation: none; opacity: 0.5; }
+}
+
+/* ═══════════════════════════════════════
+   THE ZIGGY APP — html[data-app] (phone, tablet, TV) and html[data-tv]
+   Set before the first paint by SHELL_BOOT_SCRIPT (src/lib/app-shell.ts).
+   ═══════════════════════════════════════ */
+
+/* What shows where. */
+html:not([data-app]) .app-only,
+html[data-app] .web-only,
+html:not([data-tv]) .tv-only,
+html[data-tv] .no-tv,
+html:not([data-app]) .app-touch-only,
+html[data-tv] .app-touch-only {
+  display: none !important;
+}
+
+/* A native feel: no tap flash, no text selection or long-press menu on the
+   UI, no rubber band, no double-tap delay, no zoom when a field is focused. */
+html[data-app] {
+  --tabbar-h: 4.5rem;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+}
+html[data-app] body { overscroll-behavior: none; }
+html[data-app] :is(input, textarea, [contenteditable='true'], .selectable) {
+  -webkit-user-select: text;
+  user-select: text;
+  -webkit-touch-callout: default;
+}
+html[data-app] :is(input, textarea, select) { font-size: max(16px, 1em); }
+html[data-app] :is(img, video, svg, canvas, a) { -webkit-user-drag: none; }
+/* Room for the tab bar (phones and tablets). */
+html[data-app]:not([data-tv]) body {
+  padding-bottom: calc(var(--tabbar-h) + env(safe-area-inset-bottom));
+}
+/* The top bar: full width and always solid in the app, reaching up under the
+   status bar / notch / Dynamic Island so the page never shows there. */
+html[data-app] .site-nav { padding: 0 !important; }
+html[data-app] .site-nav-bar {
+  max-width: none !important;
+  margin: 0 !important;
+  height: calc(3.75rem + env(safe-area-inset-top)) !important;
+  padding: env(safe-area-inset-top) max(1rem, env(safe-area-inset-right)) 0 max(1rem, env(safe-area-inset-left)) !important;
+}
+html[data-app] .site-nav-bar::before { opacity: 1; border-radius: 0 0 1.5rem 1.5rem; }
+
+/* ── TV: the 10-foot layout driven by the remote ── */
+html[data-tv] {
+  /* Pages made for a laptop grow on a big 1080p TV canvas (the TV home sizes itself). */
+  font-size: clamp(16px, calc(100vw / 80), 24px);
+  scrollbar-width: none;
+}
+html[data-tv] ::-webkit-scrollbar { display: none; }
+html[data-tv],
+html[data-tv] body { background-color: #0b0c26; }
+html[data-tv] body { padding-bottom: 0; }
+/* Under the TV top bar. */
+html[data-tv] #main-content { padding-top: 0.5rem; }
+
+/* The focus ring: thick, warm and glowing, the focused thing a little bigger. */
+html[data-tv] :focus-visible {
+  outline: 0.25rem solid #ffd54a !important;
+  outline-offset: 0.2rem !important;
+  box-shadow: 0 0 0 0.55rem rgb(255 213 74 / 0.25), 0 0.75rem 2.5rem rgb(255 170 40 / 0.45) !important;
+  scale: 1.06;
+  transition: scale 200ms var(--ease-out), outline-offset 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+}
+/* Regions that steer with the arrows themselves (runner, puzzle) only get the ring. */
+html[data-tv] [data-tv-own-keys]:focus-visible { scale: none; outline-offset: -0.25rem !important; }
+/* Things kept in view with some room around when the remote moves to them. */
+html[data-tv] :is(a, button, input, select, textarea, [tabindex]) { scroll-margin: 16vh 6vw; }
+@media (prefers-reduced-motion: reduce) {
+  html[data-tv] :focus-visible { scale: 1.03; }
 }

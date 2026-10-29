@@ -65,7 +65,11 @@ function OrderRound({
     if (selected === null || locked) return;
     const onKey = (e: KeyboardEvent) => {
       const dir = e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? -1 : e.key === 'ArrowDown' || e.key === 'ArrowRight' ? 1 : 0;
-      if (e.key === 'Escape') setSelected(null);
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        setSelected(null);
+        return;
+      }
       if (!dir) return;
       e.preventDefault();
       const to = selected + dir;

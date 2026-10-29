@@ -127,7 +127,7 @@ export function HeroSection() {
             custom={3}
             className="mt-9 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
           >
-            <Button href="/signup" size="lg" magnetic className="group gap-2 shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
+            <Button href="/signup" size="lg" magnetic className="web-only group gap-2 shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
               {t('cta_primary')}
               <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
             </Button>

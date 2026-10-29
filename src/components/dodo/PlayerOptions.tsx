@@ -74,6 +74,7 @@ export function PlayerOptions({
           <button
             type="button"
             onClick={onClose}
+            data-close=""
             aria-label={tr(T.close, locale)}
             className="grid h-11 w-11 place-items-center rounded-full bg-white/10 text-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200"
           >

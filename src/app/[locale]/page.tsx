@@ -19,6 +19,7 @@ import { DemoSection } from '@/components/sections/DemoSection';
 import { FAQSection } from '@/components/sections/FAQSection';
 import { CTAFinalSection } from '@/components/sections/CTAFinalSection';
 import { fetchSiteConfig } from '@/lib/site-config.server';
+import { ParentsNotice } from '@/components/app/ParentsNotice';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -49,10 +50,18 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       {sections.agents && <AgentsSection />}
       {sections.games && <GamesSection />}
       <HowItWorksSection />
-      {sections.pricing && <PricingSection />}
+      {/* No prices in the app (children's store rules): a calm pointer to the parents' area instead. */}
+      {sections.pricing && (
+        <div className="web-only">
+          <PricingSection />
+        </div>
+      )}
+      <ParentsNotice />
       <DemoSection />
       <FAQSection />
-      <CTAFinalSection />
+      <div className="web-only">
+        <CTAFinalSection />
+      </div>
     </PageTransition>
   );
 }

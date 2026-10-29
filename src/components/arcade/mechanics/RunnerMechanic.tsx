@@ -121,10 +121,12 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
 
   return (
     <Stage color={color} className="!p-3 sm:!p-5">
+      {/* On TV the remote's ← → steer Ziggy (the game listens itself); ↑ ↓ still move between the buttons. */}
+      <div data-tv-own-keys="x">
       <RoundProgress index={index} total={total} color={color} locale={locale} />
       <Prompt visual={item.visual} text={item.prompt} color={color} say={round.options} onSpeak={(i) => setReading(i && i > 0 ? i - 1 : null)} />
       <div className="relative w-full rounded-[1.8rem] p-1.5" style={{ background: `linear-gradient(180deg, ${lighten(color, 0.3)}, ${darken(color, 0.1)})`, boxShadow: `0 6px 0 ${darken(color, 0.35)}, 0 22px 36px -18px ${rgba(darken(color, 0.5), 0.6)}` }}>
-        <div className="relative h-[clamp(340px,54vh,470px)] w-full touch-none select-none overflow-hidden rounded-[1.4rem]" style={{ background: `linear-gradient(180deg, ${theme.skyTop}, ${theme.skyBottom} 30%, ${theme.night ? '#211A55' : '#A8E392'} 30%)` }}>
+        <div tabIndex={-1} data-tv-autofocus="" data-tv-own-keys="x" className="relative h-[clamp(340px,54vh,470px)] w-full touch-none select-none overflow-hidden rounded-[1.4rem] outline-none" style={{ background: `linear-gradient(180deg, ${theme.skyTop}, ${theme.skyBottom} 30%, ${theme.night ? '#211A55' : '#A8E392'} 30%)` }}>
           <div ref={hostRef} className="absolute inset-0" role="img" aria-label={ui('runnerCanvas', locale)} />
           {/* The arches' answers, in lane order, lit up while Ziggy reads them. */}
           <div className="pointer-events-none absolute inset-x-2 top-2 z-10 grid gap-2 sm:inset-x-3 sm:top-3" style={{ gridTemplateColumns: `repeat(${round.options.length}, minmax(0, 1fr))` }} dir="ltr" aria-hidden="true">
@@ -206,6 +208,7 @@ export function RunnerMechanic({ content, color, locale, onFinish, onAnswer }: M
             ui('runnerHint', locale)
           )}
         </Feedback>
+      </div>
       </div>
     </Stage>
   );

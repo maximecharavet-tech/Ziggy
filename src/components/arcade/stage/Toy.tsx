@@ -47,6 +47,8 @@ type ToyButtonProps = {
   shine?: boolean;
   /** A soft ring pulses around it (the one thing to tap next). */
   halo?: boolean;
+  /** On TV, the remote's focus lands here when the step opens. */
+  tvAutofocus?: boolean;
   className?: string;
   faceClassName?: string;
   type?: 'button' | 'submit';
@@ -74,6 +76,7 @@ export function ToyButton({
   ariaLabel,
   shine,
   halo,
+  tvAutofocus,
   className = '',
   faceClassName = '',
   type = 'button',
@@ -96,6 +99,7 @@ export function ToyButton({
       disabled={disabled}
       autoFocus={autoFocus}
       aria-label={ariaLabel}
+      data-tv-autofocus={tvAutofocus ? '' : undefined}
       initial="rest"
       animate="rest"
       whileHover={disabled ? undefined : 'hover'}

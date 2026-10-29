@@ -334,3 +334,10 @@
   .dock { bottom: 0.4rem; }
   .coverCard { left: max(7.5rem, calc(50% - 20rem)); bottom: 0.75rem; max-height: calc(100% - 4.25rem); padding: 1rem 1.25rem; }
 }
+
+/* On TV: everything inside the overscan-safe area (≈ 4 % from the edges), Back hint in the corner. */
+:global(html[data-tv]) .player > header { padding: 3.5vh 3.5vw 0; }
+:global(html[data-tv]) .dock { bottom: 4.5vh; }
+:global(html[data-tv]) .panel { bottom: calc(5.5rem + 4.5vh); }
+:global(html[data-tv]) .coverCard { bottom: 4.5vh; }
+:global(html[data-tv]) .ziggy:not([data-mode='fin']) { left: 3vw; bottom: 3.5vh; }

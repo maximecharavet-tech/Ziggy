@@ -11,6 +11,9 @@ import { SoundToggle } from '@/components/ui/SoundToggle';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { ZiggyAvatar } from '@/components/ziggy/Mascot';
 import { AccountButton } from '@/components/account/AccountButton';
+import { ParentsButton } from '@/components/app/ParentsButton';
+import { useAppShell } from '@/lib/use-app-shell';
+import { homeOf } from '@/lib/app-shell';
 
 export function Navbar() {
   const t = useTranslations('nav');
@@ -21,6 +24,8 @@ export function Navbar() {
   const pathname = usePathname();
   const pill = scrolled || pathname.startsWith('/hyper');
   const locale = useLocale();
+  // In the Ziggy app: a slim top bar (Ziggy, sound, parents); the tab bar does the rest.
+  const shell = useAppShell();
   const menuLabel = locale === 'fr' ? { open: 'Ouvrir le menu', close: 'Fermer le menu' } : { open: 'Open menu', close: 'Close menu' };
 
   // Mobile menu: Escape closes it, the page does not scroll behind it, and it closes on navigation.
@@ -61,20 +66,20 @@ export function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${scrolled ? 'pt-2 sm:pt-3' : 'pt-0'}`}
+      className={`site-nav no-tv fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${scrolled ? 'pt-2 sm:pt-3' : 'pt-0'}`}
     >
       <nav
         data-scrolled={pill}
-        className={`liquid-nav mx-auto flex items-center justify-between transition-all duration-300 ${
+        className={`liquid-nav site-nav-bar mx-auto flex items-center justify-between transition-all duration-300 ${
           scrolled ? 'max-w-6xl h-14 sm:h-16 px-3 sm:px-5 mx-3 sm:mx-auto' : 'max-w-7xl h-16 sm:h-18 px-4 sm:px-6 lg:px-8'
         }`}
       >
-        <Link href="/" className="relative z-10 flex items-center gap-2 group shrink-0" aria-label="Ziggy — home">
+        <Link href={shell.app ? homeOf(shell) : '/'} className="relative z-10 flex items-center gap-2 group shrink-0" aria-label="Ziggy — home">
           <ZiggyAvatar size={36} className="transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
           <ZiggyLogo size={96} className="transition-transform duration-300 group-hover:-rotate-1" />
         </Link>
 
-        <div className="relative z-10 hidden lg:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
+        <div className="web-only relative z-10 hidden lg:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
           {navLinks.map((link) => (
             <Link
               key={link.key}
@@ -96,7 +101,12 @@ export function Navbar() {
           ))}
         </div>
 
-        <div className="relative z-10 hidden lg:flex items-center gap-3">
+        <div className="app-only relative z-10 flex items-center gap-2">
+          <SoundToggle />
+          <ParentsButton />
+        </div>
+
+        <div className="web-only relative z-10 hidden lg:flex items-center gap-3">
           <SoundToggle />
           <ThemeToggle />
           <LanguageSwitcher />
@@ -107,7 +117,7 @@ export function Navbar() {
           onClick={() => setIsOpen(!isOpen)}
           aria-expanded={isOpen}
           aria-controls="mobile-menu"
-          className="relative z-10 lg:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
+          className="web-only relative z-10 lg:hidden w-10 h-10 flex items-center justify-center rounded-xl text-text-muted hover:text-text-body hover:bg-border/30 transition-all"
           aria-label={isOpen ? menuLabel.close : menuLabel.open}
         >
           {isOpen ? <X size={22} /> : <Menu size={22} />}

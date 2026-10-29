@@ -21,7 +21,8 @@ export function CookieConsent() {
     try {
       seen = localStorage.getItem(KEY);
     } catch {}
-    if (seen) return;
+    // The app shows no banner (nothing to consent to; the policy is in the parents' area).
+    if (seen || document.documentElement.hasAttribute('data-app')) return;
     // A moment's delay so it doesn't jump in on first paint.
     const timer = setTimeout(() => setVisible(true), 1500);
     return () => clearTimeout(timer);
@@ -44,7 +45,7 @@ export function CookieConsent() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 100, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-          className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:end-6 sm:bottom-6 sm:max-w-sm z-50 glass-strong rounded-2xl border border-border/50 p-4 shadow-xl"
+          className="web-only fixed bottom-4 inset-x-4 sm:inset-x-auto sm:end-6 sm:bottom-6 sm:max-w-sm z-50 glass-strong rounded-2xl border border-border/50 p-4 shadow-xl"
         >
           <div className="flex items-start gap-3">
             <ZiggyAvatar size={40} />

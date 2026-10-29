@@ -216,7 +216,8 @@ export function ArcadeButton({
 export function Stage({ color, children, className = '' }: { color: string; children: ReactNode; className?: string }) {
   const frame = lighten(color, 0.18);
   return (
-    <div className="relative w-full pb-3">
+    // data-tv-stage: on TV the remote lands on the board first (see SpatialNavigation).
+    <div className="relative w-full pb-3" data-tv-stage="">
       <div
         className="relative rounded-[2.4rem] p-2 sm:p-2.5"
         style={{
