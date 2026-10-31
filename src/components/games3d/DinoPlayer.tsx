@@ -393,7 +393,7 @@ export function DinoPlayer() {
                   animate={{ opacity: 1, y: 0 }}
                   className="w-full max-w-md rounded-[2rem] bg-white/95 p-4 text-center shadow-2xl ring-1 ring-white sm:p-6"
                 >
-                  <h2 className="font-display text-2xl font-bold sm:text-3xl">🏛️ {tr(T.museumDone, locale)}</h2>
+                  <h2 className="font-display text-xl font-bold sm:text-2xl">🏛️ {tr(T.museumDone, locale)}</h2>
                   <div className="mt-2 flex justify-center gap-2">
                     {s.done.map((d) => (
                       <span key={d} className="grid h-16 w-16 place-items-center overflow-hidden rounded-2xl bg-[#fff6e6] ring-1 ring-[#ffe2b8]">

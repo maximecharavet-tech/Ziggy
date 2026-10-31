@@ -267,7 +267,7 @@ export function buildWorld(scene: THREE.Scene, opts: { lowPower: boolean; locale
 
   /* Ground: warm sand, flat around the site, dunes further away */
   const gsize = 280;
-  const gseg = opts.lowPower ? 70 : 110;
+  const gseg = opts.lowPower ? 56 : 84;
   const gg = new THREE.PlaneGeometry(gsize, gsize, gseg, gseg);
   gg.rotateX(-Math.PI / 2);
   const gp = gg.attributes.position as THREE.BufferAttribute;
@@ -342,7 +342,7 @@ export function buildWorld(scene: THREE.Scene, opts: { lowPower: boolean; locale
   const palms: [number, number, number, number, number][] = [
     [-9.5, -9.5, 6.2, 0.6, 0.3],
     [-13, -4.5, 5.2, 0.8, 2.6],
-    [9.5, 3.5, 5.6, 0.7, -0.4],
+    [22, 5, 5.6, 0.7, -0.4],
     [-9, 7.5, 5.0, 0.9, 2.2],
     [6.5, -12.5, 6.8, 0.4, 1.4],
     [-3, -14, 5.8, 0.5, 1.9],
@@ -355,7 +355,7 @@ export function buildWorld(scene: THREE.Scene, opts: { lowPower: boolean; locale
   for (const [x, z, s] of [
     [-8.2, -8.2, 1.2],
     [-11.8, -3.6, 1.0],
-    [8.5, 4.6, 1.0],
+    [21, 6, 1.0],
     [-4.2, -12.6, 1.1],
     [7.7, -11.4, 1.3],
     [20, -8.6, 1.1],

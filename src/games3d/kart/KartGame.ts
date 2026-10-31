@@ -187,6 +187,7 @@ export class KartGame {
   private camModeT = 1.8;
   private camPos = new THREE.Vector3();
   private camLook = new THREE.Vector3();
+  private camReady = false;
   private fovKick = 0;
   private podium: { center: THREE.Vector3; yaw: number; t: number; fireT: number; group: THREE.Group } | null = null;
   private stopS = 0;
@@ -1364,16 +1365,20 @@ export class KartGame {
       const fa = this.track.frame(this.s + (portrait ? 16 : 13), this.f3);
       look.copy(fa.p).addScaledVector(fa.side, this.x * (portrait ? 0.12 : 0.45)).addScaledVector(fa.up, 1.2);
     }
-    if (!this.camPos.lengthSq()) {
-      this.camPos.copy(pos);
-      this.camLook.copy(look);
+    // Smoothed as offsets from the kart, so a fast kart (turbo) never leaves the camera behind.
+    const posOff = pos.sub(kp);
+    const lookOff = look.sub(kp);
+    if (!this.camReady) {
+      this.camReady = true;
+      this.camPos.copy(posOff);
+      this.camLook.copy(lookOff);
     }
-    this.camPos.lerp(pos, ease);
-    this.camLook.lerp(look, ease);
-    cam.position.copy(this.camPos);
+    this.camPos.lerp(posOff, ease);
+    this.camLook.lerp(lookOff, ease);
+    cam.position.copy(kp).add(this.camPos);
     // A gentle shake when landing a jump or in a turbo.
     if (this.boostT > 0 && !this.paused) cam.position.addScaledVector(f.up, Math.sin(t * 40) * 0.03 * M);
-    cam.lookAt(this.camLook);
+    cam.lookAt(kp.clone().add(this.camLook));
     this.fovKick *= Math.exp(-dt * 1.5);
     const fov = (portrait ? 74 : 58) + this.fovKick;
     if (Math.abs(cam.fov - fov) > 0.05) {

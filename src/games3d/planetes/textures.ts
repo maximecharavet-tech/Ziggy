@@ -184,20 +184,35 @@ export function planetMap(id: BodyId, small = false): THREE.CanvasTexture {
     }
     case 'jupiter': {
       const turb = fbm(61, 6);
-      const bands = [hex('#f5e9d2'), hex('#e6c39a'), hex('#f2e0c0'), hex('#d4a477'), hex('#f1e0c2'), hex('#ddb487'), hex('#f7eedb'), hex('#cf9d70')];
+      const fine = fbm(62, 14, 3);
+      const zone = hex('#f3e7cf');
+      const zone2 = hex('#ead7b4');
+      const pole = hex('#b9a184');
+      // Brown belts between cream zones, like the real planet (latitude, half-width, colour).
+      const belts: [number, number, RGB][] = [
+        [0.2, 0.025, hex('#c8a47e')],
+        [0.29, 0.03, hex('#d3ae86')],
+        [0.39, 0.045, hex('#b07c52')],
+        [0.6, 0.042, hex('#b5845a')],
+        [0.71, 0.028, hex('#cfa47a')],
+        [0.8, 0.025, hex('#c49c75')],
+      ];
       const spot = hex('#c4553a');
       const spotRim = hex('#f1c79a');
       c = paint(W, H, (u, v) => {
-        const vv = v + (turb(u, v) - 0.5) * 0.05;
-        const f = vv * 17;
-        const i = Math.floor(f);
-        let col = mix(bands[((i % bands.length) + bands.length) % bands.length], bands[(((i + 1) % bands.length) + bands.length) % bands.length], smooth(0.65, 1, f - i));
-        // The Great Red Spot.
+        const vv = v + (turb(u, v) - 0.5) * 0.035 + (fine(u, v) - 0.5) * 0.01;
+        let col = mix(zone, zone2, fine(u, v));
+        for (const [lat, hw, bc] of belts) {
+          const k = Math.exp(-(((vv - lat) / hw) ** 2));
+          if (k > 0.01) col = mix(col, bc, k * 0.9);
+        }
+        col = mix(col, pole, smooth(0.36, 0.48, Math.abs(v - 0.5)));
+        // The Great Red Spot, on the south belt.
         let du = Math.abs(u - 0.66);
         du = Math.min(du, 1 - du);
-        const d = Math.hypot(du / 0.075, (v - 0.64) / 0.045);
-        if (d < 1.25) col = mix(col, spotRim, smooth(1.25, 1.0, d) * 0.7);
-        if (d < 1) col = mix(col, spot, smooth(1, 0.55, d));
+        const d = Math.hypot(du / 0.07, (v - 0.645) / 0.04);
+        if (d < 1.3) col = mix(col, spotRim, smooth(1.3, 1.0, d) * 0.8);
+        if (d < 1) col = mix(col, spot, smooth(1, 0.5, d));
         return col;
       });
       break;
@@ -297,8 +312,9 @@ export function ringTexture(kind: 'saturn' | 'uranus'): THREE.CanvasTexture {
       const light = t < 0.22 ? '200,185,160' : t < 0.62 ? '240,226,190' : '222,204,165';
       col = `rgba(${light},${a})`;
     } else {
-      a = Math.abs(Math.sin(t * 20)) > 0.92 ? 0.55 : 0.08;
-      col = `rgba(200,240,245,${a})`;
+      // Two soft, thin rings (no fine lines: they shimmer when seen edge-on).
+      a = 0.05 + 0.4 * Math.exp(-(((t - 0.35) / 0.07) ** 2)) + 0.5 * Math.exp(-(((t - 0.75) / 0.06) ** 2));
+      col = `rgba(210,244,248,${a.toFixed(3)})`;
     }
     g.fillStyle = col;
     g.fillRect(x, 0, 1, 4);

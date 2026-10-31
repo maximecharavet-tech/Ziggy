@@ -227,6 +227,14 @@ export class DinoGame {
     this.brush = this.makeBrush();
     this.ziggy.userData.model.arms[1].wrist.add(this.brush);
     this.scene.add(this.ziggy);
+    // Only Ziggy's big pieces cast shadows (dozens of little felt parts would double the draw calls).
+    const parts: THREE.Mesh[] = [];
+    this.ziggy.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh && m.castShadow) parts.push(m);
+    });
+    const tris = (m: THREE.Mesh) => (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count);
+    parts.sort((a, b) => tris(b) - tris(a)).slice(8).forEach((m) => (m.castShadow = false));
 
     this.arrow = this.makeArrow();
     this.cookie = this.makeCookie();
@@ -904,7 +912,7 @@ export class DinoGame {
       const behind = palm.position.clone().add(v(0, 0, -1.25));
       d.root.position.y = 0;
       this.setView('hide');
-      this.ziggyGo(v(SITE.hide[0].x - 2.6, 0, SITE.hide[0].z + 2.6), 0.6);
+      this.ziggyGo(v(SITE.hide[0].x - 1.6, 0, SITE.hide[0].z + 2.8), 0.6);
       this.ziggy.userData.rig.cue('think');
       this.walkDino(d, d.root.position.clone(), behind, 2.4, d.root.rotation.y, -Math.PI / 2, () => {
         this.hideSpot = hide.spot;
@@ -1205,7 +1213,7 @@ export class DinoGame {
       hide: () => {
         const a = SITE.hide[0];
         const c = SITE.hide[2];
-        return { box: new THREE.Box3(v(a.x - 3.2, 0, a.z - 2.5), v(c.x + 2.4, 4.6, c.z + 3.5)), pitch: 0.24, yaw: 0 };
+        return { box: new THREE.Box3(v(a.x - 3.0, 0, a.z - 2.5), v(c.x + 2.4, 4.6, c.z + 3.8)), pitch: 0.3, yaw: 0 };
       },
       museum: () => {
         const M = SITE.museum;

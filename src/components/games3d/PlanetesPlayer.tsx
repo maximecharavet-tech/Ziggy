@@ -57,6 +57,9 @@ const T = {
   last: { fr: 'Rentrer à la poste', en: 'Back to the post office' },
   where: { fr: 'Où va ce colis ?', en: 'Where does this parcel go?' },
   flying: { fr: 'En route vers', en: 'On the way to' },
+  loadingUp: { fr: 'Ziggy charge les colis dans la fusée…', en: 'Ziggy loads the parcels into the rocket…' },
+  delivering: { fr: 'Ziggy livre le colis…', en: 'Ziggy delivers the parcel…' },
+  takeoff: { fr: 'Décollage !', en: 'Lift-off!' },
   delivery: { fr: 'Livraison', en: 'Delivery' },
   done: { fr: 'Tournée terminée !', en: 'Round finished!' },
   map: { fr: 'Ta carte des livraisons', en: 'Your delivery map' },
@@ -433,9 +436,22 @@ export function PlanetesPlayer() {
               </div>
             ) : null}
 
-            {state && (state.phase === 'fly' || state.phase === 'detour') && state.target && phase === 'play' && !bubble ? (
-              <p className="rounded-full bg-[#0b1238]/80 px-4 py-2 text-sm font-bold shadow ring-1 ring-white/15" role="status">
-                🚀 {tr(T.flying, locale)} {tr(BODY[state.target].the, locale)}…
+            {state && phase === 'play' && !['ask', 'opened', 'end'].includes(state.phase) ? (
+              // While the rocket moves, the remote's focus rests here (OK does nothing), never on the back button.
+              <p
+                tabIndex={-1}
+                data-tv-focusable=""
+                data-tv-autofocus=""
+                className="pointer-events-auto rounded-full bg-[#0b1238]/80 px-4 py-2 text-sm font-bold shadow ring-1 ring-white/15 outline-none focus-visible:ring-4 focus-visible:ring-amber-300"
+                role="status"
+              >
+                {state.phase === 'intro'
+                  ? `📦 ${tr(T.loadingUp, locale)}`
+                  : (state.phase === 'fly' || state.phase === 'detour') && state.target
+                    ? `🚀 ${tr(T.flying, locale)} ${tr(BODY[state.target].the, locale)}…`
+                    : state.phase === 'depart'
+                      ? `🚀 ${tr(T.takeoff, locale)}`
+                      : `📦 ${tr(T.delivering, locale)}`}
               </p>
             ) : null}
 
