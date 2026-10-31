@@ -16,6 +16,7 @@ const PLAY = [
   '/monde/3d/grand-huit',
   '/monde/3d/dino',
   '/monde/3d/detective',
+  '/monde/3d/pizza',
   '/monde/musique',
   '/monde/bac-a-sable',
   '/monde/nid',

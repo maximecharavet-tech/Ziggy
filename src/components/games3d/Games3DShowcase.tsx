@@ -101,6 +101,17 @@ const GAMES: {
     from: '#2f6fb3',
     to: '#f29a3c',
     skill: { fr: 'Logique · lecture · vocabulaire', en: 'Logic · reading · vocabulary' },
+  },  {
+    href: '/monde/3d/pizza',
+    emoji: '🍕',
+    title: { fr: 'La Pizzeria de Ziggy', en: 'Ziggy’s Pizzeria' },
+    teaser: {
+      fr: 'Garnis les pizzas des animaux du village et régale tout le monde !',
+      en: 'Top the village animals’ pizzas and make everyone happy!',
+    },
+    from: '#ff8a3d',
+    to: '#4cc9b7',
+    skill: { fr: 'Compter · additions · fractions · monnaie', en: 'Counting · sums · fractions · change' },
   },
 ];
 
