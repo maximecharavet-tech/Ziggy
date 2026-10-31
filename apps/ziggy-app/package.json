@@ -1,6 +1,6 @@
 {
   "name": "ziggy-app",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "private": true,
   "description": "Ziggy AI native apps (Android, Android TV, iPhone, iPad): a Tauri 2 shell around https://ziggy-ai.fr",
   "license": "UNLICENSED",
