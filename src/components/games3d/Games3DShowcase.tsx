@@ -44,6 +44,42 @@ const GAMES: {
       en: 'Counting · sums · times tables',
     },
   },
+  {
+    href: '/monde/3d/kart',
+    emoji: '🏎️',
+    title: { fr: 'Ziggy Kart des lettres', en: 'Ziggy’s Letter Kart' },
+    teaser: {
+      fr: 'Roule sur la route arc-en-ciel et passe sous les bonnes lettres pour écrire les mots.',
+      en: 'Race along the rainbow road and drive under the right letters to spell the words.',
+    },
+    from: '#7b61ff',
+    to: '#ff7ab8',
+    skill: { fr: 'Lettres · lecture · vocabulaire', en: 'Letters · reading · vocabulary' },
+  },
+  {
+    href: '/monde/3d/planetes',
+    emoji: '🪐',
+    title: { fr: 'Le Facteur des Planètes', en: 'The Planet Postman' },
+    teaser: {
+      fr: 'Livre les colis de planète en planète : résous l’énigme pour trouver la bonne adresse !',
+      en: 'Deliver parcels from planet to planet: solve the riddle to find the right address!',
+    },
+    from: '#060a24',
+    to: '#5b3fa8',
+    skill: { fr: 'Planètes · sciences · compter', en: 'Planets · science · counting' },
+  },
+  {
+    href: '/monde/3d/grand-huit',
+    emoji: '🎢',
+    title: { fr: 'Le Grand Huit des Nombres', en: 'The Number Coaster' },
+    teaser: {
+      fr: 'Construis le trajet du wagonnet et arrête Ziggy pile à la bonne gare… Splash !',
+      en: 'Build the cart’s ride and stop Ziggy right at the station… Splash!',
+    },
+    from: '#4a5bc4',
+    to: '#ff8a5c',
+    skill: { fr: 'Compter · additions · soustractions · tables · suites', en: 'Counting · sums · take-aways · times tables · patterns' },
+  },
 ];
 
 /** The 3D games, as big posters. */

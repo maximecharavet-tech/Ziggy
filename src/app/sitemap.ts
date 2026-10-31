@@ -11,6 +11,9 @@ const MAIN = ['', '/monde', '/monde/arcade', '/creer', '/coloriage', '/dodo', '/
 const PLAY = [
   '/monde/3d/noel',
   '/monde/3d/luge',
+  '/monde/3d/kart',
+  '/monde/3d/planetes',
+  '/monde/3d/grand-huit',
   '/monde/musique',
   '/monde/bac-a-sable',
   '/monde/nid',
