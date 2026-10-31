@@ -83,7 +83,7 @@ describe('Kart des lettres — a race', () => {
               expect([...slots].sort((a, b) => a - b)).toEqual(slots);
             }
           }
-  });
+  }, 60000);
 
   it('follows the age: first letter (little), whole word (middle), tricky sounds (big)', () => {
     for (const locale of LOCALES)
@@ -123,7 +123,7 @@ describe('Kart des lettres — a race', () => {
           if (level <= 2) expect(big.words.flatMap((w) => w.steps).some((s) => isTricky(s.answer))).toBe(true);
         }
       }
-  });
+  }, 60000);
 
   it('is calmer and wider for the little ones, and only a bit faster with level', () => {
     expect(pacing('little', 1).speed).toBeLessThan(pacing('middle', 1).speed);

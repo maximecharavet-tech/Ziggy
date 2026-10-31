@@ -738,7 +738,7 @@ export class KartGame {
     const slot = this.trailer.slots[this.collected.length % this.trailer.slots.length];
     this.collected.push(prop);
     this.kart.root.add(prop);
-    prop.position.set(0, 1.6, 3.4);
+    prop.position.set(0, 1.0, 3.8);
     prop.scale.setScalar(0.01);
     const fromLocal = prop.position.clone();
     this.flyers.push({
@@ -746,7 +746,7 @@ export class KartGame {
       t: 0,
       dur: 0.5,
       from: fromLocal,
-      to: () => new THREE.Vector3(0, 2.5, 3.0),
+      to: () => new THREE.Vector3(0, 1.75, 3.5),
       arc: 0.6,
       scaleFrom: 0.01,
       scaleTo: 1,

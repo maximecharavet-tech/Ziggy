@@ -737,7 +737,7 @@ export function buildVillage(lowPower: boolean): Village {
 
   // Lamps, flower beds, trees.
   for (const [x, z] of [
-    [7.9, 5.4],
+    [10.6, 6.0],
     [-4.6, -8.6],
     [4.4, -8.8],
     [-9.6, 5.8],
@@ -845,7 +845,7 @@ export function buildVillage(lowPower: boolean): Village {
 
   // Little lights to glow a bit (lanterns).
   for (const [x, z] of [
-    [7.9, 5.4],
+    [10.6, 6.0],
     [-4.6, -8.6],
     [4.4, -8.8],
     [-9.6, 5.8],
