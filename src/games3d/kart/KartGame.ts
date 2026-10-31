@@ -1,12 +1,12 @@
 import * as THREE from 'three';
 import { Post } from '../kit/post';
-import { createRenderer, disposeTree, glow, glowTex, prefersLowPower, studioEnvironment } from '../kit/look';
+import { createRenderer, disposeTree, glow, glowMat, glowTex, prefersLowPower, studioEnvironment } from '../kit/look';
 import { makeZiggy, type ZiggyActor } from '../kit/models';
 import { Puffs } from '../kit/world';
 import { rng } from '../kit/rng';
 import { makeScarf } from '../ziggy/model';
 import { KartAudio, type KartSound } from './audio';
-import { Bubbles, Confetti, bannerTexture, bubbleSprite, checkerTexture, letterTexture, puddleTexture, soapTexture, turboTexture } from './fx';
+import { Bubbles, Confetti, RainbowTrail, bannerTexture, bubbleSprite, checkerTexture, letterTexture, puddleTexture, soapTexture, turboTexture } from './fx';
 import { ScarfTail, makeKart, makeTrailer, type KartModel, type TrailerModel } from './kart';
 import { BUBBLES, checkGate, reshuffle, scoreRun, type KartRun, type Step } from './logic';
 import { Kit, makeFlyingCow, makeProp, mergeModel } from './props';
@@ -70,6 +70,7 @@ interface Arch {
   sign: THREE.Sprite;
   halo: THREE.Sprite;
   top: THREE.Mesh;
+  ring?: THREE.Mesh;
 }
 
 interface Row {
@@ -82,6 +83,8 @@ interface Row {
   arches: Arch[];
   done: boolean;
   sparkleT: number;
+  /** Seconds since the kart passed (the arches then pop away). */
+  gone: number;
 }
 
 interface Feature {
@@ -131,6 +134,7 @@ export class KartGame {
   private sparkles = new Puffs(glowTex());
   private confetti: Confetti;
   private bubbles = new Bubbles();
+  private trail = new RainbowTrail(1.8);
   private letterTex = new Map<string, THREE.Texture>();
   private gateGeo: { post: THREE.BufferGeometry; top: THREE.BufferGeometry; foot: THREE.BufferGeometry };
   private gateMat: { post: THREE.Material; tops: THREE.Material[]; foot: THREE.Material };
@@ -177,7 +181,7 @@ export class KartGame {
   private rightCount = 0;
   private collected: THREE.Object3D[] = [];
   private started = performance.now();
-  private nextCow = 26;
+  private cowDue = false;
   private cow: { g: THREE.Group; t: number; side: number; bubble: THREE.Sprite; waved: boolean } | null = null;
   private camMode: 'chase' | 'front' | 'podium' = 'front';
   private camModeT = 1.8;
@@ -294,7 +298,7 @@ export class KartGame {
     model.body.add(makeScarf(this.lowPower), this.scarf.mesh);
     this.kart.seat.add(z);
     s.add(this.kart.root, this.trailer.root);
-    s.add(this.puffs.group, this.sparkles.group, this.confetti.mesh, this.bubbles.group);
+    s.add(this.puffs.group, this.sparkles.group, this.confetti.mesh, this.bubbles.group, this.trail.mesh);
   }
 
   /** A candy-striped post (vertex colours), shared by every gate. */
@@ -359,6 +363,9 @@ export class KartGame {
 
   private onKey = (e: KeyboardEvent) => {
     if (e.altKey || e.ctrlKey || e.metaKey) return;
+    // TV: the arrows steer only from the lane controls (elsewhere they move the focus).
+    const a = document.activeElement as HTMLElement | null;
+    if (document.documentElement.hasAttribute('data-tv') && a && a !== document.body && !a.closest('[data-tv-own-keys]')) return;
     const k = e.key.toLowerCase();
     if (k === 'arrowleft' || k === 'a' || k === 'q') this.steer(-1);
     else if (k === 'arrowright' || k === 'd') this.steer(1);
@@ -389,6 +396,7 @@ export class KartGame {
   private onVisibility = () => {
     if (document.hidden) this.stop();
     else this.start();
+    this.audio.setPaused(document.hidden || this.paused);
   };
 
   /* ───────────────────────── Flow ───────────────────────── */
@@ -462,10 +470,19 @@ export class KartGame {
       sign.scale.setScalar(Math.min(2.3, gap * 0.7));
       sign.position.set(-x, 3.55, 0);
       sign.renderOrder = 2;
-      const halo = glow(hint ? '#fff09a' : '#ffffff', hint ? 3.6 : 2.6, hint ? 0.7 : 0.28);
+      const lit = hint > 0 && text === step.answer;
+      const halo = glow(lit ? '#fff09a' : '#ffffff', lit ? 3.6 : 2.6, lit ? 0.7 : 0.28);
       halo.position.copy(sign.position);
       group.add(top, halo, sign);
-      arches.push({ lane, text, sign, halo, top });
+      const arch: Arch = { lane, text, sign, halo, top };
+      if (lit) {
+        // A golden ring spins around the right letter: the gentle hint.
+        const ring = new THREE.Mesh(new THREE.TorusGeometry(sign.scale.x * 0.56, 0.09, 8, 32), glowMat('#ffd84d', 1.5));
+        ring.position.copy(sign.position);
+        group.add(ring);
+        arch.ring = ring;
+      }
+      arches.push(arch);
       if (hint === 2 && text !== step.answer) {
         (sign.material as THREE.SpriteMaterial).opacity = 0.32;
         sign.scale.multiplyScalar(0.8);
@@ -473,7 +490,7 @@ export class KartGame {
       }
     }
     this.scene.add(group);
-    const row: Row = { s, word: this.wordIndex, step: this.stepIndex, data: step, hint, group, arches, done: false, sparkleT: 0 };
+    const row: Row = { s, word: this.wordIndex, step: this.stepIndex, data: step, hint, group, arches, done: false, sparkleT: 0, gone: 0 };
     this.rows.push(row);
     this.planFeatures(this.s, s);
     return row;
@@ -511,15 +528,16 @@ export class KartGame {
       group.add(pad, h);
     } else if (kind === 'puddle') {
       tex = puddleTexture();
-      const geo = new THREE.CircleGeometry(1.25, 28);
+      const soap = soapTexture();
+      const geo = new THREE.CircleGeometry(1.35, 28);
       geo.rotateX(-Math.PI / 2);
       const p = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ map: tex, transparent: true, depthWrite: false }));
       p.scale.set(1, 1, 1.5);
       p.position.set(-x, 0.04, 0);
       group.add(p);
       for (let i = 0; i < 4; i++) {
-        const b = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.bubbleTex(), transparent: true, depthWrite: false }));
-        b.scale.setScalar(0.4 + i * 0.12);
+        const b = new THREE.Sprite(new THREE.SpriteMaterial({ map: soap, transparent: true, depthWrite: false }));
+        b.scale.setScalar(0.55 + i * 0.15);
         b.position.set(-x + Math.cos(i * 2.1) * 0.7, 0.5 + i * 0.35, Math.sin(i * 2.1) * 0.9);
         b.userData.bob = i;
         group.add(b);
@@ -576,12 +594,6 @@ export class KartGame {
     this.features.push({ kind, s, lane, group, done: false, tex });
   }
 
-  private bubbleTexCache: THREE.Texture | null = null;
-  private bubbleTex() {
-    this.bubbleTexCache ??= soapTexture();
-    return this.bubbleTexCache;
-  }
-
   private letterTexture(text: string, lane: number) {
     const key = `${text}|${lane}`;
     let t = this.letterTex.get(key);
@@ -600,7 +612,8 @@ export class KartGame {
       this.talk.material.dispose();
     }
     this.talk = bubbleSprite(text, this.opts.font);
-    this.talk.position.set(0, 3.55, 0.2);
+    // Beside Ziggy's head (never over the gates ahead).
+    this.talk.position.set(1.75, 2.75, 0.1);
     this.talk.scale.multiplyScalar(0.01);
     this.kart.root.add(this.talk);
     this.talkT = dur;
@@ -712,20 +725,19 @@ export class KartGame {
     const w = this.word;
     this.play('word');
     // Rainbow turbo!
-    this.boostT = 2.2;
+    this.boostT = 3.0;
     this.boostK = this.run.band === 'little' ? 0.5 : 0.75;
     this.fovKick = 8 * this.motion;
-    this.say(BUBBLES.turbo[this.run.locale], 1.6);
     if (!this.opts.reduceMotion) {
       this.camMode = 'front';
-      this.camModeT = 2.6;
+      this.camModeT = 2.5;
     }
     // The word's object pops up in front of the kart, then jumps into the trailer.
     const prop = makeProp(w.prop, 1.7);
     const slot = this.trailer.slots[this.collected.length % this.trailer.slots.length];
     this.collected.push(prop);
     this.kart.root.add(prop);
-    prop.position.set(0, 2.3, 6.5);
+    prop.position.set(0, 1.6, 3.4);
     prop.scale.setScalar(0.01);
     const fromLocal = prop.position.clone();
     this.flyers.push({
@@ -733,17 +745,19 @@ export class KartGame {
       t: 0,
       dur: 0.5,
       from: fromLocal,
-      to: () => new THREE.Vector3(0, 2.6, 5.5),
+      to: () => new THREE.Vector3(0, 2.5, 3.0),
       arc: 0.6,
       scaleFrom: 0.01,
       scaleTo: 1,
       spin: Math.PI * 2,
       done: () => {
         this.sparkles.emit(prop.getWorldPosition(new THREE.Vector3()), { color: '#ffe066', count: Math.round(18 * this.motion), spread: 2.5, up: 2.5, life: 1, size: 0.45, additive: true });
-        this.later(0.55, () => this.propToTrailer(prop, slot));
+        this.later(0.85, () => this.propToTrailer(prop, slot));
       },
     });
     this.emit();
+    // After the 2nd and 4th words, the flying cow comes to say hello (no gate is coming).
+    if (this.wordIndex === 1 || this.wordIndex === 3) this.later(0.9, () => (this.cowDue = true));
     const last = this.wordIndex >= this.run.words.length - 1;
     this.later(3.0, () => {
       if (last) {
@@ -913,6 +927,7 @@ export class KartGame {
       this.boostK = this.run.band === 'little' ? 0.3 : 0.45;
       this.fovKick = 6 * this.motion;
       this.play('turbo');
+      this.say(BUBBLES.turbo[this.run.locale], 1.1);
       this.ziggy.userData.rig.cue('giggle');
     } else if (ft.kind === 'puddle' && inLane) {
       this.wiggleT = 1.2;
@@ -1072,6 +1087,12 @@ export class KartGame {
       }
     }
 
+    // The rainbow ribbon of the turbo, on the road behind the kart.
+    if (gdt > 0) {
+      const rear = this.track.at(this.s - 1.9, this.x, 0.06 + this.jumpY * 0.3, this.f2);
+      this.trail.update(rear, this.f2.side, this.boostT > 0 && this.phase === 'race' ? Math.min(1, this.boostT * 1.5) : 0, gdt);
+    }
+
     // Ziggy: rig, antennas and scarf in the wind.
     const rig = this.ziggy.userData.rig;
     rig.lookAt(-this.vx * 0.15 + (this.lane - 1) * 0.25, 0.05);
@@ -1087,8 +1108,8 @@ export class KartGame {
     // Speech bubble pop.
     if (this.talk) {
       this.talkT -= dt;
-      const sc = this.talkT > 0 ? Math.min(1, this.talk.scale.x / 2.6 + dt * 8) : Math.max(0, this.talk.scale.x / 2.6 - dt * 6);
-      this.talk.scale.set(2.6 * sc, 1.3 * sc, 1);
+      const sc = this.talkT > 0 ? Math.min(1, this.talk.scale.x / 2.1 + dt * 8) : Math.max(0, this.talk.scale.x / 2.1 - dt * 6);
+      this.talk.scale.set(2.1 * sc, 1.05 * sc, 1);
       if (this.talkT <= 0 && sc <= 0.01) {
         this.kart.root.remove(this.talk);
         (this.talk.material as THREE.SpriteMaterial).map?.dispose();
@@ -1104,11 +1125,26 @@ export class KartGame {
         const right = a.text === row.data.answer;
         const bob = Math.sin(t * 2.6 + a.lane) * 0.08 * M;
         if (a.sign.parent === row.group) a.sign.position.y = 3.55 + bob;
+        if (a.ring) {
+          a.ring.visible = !row.done;
+          a.ring.position.y = 3.55 + bob;
+          a.ring.lookAt(this.camera.position);
+          a.ring.rotateZ(t * 2);
+          a.ring.scale.setScalar(1 + Math.sin(t * 6) * 0.08 * M);
+        }
         if (!row.done && row.hint && right) {
           const pulse = 1 + Math.sin(t * 6) * 0.18 * M;
           a.halo.scale.setScalar(3.8 * pulse);
           (a.halo.material as THREE.SpriteMaterial).opacity = 0.55 + Math.sin(t * 6) * 0.2;
         }
+      }
+      if (row.done) {
+        // Passed: the gate pops away before the camera gets there.
+        row.gone += gdt;
+        const k = Math.max(0, Math.min(1, (row.gone - 0.25) / 0.35));
+        const sc = 1 - k * k;
+        row.group.scale.set(Math.max(0.001, 1 + k * 0.25), Math.max(0.001, sc), Math.max(0.001, 1 + k * 0.25));
+        row.group.visible = sc > 0.01;
       }
       if (!row.done && row.hint) {
         row.sparkleT -= gdt;
@@ -1124,7 +1160,11 @@ export class KartGame {
         this.scene.remove(r.group);
         r.group.traverse((o) => {
           if ((o as THREE.Sprite).isSprite) (o as THREE.Sprite).material.dispose();
-          if ((o as THREE.Mesh).isMesh && (o as THREE.Mesh).geometry.type === 'SphereGeometry') (o as THREE.Mesh).geometry.dispose();
+          const m = o as THREE.Mesh;
+          if (m.isMesh && (m.geometry.type === 'SphereGeometry' || m.geometry.type === 'TorusGeometry') && m.geometry !== this.gateGeo.top) {
+            m.geometry.dispose();
+            if (m.material !== this.gateMat.foot) (m.material as THREE.Material).dispose();
+          }
         });
         return false;
       }
@@ -1212,18 +1252,18 @@ export class KartGame {
 
   private stepCow(dt: number, gdt: number, t: number) {
     if (this.phase === 'race' && !this.cow && gdt > 0) {
-      this.nextCow -= gdt;
-      const next = this.rows.find((r) => !r.done);
-      const calm = !next || next.s - this.s > this.base * 3.2;
-      if (this.nextCow <= 0 && calm) {
-        this.nextCow = 32 + this.seedR() * 14;
+      if (this.cowDue) {
+        this.cowDue = false;
         const g = makeFlyingCow();
         const bubble = bubbleSprite(BUBBLES.cow[this.run.locale], this.opts.font);
-        bubble.position.set(0, 3.3, 0);
+        bubble.scale.multiplyScalar(1.6);
         bubble.visible = false;
         g.add(bubble);
         this.scene.add(g);
-        this.cow = { g, t: 0, side: this.seedR() < 0.5 ? -1 : 1, bubble, waved: false };
+        const side = this.seedR() < 0.5 ? -1 : 1;
+        // Beside the cow, toward the middle of the road.
+        bubble.position.set(-side * 3.4, 2.3, 0);
+        this.cow = { g, t: 0, side, bubble, waved: false };
       }
     }
     const c = this.cow;
@@ -1232,14 +1272,17 @@ export class KartGame {
     const hw = this.track.halfWidth;
     let ahead: number;
     let h: number;
-    if (c.t < 2.2) {
-      const p = c.t / 2.2;
+    let lat = c.side * hw * 0.5;
+    if (c.t < 1.4) {
+      // Swoops in from high up and far ahead.
+      const p = c.t / 1.4;
       const e = 1 - (1 - p) ** 3;
-      ahead = 50 - 43 * e;
-      h = 14 - 10 * e;
-    } else if (c.t < 6) {
-      ahead = 7 + Math.sin((c.t - 2.2) * 1.3) * 1.5;
-      h = 4 + Math.sin(c.t * 2.4) * 0.4;
+      ahead = 45 - 35.5 * e;
+      h = 16 - 11.2 * e;
+      lat = c.side * (hw + 8 - (hw * 0.5 + 8) * e);
+    } else if (c.t < 4.0) {
+      ahead = 9.5 + Math.sin((c.t - 1.4) * 1.6) * 1.2;
+      h = 4.8 + Math.sin(c.t * 2.4) * 0.35;
       if (!c.waved) {
         c.waved = true;
         c.bubble.visible = true;
@@ -1247,10 +1290,11 @@ export class KartGame {
         this.ziggy.userData.rig.cue('wave');
       }
     } else {
-      const p = (c.t - 6) / 2.4;
+      const p = (c.t - 4.0) / 1.6;
       c.bubble.visible = false;
-      ahead = 7 + p * p * 60;
-      h = 4 + p * p * 30;
+      ahead = 9.5 + p * p * 50;
+      h = 4.8 + p * p * 30;
+      lat += c.side * p * 12;
       if (p >= 1) {
         this.scene.remove(c.g);
         disposeTree(c.g);
@@ -1258,8 +1302,8 @@ export class KartGame {
         return;
       }
     }
-    this.track.place(c.g, this.s + ahead, c.side * (hw + 4.5), h, this.f2);
-    c.g.rotateY(Math.PI + c.side * 0.5);
+    this.track.place(c.g, this.s + ahead, lat, h, this.f2);
+    c.g.rotateY(Math.PI + c.side * 0.35);
     c.g.rotateZ(Math.sin(t * 2.2) * 0.12);
     for (const w of c.g.userData.wings as THREE.Object3D[]) w.rotation.z = Math.sin(t * 14) * 0.55 * (w.userData.side as number);
   }
@@ -1307,17 +1351,18 @@ export class KartGame {
       ease = 1 - Math.exp(-dt * 2.2);
     } else if (this.camMode === 'front') {
       // A friendly "selfie" view: in front of Ziggy, looking back at him.
-      const side = this.camModeT > 1.3 ? 1 : -1;
-      pos.copy(kp).addScaledVector(f.t, 5.2).addScaledVector(f.up, 2.4).addScaledVector(f.side, side * 1.6 * (portrait ? 0.6 : 1));
-      look.copy(kp).addScaledVector(f.up, 1.5).addScaledVector(f.t, 0.3);
+      const side = this.camModeT > 1.4 ? 1 : -1;
+      pos.copy(kp).addScaledVector(f.t, portrait ? 9.5 : 7.8).addScaledVector(f.up, portrait ? 3.6 : 3.1).addScaledVector(f.side, side * (portrait ? 1.4 : 2.6));
+      look.copy(kp).addScaledVector(f.up, portrait ? 1.1 : 1.5).addScaledVector(f.t, 0.8);
       ease = 1 - Math.exp(-dt * 3.2);
     } else {
       const back = portrait ? 11.5 : 9.0;
       const up = portrait ? 6.2 : 4.6;
       const fb = this.track.frame(this.s - back, this.f2);
-      pos.copy(fb.p).addScaledVector(fb.side, this.x * 0.55).addScaledVector(fb.up, up + this.jumpY * 0.5);
+      // Narrow screens keep the camera near the middle so all three gates stay in view.
+      pos.copy(fb.p).addScaledVector(fb.side, this.x * (portrait ? 0.22 : 0.55)).addScaledVector(fb.up, up + this.jumpY * 0.5);
       const fa = this.track.frame(this.s + (portrait ? 16 : 13), this.f3);
-      look.copy(fa.p).addScaledVector(fa.side, this.x * 0.45).addScaledVector(fa.up, 1.2);
+      look.copy(fa.p).addScaledVector(fa.side, this.x * (portrait ? 0.12 : 0.45)).addScaledVector(fa.up, 1.2);
     }
     if (!this.camPos.lengthSq()) {
       this.camPos.copy(pos);
@@ -1330,11 +1375,16 @@ export class KartGame {
     if (this.boostT > 0 && !this.paused) cam.position.addScaledVector(f.up, Math.sin(t * 40) * 0.03 * M);
     cam.lookAt(this.camLook);
     this.fovKick *= Math.exp(-dt * 1.5);
-    const fov = (portrait ? 70 : 58) + this.fovKick;
+    const fov = (portrait ? 74 : 58) + this.fovKick;
     if (Math.abs(cam.fov - fov) > 0.05) {
       cam.fov = fov;
       cam.updateProjectionMatrix();
     }
+  }
+
+  /** End-to-end tests only (software GL is slow): run the race forward without drawing. */
+  fastForward(seconds: number) {
+    for (let i = 0; i < Math.round(seconds / 0.05); i++) this.step(0.05);
   }
 
   dispose() {
@@ -1349,7 +1399,6 @@ export class KartGame {
     this.bubbles.dispose();
     this.letterTex.forEach((t) => t.dispose());
     this.letterTex.clear();
-    this.bubbleTexCache?.dispose();
     for (const g of Object.values(this.gateGeo)) g.dispose();
     this.gateMat.post.dispose();
     this.gateMat.foot.dispose();

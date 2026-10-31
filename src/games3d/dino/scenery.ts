@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { glow, glowTex } from '../kit/look';
 import { rng } from '../kit/rng';
 import { makeSky } from '../nid/garden';
-import { Parts, box, col, cone, ell, stick, tf, v, type V3 } from './geo';
+import { Parts, box, col, ell, stick, tf, v, type V3 } from './geo';
 
 /**
  * The sunny dig site, built in code: warm sand, striped sandstone mesas,
@@ -347,9 +347,9 @@ export function buildWorld(scene: THREE.Scene, opts: { lowPower: boolean; locale
     [6.5, -12.5, 6.8, 0.4, 1.4],
     [-3, -14, 5.8, 0.5, 1.9],
     [21, -10, 6, 0.6, 2.8],
-    [30, -2, 5.4, 0.8, 0.6],
-    [50, -3, 5.6, 0.7, 2.5],
-    [29, -12, 6.4, 0.5, 0.2],
+    [24.5, 2.5, 5.4, 0.8, 0.6],
+    [56, -4, 5.6, 0.7, 2.5],
+    [25, -13, 6.4, 0.5, 0.2],
   ];
   palms.forEach(([x, z, h, lean, a], i) => palm(smooth, leaves, v(x, 0, z), h, lean, a, 100 + i));
   for (const [x, z, s] of [
@@ -527,14 +527,18 @@ export function buildWorld(scene: THREE.Scene, opts: { lowPower: boolean; locale
       box(flatCast, v(x, 6.55, z), v(1.2, 0.3, 1.2), '#e6d4b0');
     }
     box(flatCast, v(M.x, 7.0, M.z - D / 2 + 1.0), v(W + 0.6, 0.6, 2.6), '#efe1c3');
-    const ped = new THREE.CylinderGeometry(W / 2 + 0.3, W / 2 + 0.3, 2.4, 3, 1);
-    flatCast.add(ped, '#f3e6cc', tf(v(M.x, 8.1, M.z - D / 2 + 1.0), [Math.PI / 2, 0, Math.PI / 2], v(1, 1, 0.18)));
+    const tri = new THREE.Shape();
+    tri.moveTo(-W / 2 - 0.3, 0);
+    tri.lineTo(W / 2 + 0.3, 0);
+    tri.lineTo(0, 2.3);
+    tri.closePath();
+    flatCast.add(new THREE.ExtrudeGeometry(tri, { depth: 2.4, bevelEnabled: false }), '#f3e6cc', tf(v(M.x, 7.3, M.z - D / 2 - 0.2)));
     // Pedestals (up to 3).
     for (let i = 0; i < 3; i++) {
-      const x = M.x + (i - 1) * 8;
+      const x = M.x + (i - 1) * 6.6;
       const z = M.z - 0.5;
-      box(flatCast, v(x, 0.5 + 0.35, z), v(5.6, 0.7, 3.2), '#d6c39d');
-      box(flatCast, v(x, 0.5 + 0.72, z), v(5.9, 0.08, 3.5), '#bfa77c');
+      box(flatCast, v(x, 0.5 + 0.35, z), v(5.2, 0.7, 3.2), '#d6c39d');
+      box(flatCast, v(x, 0.5 + 0.72, z), v(5.5, 0.08, 3.5), '#bfa77c');
       pedestals.push(v(x, 1.26, z));
       const pm = new THREE.MeshBasicMaterial({ color: '#ffffff', toneMapped: false });
       plaqueMats.push(pm);

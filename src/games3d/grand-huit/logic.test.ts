@@ -4,6 +4,7 @@ import {
   COASTER_SKILLS,
   EMPTY_GO,
   FULL_PATH,
+  GAME_ID,
   LINE_CAP,
   PRAISE,
   RIDES_PER_GAME,
@@ -40,6 +41,12 @@ function allRides(): { band: Band; level: number; ride: Ride }[] {
   return out;
 }
 const RIDES = allRides();
+
+describe('ids', () => {
+  it('the game id is valid for the World Memory (letters, digits, _)', () => {
+    expect(GAME_ID).toMatch(/^[a-z0-9_]{1,40}$/);
+  });
+});
 
 describe('rail pieces', () => {
   it('apply, label and speak', () => {

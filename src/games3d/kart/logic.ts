@@ -322,7 +322,7 @@ export function wordsPerRun(band: Band, level: number): number {
 /** Calm speeds, a bit faster with age and level; never a race against the clock. */
 export function pacing(band: Band, level: number): Pacing {
   const lv = Math.max(1, Math.min(5, level)) - 1;
-  if (band === 'little') return { speed: 8 + lv * 0.5, laneGap: 3.6, firstGap: 8, stepGap: 6, retryGap: 6.5 };
+  if (band === 'little') return { speed: 8 + lv * 0.5, laneGap: 3.6, firstGap: 9.5, stepGap: 6, retryGap: 7.5 };
   if (band === 'middle') return { speed: 9.5 + lv * 0.5, laneGap: 3.0, firstGap: 6.5, stepGap: 4.8, retryGap: 5.5 };
   return { speed: 10.5 + lv * 0.5, laneGap: 3.0, firstGap: 6.5, stepGap: 5, retryGap: 5.5 };
 }

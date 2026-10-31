@@ -73,10 +73,10 @@ interface Pal extends Walker {
   look: THREE.Vector3 | null;
 }
 
-const RING = 6.3;
+const RING = 5.6;
 const STAGE = new THREE.Vector3(0, 0, 5.7);
-const ZIGGY_STAGE = new THREE.Vector3(-1.6, 0, 6.3);
-const ZIGGY_MYSTERY = new THREE.Vector3(1.9, 0, -5.0);
+const ZIGGY_STAGE = new THREE.Vector3(-1.45, 0, 5.3);
+const ZIGGY_MYSTERY = new THREE.Vector3(2.0, 0, -7.0);
 
 const lerpAngle = (a: number, b: number, k: number) => {
   let d = b - a;
@@ -184,8 +184,9 @@ export class DetectiveGame {
   private time = 0;
 
   // Camera
-  private view = { center: new THREE.Vector3(0, 0.9, 0), radius: 6, pitch: 0.55, yaw: 0 };
-  private cur = { center: new THREE.Vector3(0, 1.4, -2), radius: 13, pitch: 0.7, yaw: 0.4 };
+  /** Camera aim: a centre and the half-width / half-height (world units) to keep in view. */
+  private view = { center: new THREE.Vector3(0, 0.9, 0), rx: 6, ry: 3, pitch: 0.55, yaw: 0 };
+  private cur = { center: new THREE.Vector3(0, 1.4, -2), rx: 12, ry: 8, pitch: 0.7, yaw: 0.4 };
   private mode: 'lineup' | 'other' = 'other';
   private insets = { top: 0, bottom: 0 };
   private insetsCur = { top: 0, bottom: 0 };
@@ -333,7 +334,8 @@ export class DetectiveGame {
     const h = el.clientHeight || 600;
     this.renderer.setSize(w, h, false);
     this.camera.aspect = w / h;
-    this.camera.fov = w < h ? 50 : 40;
+    // A narrow lens: a flatter, diorama-like view where far and near friends look alike.
+    this.camera.fov = w < h ? 38 : 34;
     this.applyOffset();
     if (this.mode === 'lineup') this.frameLineup();
   }
@@ -358,17 +360,18 @@ export class DetectiveGame {
     return this.camera.aspect < 0.9;
   }
 
-  private setView(center: THREE.Vector3, radius: number, pitch: number, yaw = 0) {
+  private setView(center: THREE.Vector3, rx: number, ry: number, pitch: number, yaw = 0) {
     this.view.center.copy(center);
-    this.view.radius = radius;
+    this.view.rx = rx;
+    this.view.ry = ry;
     this.view.pitch = pitch;
     this.view.yaw = yaw;
   }
 
   private frameLineup() {
     this.mode = 'lineup';
-    if (this.portrait()) this.setView(new THREE.Vector3(-0.2, 0.7, 0.5), 4.6, 0.72, 0);
-    else this.setView(new THREE.Vector3(-0.7, 0.8, 0.7), 5.7, 0.5, 0.05);
+    if (this.portrait()) this.setView(new THREE.Vector3(0, 0.7, 0.5), 4.4, 3.3, 0.62, 0);
+    else this.setView(new THREE.Vector3(-0.9, 0.75, 0.7), 5.15, 2.5, 0.52, 0.05);
   }
 
   /* ───────────────────────── The story ───────────────────────── */
@@ -393,7 +396,7 @@ export class DetectiveGame {
     // The friends walk in from the edges of the square.
     c.suspects.forEach((s, i) => {
       const a = makeSuspect(s, this.lowPower);
-      const scale = s.size === 'big' ? 1.06 : 0.7;
+      const scale = s.size === 'big' ? 1.2 : 0.82;
       const home = new THREE.Vector3(SLOT_X[s.col], 0, SLOT_Z[s.row]);
       const side = s.col === 'left' ? -1 : s.col === 'right' ? 1 : i % 2 ? 1 : -1;
       const start = new THREE.Vector3(side * (13 + i * 0.8), 0, s.row === 'front' ? 4 + i * 0.3 : -3 - i * 0.3);
@@ -461,12 +464,18 @@ export class DetectiveGame {
       this.scene.add(g);
       return g;
     });
-    // Ziggy discovers the mystery.
+    // Ziggy discovers the mystery: a cut to the party table, Ziggy already there.
     this.closeUp = true;
-    this.setView(MYSTERY_SPOT.clone().add(new THREE.Vector3(0.6, 1.0, 0.8)), 2.6, 0.38, 0.35);
+    this.setView(MYSTERY_SPOT.clone().add(new THREE.Vector3(1.0, 1.0, 0.5)), 2.3, 1.45, 0.3, 0.45);
     this.mode = 'other';
-    this.walkZiggy(ZIGGY_MYSTERY, () => {
-      this.zig.face = MYSTERY_SPOT.clone();
+    this.cur.center.copy(this.view.center);
+    Object.assign(this.cur, { rx: this.view.rx, ry: this.view.ry, pitch: this.view.pitch, yaw: this.view.yaw });
+    this.zig.path = [];
+    this.zig.onArrive = null;
+    this.zig.pos.copy(ZIGGY_MYSTERY);
+    this.zig.face = MYSTERY_SPOT.clone();
+    this.zig.yaw = Math.atan2(MYSTERY_SPOT.x - ZIGGY_MYSTERY.x, MYSTERY_SPOT.z - ZIGGY_MYSTERY.z);
+    this.after(0.6, () => {
       this.ziggy.userData.rig.cue('oops');
       this.sfx('oops');
       this.sparkles.emit(MYSTERY_SPOT.clone().add(new THREE.Vector3(0, 1.2, 0)), { color: '#ffe066', count: this.lowPower ? 10 : 18, spread: 1.6, up: 1.4, life: 1.2, size: 0.3, additive: true });
@@ -508,15 +517,16 @@ export class DetectiveGame {
     const place = CLUE_PLACES[clue.spot];
     const dir = new THREE.Vector3(Math.sin(place.face), 0, Math.cos(place.face));
     const perp = new THREE.Vector3(dir.z, 0, -dir.x);
-    const stand = place.at.clone().addScaledVector(dir, 1.05).addScaledVector(perp, -0.55);
+    // Ziggy stands beside the clue (not in front of it), seen three-quarters by the camera.
+    const stand = place.at.clone().addScaledVector(perp, 0.95 * place.side).addScaledVector(dir, 0.25);
     const prop = this.clueProps[step];
     prop.visible = true;
     // A glint shows where the clue is.
     this.sparkles.emit(place.at.clone().add(new THREE.Vector3(0, 0.4, 0)), { color: '#fff3a8', count: this.lowPower ? 8 : 14, spread: 0.8, up: 1.2, life: 1.0, size: 0.35, additive: true });
     this.closeUp = true;
     this.mode = 'other';
-    const mid = place.at.clone().lerp(stand, 0.45).add(new THREE.Vector3(0, 0.75, 0));
-    this.setView(mid, 1.9, 0.42, place.face - 0.25);
+    const mid = place.at.clone().lerp(stand, 0.45).add(new THREE.Vector3(0, 0.85, 0));
+    this.setView(mid, 1.7, 1.25, 0.36, place.face - 0.55 * place.side);
     this.magnifyTarget = 0;
     this.walkZiggy(stand, () => {
       this.zig.face = place.at.clone();
@@ -644,18 +654,23 @@ export class DetectiveGame {
     this.closeUp = true;
     this.mode = 'other';
     p.glowTarget = 0;
+    // The culprit steps forward (we watch them come), then the camera comes close.
+    p.jump = 1;
+    p.blushTarget = 0.6;
     this.walkZiggy(ZIGGY_STAGE, () => (this.zig.face = STAGE.clone()));
+    p.speed = 5;
     this.walk(p, STAGE, () => {
+      p.speed = 3.2;
       p.face = new THREE.Vector3(0.6, 0, 20);
       p.blushTarget = 1;
       p.talk = 3.2;
       p.jump = 1;
       this.giveaway(p, c.mystery);
       this.hearts.emit(p.pos.clone().add(new THREE.Vector3(0, 1.8 * p.scale, 0)), { count: 6, spread: 1.2, up: 1.2, life: 1.6, size: 0.35 });
-      this.after(3.6, () => this.party());
+      const head = STAGE.clone().add(new THREE.Vector3(-0.55, 0.95 * p.scale + 0.25, 0));
+      this.setView(head, 1.55 + p.scale * 0.2, 0.95 + p.scale * 0.25, 0.12, 0.12);
+      this.after(4.2, () => this.party());
     });
-    const head = STAGE.clone().add(new THREE.Vector3(0, 1.25 * p.scale + 0.25, 0));
-    this.setView(head, 1.55 + p.scale * 0.35, 0.16, 0.22);
   }
 
   private giveaway(p: Pal, mystery: MysteryId) {
@@ -716,18 +731,21 @@ export class DetectiveGame {
     this.mystery.after.visible = true;
     this.mystery.after.scale.setScalar(0.01);
     this.mystery.after.userData.grow = 0.01;
-    if (c.mystery !== 'cake') this.mystery.before.visible = c.mystery === 'mud' ? false : true;
-    else this.mystery.before.visible = false;
+    if (c.mystery === 'cake') this.mystery.before.visible = false;
+    this.mystery.before.traverse((o) => {
+      if (o.name === 'dirty') o.visible = false;
+    });
     const list = [...this.pals.values()];
     const n = list.length;
+    const spread = Math.min(Math.PI * 1.15, n * 0.62);
     list.forEach((p, i) => {
       p.resting = false;
       p.floatTarget = 0;
-      const a = Math.PI / 2 + ((i - (n - 1) / 2) / n) * Math.PI * 1.7;
-      const target = new THREE.Vector3(Math.cos(a) * 3.4, 0, Math.sin(a) * 3.4);
+      const a = -Math.PI / 2 + (n > 1 ? (i / (n - 1) - 0.5) * spread : 0);
+      const target = new THREE.Vector3(Math.cos(a) * 3.3, 0, Math.sin(a) * 3.3 + 0.2);
       p.home = target.clone();
       this.walk(p, target, () => {
-        p.face = new THREE.Vector3(0, 0, 0).lerp(new THREE.Vector3(0, 0, 14), 0.4);
+        p.face = new THREE.Vector3(target.x * 0.4, 0, 14);
         p.dance = true;
         if (c.mystery === 'cake') {
           const sl = makeSlice();
@@ -763,12 +781,12 @@ export class DetectiveGame {
       }
     }
     if (c.mystery === 'mud') this.bubbles.start(this.reduceMotion ? 4 : 9);
-    this.walkZiggy(new THREE.Vector3(0, 0, 5.4), () => {
+    this.walkZiggy(new THREE.Vector3(0, 0, 2.6), () => {
       this.zig.face = new THREE.Vector3(0, 0, 20);
       this.zigDance = true;
       this.ziggy.userData.rig.cue('cheer');
     });
-    this.setView(new THREE.Vector3(0, 0.9, 0.4), this.portrait() ? 5.0 : 6.2, 0.48, 0);
+    this.setView(new THREE.Vector3(0, 1.0, 0.2), this.portrait() ? 4.4 : 4.6, 2.5, 0.42, 0);
     this.cb.onParty();
   }
 
@@ -851,10 +869,12 @@ export class DetectiveGame {
         root.scale.setScalar(1);
         p.ring.visible = false;
         root.updateMatrixWorld(true);
+        // The face, the hat and the scarf (little ones compare the scarves too).
         const box = new THREE.Box3().setFromObject(p.a.c.head);
+        box.expandByPoint(p.a.c.neck.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, -0.22, 0)));
         const center = box.getCenter(new THREE.Vector3());
         const sz = box.getSize(new THREE.Vector3());
-        const r = Math.max(sz.x, sz.y) * 0.62 + 0.06;
+        const r = Math.max(sz.x, sz.y) * 0.56 + 0.05;
         cam.position.set(center.x + 0.25, center.y + 0.12, center.z + r / Math.tan(THREE.MathUtils.degToRad(15)));
         cam.lookAt(center.x, center.y - 0.04, center.z);
         this.renderer.setViewport(0, 0, size, size);
@@ -918,7 +938,7 @@ export class DetectiveGame {
     if (!this.running) return;
     this.raf = requestAnimationFrame(this.loop);
     const raw = this.clock.getDelta();
-    const dt = Math.min(0.06, raw);
+    const dt = Math.min(0.1, raw);
     this.time += dt;
     this.step(dt, this.time);
     this.renderer.render(this.scene, this.camera);
@@ -1177,7 +1197,7 @@ export class DetectiveGame {
 
     // Hat hop when objecting.
     const hat = p.a.hat;
-    if (hat?.userData.bounce > 0) {
+    if (hat && hat.userData.bounce > 0) {
       hat.userData.bounce = Math.max(0, hat.userData.bounce - dt / 0.9);
       const k = 1 - hat.userData.bounce;
       hat.position.y = Math.sin(k * Math.PI) * 0.35;
@@ -1199,7 +1219,7 @@ export class DetectiveGame {
       p.propT -= dt;
       const life = p.propT;
       const k = life > 3.0 ? 1 - (life - 3.0) / 0.4 : life < 0.5 ? Math.max(0, life / 0.5) : 1;
-      p.prop.scale.setScalar(Math.max(0.001, k * 1.2));
+      p.prop.scale.setScalar(Math.max(0.001, (k * 1.7) / Math.max(0.8, p.scale)));
       p.prop.rotation.y = Math.sin(t * 2) * 0.5;
       p.prop.children.forEach((ch) => {
         if (ch.userData.juggle !== undefined) {
@@ -1255,7 +1275,8 @@ export class DetectiveGame {
     const v = this.view;
     const k = 1 - Math.exp(-dt * (this.reduceMotion ? 6 : 2.4));
     this.cur.center.lerp(v.center, k);
-    this.cur.radius += (v.radius - this.cur.radius) * k;
+    this.cur.rx += (v.rx - this.cur.rx) * k;
+    this.cur.ry += (v.ry - this.cur.ry) * k;
     this.cur.pitch += (v.pitch - this.cur.pitch) * k;
     this.cur.yaw = lerpAngle(this.cur.yaw, v.yaw, k);
     const el = this.canvas.parentElement ?? this.canvas;
@@ -1264,7 +1285,7 @@ export class DetectiveGame {
     const vf = THREE.MathUtils.degToRad(this.camera.fov) / 2;
     const tanV = Math.tan(vf) * safe;
     const tanH = Math.tan(vf) * this.camera.aspect;
-    const dist = this.cur.radius / Math.min(tanV, tanH) + 1;
+    const dist = Math.max(this.cur.rx / tanH, this.cur.ry / tanV) + 0.5;
     const sway = this.reduceMotion ? 0 : Math.sin(t * 0.15) * 0.03 + (this.partyT > 0 ? Math.sin(t * 0.3) * 0.15 : 0);
     const yaw = this.cur.yaw + sway;
     const p = this.cur.pitch;
@@ -1277,6 +1298,8 @@ export class DetectiveGame {
   debugState() {
     return {
       ziggy: this.zig.pos.toArray(),
+      ziggyMoving: this.zig.path.length > 0,
+      closeUp: this.closeUp,
       pals: [...this.pals.entries()].map(([id, p]) => ({ id, pos: p.pos.toArray(), resting: p.resting, moving: p.path.length > 0 })),
       calls: this.renderer.info.render.calls,
       triangles: this.renderer.info.render.triangles,

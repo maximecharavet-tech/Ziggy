@@ -5,6 +5,7 @@ import {
   DINO_INFO,
   PIECES,
   PIECE_INFO,
+  SIZE_GAP,
   awakeText,
   boneChoices,
   bonesFor,
@@ -216,7 +217,7 @@ describe('Ziggy the Dino Digger — right answers', () => {
         const right = vals[q.answer];
         expect(right).toBe(mode === 'biggest' ? Math.max(...vals) : Math.min(...vals));
         // The answer is clearly bigger (or smaller) than every other choice.
-        for (const v of vals) if (v !== right) expect(mode === 'biggest' ? right / v : v / right).toBeGreaterThanOrEqual(1.25);
+        for (const v of vals) if (v !== right) expect(mode === 'biggest' ? right / v : v / right).toBeGreaterThanOrEqual(SIZE_GAP);
         expect(q.choices.every((c) => c.kind === 'piece' && c.toScale)).toBe(true);
       }
     }

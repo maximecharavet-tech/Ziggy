@@ -37,7 +37,8 @@ const smooth = (e0: number, e1: number, x: number) => {
 
 /** How big the Sun looks from each world (not to scale, but in the right order). */
 const SUN_SIZE: Record<BodyId, number> = { mercury: 70, venus: 46, earth: 34, moon: 34, mars: 26, jupiter: 13, saturn: 10, uranus: 7, neptune: 6 };
-export const SUN_DIR = new THREE.Vector3(-0.72, 0.3, -0.62).normalize();
+// Just above the horizon, a little to the left: it shows in the frame (the camera looks a little down).
+export const SUN_DIR = new THREE.Vector3(-0.3, 0.025, -0.95).normalize();
 
 interface GroundOpts {
   seed: number;
@@ -63,8 +64,8 @@ function makeGround(o: GroundOpts): THREE.Mesh {
     const d = 7 + r() * 45;
     return { x: Math.cos(a) * d, z: Math.sin(a) * d - 8, rad: 1.2 + r() * 4.5, depth: 0.25 + r() * 0.6 };
   });
-  // Two near craters the camera can see well.
-  if (o.craters) cr.push({ x: -7.5, z: -3, rad: 2.2, depth: 0.5 }, { x: 8, z: -5, rad: 3, depth: 0.6 });
+  // Craters the camera can see well, also in front of the characters.
+  if (o.craters) cr.push({ x: -7.5, z: -3, rad: 2.2, depth: 0.5 }, { x: 8, z: -5, rad: 3, depth: 0.6 }, { x: -4.2, z: 5.2, rad: 1.5, depth: 0.35 }, { x: 4.6, z: 6.8, rad: 2.0, depth: 0.45 }, { x: 0.6, z: 9.5, rad: 1.2, depth: 0.3 });
   const pos = geo.attributes.position;
   const colors: number[] = [];
   const lo = new THREE.Color(o.low);
@@ -74,7 +75,8 @@ function makeGround(o: GroundOpts): THREE.Mesh {
   for (let i = 0; i < pos.count; i++) {
     const x = pos.getX(i);
     const z = pos.getZ(i);
-    const flat = smooth(4.5, 9, Math.hypot(x * 0.8, (z - 0.5) * 1.4));
+    // Flat only on the strip where the rocket, Ziggy and the inhabitant stand.
+    const flat = smooth(0, 3, Math.hypot(Math.max(0, Math.abs(x) - 5), Math.max(0, z - 2.4) + Math.max(0, -3 - z)));
     let y = -(x * x + z * z) / (2 * o.curve);
     const n = Math.sin(x * 0.35 + z * 0.12) * Math.cos(z * 0.41 - x * 0.07) + Math.sin(x * 0.9 + 1.3) * Math.sin(z * 0.8) * 0.4;
     y += n * o.bump * flat + (r() - 0.5) * 0.12 * flat;
@@ -129,6 +131,14 @@ function cloudCluster(r: () => number, color: string, size = 1, n = 7): THREE.Gr
     g.add(p);
   }
   return g;
+}
+
+/** A soft glow of their own for merged clouds (they stay white in the shade). */
+function tintMerged(g: THREE.Group, color: THREE.ColorRepresentation) {
+  for (const o of g.children) {
+    const m = (o as THREE.Mesh).material as THREE.MeshLambertMaterial | undefined;
+    if (m?.isMeshLambertMaterial) m.emissive = new THREE.Color(color);
+  }
 }
 
 function sunInSky(g: THREE.Group, id: BodyId) {
@@ -188,12 +198,12 @@ export function buildStage(id: BodyId, lowPower: boolean): Stage {
         dust: '#cfe9b8',
       },
       moon: {
-        ground: { seed: 4, curve: 50, low: '#9a9aa3', high: '#d8d8de', accent: '#7d7d86', craters: 30, bump: 0.4 },
+        ground: { seed: 4, curve: 50, low: '#85858f', high: '#c2c2ca', accent: '#696973', craters: 30, bump: 0.4 },
         rocks: ['#a9a9b2', '#c4c4cc'],
         sky: { top: '#02030a', bottom: '#0b0e24', stars: 1 },
         fog: null,
-        hemi: { sky: '#cfd2ea', ground: '#55555e', intensity: 0.75 },
-        key: { color: '#ffffff', intensity: 2.6 },
+        hemi: { sky: '#cfd2ea', ground: '#55555e', intensity: 0.7 },
+        key: { color: '#ffffff', intensity: 2.1 },
         dust: '#e2e2e8',
       },
       mars: {
@@ -250,12 +260,41 @@ export function buildStage(id: BodyId, lowPower: boolean): Stage {
       top.position.set(18, -5.2, -62);
       deco.add(v, top);
     }
+    // The foreground: pebbles everywhere, flowers and grass on the Earth.
+    for (let i = 0; i < (lowPower ? 18 : 34); i++) {
+      const x = (r() - 0.5) * 18;
+      const z = 3 + r() * 9;
+      const s = 0.08 + r() * 0.18;
+      const p = new THREE.Mesh(new THREE.DodecahedronGeometry(s, 0), mat(c.rocks[i % c.rocks.length]));
+      p.position.set(x, -(x * x + z * z) / (2 * c.ground.curve) + s * 0.2, z);
+      p.rotation.set(r() * 3, r() * 3, r() * 3);
+      deco.add(p);
+    }
+    if (id === 'earth') {
+      const petals = ['#ff7ab8', '#ffd166', '#ffffff', '#b38cff', '#ff8a3d'];
+      for (let i = 0; i < (lowPower ? 26 : 50); i++) {
+        const x = (r() - 0.5) * 16;
+        const z = 2.6 + r() * 8;
+        const y = -(x * x + z * z) / 320;
+        const tuft = new THREE.Mesh(new THREE.ConeGeometry(0.07, 0.4, 4), mat(r() < 0.5 ? '#3f8a3a' : '#5aa845'));
+        tuft.position.set(x, y + 0.18, z);
+        tuft.rotation.z = (r() - 0.5) * 0.6;
+        deco.add(tuft);
+        if (i % 2) {
+          const f = new THREE.Mesh(new THREE.IcosahedronGeometry(0.11, 0), mat(petals[i % petals.length]));
+          f.position.set(x + 0.15, y + 0.36, z);
+          const heart = new THREE.Mesh(new THREE.IcosahedronGeometry(0.05, 0), mat('#ffd166'));
+          heart.position.set(x + 0.15, y + 0.38, z + 0.08);
+          deco.add(f, heart);
+        }
+      }
+    }
     mergeStatic(deco, { shadows: true });
     group.add(deco);
     if (id === 'moon') {
       // The Earth, blue and white, in the black sky.
-      const earth = makeSkyBody('earth', 7, lowPower);
-      earth.position.set(26, 30, -95);
+      const earth = makeSkyBody('earth', 6, lowPower);
+      earth.position.set(24, 9.5, -88);
       earth.rotation.z = 0.4;
       const halo = glow('#7fc4ff', 22, 0.45);
       (halo.material as THREE.SpriteMaterial).fog = false;
@@ -272,7 +311,7 @@ export function buildStage(id: BodyId, lowPower: boolean): Stage {
         clouds.add(cl);
       }
       mergeStatic(clouds);
-      for (const m of clouds.children) ((m as THREE.Mesh).material as THREE.MeshLambertMaterial).emissive = new THREE.Color('#8a9ab8');
+      tintMerged(clouds, '#8a9ab8');
       group.add(clouds);
       anims.push((dt) => (clouds.position.x = ((clouds.position.x + dt * 0.6 + 30) % 60) - 30));
     }
@@ -343,9 +382,9 @@ export function buildStage(id: BodyId, lowPower: boolean): Stage {
 
   // ── Jupiter, Uranus, Neptune: no ground, a deck of clouds above the giant ──
   const tint: Record<string, { sky: Stage['sky']; fog: Stage['fog']; cloud: string[]; hemi: Stage['hemi'] }> = {
-    jupiter: { sky: { top: '#0b0f2e', bottom: '#e0b88e', stars: 0.6 }, fog: { color: '#d9b088', near: 25, far: 140 }, cloud: ['#f6e3c4', '#f1d2a8', '#ffffff'], hemi: { sky: '#ffe8cc', ground: '#a8703f', intensity: 1.1 } },
-    uranus: { sky: { top: '#071a2a', bottom: '#a6ecef', stars: 0.6 }, fog: { color: '#9adfe4', near: 25, far: 140 }, cloud: ['#dffafb', '#c5f1f3', '#ffffff'], hemi: { sky: '#e0fbff', ground: '#4fa6ae', intensity: 1.15 } },
-    neptune: { sky: { top: '#040a2a', bottom: '#5a7ff0', stars: 0.7 }, fog: { color: '#5a7ff0', near: 25, far: 140 }, cloud: ['#dbe6ff', '#b9ccff', '#ffffff'], hemi: { sky: '#dfe8ff', ground: '#2a4bbd', intensity: 1.15 } },
+    jupiter: { sky: { top: '#1a1640', bottom: '#e9c49a', stars: 0.6 }, fog: { color: '#e2bd92', near: 45, far: 210 }, cloud: ['#f6e3c4', '#f1d2a8', '#ffffff'], hemi: { sky: '#ffe8cc', ground: '#a8703f', intensity: 1.1 } },
+    uranus: { sky: { top: '#0b2a40', bottom: '#a6ecef', stars: 0.6 }, fog: { color: '#a6e6ea', near: 45, far: 210 }, cloud: ['#dffafb', '#c5f1f3', '#ffffff'], hemi: { sky: '#e0fbff', ground: '#4fa6ae', intensity: 1.15 } },
+    neptune: { sky: { top: '#0a1450', bottom: '#6a8cf2', stars: 0.7 }, fog: { color: '#6a8cf2', near: 45, far: 210 }, cloud: ['#dbe6ff', '#b9ccff', '#ffffff'], hemi: { sky: '#dfe8ff', ground: '#2a4bbd', intensity: 1.15 } },
   };
   const tt = tint[id];
   const deckTex = planetMap(id, lowPower);
@@ -377,9 +416,19 @@ export function buildStage(id: BodyId, lowPower: boolean): Stage {
     pads.add(cl);
   }
   mergeStatic(pads, { shadows: true });
-  for (const m of pads.children) ((m as THREE.Mesh).material as THREE.MeshLambertMaterial).emissive = new THREE.Color(tt.cloud[1]).multiplyScalar(0.25);
+  tintMerged(pads, new THREE.Color(tt.cloud[1]).multiplyScalar(0.25));
   group.add(pads);
   anims.push((_, t) => (pads.position.y = Math.sin(t * 1.1) * 0.08));
+  if (id === 'uranus' || id === 'neptune') {
+    // Faint rings across the sky (Uranus's stand almost upright: the planet lies on its side).
+    const ring = new THREE.Mesh(
+      new THREE.RingGeometry(70, 73, 96, 1),
+      new THREE.MeshBasicMaterial({ color: id === 'uranus' ? '#e9fbff' : '#c9d6ff', transparent: true, opacity: 0.35, side: THREE.DoubleSide, fog: false, depthWrite: false })
+    );
+    ring.position.set(10, -30, -120);
+    ring.rotation.set(id === 'uranus' ? 0.15 : 1.25, 0.35, 0.2);
+    group.add(ring);
+  }
   if (id === 'jupiter') {
     const io = makeSkyBody('venus', 3, lowPower);
     io.position.set(40, 45, -120);

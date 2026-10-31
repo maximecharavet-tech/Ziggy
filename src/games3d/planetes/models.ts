@@ -79,8 +79,10 @@ export interface Rocket {
   root: THREE.Group;
   /** Where Ziggy sits (origin on the seat). */
   seat: THREE.Group;
-  /** The glass dome, hinged at the back: rotation.x < 0 opens it. */
+  /** The glass dome, hinged at the back. */
   dome: THREE.Group;
+  /** 0 = closed, 1 = open (the bubble tips back and folds away behind the cockpit). */
+  setDome(k: number): void;
   flames: THREE.Group;
   /** Thrust 0..1 (flame size), set every frame. */
   setThrust(k: number, t: number): void;
@@ -234,7 +236,12 @@ export function makeRocket(lowPower: boolean): Rocket {
     (halo.material as THREE.SpriteMaterial).opacity = 0.35 + k * 0.5;
   };
   setThrust(0, 0);
-  return { root, seat, dome, flames, setThrust, tail: new THREE.Vector3(0, -0.4, 0), rack };
+  const setDome = (k: number) => {
+    dome.rotation.x = -0.9 * k;
+    dome.scale.setScalar(Math.max(0.001, 1 - k * 0.97));
+    dome.visible = k < 0.99;
+  };
+  return { root, seat, dome, setDome, flames, setThrust, tail: new THREE.Vector3(0, -0.4, 0), rack };
 }
 
 /* ───────────────────────── Parcels ───────────────────────── */
@@ -574,9 +581,10 @@ export class Alien {
     // Mouth: a smile, or a round "oh".
     const mouthY = cy - r * h * 0.05;
     const mz = r * 0.93;
-    this.smile = new THREE.Mesh(new THREE.TorusGeometry(0.15, 0.035, 6, 14, Math.PI), toy('#5a2340', 10));
+    this.smile = new THREE.Mesh(new THREE.TorusGeometry(0.2, 0.045, 8, 16, Math.PI), toy('#5a2340', 10));
     this.smile.rotation.z = Math.PI;
-    this.smile.position.set(0, mouthY + 0.05, mz);
+    this.smile.scale.y = 0.85;
+    this.smile.position.set(0, mouthY + 0.1, mz - 0.02);
     this.ohMouth = new THREE.Mesh(new THREE.SphereGeometry(0.11, 12, 8), toy('#5a2340', 10));
     this.ohMouth.scale.set(1, 1.2, 0.4);
     this.ohMouth.position.set(0, mouthY, mz);
@@ -891,7 +899,7 @@ export function makeBelt(count: number, seed = 3): THREE.InstancedMesh {
 /** The post office: a little asteroid with a yellow mailbox and a landing pad. */
 export function makePostOffice(): THREE.Group {
   const g = new THREE.Group();
-  const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.9, 1), mat('#8d7f9e'));
+  const rock = new THREE.Mesh(new THREE.DodecahedronGeometry(0.9, 1), mat('#a99bc0'));
   rock.scale.set(1.25, 0.55, 1.1);
   rock.position.y = -0.35;
   const pad = new THREE.Mesh(new THREE.CylinderGeometry(0.75, 0.75, 0.08, 24), mat('#e8e6f5', { flatShading: false }));
@@ -915,6 +923,7 @@ export function makePostOffice(): THREE.Group {
   const lamp = glow('#ffd166', 1.3, 0.55);
   lamp.position.set(-0.25, 0.3, 0.1);
   g.add(lamp);
+  g.scale.setScalar(1.35);
   return g;
 }
 

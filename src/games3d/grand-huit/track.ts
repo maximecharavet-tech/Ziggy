@@ -3,7 +3,7 @@ import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeom
 import { glow, glowMat, glowTex } from '../kit/look';
 import { applyOp, opLabel, type Band, type Op } from './logic';
 import { FAIR_COLORS, makeBalloon } from './fair';
-import { badgeTexture, bubbleTexture, flat, mergeStatic, pillTexture, shiny, soft, spriteOf, stripes, type BadgeStyle } from './util';
+import { badgeTexture, bubbleTexture, mergeStatic, pillTexture, shiny, soft, spriteOf, stripes, type BadgeStyle } from './util';
 
 /**
  * The coaster: the number line (a straight rail on striped pillars, one
@@ -178,10 +178,13 @@ export class NumberLine {
           statics.add(seg);
         }
       }
-      const foot = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.24, 0.08, 10), soft('#c9b8e8'));
-      foot.position.set(x, 0.04, 0);
-      foot.scale.z = 2.6;
-      statics.add(foot);
+    }
+    // A pastel tile on the ground for every station: the number line is also a path of squares.
+    const TILE = ['#ffe9b8', '#ffd9ea', '#d9efff', '#ddf7e3', '#efe2ff'];
+    for (let v = 0; v <= L.max; v++) {
+      const tile = new THREE.Mesh(new THREE.BoxGeometry(L.sp * 0.94, 0.06, 2.5), soft(TILE[v % TILE.length]));
+      tile.position.set(L.x(v), 0.03, 0.3);
+      statics.add(tile);
     }
     // A yellow stud for every station, so each number is a place on the rail.
     for (let v = 0; v <= L.max; v++) {
@@ -212,11 +215,11 @@ export class NumberLine {
     }
     const dotsN = this.band === 'little' && v > 0 ? v : 0;
     const big = style === 'target' || style === 'start' ? 1.18 : style === 'small' ? 0.85 : 1;
-    const s = spriteOf(badgeTexture(String(v), style, dotsN), this.labelSize * big * (dotsN ? 1.2 : 1));
+    const s = spriteOf(badgeTexture(String(v), style, dotsN), this.labelSize * big * (dotsN ? 1.2 : 1), { depthTest: false });
     s.position.copy(this.labelPos(v));
     if (dotsN) s.position.y -= 0.12;
     s.userData.style = style;
-    s.renderOrder = 2;
+    s.renderOrder = style === 'target' ? 12 : 10;
     this.labels.set(v, s);
     this.group.add(s);
     return s;
@@ -289,7 +292,8 @@ export function buildPieces(layout: Layout, start: number, ops: readonly Op[], b
     const pts: THREE.Vector3[] = [];
     for (let k = 0; k <= n; k++) {
       const t = k / n;
-      const bump = Math.sin(Math.PI * t);
+      // Flat at both ends: the cart leaves and lands level on the stations.
+      const bump = Math.sin(Math.PI * t) ** 2;
       pts.push(new THREE.Vector3(xa + (xb - xa) * t, Y0 + (up ? h : -h) * bump, z + (z1 - z) * smooth(t)));
     }
     const color = OP_COLORS[op.kind];
@@ -480,13 +484,14 @@ export function buildFinale(xt: number, zFrom: number, parts: { loop: boolean; s
   }
   const loopEnd = pts.length;
   // 3. The slide down to the pool behind the line.
-  const poolCenter = new THREE.Vector3(xt + 0.6, 0, -4.7);
+  // The pool sits behind the line, to the right of the loop (never hidden by it).
+  const poolCenter = new THREE.Vector3(xt + 3.3, 0, -4.4);
   const slideCurve = new THREE.CatmullRomCurve3([
     new THREE.Vector3(xt + 1.0, Y0, -1.25),
-    new THREE.Vector3(xt + 1.8, Y0 - 0.1, -1.55),
-    new THREE.Vector3(xt + 2.25, Y0 - 0.45, -2.5),
-    new THREE.Vector3(xt + 1.95, 1.05, -3.55),
-    new THREE.Vector3(xt + 1.25, 0.72, -4.25),
+    new THREE.Vector3(xt + 1.9, Y0 - 0.08, -1.4),
+    new THREE.Vector3(xt + 2.8, Y0 - 0.4, -1.95),
+    new THREE.Vector3(xt + 3.45, Y0 - 0.75, -2.75),
+    new THREE.Vector3(xt + 3.5, 0.95, -3.55),
     new THREE.Vector3(poolCenter.x + 0.05, 0.5, poolCenter.z + 0.05),
   ]);
   const slidePts = slideCurve.getSpacedPoints(30);
@@ -552,15 +557,16 @@ export function makeGate(label: { tex: THREE.Texture; aspect: number }, h = 3.6)
   flag.name = 'flag';
   g.add(flag);
   const balloons: THREE.Group[] = [];
-  for (const z of [-1.6, 1.6])
-    for (let k = 0; k < 3; k++) {
-      const b = makeBalloon(FAIR_COLORS[(k * 2 + (z > 0 ? 1 : 0)) % FAIR_COLORS.length], 0.9 + k * 0.25);
-      b.position.set(0, h + 0.05, z);
-      b.rotation.set((k - 1) * 0.28, 0, (k - 1) * 0.22 * (z > 0 ? 1 : -1));
-      b.userData.phase = k * 1.3 + z;
-      balloons.push(b);
-      g.add(b);
-    }
+  // Tied to the back post, floating high above the banner.
+  for (let k = 0; k < 5; k++) {
+    const b = makeBalloon(FAIR_COLORS[k % FAIR_COLORS.length], 1.5 + (k % 3) * 0.35);
+    b.position.set(0, h + 0.05, -1.6);
+    b.rotation.set((k - 2) * 0.12 - 0.15, 0, (k - 2) * 0.16);
+    b.userData.phase = k * 1.3;
+    b.userData.tilt = (k - 2) * 0.2;
+    balloons.push(b);
+    g.add(b);
+  }
   return { group: g, balloons, banner };
 }
 
@@ -579,7 +585,7 @@ export function makeGapMarker(layout: Layout, from: number, to: number, text: st
   }
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-  const dotsMesh = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.34, map: glowTex(), color: new THREE.Color('#ff5ca8').multiplyScalar(1.6), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
+  const dotsMesh = new THREE.Points(geo, new THREE.PointsMaterial({ size: 0.55, map: glowTex(), color: new THREE.Color('#ff5ca8').multiplyScalar(1.8), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false }));
   const bubble = spriteOf(bubbleTexture(text), 0.95);
   bubble.position.set((xa + xb) / 2, Y0 + 0.25 + h + 0.7, 0.2);
   bubble.renderOrder = 5;

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { Post } from '../kit/post';
-import { createRenderer, disposeTree, glowTex, prefersLowPower, studioEnvironment } from '../kit/look';
+import { createRenderer, disposeTree, glow, glowTex, prefersLowPower, studioEnvironment } from '../kit/look';
 import { makeZiggy, type ZiggyActor } from '../kit/models';
 import { Puffs } from '../kit/world';
 import { FairAudio } from './audio';
@@ -40,6 +40,10 @@ export interface CoasterCallbacks {
 type Mode = 'build' | 'ride' | 'boing' | 'rewind' | 'finale' | 'splashed' | 'lap';
 
 const ZIGGY_SCALE = 0.58;
+/** The cart (with Ziggy) is drawn a bit bigger than the rails, so Ziggy reads well on a phone. */
+const CART_SCALE = 1.25;
+/** Ziggy faces the way the cart goes, turned a little towards us so we see his face. */
+const ZIGGY_TURN = Math.PI / 2 - 0.5;
 const LIGHT_DIR = new THREE.Vector3(-0.55, 1, 0.75).normalize();
 
 interface Floater {
@@ -112,6 +116,8 @@ export class GrandHuitGame {
   private mode: Mode = 'build';
   private run = { k: 0, u: 0, dwell: 0, s: 0, boingT: 0, rewindK: 0, splashT: 0, top: false, splashed: false, ok: false };
   private ripple = 0;
+  private bounces: { s: THREE.Sprite; t: number }[] = [];
+  private trailT = 0;
   private duckJump = { y: 0, v: 0 };
 
   // Camera
@@ -210,7 +216,7 @@ export class GrandHuitGame {
     rig.seated = true;
     rig.energy = this.reduce ? 0.35 : 1;
     this.ziggy.scale.setScalar(ZIGGY_SCALE);
-    this.ziggy.rotation.y = Math.PI / 2;
+    this.ziggy.rotation.y = ZIGGY_TURN;
     this.cart.seat.add(this.ziggy);
     const model = this.ziggy.userData.model;
     model.body.add(this.scarf.group);
@@ -218,6 +224,7 @@ export class GrandHuitGame {
     this.scarf.rest.quat.copy(this.scarf.group.quaternion);
     model.head.add(this.dizzy);
     this.cart.group.traverse((o) => ((o as THREE.Mesh).isMesh ? (o.castShadow = true) : null));
+    this.cart.group.scale.setScalar(CART_SCALE);
     s.add(this.cart.group);
   }
 
@@ -282,6 +289,7 @@ export class GrandHuitGame {
     this.puffs.emit(this.cart.group.position.clone().add(new THREE.Vector3(0, 0.8, 0)), { color: '#ffffff', count: this.lowPower ? 8 : 16, spread: 2.2, up: 1.6, life: 1.0, size: 0.8 });
     this.sparks.emit(this.cart.group.position.clone().add(new THREE.Vector3(0, 1, 0)), { count: 30, colors: FAIR_COLORS, speed: 3.2, life: 0.9, gravity: 3 });
     this.mode = 'build';
+    this.ziggy.userData.rig.mood = 'happy';
     this.ziggy.userData.rig.cue('wave');
     this.framedAt = -1;
     this.lap = { t: 0, gondola: -1, fired: 0, done: false };
@@ -411,10 +419,17 @@ export class GrandHuitGame {
   }
 
   private seatZiggy() {
+    for (const g of this.wheel.gondolas) {
+      const halo = (g.userData.cabin as THREE.Group).getObjectByName('lapHalo') as THREE.Sprite | undefined;
+      if (halo) {
+        halo.parent?.remove(halo);
+        halo.material.dispose();
+      }
+    }
     const z = this.ziggy;
     z.parent?.remove(z);
     z.position.set(0, 0, 0);
-    z.rotation.set(0, Math.PI / 2, 0);
+    z.rotation.set(0, ZIGGY_TURN, 0);
     z.scale.setScalar(ZIGGY_SCALE);
     this.cart.seat.add(z);
     z.userData.rig.idle = 'calm';
@@ -426,6 +441,8 @@ export class GrandHuitGame {
     this.mode = 'ride';
     this.run = { k: 0, u: 0, dwell: 0, s: 0, boingT: 0, rewindK: 0, splashT: 0, top: false, splashed: false, ok: false };
     this.audio.go();
+    this.framedAt = -1;
+    this.ziggy.userData.rig.mood = 'excited';
     this.ziggy.userData.rig.cue('cheer');
     if (this.gapMarker) {
       this.rideGroup.remove(this.gapMarker);
@@ -459,6 +476,7 @@ export class GrandHuitGame {
       if (r.dwell <= 0) {
         r.k++;
         r.u = 0;
+        this.framedAt = -1;
         if (r.k >= this.pieces.length) this.endRide();
       }
       return;
@@ -476,6 +494,8 @@ export class GrandHuitGame {
       const isTarget = p.to === ride.target && r.k === this.pieces.length - 1;
       this.pops.pop(String(p.to), at, this.band === 'little' ? 1.15 : 0.95, isTarget ? '#ff7a1a' : '#5b6fd8');
       this.cart.body.position.y = -0.05;
+      const badge = this.line?.labelOf(p.to);
+      if (badge) this.bounces.push({ s: badge, t: 0 });
       this.cb.onStation(p.to, r.k);
     }
   }
@@ -543,6 +563,7 @@ export class GrandHuitGame {
   }
 
   private finishRewind() {
+    this.ziggy.userData.rig.mood = 'happy';
     this.placeCart(this.ride!.start);
     this.mode = 'build';
     this.framedAt = -1;
@@ -563,6 +584,7 @@ export class GrandHuitGame {
     const xt = this.layout.x(ride.target);
     if (!this.gate) this.showGoal(true);
     this.line?.label(ride.target, 'target');
+    for (const q of this.question) q.visible = false;
     // The loop appears, starting from where the cart stands.
     const z0 = this.cart.group.position.z;
     const f = buildFinale(xt, z0, { loop: true, slide: false });
@@ -736,6 +758,11 @@ export class GrandHuitGame {
     z.scale.setScalar(0.62);
     cabin.add(z);
     z.userData.rig.idle = 'wave';
+    // Ziggy's gondola shines a little, so we always find him.
+    const halo = glow('#ffe9a8', 3.4, 0.4);
+    halo.position.set(0, -1.1, -0.3);
+    halo.name = 'lapHalo';
+    cabin.add(halo);
     this.cart.group.visible = false;
     this.duskTarget = 1;
     this.audio.fanfare();
@@ -745,15 +772,16 @@ export class GrandHuitGame {
   private stepLap(dt: number) {
     const L = this.lap;
     L.t += dt;
-    if (!L.done && L.t > 9.5) {
+    if (!L.done && L.t > 10) {
       L.done = true;
       this.cb.onLapDone();
     }
     // Fireworks over the fair once Ziggy is high up.
-    const every = this.reduce ? 1.6 : 0.75;
-    if (L.t > 4 && L.t - 4 > L.fired * every) {
+    const every = this.reduce ? 1.6 : 0.7;
+    if (L.t > 3.5 && L.t - 3.5 > L.fired * every) {
       L.fired++;
-      const at = new THREE.Vector3(this.wheel.group.position.x + (Math.random() - 0.5) * 36, 20 + Math.random() * 10, -40 - Math.random() * 12);
+      const side = L.fired % 2 ? -1 : 1;
+      const at = new THREE.Vector3(this.wheel.group.position.x + side * (8 + Math.random() * 14), 17 + Math.random() * 9, this.wheel.group.position.z - 10 - Math.random() * 8);
       const cols = [FAIR_COLORS[L.fired % FAIR_COLORS.length], '#ffffff', FAIR_COLORS[(L.fired + 2) % FAIR_COLORS.length]];
       this.sparks.emit(at, { count: this.lowPower ? 50 : 90, colors: cols, speed: 7, life: 1.6, gravity: 2.2, glow: 1.8 });
       if (L.fired % 2 === 1 || !this.reduce) this.audio.firework();
@@ -762,127 +790,205 @@ export class GrandHuitGame {
 
   /* ───────────────────────── Camera ───────────────────────── */
 
-  /** Fit a set of points between the HUD bars, seen from a 3/4 front view. */
-  private fitPoints(pts: THREE.Vector3[], yaw: number, pitch: number) {
-    const box = new THREE.Box3().setFromPoints(pts);
-    const c = box.getCenter(new THREE.Vector3());
+  /**
+   * Frame a set of points between the HUD bars, seen from a 3/4 front view
+   * (`yaw` turns the camera towards +x, `pitch` raises it): the distance is
+   * found by bisection, then the aim is re-centred on what is really seen.
+   */
+  private fitPoints(pts: THREE.Vector3[], yaw: number, pitch: number, minDist = 6) {
+    const c = new THREE.Box3().setFromPoints(pts).getCenter(new THREE.Vector3());
     const dir = new THREE.Vector3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch));
     const el = this.canvas.parentElement ?? this.canvas;
     const h = el.clientHeight || 600;
-    const yHi = 1 - (2 * Math.min(this.insets.top, h * 0.4)) / h - 0.06;
-    const yLo = -1 + (2 * Math.min(this.insets.bottom, h * 0.5)) / h + 0.06;
+    const yHi = 1 - (2 * Math.min(this.insets.top, h * 0.4)) / h - 0.05;
+    const yLo = -1 + (2 * Math.min(this.insets.bottom, h * 0.5)) / h + 0.05;
+    const mid = (yHi + yLo) / 2;
     const cam = this.camera;
     const saved = cam.position.clone();
     const savedQ = cam.quaternion.clone();
     const v = new THREE.Vector3();
-    const fits = (d: number) => {
+    const place = (d: number) => {
       cam.position.copy(c).addScaledVector(dir, d);
       cam.lookAt(c);
       cam.updateMatrixWorld(true);
+    };
+    const fits = (d: number) => {
+      place(d);
       for (const p of pts) {
         v.copy(p).project(cam);
-        if (v.z > 1 || Math.abs(v.x) > 0.9 || v.y > yHi || v.y < yLo) return false;
+        if (v.z > 1 || Math.abs(v.x) > 0.92 || v.y > yHi || v.y < yLo) return false;
       }
       return true;
     };
-    let lo = 4;
-    let hi = 140;
-    for (let i = 0; i < 22; i++) {
-      const m = (lo + hi) / 2;
-      if (fits(m)) hi = m;
-      else lo = m;
+    const search = () => {
+      let lo = 3;
+      let hi = 160;
+      for (let i = 0; i < 22; i++) {
+        const m = (lo + hi) / 2;
+        if (fits(m)) hi = m;
+        else lo = m;
+      }
+      return hi;
+    };
+    let d = search();
+    const P = cam.projectionMatrix.elements;
+    const right = new THREE.Vector3();
+    const up = new THREE.Vector3();
+    for (let k = 0; k < 3; k++) {
+      place(d);
+      let x0 = Infinity;
+      let x1 = -Infinity;
+      let y0 = Infinity;
+      let y1 = -Infinity;
+      for (const p of pts) {
+        v.copy(p).project(cam);
+        x0 = Math.min(x0, v.x);
+        x1 = Math.max(x1, v.x);
+        y0 = Math.min(y0, v.y);
+        y1 = Math.max(y1, v.y);
+      }
+      right.setFromMatrixColumn(cam.matrixWorld, 0);
+      up.setFromMatrixColumn(cam.matrixWorld, 1);
+      c.addScaledVector(right, (((x0 + x1) / 2) * d) / P[0]).addScaledVector(up, (((y0 + y1) / 2 - mid) * d) / P[5]);
+      d = search();
     }
     cam.position.copy(saved);
     cam.quaternion.copy(savedQ);
-    this.wantPos.copy(c).addScaledVector(dir, hi);
+    cam.updateMatrixWorld(true);
+    d = Math.max(d, minDist);
+    this.wantPos.copy(c).addScaledVector(dir, d);
     this.wantLook.copy(c);
   }
 
+  /**
+   * The 3/4 view. On a narrow (portrait) screen the line turns into the
+   * depth, seen from behind the departure station: the cart and Ziggy are
+   * near and big, the line runs away towards the target.
+   */
   private view(): { yaw: number; pitch: number } {
     const a = this.camera.aspect;
-    if (a < 0.8) return { yaw: 0.62, pitch: 0.5 };
-    if (a < 1.25) return { yaw: 0.45, pitch: 0.46 };
-    return { yaw: 0.3, pitch: 0.42 };
+    const ride = this.ride;
+    const forward = !ride || ride.target >= valueAfter(ride.start, ride.preset);
+    if (a < 0.8) return { yaw: forward ? -0.95 : 0.95, pitch: 0.5 };
+    if (a < 1.25) return { yaw: 0.6, pitch: 0.46 };
+    return { yaw: 0.36, pitch: 0.42 };
+  }
+
+  /** Points around a station: its number below the rail, and the cart (with Ziggy) above. */
+  private stationPts(v: number, pts: THREE.Vector3[]) {
+    const x = this.layout.x(v);
+    pts.push(new THREE.Vector3(x - 0.55, 0.15, 1.1), new THREE.Vector3(x + 0.55, Y0 + 1.95, 0));
+  }
+
+  /** The cart and Ziggy, with a margin. */
+  private cartPts(pts: THREE.Vector3[]) {
+    const c = this.cart.group.position;
+    pts.push(c.clone().add(new THREE.Vector3(-1.1, -0.2, 0.7)), c.clone().add(new THREE.Vector3(1.1, -0.2, -0.7)), c.clone().add(new THREE.Vector3(0, 2.3, 0)));
+  }
+
+  /** Never closer than a few stations' width. */
+  private minWidth(pts: THREE.Vector3[], w: number) {
+    const box = new THREE.Box3().setFromPoints(pts);
+    const cx = (box.min.x + box.max.x) / 2;
+    if (box.max.x - box.min.x < w) pts.push(new THREE.Vector3(cx - w / 2, Y0, 0), new THREE.Vector3(cx + w / 2, Y0, 0));
   }
 
   private frameBuild() {
     const ride = this.ride;
     if (!ride) return;
-    const L = this.layout;
+    const portrait = this.camera.aspect < 0.8;
     const pts: THREE.Vector3[] = [];
-    const addStation = (v: number) => {
-      const x = L.x(v);
-      pts.push(new THREE.Vector3(x - 0.6, 0.1, 1.1), new THREE.Vector3(x + 0.6, Y0 + 1.9, 0));
-    };
-    addStation(ride.start);
+    this.stationPts(ride.start, pts);
+    this.cartPts(pts);
     for (const p of this.pieces) {
-      addStation(p.to);
+      this.stationPts(p.to, pts);
       pts.push(p.apex.clone().add(new THREE.Vector3(0, p.to > p.from ? 1.0 : -0.8, 0)));
     }
     if (!ride.hidden || this.gate) {
-      addStation(ride.target);
-      pts.push(new THREE.Vector3(L.x(ride.target), 5.1, 0));
-      if (this.pool) pts.push(this.pool.center.clone().add(new THREE.Vector3(-1.6, 0.6, -1.4)), this.pool.center.clone().add(new THREE.Vector3(1.6, 0.6, 0)));
+      this.stationPts(ride.target, pts);
+      pts.push(new THREE.Vector3(this.layout.x(ride.target), 4.5, 0));
+      if (this.pool && !portrait) pts.push(this.pool.center.clone().add(new THREE.Vector3(0, 0.8, -1.4)));
     }
     for (const q of this.question) pts.push(q.position.clone().add(new THREE.Vector3(0, 0.6, 0)));
-    if (ride.kind === 'compare') for (const op of ride.palette) addStation(applyOp(ride.start, op));
-    // Never too close: at least a few stations around.
-    const box = new THREE.Box3().setFromPoints(pts);
-    const cx = (box.min.x + box.max.x) / 2;
-    const minW = this.camera.aspect < 0.8 ? 7 : 10;
-    if (box.max.x - box.min.x < minW) pts.push(new THREE.Vector3(cx - minW / 2, Y0, 0), new THREE.Vector3(cx + minW / 2, Y0, 0));
+    if (ride.kind === 'compare') for (const op of ride.palette) this.stationPts(applyOp(ride.start, op), pts);
+    this.minWidth(pts, portrait ? 5 : 8);
     const { yaw, pitch } = this.view();
-    this.fitPoints(pts, yaw, pitch);
+    this.fitPoints(pts, yaw, pitch, portrait ? 11 : 8);
+  }
+
+  /** During the ride: frame the piece being ridden (the camera glides from piece to piece). */
+  private frameRide() {
+    const p = this.pieces[Math.min(this.run.k, this.pieces.length - 1)];
+    if (!p) return;
+    const portrait = this.camera.aspect < 0.8;
+    const pts: THREE.Vector3[] = [];
+    this.stationPts(p.from, pts);
+    this.stationPts(p.to, pts);
+    pts.push(p.apex.clone().add(new THREE.Vector3(0, p.to > p.from ? 1.9 : 0.6, 0)));
+    this.cartPts(pts);
+    this.minWidth(pts, portrait ? 4.5 : 6.5);
+    const { yaw, pitch } = this.view();
+    this.fitPoints(pts, Math.sign(yaw) * Math.min(1.1, Math.abs(yaw) + 0.12), pitch * 0.8, portrait ? 9 : 7);
+  }
+
+  private frameFinale() {
+    const f = this.finale;
+    if (!f || !this.ride) return;
+    const xt = this.layout.x(this.ride.target);
+    const pc = f.poolCenter;
+    const v = this.view();
+    // The loop and the pool are to the right of the target: always seen from the right.
+    const yaw = Math.max(0.36, Math.abs(v.yaw) * 0.6);
+    const pitch = v.pitch;
+    if (this.mode === 'splashed') {
+      // Ziggy in the pool, seen from above the line.
+      const pts = [pc.clone().add(new THREE.Vector3(-1.8, 0.3, 1.6)), pc.clone().add(new THREE.Vector3(1.8, 0.3, -1.6)), pc.clone().add(new THREE.Vector3(0, 2.4, 0))];
+      this.minWidth(pts, 5);
+      this.fitPoints(pts, yaw, Math.max(0.72, pitch + 0.25), 7);
+      return;
+    }
+    // The loop and the slide down to the pool.
+    const pts = [
+      new THREE.Vector3(xt - 0.6, Y0 - 0.4, 0.3),
+      new THREE.Vector3(xt + 2.4, Y0 + 2.6, -1.3),
+      new THREE.Vector3(xt, 5.2, 0),
+      pc.clone().add(new THREE.Vector3(1.7, 0.5, 1.5)),
+      pc.clone().add(new THREE.Vector3(-1.7, 0.2, -1.5)),
+    ];
+    this.fitPoints(pts, yaw, pitch * 0.9, 9);
   }
 
   private stepCamera(dt: number, t: number) {
     const portrait = this.camera.aspect < 0.8;
     const c = this.cart.group.position;
-    if (this.mode === 'build' || this.mode === 'rewind') {
-      if (this.framedAt < 0) {
-        this.frameBuild();
-        this.framedAt = t;
-      }
-    } else if (this.mode === 'ride') {
-      const off = portrait ? new THREE.Vector3(2.6, 3.0, 8.4) : new THREE.Vector3(2.4, 2.4, 6.6);
-      this.wantPos.copy(c).add(off);
-      this.wantLook.copy(c).add(new THREE.Vector3(1.0, 0.5, 0));
-    } else if (this.mode === 'boing') {
-      if (this.framedAt < 0) {
+    if (this.framedAt < 0) {
+      if (this.mode === 'build' || this.mode === 'rewind') this.frameBuild();
+      else if (this.mode === 'ride') this.frameRide();
+      else if (this.mode === 'finale' || this.mode === 'splashed') this.frameFinale();
+      else if (this.mode === 'boing') {
         const ride = this.ride!;
-        const pts = [c.clone().add(new THREE.Vector3(0, 1.8, 0)), c.clone().add(new THREE.Vector3(0, -1.2, 1))];
-        if (!ride.hidden) {
-          const x = this.layout.x(ride.target);
-          pts.push(new THREE.Vector3(x, 5, 0), new THREE.Vector3(x, 0.2, 1.1));
-        }
-        const box = new THREE.Box3().setFromPoints(pts);
-        const cx = (box.min.x + box.max.x) / 2;
-        if (box.max.x - box.min.x < 7) pts.push(new THREE.Vector3(cx - 3.5, Y0, 0), new THREE.Vector3(cx + 3.5, Y0, 0));
+        const pts: THREE.Vector3[] = [c.clone().add(new THREE.Vector3(0, -1.4, 1.1))];
+        this.cartPts(pts);
+        if (!ride.hidden) this.stationPts(ride.target, pts);
+        if (this.gapMarker) pts.push((this.gapMarker.userData.bubble as THREE.Sprite).position.clone().add(new THREE.Vector3(0, 0.5, 0)));
+        this.minWidth(pts, portrait ? 5 : 7);
         const { yaw, pitch } = this.view();
-        this.fitPoints(pts, yaw, pitch * 0.85);
-        this.framedAt = t;
+        this.fitPoints(pts, yaw, pitch * 0.9, portrait ? 10 : 7);
       }
-    } else if (this.mode === 'finale' && this.finale) {
-      const xt = this.layout.x(this.ride!.target);
-      if (this.run.top || this.run.s > 1) {
-        this.wantLook.set(xt + 1.0, Y0 + 0.4, -1.8);
-        this.wantPos.set(xt + (portrait ? 5.4 : 5.6), Y0 + (portrait ? 4.2 : 3.2), portrait ? 9.4 : 6.8);
-      } else {
-        this.wantPos.copy(c).add(portrait ? new THREE.Vector3(3.6, 3.2, 9) : new THREE.Vector3(3.6, 2.6, 7));
-        this.wantLook.copy(c).add(new THREE.Vector3(0.8, 0.8, -0.6));
-      }
-    } else if (this.mode === 'splashed' && this.finale) {
-      const pc = this.finale.poolCenter;
-      this.wantLook.copy(pc).add(new THREE.Vector3(0, 0.9, 0));
-      this.wantPos.copy(pc).add(portrait ? new THREE.Vector3(2.6, 3.8, 9.4) : new THREE.Vector3(3.4, 3.0, 7.2));
-    } else if (this.mode === 'lap' && this.lap.gondola >= 0) {
-      const g = this.wheel.gondolas[this.lap.gondola];
-      const p = g.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, -1.0, 0));
-      const k = Math.min(1, this.lap.t / 3);
-      this.wantLook.copy(p);
-      this.wantPos.copy(p).add(new THREE.Vector3(-3.5 + Math.sin(this.lap.t * 0.25) * 1.5, 1.4 + k * 0.8, portrait ? 13 : 9.5));
+      if (this.mode !== 'lap') this.framedAt = t;
     }
-    const kk = 1 - Math.exp(-dt * (this.mode === 'ride' || this.mode === 'finale' ? 3.2 : 2.4));
+    if (this.mode === 'lap' && this.lap.gondola >= 0) {
+      const g = this.wheel.gondolas[this.lap.gondola];
+      const p = g.getWorldPosition(new THREE.Vector3()).add(new THREE.Vector3(0, -1.2, 0));
+      const hub = this.wheel.group.position.clone().add(this.wheel.hub);
+      // First the whole wheel, then closer to Ziggy's gondola as it climbs into the sunset.
+      const k = THREE.MathUtils.smoothstep(this.lap.t, 1.2, 4);
+      this.wantLook.copy(hub).lerp(p, k);
+      const wide = hub.clone().add(new THREE.Vector3(4, -2, portrait ? 40 : 30));
+      const close = p.clone().add(new THREE.Vector3(1.6 + Math.sin(this.lap.t * 0.3) * 1.2, 1.1, portrait ? 9.5 : 7.5));
+      this.wantPos.copy(wide).lerp(close, k);
+    }
+    const kk = 1 - Math.exp(-dt * (this.mode === 'ride' || this.mode === 'finale' ? 3.0 : 2.4));
     this.camPos.lerp(this.wantPos, kk);
     this.camLook.lerp(this.wantLook, kk);
     this.camera.position.copy(this.camPos);
@@ -930,7 +1036,7 @@ export class GrandHuitGame {
     if (!this.running) return;
     this.raf = requestAnimationFrame(this.loop);
     const raw = this.clock.getDelta();
-    const dt = this.paused ? 0 : Math.min(0.05, raw);
+    const dt = this.paused ? 0 : Math.min(0.1, raw);
     const t = this.clock.elapsedTime;
     this.step(dt, t);
     this.post.render(dt);
@@ -1081,6 +1187,25 @@ export class GrandHuitGame {
     // Water ripples and the duck.
     if (this.pool) this.stepPool(dt, t);
 
+    for (let i = this.bounces.length - 1; i >= 0; i--) {
+      const b = this.bounces[i];
+      b.t += dt;
+      const base = b.s.userData.baseScale as THREE.Vector3;
+      const k = 1 + Math.sin(Math.min(1, b.t / 0.45) * Math.PI) * 0.4;
+      b.s.scale.set(base.x * k, base.y * k, 1);
+      if (b.t >= 0.45 || !b.s.parent) {
+        b.s.scale.copy(base);
+        this.bounces.splice(i, 1);
+      }
+    }
+    // A trail of little sparkles behind the wheels when the cart goes fast.
+    if ((this.mode === 'ride' || this.mode === 'finale') && this.wind > 0.55 && !this.reduce) {
+      this.trailT -= dt;
+      if (this.trailT <= 0) {
+        this.trailT = 0.06;
+        this.sparks.emit(this.cart.group.position.clone(), { count: 2, colors: ['#ffe066', '#ffffff', '#ff9fc6'], speed: 1.2, life: 0.5, gravity: 1.5 });
+      }
+    }
     this.sparks.update(dt);
     this.puffs.update(dt);
     this.pops.update(dt);
@@ -1160,7 +1285,7 @@ export class GrandHuitGame {
 
   /** For tests and the HUD: what the scene is doing. */
   get state() {
-    return { mode: this.mode, pieces: this.pieces.length, dusk: this.dusk };
+    return { mode: this.mode, pieces: this.pieces.length, dusk: this.dusk, camGap: this.camPos.distanceTo(this.wantPos), fps: this.perf.frames / Math.max(0.001, this.perf.time) };
   }
 
   dispose() {

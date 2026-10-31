@@ -51,8 +51,8 @@ export interface PlanetesCallbacks {
   onState: (s: PlanetesState) => void;
   /** A new delivery: read the riddle. */
   onAsk: (index: number) => void;
-  /** Wrong address (after the funny detour). */
-  onWrong: (body: BodyId, mistakes: number) => void;
+  /** Wrong address (the funny detour starts). */
+  onWrong: (body: BodyId, mistakes: number, index: number) => void;
   /** A tap on a planet that isn't one of the choices: say its name. */
   onPeek: (body: BodyId) => void;
   /** Right address: the rocket lands. */
@@ -64,8 +64,9 @@ export interface PlanetesCallbacks {
   onFinish: () => void;
 }
 
-const ROCKET_SMALL = 0.17;
-const UP = new THREE.Vector3(0, 1, 0);
+const ROCKET_SMALL = 0.27;
+/** The rocket's landing pad on the post office asteroid. */
+const POST_PAD = POST_SPOT.clone().add(new THREE.Vector3(-0.34, 0.36, 0.14));
 const easeInOut = (k: number) => (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2);
 const easeOut = (k: number) => 1 - (1 - k) ** 3;
 
@@ -146,7 +147,7 @@ export class PlanetesGame {
   private stamps: THREE.Sprite[] = [];
   private belt: THREE.InstancedMesh;
   private postOffice = makePostOffice();
-  private ambient = new THREE.AmbientLight('#8a90d8', 0.75);
+  private ambient = new THREE.AmbientLight('#9aa0e0', 1.05);
   private sunLight = new THREE.PointLight('#fff1dc', 3.2, 0, 0);
   private hemi = new THREE.HemisphereLight('#ffffff', '#444444', 0);
   private key = new THREE.DirectionalLight('#ffffff', 0);
@@ -192,7 +193,8 @@ export class PlanetesGame {
   private askedAt = 0;
   private target: BodyId | null = null;
   private tweens: Tween[] = [];
-  private timers: number[] = [];
+  /** Waits on the game's own clock: sequences stay in step with the tweens on any device. */
+  private waits: { t: number; fn: () => void }[] = [];
   private down: { x: number; y: number; t: number } | null = null;
   private perf = { frames: 0, time: 0, ratio: 0 };
 
@@ -289,7 +291,7 @@ export class PlanetesGame {
   }
 
   private overviewLights(on: boolean) {
-    this.ambient.intensity = on ? 0.75 : 0;
+    this.ambient.intensity = on ? 1.05 : 0;
     this.sunLight.intensity = on ? 3.2 : 0;
     this.sky.material.uniforms.top.value.set('#060a24');
     this.sky.material.uniforms.bottom.value.set('#1a1240');
@@ -333,7 +335,8 @@ export class PlanetesGame {
   /** Direction from the look point to the camera for the overview. */
   private overviewDir(): THREE.Vector3 {
     if (this.portrait()) {
-      const p = THREE.MathUtils.degToRad(66);
+      // Nearly from above: the far planets don't shrink, the line of planets fills the height.
+      const p = THREE.MathUtils.degToRad(78);
       return new THREE.Vector3(-Math.cos(p), Math.sin(p), 0.0001).normalize();
     }
     const p = THREE.MathUtils.degToRad(52);
@@ -400,7 +403,13 @@ export class PlanetesGame {
   }
 
   private overviewPoints(): THREE.Vector3[] {
-    const pts: THREE.Vector3[] = [new THREE.Vector3(0.6, 0, 0), POST_SPOT.clone().add(new THREE.Vector3(0, 0, 1))];
+    const pts: THREE.Vector3[] = [
+      new THREE.Vector3(0.6, 0, 0),
+      POST_SPOT.clone().add(new THREE.Vector3(-1.6, 0, 0)),
+      POST_SPOT.clone().add(new THREE.Vector3(1.4, 0, 0)),
+      POST_SPOT.clone().add(new THREE.Vector3(0, 0, 1.5)),
+      POST_SPOT.clone().add(new THREE.Vector3(0, 1.4, 0)),
+    ];
     for (const id of BODIES) {
       const L = LAYOUT[id];
       const r = id === 'saturn' ? L.r * 2.2 : id === 'earth' ? MOON_ORBIT + 0.3 : L.r * 1.2;
@@ -430,14 +439,14 @@ export class PlanetesGame {
   /** A spot just in front of a planet (towards the camera), where the rocket stops. */
   private arrivalNear(id: BodyId): THREE.Vector3 {
     const p = this.planetPos(id);
-    const r = LAYOUT[id].r * (id === 'saturn' ? 1.9 : 1) + 0.55;
+    const r = LAYOUT[id].r * (id === 'saturn' ? 1.9 : 1) + 0.75;
     const toCam = this.overviewDir().setY(0).normalize();
     return p.add(toCam.multiplyScalar(r)).add(new THREE.Vector3(0, LAYOUT[id].r * 0.4 + 0.25, 0));
   }
 
   private intro() {
     this.phase = 'intro';
-    this.rocketAt.copy(POST_SPOT).add(new THREE.Vector3(-0.25, 0.32, 0.1));
+    this.rocketAt.copy(POST_PAD);
     this.rocket.root.position.copy(this.rocketAt);
     // Start close on the post office, then pull back to the whole system.
     const near = [POST_SPOT.clone().add(new THREE.Vector3(-1.2, 0, 0)), POST_SPOT.clone().add(new THREE.Vector3(1.2, 1.2, 0.5))];
@@ -491,7 +500,7 @@ export class PlanetesGame {
     for (const id of BODIES) {
       const cand = on && Boolean(d?.candidates.includes(id)) && !this.tried.includes(id);
       this.halos.get(id)!.visible = cand;
-      this.tags.get(id)!.visible = cand || (this.phase === 'end' && this.visited.includes(id));
+      this.tags.get(id)!.visible = cand;
     }
     for (const b of this.badges) {
       this.system.remove(b);
@@ -555,14 +564,17 @@ export class PlanetesGame {
     const center = this.planetPos(body);
     const start = this.rocket.root.position.clone();
     const rel = start.clone().sub(center);
-    this.follow = () => [center.clone().add(new THREE.Vector3(LAYOUT[body].r + 1.6, 0, 0)), center.clone().add(new THREE.Vector3(-LAYOUT[body].r - 1.6, 0, 0)), center.clone().add(new THREE.Vector3(0, 0, LAYOUT[body].r + 1.8))];
-    this.cb.onWrong(body, this.mistakes);
+    const span = Math.hypot(rel.x, rel.z) + 1.6;
+    this.follow = () => [-1, 1].flatMap((s) => [center.clone().add(new THREE.Vector3(s * span, 0, 0)), center.clone().add(new THREE.Vector3(0, s * 0.8, s * span))]);
+    this.cb.onWrong(body, this.mistakes, this.index);
+    // The planet shakes "not here!" while the rocket circles round it.
+    this.planets.get(body)!.group.userData.wobble = 1;
     this.orbitLoop = {
       center: center.clone().setY(start.y),
       r: Math.hypot(rel.x, rel.z),
       a0: Math.atan2(rel.z, rel.x),
       t: 0,
-      dur: this.reduceMotion ? 1.2 : 1.7,
+      dur: this.reduceMotion ? 1.4 : 2.3,
       done: () => {
         this.bubble.visible = false;
         if (d.numbers && this.mistakes >= 1) this.showNumbers();
@@ -704,13 +716,13 @@ export class PlanetesGame {
     const r = st.rocketSpot;
     const a = st.alienSpot;
     const pts = [
-      r.clone().add(new THREE.Vector3(-1.3, 0, 0)),
-      r.clone().add(new THREE.Vector3(0, 3.7, 0)),
-      a.clone().add(new THREE.Vector3(1.0, 0, 0)),
-      a.clone().add(new THREE.Vector3(0, 2.4, 0)),
-      new THREE.Vector3(0, -0.2, 1.4),
+      r.clone().add(new THREE.Vector3(-1.6, 0, 0)),
+      r.clone().add(new THREE.Vector3(0, 4.6, 0)),
+      a.clone().add(new THREE.Vector3(1.2, 0, 0)),
+      a.clone().add(new THREE.Vector3(0, 3.0, 0)),
+      new THREE.Vector3(0, -0.3, 1.6),
     ];
-    const dir = new THREE.Vector3(0, 0.26, 1).normalize();
+    const dir = new THREE.Vector3(0, this.portrait() ? 0.36 : 0.26, 1).normalize();
     this.follow = null;
     this.camRate = 2.2;
     this.setView(pts, dir, { margin: 0.06, snap, minDist: 6 });
@@ -775,7 +787,7 @@ export class PlanetesGame {
 
     // Open the dome, hop out with the parcels in his arms, walk (or bounce, on the Moon) to the inhabitant.
     const moon = st.gravity < 0.3;
-    this.tween(0.5, (k) => (this.rocket.dome.rotation.x = -1.9 * easeOut(k)));
+    this.tween(0.5, (k) => this.rocket.setDome(easeOut(k)));
     this.later(450, () => {
       const z = this.ziggy;
       st.group.attach(z);
@@ -802,7 +814,8 @@ export class PlanetesGame {
         this.dust.emit(land.clone().add(new THREE.Vector3(0, 0.1, 0)), { color: st.dust, count: 6, spread: 1.4, up: 0.4, life: 1.1, size: 0.6 });
         const goal = st.alienSpot.clone().add(new THREE.Vector3(-1.75, 0, 0.75));
         const walk = () => {
-          this.ziggy.rotation.y = Math.PI / 2 - 0.25;
+          // Towards the inhabitant, his face still turned to the child.
+          this.ziggy.rotation.y = 0.8;
           if (moon) {
             // Two giant, slow-motion jumps: boing… boing…
             const mid = land.clone().lerp(goal, 0.5);
@@ -830,7 +843,7 @@ export class PlanetesGame {
           }
         };
         const arrived = () => {
-          z.rotation.y = 0.75;
+          z.rotation.y = 0.4;
           alien.cue('receive');
           // Each parcel goes onto the pile, counted aloud.
           let i = 0;
@@ -1002,7 +1015,7 @@ export class PlanetesGame {
       const rk = this.rocket.root;
       const base = rk.position.clone();
       this.thrust = 1;
-      this.tween(0.5, (k) => (this.rocket.dome.rotation.x = -1.9 * (1 - easeOut(k))));
+      this.tween(0.5, (k) => this.rocket.setDome(1 - easeOut(k)));
       const up1 = base.clone().add(new THREE.Vector3(0, 3.2, 0));
       this.tween(this.reduceMotion ? 1.0 : 0.9, (k) => rk.position.lerpVectors(base, up1, easeInOut(k)), () => {
         const fin = () => {
@@ -1082,7 +1095,7 @@ export class PlanetesGame {
     this.system.add(this.rocket.root);
     this.rocket.root.scale.setScalar(ROCKET_SMALL);
     this.rocket.root.rotation.set(0, 0, 0);
-    this.rocket.dome.rotation.x = 0;
+    this.rocket.setDome(0);
     if (this.ziggy.parent !== this.rocket.seat) {
       this.rocket.seat.attach(this.ziggy);
       this.ziggy.position.set(0, 0, 0);
@@ -1115,7 +1128,7 @@ export class PlanetesGame {
     this.phase = 'end';
     this.showChoices(false);
     this.emit();
-    this.flyTo(POST_SPOT.clone().add(new THREE.Vector3(-0.25, 0.32, 0.1)), () => {
+    this.flyTo(POST_PAD.clone(), () => {
       this.hover = true;
       this.rocketAt.copy(this.rocket.root.position);
       this.overview();
@@ -1129,7 +1142,6 @@ export class PlanetesGame {
           s.userData.pop = 0;
           this.stamps.push(s);
           this.system.add(s);
-          this.tags.get(id)!.visible = true;
           this.audio.play('stamp');
         });
       });
@@ -1216,20 +1228,16 @@ export class PlanetesGame {
   }
 
   private later(ms: number, fn: () => void) {
-    const id = window.setTimeout(() => {
-      this.timers = this.timers.filter((t) => t !== id);
-      fn();
-    }, ms);
-    this.timers.push(id);
+    this.waits.push({ t: ms / 1000, fn });
   }
 
   private loop = () => {
     if (!this.running) return;
     this.raf = requestAnimationFrame(this.loop);
     const raw = this.clock.getDelta();
-    const dt = Math.min(0.05, raw);
+    const dt = Math.min(0.1, raw);
     const t = this.clock.elapsedTime;
-    this.step(dt, t);
+    this.step(dt, t, Math.min(0.5, raw));
     this.post.render(dt);
     this.adaptResolution(raw);
   };
@@ -1272,11 +1280,20 @@ export class PlanetesGame {
     rk.quaternion.slerp(q, Math.min(1, dt * 8));
   }
 
-  private step(dt: number, t: number) {
+  private step(dt: number, t: number, rawDt = dt) {
     const motion = this.reduceMotion ? 0.35 : 1;
     this.trailT -= dt;
 
-    // Tweens.
+    // Waits, then tweens.
+    for (let i = 0; i < this.waits.length; i++) {
+      const w = this.waits[i];
+      w.t -= dt;
+      if (w.t <= 0) {
+        this.waits.splice(i, 1);
+        i--;
+        w.fn();
+      }
+    }
     for (let i = 0; i < this.tweens.length; i++) {
       const tw = this.tweens[i];
       tw.t += dt;
@@ -1318,7 +1335,7 @@ export class PlanetesGame {
       const reveal = this.mistakes >= REVEAL_AFTER && this.phase === 'ask';
       for (const id of BODIES) {
         const p = this.planets.get(id)!;
-        const r = id === 'saturn' ? LAYOUT[id].r * 1.6 : LAYOUT[id].r;
+        const r = id === 'saturn' ? LAYOUT[id].r * 2.45 : LAYOUT[id].r;
         const halo = this.halos.get(id)!;
         if (halo.visible) {
           halo.position.copy(p.group.position);
@@ -1329,7 +1346,7 @@ export class PlanetesGame {
           if (big && Math.random() < dt * 6) this.sparkles.emit(p.group.position.clone().addScaledVector(camUp, r), { color: '#fff07a', count: 1, spread: r * 2, up: 0.4, life: 0.8, size: 0.35, additive: true });
         }
         const tag = this.tags.get(id)!;
-        if (tag.visible) tag.position.copy(p.group.position).addScaledVector(camUp, -(r * 1.05 + 0.4));
+        if (tag.visible) tag.position.copy(p.group.position).addScaledVector(camUp, -((id === 'saturn' ? LAYOUT[id].r * 1.3 : r) * 1.05 + 0.4));
       }
       for (const b of this.badges) {
         const id = b.userData.body as BodyId;
@@ -1342,7 +1359,7 @@ export class PlanetesGame {
         const id = s.userData.body as BodyId;
         s.userData.pop += dt;
         const k = Math.min(1, s.userData.pop / 0.35);
-        s.scale.setScalar(0.085 * (k < 1 ? 1.8 - 0.8 * k : 1));
+        s.scale.setScalar(0.062 * (k < 1 ? 1.8 - 0.8 * k : 1));
         s.position.copy(this.planets.get(id)!.group.position).addScaledVector(camUp, LAYOUT[id].r * (id === 'saturn' ? 1.2 : 1) + 0.6);
       }
       // A comet now and then.
@@ -1392,7 +1409,7 @@ export class PlanetesGame {
         const o = this.orbitLoop;
         o.t = Math.min(1, o.t + dt / o.dur);
         const a = o.a0 + easeInOut(o.t) * Math.PI * 2;
-        rk.position.set(o.center.x + Math.cos(a) * o.r, o.center.y + Math.sin(o.t * Math.PI) * 0.6, o.center.z + Math.sin(a) * o.r);
+        rk.position.set(o.center.x + Math.cos(a) * o.r, o.center.y + Math.sin(o.t * Math.PI) * 0.6 + Math.sin(o.t * Math.PI * 4) * 0.25 * motion, o.center.z + Math.sin(a) * o.r);
         this.orient(rk, new THREE.Vector3(-Math.sin(a), 0.2, Math.cos(a)), dt);
         this.thrust = 0.8;
         this.trail(rk, 1);
@@ -1405,7 +1422,7 @@ export class PlanetesGame {
         this.orient(rk, new THREE.Vector3(0, 1, 0).add(this.camera.position.clone().sub(rk.position).normalize().multiplyScalar(0.55)), dt);
         this.thrust = this.phase === 'end' ? 0.15 : 0.25;
       }
-      if (this.bubble.visible) this.bubble.position.copy(rk.position).add(new THREE.Vector3(0, 0.75, 0));
+      if (this.bubble.visible) this.bubble.position.copy(rk.position).add(new THREE.Vector3(0, 1.1, 0));
     } else if (this.stage && this.stage.kind === 'cloud' && rk.parent === this.stage.group && this.phase !== 'depart' && this.phase !== 'land') {
       rk.position.y = 0.15 + Math.sin(t * 1.4) * 0.08 * motion;
     }
@@ -1430,7 +1447,8 @@ export class PlanetesGame {
       this.view.pos.copy(f.pos);
       this.view.look.copy(f.look);
     }
-    const k = 1 - Math.exp(-dt * this.camRate);
+    // Smoothed on the real time, so a slow device still frames the action in time.
+    const k = 1 - Math.exp(-rawDt * this.camRate);
     this.cur.pos.lerp(this.view.pos, k);
     this.cur.look.lerp(this.view.look, k);
     const sway = this.reduceMotion ? 0 : Math.sin(t * 0.25) * 0.15;
@@ -1440,8 +1458,7 @@ export class PlanetesGame {
 
   dispose() {
     this.stop();
-    for (const id of this.timers) window.clearTimeout(id);
-    this.timers = [];
+    this.waits = [];
     this.tweens = [];
     this.resize.disconnect();
     this.canvas.removeEventListener('pointerdown', this.onDown);

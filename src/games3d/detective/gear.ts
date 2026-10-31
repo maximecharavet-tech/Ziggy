@@ -10,58 +10,62 @@ function plaidTex(): THREE.CanvasTexture {
   const c = document.createElement('canvas');
   c.width = c.height = 64;
   const g = c.getContext('2d')!;
-  g.fillStyle = '#c99a5b';
+  g.fillStyle = '#b07a48';
   g.fillRect(0, 0, 64, 64);
-  g.fillStyle = 'rgba(122,74,38,0.55)';
-  for (let i = 0; i < 4; i++) {
-    g.fillRect(i * 16 + 2, 0, 6, 64);
-    g.fillRect(0, i * 16 + 2, 64, 6);
+  // A bold check, readable even when Ziggy is small on screen.
+  g.fillStyle = 'rgba(70,40,22,0.75)';
+  for (let i = 0; i < 2; i++) {
+    g.fillRect(i * 32 + 4, 0, 10, 64);
+    g.fillRect(0, i * 32 + 4, 64, 10);
   }
-  g.fillStyle = 'rgba(255,240,200,0.45)';
-  for (let i = 0; i < 4; i++) {
-    g.fillRect(i * 16 + 11, 0, 2, 64);
-    g.fillRect(0, i * 16 + 11, 64, 2);
+  g.fillStyle = 'rgba(255,226,170,0.7)';
+  for (let i = 0; i < 2; i++) {
+    g.fillRect(i * 32 + 22, 0, 3, 64);
+    g.fillRect(0, i * 32 + 22, 64, 3);
   }
   const t = new THREE.CanvasTexture(c);
   t.colorSpace = THREE.SRGBColorSpace;
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
-  t.repeat.set(2, 2);
+  t.repeat.set(2, 1.5);
   return t;
 }
 
+/** The deerstalker: a round checked crown, a peak at the front and one at the back, a bow on top. */
 export function makeDetectiveCap(): THREE.Group {
   const g = new THREE.Group();
-  const m = new THREE.MeshStandardMaterial({ map: plaidTex(), roughness: 0.92, color: '#ffffff' });
-  const crown = new THREE.Mesh(new THREE.SphereGeometry(0.27, 24, 12, 0, Math.PI * 2, 0, Math.PI / 2), m);
-  crown.scale.set(1, 0.85, 1.08);
+  const m = new THREE.MeshStandardMaterial({ map: plaidTex(), roughness: 0.9, color: '#ffffff' });
+  const crown = new THREE.Mesh(new THREE.SphereGeometry(0.27, 24, 14, 0, Math.PI * 2, 0, Math.PI / 2), m);
+  crown.scale.set(1, 1.05, 1.1);
   crown.castShadow = true;
-  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.265, 0.03, 8, 28), m);
+  const rim = new THREE.Mesh(new THREE.TorusGeometry(0.268, 0.032, 8, 28), new THREE.MeshStandardMaterial({ color: '#6b4226', roughness: 0.85 }));
   rim.rotation.x = Math.PI / 2;
-  rim.scale.set(1, 1.08, 1);
+  rim.scale.set(1, 1.1, 1);
+  rim.position.y = 0.01;
+  g.add(crown, rim);
   // Peaks at the front and the back: the deerstalker look.
   for (const s of [1, -1]) {
-    const peak = new THREE.Mesh(new THREE.CylinderGeometry(0.2, 0.2, 0.025, 20, 1, false, -Math.PI / 2, Math.PI), m);
-    peak.scale.set(1, 1, 0.75);
-    peak.position.set(0, 0.0, s * 0.24);
-    peak.rotation.x = s * 0.25;
+    const peak = new THREE.Mesh(new THREE.CylinderGeometry(0.23, 0.23, 0.03, 20, 1, false, -Math.PI / 2, Math.PI), m);
+    peak.scale.set(0.95, 1, 0.85);
+    peak.position.set(0, 0.0, s * 0.26);
+    peak.rotation.x = s * 0.32;
     if (s < 0) peak.rotation.y = Math.PI;
     peak.castShadow = true;
     g.add(peak);
   }
-  const button = new THREE.Mesh(new THREE.SphereGeometry(0.035, 10, 8), new THREE.MeshStandardMaterial({ color: '#7a4a26', roughness: 0.8 }));
-  button.position.y = 0.23;
+  const brown = new THREE.MeshStandardMaterial({ color: '#6b4226', roughness: 0.85 });
+  const button = new THREE.Mesh(new THREE.SphereGeometry(0.04, 10, 8), brown);
+  button.position.y = 0.285;
   // A little bow on top (the tied ear flaps).
-  const bowM = new THREE.MeshStandardMaterial({ color: '#7a4a26', roughness: 0.85 });
   for (const s of [-1, 1]) {
-    const loop = new THREE.Mesh(new THREE.ConeGeometry(0.05, 0.1, 4), bowM);
+    const loop = new THREE.Mesh(new THREE.ConeGeometry(0.06, 0.13, 4), brown);
     loop.rotation.z = (s * Math.PI) / 2;
-    loop.position.set(s * 0.055, 0.2, -0.02);
+    loop.position.set(s * 0.07, 0.27, -0.02);
     loop.scale.z = 0.5;
     g.add(loop);
   }
-  g.add(crown, rim, button);
-  g.position.y = -0.03;
-  g.rotation.x = -0.08;
+  g.add(button);
+  g.position.y = -0.035;
+  g.rotation.x = -0.1;
   return g;
 }
 

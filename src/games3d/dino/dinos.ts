@@ -270,8 +270,8 @@ const DEFS: Record<DinoId, DinoDef> = {
       for (const z of [-1, 1]) {
         ell(H, v(1.5, 0.27, z * 0.17), v(0.05, 0.035, 0.05), '#2c4a2f', [0, 0, 0], 8);
         ell(H, v(0.58, 0.68, z * 0.3), v(0.24, 0.1, 0.16), '#58b25f', [0, 0, 0.1], 10);
-        const blush = onEll(v(1.0, 0.08, 0), v(0.62, 0.42, 0.48), v(-0.15, -0.25, z));
-        ell(H, blush.p, v(0.13, 0.08, 0.03), BLUSH, [0, z * 0.25, 0], 10);
+        const blush = onEll(v(1.0, 0.08, 0), v(0.62, 0.42, 0.48), v(-0.45, -0.1, z));
+        ell(H, blush.p, v(0.12, 0.075, 0.03), BLUSH, [0, z * 0.5, 0], 10);
         smile(H, v(0.62, -0.18, 0), v(1.45, -0.14, 0), z * 0.43);
         for (let i = 0; i < 3; i++) cone(H, v(1.0 + i * 0.16, -0.22, z * 0.36), v(0.05, -1, 0), 0.1, 0.035, CLAW, 6);
       }
@@ -280,7 +280,7 @@ const DEFS: Record<DinoId, DinoDef> = {
       const jaw = k.group(head, v(0.25, -0.18, 0));
       k.set('jaw', jaw);
       const J = k.P();
-      ell(J, v(0.72, -0.08, 0), v(0.82, 0.2, 0.43), (p, n) => (n.y > 0.5 ? col(TONGUE) : col('#f6f2b0')), [0, 0, -0.04], 18);
+      ell(J, v(0.62, -0.08, 0), v(0.74, 0.2, 0.42), (p, n) => (n.y > 0.6 && p.x < 1.05 ? col(TONGUE) : col('#f6f2b0')), [0, 0, -0.04], 18);
       k.mesh(jaw, J);
       for (const z of [-1, 1]) {
         const e = onEll(skull.c, skull.r, v(0.3, 0.42, z * 0.85), 0.07);
@@ -361,7 +361,6 @@ const DEFS: Record<DinoId, DinoDef> = {
         ell(H, fc.clone().add(local), v(0.11, 0.11, 0.08), '#ff8296', [0, 0, 0], 8);
       }
       for (const z of [-1, 1]) {
-        ell(H, fc.clone().add(v(0.05, 0.42, z * 0.38)).applyAxisAngle(v(0, 0, 1), 0), v(0.06, 0.12, 0.12), '#ff9f6b', [0, 0, 0.65], 8);
         // Three horns: two big ones above the eyes…
         cone(H, v(0.66, 0.42, z * 0.24), v(0.75, 0.62, z * 0.1), 0.8, 0.1, '#fff3d9', 12);
         const blush = onEll(skull.c, skull.r, v(0.45, -0.45, z));
@@ -620,7 +619,7 @@ export interface PieceModel {
   /** Width × height in profile (model units). */
   w: number;
   h: number;
-  /** Longest extent in profile: the size compared in "biggest / smallest". */
+  /** Longest side in profile: the size compared in "biggest / smallest" (children compare lengths). */
   size: number;
 }
 
@@ -639,7 +638,7 @@ export function buildPieces(id: DinoId): PieceModel[] {
     geometry.computeBoundingSphere();
     const w = bb.max.x - bb.min.x;
     const h = bb.max.y - bb.min.y;
-    out.push({ id: pid, geometry, slot: c, w, h, size: Math.hypot(w, h) });
+    out.push({ id: pid, geometry, slot: c, w, h, size: Math.max(w, h) });
   });
   return out.filter((p) => DINO_INFO[id].pieces.includes(p.id));
 }
@@ -765,7 +764,7 @@ export interface DinoModel {
 }
 
 /** Builds the living dinosaur and its skeleton pieces. */
-export function buildDino(id: DinoId, opts: { lowPower?: boolean } = {}): DinoModel {
+export function buildDino(id: DinoId): DinoModel {
   const def = DEFS[id];
   const root = new THREE.Group();
   root.name = `dino-${id}`;
@@ -779,8 +778,6 @@ export function buildDino(id: DinoId, opts: { lowPower?: boolean } = {}): DinoMo
   const body = new THREE.Group();
   flesh.add(body);
   parts.body = body;
-  const seg = opts.lowPower ? 0.7 : 1;
-  void seg;
   const kit: FleshKit = {
     P: () => new Parts(),
     skin: paint,

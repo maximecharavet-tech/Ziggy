@@ -15,10 +15,10 @@ function cobbleTexture(): THREE.CanvasTexture {
     512,
     512,
     (g) => {
-      g.fillStyle = '#bda78a';
+      g.fillStyle = '#a8865f';
       g.fillRect(0, 0, 512, 512);
       const r = rng(17);
-      const cols = ['#ead9bf', '#e2cdb0', '#f1e3cc', '#dcc4a2', '#e8d2b4', '#f3e6d2'];
+      const cols = ['#ddbf95', '#d3b084', '#e6cba3', '#c9a57a', '#dcbb8f', '#e8d0ab'];
       const n = 8;
       const s = 512 / n;
       for (let y = 0; y < n; y++)
@@ -33,7 +33,7 @@ function cobbleTexture(): THREE.CanvasTexture {
             g.beginPath();
             g.ellipse(cx + dx, cy, w / 2, h / 2, 0, 0, Math.PI * 2);
             g.fill();
-            g.fillStyle = 'rgba(255,255,255,0.22)';
+            g.fillStyle = 'rgba(255,248,230,0.18)';
             g.beginPath();
             g.ellipse(cx + dx - w * 0.12, cy - h * 0.14, w * 0.26, h * 0.16, 0, 0, Math.PI * 2);
             g.fill();
@@ -51,7 +51,7 @@ const box = (w: number, h: number, d: number, color: string, x: number, y: numbe
   return m;
 };
 
-const HOUSE_COLS = ['#ffb8a8', '#ffe08a', '#bfe6c5', '#a9d8ff', '#ffd0a1', '#e4c8ff', '#fff1d0', '#ffc6dd'];
+const HOUSE_COLS = ['#ff9f8a', '#ffd35c', '#9fdcae', '#8cc8f5', '#ffb877', '#d4b0ff', '#ffe7b0', '#ffaacb'];
 const SHUTTERS = ['#3fa37a', '#4a86d9', '#c9773e', '#7a5fc7', '#e0564a'];
 
 function makeHouse(w: number, floors: number, color: string, r: () => number, shop: boolean): THREE.Group {

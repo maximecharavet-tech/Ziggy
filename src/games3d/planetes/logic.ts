@@ -291,7 +291,6 @@ const NUMBER: Record<'fr' | 'en', string[]> = {
   en: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten'],
 };
 export const countWord = (n: number, locale: string) => NUMBER[locale === 'fr' ? 'fr' : 'en'][n] ?? String(n);
-const lang = (locale: string): 'fr' | 'en' => (locale === 'fr' ? 'fr' : 'en');
 
 /** "la Terre" / "Earth" with a capital at the start of a sentence. */
 const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
@@ -375,7 +374,6 @@ function fixed(id: string, bands: Band[], skill: PlanetesSkill, answer: BodyId, 
   };
 }
 
-const ALL_BANDS: Band[] = ['little', 'middle', 'big'];
 
 export const TEMPLATES: Template[] = [
   /* ── Little ones: colours, shapes, the Sun is hot, counting from the Sun ── */
@@ -1013,8 +1011,13 @@ export function parcelWord(n: number, locale: string): string {
 
 export function endText(visited: number, locale: string): string {
   return locale === 'fr'
-    ? `Tournée terminée ! Tu as livré des colis sur ${visited} astres. Bravo, facteur des planètes !`
-    : `Round finished! You delivered parcels to ${visited} worlds. Well done, planet postman!`;
+    ? `Tu as livré des colis sur ${visited} astres. Bravo, facteur des planètes !`
+    : `You delivered parcels to ${visited} worlds. Well done, planet postman!`;
+}
+
+/** French typography: a non-breaking space before ! ? : ; (no lonely "!" on a new line). */
+export function nbsp(text: string, locale: string): string {
+  return locale === 'fr' ? text.replace(/ ([!?:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0') : text;
 }
 
 export const PRETEND: L = {

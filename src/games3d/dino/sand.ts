@@ -19,9 +19,10 @@ export class SandBox {
   private base: Float32Array;
   private dirty = true;
   private geo: THREE.PlaneGeometry;
-  private dry = new THREE.Color('#f6dca6');
-  private damp = new THREE.Color('#d6a467');
-  private deep = new THREE.Color('#b98552');
+  private dry = new THREE.Color('#f3cf8c');
+  private ripple = new THREE.Color('#e2b26c');
+  private damp = new THREE.Color('#c99258');
+  private deep = new THREE.Color('#a8723f');
 
   constructor(width: number, depth: number, top = 0.62, lowPower = false) {
     this.width = width;
@@ -50,7 +51,8 @@ export class SandBox {
     for (let i = 0; i < pos.count; i++) {
       const x = pos.getX(i);
       const z = pos.getZ(i);
-      let y = this.top + Math.sin(x * 2.1 + seed) * Math.cos(z * 2.7) * 0.025;
+      // Soft heaps and little wind ripples.
+      let y = this.top + Math.sin(x * 2.1 + seed) * Math.cos(z * 2.7) * 0.03 + Math.sin(x * 7.5 + z * 2.2 + seed) * 0.008;
       for (const b of bumps) y += b.a * Math.exp(-((x - b.x) ** 2 + (z - b.z) ** 2) / (b.s * b.s));
       // Sand slumps a little against the boards.
       const ex = Math.min(this.width / 2 - Math.abs(x), this.depth / 2 - Math.abs(z));
@@ -121,6 +123,11 @@ export class SandBox {
     return moved;
   }
 
+  /** Let a bone tip peek out: lower the sand over a point, just to `toY`. */
+  peek(wx: number, wz: number, radius: number, toY: number) {
+    for (let k = 0; k < 12; k++) this.scrape(wx, wz, radius, 0.1, toY);
+  }
+
   /** Lower everything a little (the wind blows the last sand away). */
   settle(amount: number) {
     for (let i = 0; i < this.h.length; i++) this.h[i] = Math.max(this.floor, this.h[i] - amount);
@@ -148,11 +155,14 @@ export class SandBox {
       const y = this.h[i];
       pos.setY(i, y);
       const dug = 1 - (y - this.floor) / Math.max(0.01, this.base[i] - this.floor);
-      c.copy(this.dry).lerp(this.damp, Math.min(1, Math.max(0, dug * 1.6)));
+      const px = pos.getX(i);
+      const pz = pos.getZ(i);
+      const rip = Math.max(0, Math.sin(px * 7.5 + pz * 2.2 + 1)) * (1 - Math.min(1, dug * 3));
+      c.copy(this.dry).lerp(this.ripple, rip * 0.45).lerp(this.damp, Math.min(1, Math.max(0, dug * 1.6)));
       if (dug > 0.75) c.lerp(this.deep, (dug - 0.75) * 2.4);
       // A soft speckle so the sand never looks like plastic.
       const n = Math.sin(i * 12.9898) * 43758.5453;
-      c.offsetHSL(0, 0, (n - Math.floor(n) - 0.5) * 0.035);
+      c.offsetHSL(0, 0, (n - Math.floor(n) - 0.5) * 0.06);
       colors.setXYZ(i, c.r, c.g, c.b);
     }
     pos.needsUpdate = true;

@@ -11,22 +11,22 @@ import { CLUE_SPOTS, type MysteryId } from './logic';
  * into a few draw calls.
  */
 
-export const SLOT_X = { left: -3.4, center: 0, right: 3.4 } as const;
-export const SLOT_Z = { front: 2.6, back: -2.6 } as const;
+export const SLOT_X = { left: -3.1, center: 0, right: 3.1 } as const;
+export const SLOT_Z = { front: 2.5, back: -2.5 } as const;
 
 /** Where Ziggy waits, watching the line-up. */
-export const ZIGGY_HOME = new THREE.Vector3(-5.4, 0, 4.4);
+export const ZIGGY_HOME = new THREE.Vector3(-5.0, 0, 4.2);
 /** The scene of the mystery (party table) in front of the town hall. */
-export const MYSTERY_SPOT = new THREE.Vector3(0, 0, -6.6);
+export const MYSTERY_SPOT = new THREE.Vector3(0, 0, -7.6);
 
-/** Clue spots: the prop's place and the side Ziggy comes from (towards the camera). */
-export const CLUE_PLACES: { at: THREE.Vector3; face: number }[] = [
-  { at: new THREE.Vector3(-8.9, 0, -1.6), face: 1.2 }, // bakery door
-  { at: new THREE.Vector3(8.8, 0, -1.2), face: -1.2 }, // market stall
-  { at: new THREE.Vector3(-7.0, 0, 6.2), face: 0.6 }, // flower bed
-  { at: new THREE.Vector3(6.9, 0, 6.0), face: -0.6 }, // lamp post
-  { at: new THREE.Vector3(9.3, 0, 3.0), face: -1.0 }, // well
-  { at: new THREE.Vector3(-9.4, 0, 2.6), face: 1.0 }, // big tree
+/** Clue spots: the prop's place, the direction the camera looks from, and the side where Ziggy kneels. */
+export const CLUE_PLACES: { at: THREE.Vector3; face: number; side: 1 | -1 }[] = [
+  { at: new THREE.Vector3(-8.9, 0, -1.6), face: 1.2, side: 1 }, // bakery door
+  { at: new THREE.Vector3(8.8, 0, -1.2), face: -1.2, side: 1 }, // market stall
+  { at: new THREE.Vector3(-7.0, 0, 6.2), face: 0.6, side: 1 }, // flower bed
+  { at: new THREE.Vector3(6.9, 0, 6.0), face: -0.6, side: 1 }, // lamp post
+  { at: new THREE.Vector3(9.3, 0, 3.0), face: -1.0, side: -1 }, // well
+  { at: new THREE.Vector3(-9.4, 0, 2.6), face: 1.0, side: 1 }, // big tree
 ];
 if (CLUE_PLACES.length !== CLUE_SPOTS) throw new Error('clue places');
 
@@ -666,9 +666,21 @@ export function buildVillage(lowPower: boolean): Village {
   const fountain = makeFountain();
   g.add(fountain);
 
+  // Six round stone mats around the fountain: the friends' places (like the map in the clues).
+  for (const x of Object.values(SLOT_X))
+    for (const z of Object.values(SLOT_Z)) {
+      const matStone = new THREE.Mesh(new THREE.CylinderGeometry(0.85, 0.9, 0.06, 28), mat('#f4ead8'));
+      matStone.position.set(x, 0.04, z);
+      matStone.receiveShadow = true;
+      const rim = new THREE.Mesh(new THREE.TorusGeometry(0.87, 0.05, 4, 28), mat('#d9c2a0'));
+      rim.rotation.x = Math.PI / 2;
+      rim.position.set(x, 0.07, z);
+      g.add(matStone, rim);
+    }
+
   // Buildings around the square.
   const hall = makeTownHall();
-  hall.position.set(0, 0, -12.2);
+  hall.position.set(0, 0, -12.9);
   g.add(hall);
   const houses: [HouseOpts, number, number, number][] = [
     [{ w: 3.6, h: 3.8, d: 3.2, walls: '#ffd6e0', roof: '#d94b4b', shutters: '#5f9fd9', door: '#5f9fd9' }, -6.6, -11.4, 0.15],
@@ -725,7 +737,7 @@ export function buildVillage(lowPower: boolean): Village {
 
   // Lamps, flower beds, trees.
   for (const [x, z] of [
-    [6.4, 6.6],
+    [7.9, 5.4],
     [-4.6, -8.6],
     [4.4, -8.8],
     [-9.6, 5.8],
@@ -833,7 +845,7 @@ export function buildVillage(lowPower: boolean): Village {
 
   // Little lights to glow a bit (lanterns).
   for (const [x, z] of [
-    [6.4, 6.6],
+    [7.9, 5.4],
     [-4.6, -8.6],
     [4.4, -8.8],
     [-9.6, 5.8],
@@ -912,7 +924,7 @@ export function makeMysteryScene(id: MysteryId): { before: THREE.Group; after: T
       [-0.8, 0.8].forEach((x) => {
         const sh = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.1), new THREE.MeshLambertMaterial({ map: sheetTex, side: THREE.DoubleSide }));
         sh.position.set(x, 1.45, -0.88);
-        sh.userData.noMerge = true;
+        sh.name = 'dirty';
         before.add(sh);
         const sh2 = new THREE.Mesh(new THREE.PlaneGeometry(1.3, 1.1), new THREE.MeshLambertMaterial({ map: clean, side: THREE.DoubleSide }));
         sh2.position.set(x, 1.45, -0.88);
@@ -962,6 +974,15 @@ export function makeMysteryScene(id: MysteryId): { before: THREE.Group; after: T
         s.rotation.z = Math.sin(i * 2) * 0.3;
         before.add(s);
       }
+      // At the party, a fresh bunch of balloons is back on the cart.
+      ['#ff5f6d', '#ffd166', '#5fb8ff', '#7ed957', '#c99bff'].forEach((col, i) => {
+        const b = new THREE.Mesh(new THREE.SphereGeometry(0.24, 12, 10), mat(col, { emissive: new THREE.Color(col).multiplyScalar(0.15) }));
+        b.scale.y = 1.18;
+        b.position.set(-0.4 + i * 0.2, 2.0 + Math.sin(i * 2.1) * 0.25, 1.6 + Math.cos(i * 1.3) * 0.15);
+        const line = cyl(0.006, 0.006, 1.0, '#ffffff', 3, false);
+        line.position.set(-0.4 + i * 0.2, 1.3, 1.6);
+        after.add(b, line);
+      });
       break;
     }
   }

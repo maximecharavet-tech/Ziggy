@@ -16,7 +16,8 @@ import { rng } from '../kit/rng';
 
 export type Band = 'little' | 'middle' | 'big';
 
-export const GAME_ID = 'grand-huit';
+/** The id the learning engine stores (letters, digits and _ only: the World Memory schema). */
+export const GAME_ID = 'grand_huit';
 export const RIDES_PER_GAME = 5;
 
 export type CoasterSkill = 'counting' | 'addition' | 'subtraction' | 'multiplication' | 'sequencing';
@@ -252,6 +253,7 @@ function minus(r: R, lv: number): Ride | null {
   const solution = walk(r, start, pal, lv >= 3 ? between(2, 3, r) : 2, start);
   if (!solution) return null;
   const target = valueAfter(start, solution);
+  if (target < 1) return null;
   if ((shortest(start, target, pal, 4, start)?.length ?? 0) < 2) return null;
   return { kind: 'minus', skill: 'subtraction', start, target, preset: [], palette: pal, slots: 4, max: lineFor('middle', [start]), hidden: false, autoLaunch: false, solution, level: lv };
 }
@@ -549,7 +551,17 @@ export function missText(ride: Ride, path: readonly Op[], misses: number, locale
   if (misses >= 2) {
     const h = nextHint(ride, path);
     if (h?.kind === 'piece') text += fr ? ` Essaie le rail ${opLabel(h.op)} !` : ` Try the ${opLabel(h.op)} rail!`;
-    else if (h?.kind === 'undo') text += fr ? ' Commence par « Annuler ».' : ' Start with “Undo”.';
+    else if (h?.kind === 'undo') {
+      const after = nextHint(ride, path.slice(0, -1));
+      text +=
+        after?.kind === 'piece'
+          ? fr
+            ? ` Appuie sur « Annuler », puis essaie le rail ${opLabel(after.op)} !`
+            : ` Press “Undo”, then try the ${opLabel(after.op)} rail!`
+          : fr
+            ? ' Commence par « Annuler ».'
+            : ' Start with “Undo”.';
+    }
   }
   return text;
 }

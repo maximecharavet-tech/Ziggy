@@ -732,16 +732,16 @@ export function makeProp(id: PropId, size = 1): THREE.Group {
 
 /** Little wings for the flying cow (they flap: `userData.wings`). */
 export function makeFlyingCow(): THREE.Group {
-  const cow = makeProp('cow', 2.2);
+  const cow = makeProp('cow', 3);
   const wings: THREE.Object3D[] = [];
   const wm = new THREE.MeshLambertMaterial({ color: '#ffffff', emissive: new THREE.Color('#e7f5ff').multiplyScalar(0.35), flatShading: true });
   for (const sx of [-1, 1]) {
     const pivot = new THREE.Group();
-    pivot.position.set(sx * 0.45, 1.35, -0.1);
+    pivot.position.set(sx * 0.6, 1.85, -0.15);
     for (let i = 0; i < 3; i++) {
-      const f = new THREE.Mesh(new THREE.SphereGeometry(0.32 - i * 0.06, 10, 6), wm);
+      const f = new THREE.Mesh(new THREE.SphereGeometry(0.44 - i * 0.08, 10, 6), wm);
       f.scale.set(1.6, 0.18, 0.7);
-      f.position.set(sx * (0.38 + i * 0.22), 0.02 - i * 0.05, -i * 0.12);
+      f.position.set(sx * (0.5 + i * 0.3), 0.02 - i * 0.07, -i * 0.16);
       pivot.add(f);
     }
     pivot.userData.side = sx;
@@ -750,9 +750,9 @@ export function makeFlyingCow(): THREE.Group {
   }
   // A tiny red cape, for the superhero cow.
   const cape = new THREE.Mesh(new THREE.ConeGeometry(0.5, 1.2, 4, 1, true), new THREE.MeshLambertMaterial({ color: '#ff6b6b', side: THREE.DoubleSide, flatShading: true }));
-  cape.position.set(0, 1.15, -0.75);
+  cape.position.set(0, 1.55, -1.0);
   cape.rotation.set(-1.25, Math.PI / 4, 0);
-  cape.scale.set(1, 1, 0.25);
+  cape.scale.set(1.35, 1.35, 0.3);
   cow.add(cape);
   cow.userData.wings = wings;
   return cow;

@@ -23,14 +23,14 @@ function card(g: CanvasRenderingContext2D, x: number, y: number, s: number) {
   g.restore();
 }
 
-function rainbowFill(g: CanvasRenderingContext2D, x: number, y: number, w: number, h: number) {
+function rainbowFill(g: CanvasRenderingContext2D, x: number, y: number, w: number) {
   const grad = g.createLinearGradient(x, y, x + w, y);
   RAINBOW.forEach((c, i) => grad.addColorStop(i / (RAINBOW.length - 1), c));
   return grad;
 }
 
 function drawHat(g: CanvasRenderingContext2D, cx: number, cy: number, s: number, color: string | 'any') {
-  const fill = color === 'any' ? rainbowFill(g, cx - s * 0.32, cy, s * 0.64, 1) : color;
+  const fill = color === 'any' ? rainbowFill(g, cx - s * 0.32, cy, s * 0.64) : color;
   g.save();
   g.lineJoin = 'round';
   g.lineWidth = s * 0.035;
@@ -59,7 +59,7 @@ function drawHat(g: CanvasRenderingContext2D, cx: number, cy: number, s: number,
 }
 
 function drawScarf(g: CanvasRenderingContext2D, cx: number, cy: number, s: number, color: string | 'any') {
-  const fill = color === 'any' ? rainbowFill(g, cx - s * 0.3, cy, s * 0.6, 1) : color;
+  const fill = color === 'any' ? rainbowFill(g, cx - s * 0.3, cy, s * 0.6) : color;
   g.save();
   g.lineJoin = 'round';
   g.lineCap = 'round';

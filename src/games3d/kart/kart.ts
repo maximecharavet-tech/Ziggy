@@ -104,9 +104,9 @@ export function makeKart(font: string): KartModel {
 
   // Headlights.
   for (const sx of [-1, 1]) {
-    const l = new THREE.Mesh(new THREE.SphereGeometry(0.1, 10, 8), glowMat('#fff6d0', 1.4));
+    const l = new THREE.Mesh(new THREE.SphereGeometry(0.09, 10, 8), glowMat('#fff6d0', 1.05));
     l.position.set(sx * 0.4, 0.55, 1.96);
-    const h = glow('#fff1c4', 0.7, 0.55);
+    const h = glow('#fff1c4', 0.45, 0.35);
     h.position.copy(l.position).add(new THREE.Vector3(0, 0, 0.08));
     body.add(l, h);
   }

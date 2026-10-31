@@ -43,7 +43,7 @@ export interface DinoInfo {
   ageMy: number;
   era: 'jurassic' | 'cretaceous';
   pieces: readonly PieceId[];
-  /** Size of each piece in the 3D model (its longest side, model units): for "biggest / smallest". */
+  /** Size of each piece in the 3D model (its longest side in profile, model units): for "biggest / smallest". */
   sizes: Partial<Record<PieceId, number>>;
   fun: FunMoment;
   /** A true little fact, said when the dinosaur wakes up. */
@@ -58,7 +58,7 @@ export const DINO_INFO: Record<DinoId, DinoInfo> = {
     ageMy: 68,
     era: 'cretaceous',
     pieces: ['ribs', 'legs', 'arms', 'neck', 'head', 'tail'],
-    sizes: { tail: 3.5, ribs: 2.9, legs: 2.55, head: 2.15, neck: 1.6, arms: 0.75 },
+    sizes: { tail: 3.35, ribs: 2.57, legs: 2.24, head: 1.82, neck: 1.16, arms: 0.64 },
     fun: 'cookie',
     fact: { fr: 'Le T-Rex avait de tout petits bras, avec seulement deux doigts à chaque main !', en: 'The T-Rex had tiny arms, with only two fingers on each hand!' },
   },
@@ -69,7 +69,7 @@ export const DINO_INFO: Record<DinoId, DinoInfo> = {
     ageMy: 68,
     era: 'cretaceous',
     pieces: ['ribs', 'legs', 'frontLegs', 'head', 'tail'],
-    sizes: { ribs: 2.8, head: 2.55, tail: 2.3, legs: 1.75, frontLegs: 1.5 },
+    sizes: { ribs: 2.55, head: 2.04, tail: 1.98, legs: 1.48, frontLegs: 1.26 },
     fun: 'hide',
     fact: { fr: 'Tricératops veut dire « tête à trois cornes » : deux grandes au-dessus des yeux et une petite sur le nez.', en: 'Triceratops means “three-horned face”: two big horns above the eyes and a small one on the nose.' },
   },
@@ -80,7 +80,7 @@ export const DINO_INFO: Record<DinoId, DinoInfo> = {
     ageMy: 152,
     era: 'jurassic',
     pieces: ['ribs', 'legs', 'frontLegs', 'neck', 'head', 'tail'],
-    sizes: { tail: 6.6, neck: 3.9, ribs: 3.5, legs: 2.75, frontLegs: 2.5, head: 1.0 },
+    sizes: { tail: 6.21, ribs: 3.23, neck: 2.85, legs: 2.55, frontLegs: 2.31, head: 0.86 },
     fun: 'sneeze',
     fact: { fr: 'Le diplodocus était très long : environ 25 mètres, autant que deux bus !', en: 'The Diplodocus was very long: about 25 metres, as long as two buses!' },
   },
@@ -91,7 +91,7 @@ export const DINO_INFO: Record<DinoId, DinoInfo> = {
     ageMy: 150,
     era: 'jurassic',
     pieces: ['ribs', 'legs', 'frontLegs', 'plates', 'head', 'tail'],
-    sizes: { plates: 2.9, tail: 2.85, ribs: 2.85, legs: 1.85, head: 1.65, frontLegs: 1.45 },
+    sizes: { plates: 2.63, ribs: 2.59, tail: 2.58, legs: 1.64, head: 1.5, frontLegs: 1.23 },
     fun: 'music',
     fact: { fr: 'Le stégosaure avait de grandes plaques sur le dos et quatre piques au bout de la queue.', en: 'The Stegosaurus had big plates on its back and four spikes at the end of its tail.' },
   },
@@ -307,13 +307,16 @@ export function presetQuestion(total: number, found: number, r: () => number): Q
   };
 }
 
+/** Pieces compared by size differ by at least this ratio (clear at a glance). */
+export const SIZE_GAP = 1.3;
+
 /** Biggest or smallest bone, among 3 clearly different ones (pictures drawn to scale). */
 export function sizeQuestion(dino: DinoId, pool: readonly PieceId[], r: () => number, mode?: 'biggest' | 'smallest'): Question | null {
   const sizes = DINO_INFO[dino].sizes;
   const sorted = [...pool].filter((p) => sizes[p] !== undefined).sort((a, b) => sizes[b]! - sizes[a]!);
-  // Keep pieces that differ clearly (25 % or more) from the previous one kept.
+  // Keep pieces that differ clearly (30 % or more) from the previous one kept.
   const distinct: PieceId[] = [];
-  for (const p of sorted) if (!distinct.length || sizes[distinct[distinct.length - 1]]! >= sizes[p]! * 1.25) distinct.push(p);
+  for (const p of sorted) if (!distinct.length || sizes[distinct[distinct.length - 1]]! >= sizes[p]! * SIZE_GAP) distinct.push(p);
   if (distinct.length < 2) return null;
   const want = mode ?? (r() < 0.5 ? 'biggest' : 'smallest');
   const three = distinct.length > 3 ? shuffle(distinct, r).slice(0, 3) : distinct;

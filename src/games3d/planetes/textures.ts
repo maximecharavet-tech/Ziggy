@@ -184,12 +184,12 @@ export function planetMap(id: BodyId, small = false): THREE.CanvasTexture {
     }
     case 'jupiter': {
       const turb = fbm(61, 6);
-      const bands = [hex('#f3e6cc'), hex('#d9a56b'), hex('#f0d9b0'), hex('#b97b4b'), hex('#ecd6ad'), hex('#c98d58'), hex('#f6ead2'), hex('#a8703f')];
+      const bands = [hex('#f5e9d2'), hex('#e6c39a'), hex('#f2e0c0'), hex('#d4a477'), hex('#f1e0c2'), hex('#ddb487'), hex('#f7eedb'), hex('#cf9d70')];
       const spot = hex('#c4553a');
       const spotRim = hex('#f1c79a');
       c = paint(W, H, (u, v) => {
-        const vv = v + (turb(u, v) - 0.5) * 0.06;
-        const f = vv * 13;
+        const vv = v + (turb(u, v) - 0.5) * 0.05;
+        const f = vv * 17;
         const i = Math.floor(f);
         let col = mix(bands[((i % bands.length) + bands.length) % bands.length], bands[(((i + 1) % bands.length) + bands.length) % bands.length], smooth(0.65, 1, f - i));
         // The Great Red Spot.

@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { glow, glowMat, mat } from '../kit/look';
 import { TOPPINGS, TOPPING_INFO, type ToppingId } from './logic';
 import { makePiece } from './food';
-import { EMOJI_FONT, canvasTex, roundRect } from './util';
+import { EMOJI_FONT, canvasTex, mergeStatic, roundRect } from './util';
 
 /**
  * Ziggy's pizza truck: a mint food truck with a red-and-white awning, a
@@ -56,6 +56,8 @@ const box = (w: number, h: number, d: number, color: string, x: number, y: numbe
 
 export interface Truck {
   group: THREE.Group;
+  /** Hinged on the front of the roof: rotation.x < 0 lifts it. */
+  awning: THREE.Group;
   flames: THREE.Mesh[];
   ovenGlow: THREE.Sprite;
   ovenLight: THREE.PointLight;
@@ -178,9 +180,8 @@ export function makeTruck(lowPower: boolean): Truck {
   g.add(box(W, top - F, 0.12, C.body, cx, (top + F) / 2, -1.26)); // back
   g.add(box(0.12, top - F, 2.6, C.body, x1 - 0.06, (top + F) / 2, 0)); // right
   g.add(box(W, 0.82, 0.12, C.body, cx, F + 0.41, 1.26)); // under the window
-  g.add(box(W, 0.55, 0.12, C.body, cx, top - 0.27, 1.26)); // over the window
-  g.add(box(0.36, 1.6, 0.12, C.body, x0 + 0.18, 2.42, 1.26));
-  g.add(box(0.36, 1.6, 0.12, C.body, x1 - 0.18, 2.42, 1.26));
+  g.add(box(0.36, top - 1.55, 0.12, C.body, x0 + 0.18, (top + 1.55) / 2, 1.26));
+  g.add(box(0.36, top - 1.55, 0.12, C.body, x1 - 0.18, (top + 1.55) / 2, 1.26));
   // Skirt and belt.
   g.add(box(W + 0.04, 0.3, 0.14, C.bodyDark, cx, F + 0.12, 1.27));
   g.add(box(W + 0.04, 0.16, 0.14, C.cream, cx, F + 0.52, 1.28, false));
@@ -191,9 +192,9 @@ export function makeTruck(lowPower: boolean): Truck {
     g.add(d);
   }
   // Window trim.
-  g.add(box(W - 0.6, 0.08, 0.16, C.trim, cx, 3.06, 1.3, false));
-  g.add(box(0.08, 1.45, 0.16, C.trim, x0 + 0.38, 2.36, 1.3, false));
-  g.add(box(0.08, 1.45, 0.16, C.trim, x1 - 0.38, 2.36, 1.3, false));
+  g.add(box(0.08, top - 1.7, 0.16, C.trim, x0 + 0.38, (top + 1.7) / 2, 1.3, false));
+  g.add(box(0.08, top - 1.7, 0.16, C.trim, x1 - 0.38, (top + 1.7) / 2, 1.3, false));
+  g.add(box(W - 0.6, 0.08, 0.16, C.trim, cx, top - 0.08, 1.3, false));
   // Roof with rounded edges.
   g.add(box(W + 0.16, 0.14, 2.76, C.white, cx, top + 0.07, 0));
   for (const z of [-1.38, 1.38]) {
@@ -325,52 +326,55 @@ export function makeTruck(lowPower: boolean): Truck {
   timer.traverse((o) => ((o as THREE.Mesh).castShadow = true));
   g.add(timer);
 
-  // Awning: red and white stripes with a scalloped edge.
+  // The red-and-white awning with its scalloped edge, hinged on the roof edge
+  // like a serving hatch: it lifts up when the camera comes close, so nothing
+  // hides the pizza and Ziggy.
   const awning = new THREE.Group();
+  awning.userData.noMerge = true;
+  awning.position.set(0, top, 1.32);
+  const cloth = new THREE.Group();
   const aw0 = x0 - 0.05;
   const aw1 = x1 + 0.05;
   const stripes = 15;
   const sw = (aw1 - aw0) / stripes;
-  const slope = 0.34;
+  const slope = 0.52;
+  const len = 1.25;
+  const ey = -Math.sin(slope) * len;
+  const ez = Math.cos(slope) * len;
   for (let i = 0; i < stripes; i++) {
     const col = i % 2 ? C.white : C.red;
     const x = aw0 + sw * (i + 0.5);
-    const s = new THREE.Mesh(new THREE.BoxGeometry(sw + 0.002, 0.04, 1.25), mat(col));
+    const s = new THREE.Mesh(new THREE.BoxGeometry(sw + 0.002, 0.04, len), mat(col));
     s.rotation.x = slope;
-    s.position.set(x, 3.34, 1.86);
+    s.position.set(x, ey / 2, ez / 2);
     s.castShadow = true;
     const scallop = new THREE.Mesh(new THREE.CylinderGeometry(sw / 2, sw / 2, 0.04, 10, 1, false, Math.PI / 2, Math.PI), mat(col));
     scallop.rotation.set(Math.PI / 2, 0, 0);
-    scallop.position.set(x, 3.13 - 0.06, 2.47);
+    scallop.position.set(x, ey - 0.15, ez);
     const lip = new THREE.Mesh(new THREE.BoxGeometry(sw + 0.002, 0.16, 0.04), mat(col));
-    lip.position.set(x, 3.07, 2.47);
-    awning.add(s, scallop, lip);
+    lip.position.set(x, ey - 0.08, ez);
+    cloth.add(s, scallop, lip);
   }
-  g.add(awning);
-  for (const x of [aw0 + 0.1, aw1 - 0.1]) {
-    const pole = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 0.9, 6), mat('#e8e2d6'));
-    pole.rotation.x = -0.9;
-    pole.position.set(x, 2.95, 1.75);
-    g.add(pole);
-  }
+  mergeStatic(cloth);
+  awning.add(cloth);
 
   // String lights under the awning edge.
   const lights = new THREE.Group();
-  lights.userData.noMerge = true;
   const bulbs: THREE.Sprite[] = [];
   const bulbCols = ['#ffd166', '#ff7ab8', '#7fd0ff', '#9bf07f', '#ffb35c'];
   for (let i = 0; i < 16; i++) {
     const x = aw0 + 0.15 + i * ((aw1 - aw0 - 0.3) / 15);
-    const sag = Math.sin((i / 15) * Math.PI) * 0.0 - Math.abs(Math.sin(i * 1.7)) * 0.04;
+    const sag = -Math.abs(Math.sin(i * 1.7)) * 0.04;
     const bulb = new THREE.Mesh(new THREE.SphereGeometry(0.045, 8, 6), glowMat(bulbCols[i % 5], 1.2));
-    bulb.position.set(x, 2.93 + sag, 2.5);
+    bulb.position.set(x, ey - 0.24 + sag, ez + 0.03);
     const halo = glow(bulbCols[i % 5], 0.42, 0.55);
     halo.position.copy(bulb.position);
     halo.userData.phase = i * 0.9;
     bulbs.push(halo);
     lights.add(bulb, halo);
   }
-  g.add(lights);
+  awning.add(lights);
+  g.add(awning);
 
   // The roof sign and the spinning pizza.
   const signMat = new THREE.MeshLambertMaterial({ map: signTexture() });
@@ -533,8 +537,11 @@ export function makeTruck(lowPower: boolean): Truck {
   }
 
   void lowPower;
+  // Hundreds of little static pieces → a few draw calls.
+  mergeStatic(g, true);
   return {
     group: g,
+    awning,
     flames,
     ovenGlow,
     ovenLight,

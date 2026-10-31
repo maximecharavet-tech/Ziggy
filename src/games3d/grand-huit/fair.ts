@@ -191,7 +191,10 @@ export function makeClouds(): THREE.Group {
   mergeStatic(g);
   g.traverse((o) => {
     const m = (o as THREE.Mesh).material as THREE.MeshLambertMaterial | undefined;
-    if (m?.isMeshLambertMaterial) m.fog = false;
+    if (!m?.isMeshLambertMaterial) return;
+    // Lit by the sunset from inside: they stay pink even at dusk.
+    m.fog = false;
+    m.emissive.set('#b8607f');
   });
   return g;
 }

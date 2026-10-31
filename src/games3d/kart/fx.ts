@@ -128,10 +128,10 @@ export function soapTexture(): THREE.CanvasTexture {
 export function puddleTexture(): THREE.CanvasTexture {
   return canvasTex(256, 256, (g) => {
     const grad = g.createRadialGradient(128, 128, 10, 128, 128, 124);
-    grad.addColorStop(0, 'rgba(255,255,255,0.95)');
-    grad.addColorStop(0.45, 'rgba(180,225,255,0.9)');
-    grad.addColorStop(0.75, 'rgba(255,190,235,0.85)');
-    grad.addColorStop(0.95, 'rgba(210,190,255,0.7)');
+    grad.addColorStop(0, 'rgba(255,255,255,1)');
+    grad.addColorStop(0.35, 'rgba(120,205,255,1)');
+    grad.addColorStop(0.62, 'rgba(255,140,215,1)');
+    grad.addColorStop(0.85, 'rgba(170,140,255,0.95)');
     grad.addColorStop(1, 'rgba(255,255,255,0)');
     g.fillStyle = grad;
     g.beginPath();
@@ -307,5 +307,69 @@ export class Bubbles {
     for (const b of this.items) b.s.material.dispose();
     this.items = [];
     this.tex.dispose();
+  }
+}
+
+/* ───────────────────────── Rainbow trail ───────────────────────── */
+
+const TRAIL = ['#ff5d5d', '#ff9f43', '#ffe14d', '#5fe08a', '#4fb6ff', '#a37bff'].map((c) => new THREE.Color(c));
+
+/** The turbo's rainbow ribbon, laid on the road behind the kart. */
+export class RainbowTrail {
+  readonly mesh: THREE.Mesh;
+  private n = 28;
+  private across = 7;
+  private pts: { p: THREE.Vector3; side: THREE.Vector3 }[] = [];
+  private pos: Float32Array;
+  private col: Float32Array;
+  strength = 0;
+
+  constructor(private width = 1.6) {
+    const n = this.n;
+    const a = this.across;
+    this.pos = new Float32Array(n * a * 3);
+    this.col = new Float32Array(n * a * 3);
+    const idx: number[] = [];
+    for (let i = 0; i < n - 1; i++)
+      for (let j = 0; j < a - 1; j++) {
+        const v = i * a + j;
+        idx.push(v, v + a, v + 1, v + 1, v + a, v + a + 1);
+      }
+    const geo = new THREE.BufferGeometry();
+    geo.setAttribute('position', new THREE.BufferAttribute(this.pos, 3));
+    geo.setAttribute('color', new THREE.BufferAttribute(this.col, 3));
+    geo.setIndex(idx);
+    this.mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ vertexColors: true, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, toneMapped: false }));
+    this.mesh.frustumCulled = false;
+    this.mesh.renderOrder = 1;
+  }
+
+  /** Add the kart's newest point (on the road, behind it) and redraw. */
+  update(p: THREE.Vector3, side: THREE.Vector3, target: number, dt: number) {
+    this.strength += (target - this.strength) * Math.min(1, dt * 5);
+    this.pts.unshift({ p: p.clone(), side: side.clone() });
+    if (this.pts.length > this.n) this.pts.length = this.n;
+    this.mesh.visible = this.strength > 0.02;
+    if (!this.mesh.visible) return;
+    const a = this.across;
+    for (let i = 0; i < this.n; i++) {
+      const q = this.pts[Math.min(i, this.pts.length - 1)];
+      const fade = (1 - i / (this.n - 1)) ** 1.3 * this.strength;
+      const w = this.width * (0.7 + 0.3 * (1 - i / this.n));
+      for (let j = 0; j < a; j++) {
+        const k = (i * a + j) * 3;
+        const off = (j / (a - 1) - 0.5) * w;
+        this.pos[k] = q.p.x + q.side.x * off;
+        this.pos[k + 1] = q.p.y + q.side.y * off;
+        this.pos[k + 2] = q.p.z + q.side.z * off;
+        const c = TRAIL[Math.min(TRAIL.length - 1, Math.floor((j / (a - 1)) * TRAIL.length * 0.999))];
+        this.col[k] = c.r * fade;
+        this.col[k + 1] = c.g * fade;
+        this.col[k + 2] = c.b * fade;
+      }
+    }
+    const g = this.mesh.geometry;
+    (g.attributes.position as THREE.BufferAttribute).needsUpdate = true;
+    (g.attributes.color as THREE.BufferAttribute).needsUpdate = true;
   }
 }
