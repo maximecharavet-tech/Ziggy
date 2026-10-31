@@ -90,6 +90,17 @@ const GAMES: {
     from: '#7a3b12',
     to: '#f2994a',
     skill: { fr: 'Animaux · formes · sciences · compter', en: 'Animals · shapes · science · counting' },
+  },  {
+    href: '/monde/3d/detective',
+    emoji: '🔍',
+    title: { fr: 'Ziggy Détective', en: 'Detective Ziggy' },
+    teaser: {
+      fr: 'Trouve les indices au village et découvre qui a mangé le gâteau !',
+      en: 'Find the clues in the village and discover who ate the cake!',
+    },
+    from: '#2f6fb3',
+    to: '#f29a3c',
+    skill: { fr: 'Logique · lecture · vocabulaire', en: 'Logic · reading · vocabulary' },
   },
 ];
 
