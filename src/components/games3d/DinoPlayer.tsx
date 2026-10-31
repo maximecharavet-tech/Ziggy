@@ -36,6 +36,7 @@ const T = {
   turnLeft: { fr: 'Tourner à gauche', en: 'Turn left' },
   turnRight: { fr: 'Tourner à droite', en: 'Turn right' },
   place: { fr: 'Poser', en: 'Put it in' },
+  turn: { fr: 'Tourner', en: 'Turn' },
   skip: { fr: 'Continuer', en: 'Continue' },
   nextDino: { fr: 'Dinosaure suivant', en: 'Next dinosaur' },
   toMuseum: { fr: 'Au musée !', en: 'To the museum!' },
@@ -341,9 +342,9 @@ export function DinoPlayer() {
 
               {s.phase === 'turn' ? (
                 <div data-tv-row className="grid w-full grid-cols-3 gap-2 rounded-[1.75rem] bg-white/90 p-2 shadow-[0_8px_30px_rgba(90,60,20,.2)] ring-1 ring-white sm:p-3">
-                  <BigButton label={tr(T.turnLeft, locale)} emoji="↺" onClick={() => g()?.turn(-1)} busy={s.busy} />
+                  <BigButton label={tr(T.turnLeft, locale)} sub={tr(T.turn, locale)} emoji="↺" onClick={() => g()?.turn(-1)} busy={s.busy} />
                   <BigButton label={tr(T.place, locale)} emoji="✓" onClick={() => g()?.place()} busy={s.busy} primary autoFocus />
-                  <BigButton label={tr(T.turnRight, locale)} emoji="↻" onClick={() => g()?.turn(1)} busy={s.busy} />
+                  <BigButton label={tr(T.turnRight, locale)} sub={tr(T.turn, locale)} emoji="↻" onClick={() => g()?.turn(1)} busy={s.busy} />
                 </div>
               ) : null}
 

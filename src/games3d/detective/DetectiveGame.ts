@@ -538,7 +538,7 @@ export class DetectiveGame {
         // The picture of the clue pops above it.
         const tex = new THREE.CanvasTexture(clueCanvas(clue, 256));
         tex.colorSpace = THREE.SRGBColorSpace;
-        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false }));
+        const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, transparent: true, depthWrite: false, toneMapped: false }));
         const ratio = (tex.image as HTMLCanvasElement).width / (tex.image as HTMLCanvasElement).height;
         sp.userData.size = new THREE.Vector2(0.9 * ratio, 0.9);
         sp.userData.grow = 0;

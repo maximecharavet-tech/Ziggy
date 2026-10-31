@@ -734,11 +734,12 @@ export class KartGame {
       this.camModeT = 2.5;
     }
     // The word's object pops up in front of the kart, then jumps into the trailer.
-    const prop = makeProp(w.prop, 1.7);
+    const prop = makeProp(w.prop, 1.45);
     const slot = this.trailer.slots[this.collected.length % this.trailer.slots.length];
     this.collected.push(prop);
     this.kart.root.add(prop);
-    prop.position.set(0, 1.0, 3.8);
+    // Beside Ziggy (the selfie camera sees both faces).
+    prop.position.set(1.7, 0.6, 3.2);
     prop.scale.setScalar(0.01);
     const fromLocal = prop.position.clone();
     this.flyers.push({
@@ -746,7 +747,7 @@ export class KartGame {
       t: 0,
       dur: 0.5,
       from: fromLocal,
-      to: () => new THREE.Vector3(0, 1.75, 3.5),
+      to: () => new THREE.Vector3(1.7, 1.1, 2.8),
       arc: 0.6,
       scaleFrom: 0.01,
       scaleTo: 1,
@@ -1352,7 +1353,7 @@ export class KartGame {
       ease = 1 - Math.exp(-dt * 2.2);
     } else if (this.camMode === 'front') {
       // A friendly "selfie" view: in front of Ziggy, looking back at him.
-      const side = this.camModeT > 1.4 ? 1 : -1;
+      const side = 1;
       pos.copy(kp).addScaledVector(f.t, portrait ? 9.5 : 7.8).addScaledVector(f.up, portrait ? 3.6 : 3.1).addScaledVector(f.side, side * (portrait ? 1.4 : 2.6));
       look.copy(kp).addScaledVector(f.up, portrait ? 1.1 : 1.5).addScaledVector(f.t, 0.8);
       ease = 1 - Math.exp(-dt * 3.2);
@@ -1361,9 +1362,9 @@ export class KartGame {
       const up = portrait ? 6.2 : 4.6;
       const fb = this.track.frame(this.s - back, this.f2);
       // Narrow screens keep the camera near the middle so all three gates stay in view.
-      pos.copy(fb.p).addScaledVector(fb.side, this.x * (portrait ? 0.22 : 0.55)).addScaledVector(fb.up, up + this.jumpY * 0.5);
+      pos.copy(fb.p).addScaledVector(fb.side, this.x * (portrait ? 0.42 : 0.55)).addScaledVector(fb.up, up + this.jumpY * 0.5);
       const fa = this.track.frame(this.s + (portrait ? 16 : 13), this.f3);
-      look.copy(fa.p).addScaledVector(fa.side, this.x * (portrait ? 0.12 : 0.45)).addScaledVector(fa.up, 1.2);
+      look.copy(fa.p).addScaledVector(fa.side, this.x * (portrait ? 0.3 : 0.45)).addScaledVector(fa.up, 1.2);
     }
     // Smoothed as offsets from the kart, so a fast kart (turbo) never leaves the camera behind.
     const posOff = pos.sub(kp);

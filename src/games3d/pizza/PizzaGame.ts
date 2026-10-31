@@ -1568,7 +1568,7 @@ export class PizzaGame {
     }
     this.truck.spinner.rotation.y += dt * 0.9 * E;
     // The awning lifts like a serving hatch when the camera comes close.
-    const lift = this.step === 'build' ? 1 : 0;
+    const lift = this.step === 'build' || this.step === 'ask' || this.step === 'bake' ? 1 : 0;
     this.awningLift += (lift - this.awningLift) * Math.min(1, dt * 3);
     this.truck.awning.rotation.x = -easeInOut(this.awningLift) * 1.9;
     this.truck.bulbs.forEach((b) => {

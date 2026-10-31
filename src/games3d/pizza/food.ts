@@ -212,6 +212,7 @@ export class Pizza {
       const c = new THREE.Mesh(toppingGeometry('char'), toppingMaterial());
       c.position.copy(dirAt(a, PIZZA_R - 0.02 + ((i * 7) % 3) * 0.012)).setY(0.115);
       c.scale.setScalar(0.001);
+      c.userData.shared = true;
       this.chars.push(c);
       this.pie.add(c);
     }
@@ -240,6 +241,8 @@ export class Pizza {
     this.pie.rotation.set(0, 0, 0);
     this.pie.scale.setScalar(1);
     this.sauce.scale.set(0.001, 1, 0.001);
+    // A flight may have spun it: slices always start at 12 o'clock.
+    this.group.rotation.set(0, 0, 0);
     this.group.scale.setScalar(1);
     this.group.visible = true;
   }
@@ -396,7 +399,7 @@ export class Pizza {
     this.setParts(0);
     this.group.traverse((o) => {
       const m = o as THREE.Mesh;
-      if (m.userData.shared || m.geometry === toppingGeometry('char')) return;
+      if (m.userData.shared) return;
       m.geometry?.dispose();
       const mats = Array.isArray(m.material) ? m.material : m.material ? [m.material] : [];
       mats.forEach((x) => x.dispose());

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { glow, mat } from '../kit/look';
 import { makeCompanion, makeScarf } from '../nid/companions3d';
+import { mergeStatic } from '../nid/garden';
 import { HUE_HEX, type AlibiProp, type Species, type Suspect } from './logic';
 
 /**
@@ -365,6 +366,8 @@ function frog(): Critter {
   open.position.set(0, c.y - R * 0.25, c.z + R * 0.88);
   open.scale.set(1.3, 0.6, 0.4);
   open.visible = false;
+  smile.userData.noMerge = true;
+  open.userData.noMerge = true;
   head.add(smile, open);
   cheeks(head, R * 0.14, c.y - R * 0.05, c.z + R * 0.85, R * 0.75);
   const setMouth = (k: number) => {
@@ -548,7 +551,33 @@ export function makeSuspect(data: Suspect, lowPower: boolean): SuspectActor {
   }
   c.root.userData.suspect = data.id;
   c.hitbox.userData.suspect = data.id;
+  mergeCritter(c, hat);
   return { id: data.id, data, c, mouth, blush, hat, glasses };
+}
+
+/**
+ * A friend is made of dozens of little meshes: merge the still ones (per
+ * moving part: feet, body, head) so six friends cost a few draw calls each.
+ * Moving bits (ears, tails, eyes, mouth, hat) stay separate.
+ */
+function mergeCritter(c: Critter, hat: THREE.Object3D | null) {
+  for (const w of c.wiggles) w.obj.userData.noMerge = true;
+  if (hat) hat.userData.noMerge = true;
+  c.root.traverse((o) => {
+    // The mouth: a group holding the hidden "open" shape (or that shape itself).
+    if ((o as THREE.Mesh).isMesh && !o.visible) {
+      const parent = o.parent;
+      if (parent && parent !== c.head && parent !== c.body && parent !== c.root) parent.userData.noMerge = true;
+      else o.userData.noMerge = true;
+    }
+  });
+  c.body.userData.noMerge = true;
+  mergeStatic(c.root);
+  c.body.userData.noMerge = false;
+  c.head.userData.noMerge = true;
+  mergeStatic(c.body);
+  c.head.userData.noMerge = false;
+  mergeStatic(c.head);
 }
 
 /* ───────────────────────── Props ───────────────────────── */

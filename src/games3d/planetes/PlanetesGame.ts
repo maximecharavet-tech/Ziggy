@@ -717,7 +717,8 @@ export class PlanetesGame {
     const a = st.alienSpot;
     const pts = [
       r.clone().add(new THREE.Vector3(-1.6, 0, 0)),
-      r.clone().add(new THREE.Vector3(0, 4.6, 0)),
+      // On the Moon, room for Ziggy's giant slow-motion jumps.
+      r.clone().add(new THREE.Vector3(0, st.gravity < 0.3 ? 6.4 : 4.6, 0)),
       a.clone().add(new THREE.Vector3(1.2, 0, 0)),
       a.clone().add(new THREE.Vector3(0, 3.0, 0)),
       new THREE.Vector3(0, -0.3, 1.6),
