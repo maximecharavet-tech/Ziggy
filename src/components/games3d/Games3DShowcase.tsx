@@ -79,6 +79,17 @@ const GAMES: {
     from: '#4a5bc4',
     to: '#ff8a5c',
     skill: { fr: 'Compter · additions · soustractions · tables · suites', en: 'Counting · sums · take-aways · times tables · patterns' },
+  },  {
+    href: '/monde/3d/dino',
+    emoji: '🦕',
+    title: { fr: 'Ziggy Paléontologue', en: 'Ziggy the Dino Digger' },
+    teaser: {
+      fr: 'Creuse le sable, reconstruis les squelettes et regarde les dinosaures se réveiller !',
+      en: 'Dig the sand, rebuild the skeletons and watch the dinosaurs wake up!',
+    },
+    from: '#7a3b12',
+    to: '#f2994a',
+    skill: { fr: 'Animaux · formes · sciences · compter', en: 'Animals · shapes · science · counting' },
   },
 ];
 

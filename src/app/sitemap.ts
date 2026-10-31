@@ -14,6 +14,7 @@ const PLAY = [
   '/monde/3d/kart',
   '/monde/3d/planetes',
   '/monde/3d/grand-huit',
+  '/monde/3d/dino',
   '/monde/musique',
   '/monde/bac-a-sable',
   '/monde/nid',
