@@ -742,7 +742,7 @@ export function CreaturesPlayer() {
             onClick={() => chooseCat(id)}
             onFocus={focusLook}
             whileTap={reduce ? undefined : { scale: 0.88 }}
-            className={`relative grid h-16 w-16 shrink-0 place-items-center rounded-2xl text-3xl transition ${on ? 'bg-gradient-to-b from-[#ffe08a] to-[#ffc24d] shadow-[0_4px_0_#e0a12a]' : 'bg-white/90 shadow-[0_3px_0_rgba(110,80,180,.18)]'}`}
+            className={`relative grid h-16 w-14 shrink-0 place-items-center rounded-2xl text-3xl transition sm:w-16 ${on ? 'bg-gradient-to-b from-[#ffe08a] to-[#ffc24d] shadow-[0_4px_0_#e0a12a]' : 'bg-white/90 shadow-[0_3px_0_rgba(110,80,180,.18)]'}`}
           >
             <span aria-hidden="true">{info.icon}</span>
             {halo ? (
