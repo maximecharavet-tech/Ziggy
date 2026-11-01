@@ -1,0 +1,42 @@
+{
+  "$schema": "../node_modules/@tauri-apps/cli/config.schema.json",
+  "productName": "Ziggy AI",
+  "version": "1.1.0",
+  "identifier": "fr.ziggyai.app",
+  "build": {
+    "frontendDist": "../www"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [],
+    "security": {
+      "csp": "default-src 'self' ipc: http://ipc.localhost; img-src 'self' data:; style-src 'self' 'unsafe-inline'; connect-src 'self' ipc: http://ipc.localhost https://ziggy-ai.fr",
+      "freezePrototype": false
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": "all",
+    "category": "Education",
+    "shortDescription": "Ziggy AI",
+    "longDescription": "Ziggy AI: learning games, stories and bedtime tales for children aged 4 to 12, with Ziggy the plush robot.",
+    "copyright": "\u00a9 Ziggy AI",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ],
+    "android": {
+      "minSdkVersion": 24,
+      "versionCode": 2
+    },
+    "iOS": {
+      "minimumSystemVersion": "15.0",
+      "bundleVersion": "2",
+      "frameworks": [
+        "AVFAudio"
+      ]
+    }
+  }
+}

@@ -19,8 +19,13 @@
     "theme_light": "Lichte modus",
     "theme_dark": "Donkere modus",
     "world": "Ziggy World",
+    "create": "Maken",
     "dodo": "Bedtijd",
-    "learn": "Leren"
+    "learn": "Leren",
+    "apps": "Apps",
+    "sound_on": "Geluid aanzetten",
+    "sound_off": "Geluid uitzetten",
+    "switch_language": "Taal wijzigen"
   },
   "hero": {
     "badge": "AI-onderwijs voor kinderen van 5 tot 12 jaar",
@@ -36,7 +41,11 @@
     "bubble_happy": "Hihi, dat kietelt! 💚",
     "trust_1": "Zonder reclame",
     "trust_2": "Gegevens in Europa",
-    "trust_3": "Spelen zonder account"
+    "trust_3": "Spelen zonder account",
+    "facts_worlds": "Werelden om te ontdekken",
+    "facts_stories": "Bedtijdverhalen",
+    "facts_games": "Spellen die zich aanpassen",
+    "facts_ads": "Reclame"
   },
   "features": {
     "title": "Waarom ouders van Ziggy houden",
@@ -91,7 +100,7 @@
     "family": "Gezin",
     "family_price_monthly": "€9,90",
     "family_price_yearly": "€7,90",
-    "family_period": "/maand",
+    "family_period": "maand",
     "family_cta": "Gratis proberen",
     "family_f1": "Onbeperkte sessies",
     "family_f2": "Tot 3 kinderen",
@@ -102,7 +111,7 @@
     "school": "School",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
-    "school_period": "/maand",
+    "school_period": "maand",
     "school_cta": "Neem contact op met sales",
     "school_f1": "Tot 30 leerlingen",
     "school_f2": "Leerkrachtdashboard",
@@ -169,7 +178,7 @@
   },
   "cta_final": {
     "title": "Klaar om het AI-avontuur van je kind te starten?",
-    "subtitle": "Sluit je aan bij duizenden gezinnen die al leren met Ziggy. Begin vandaag gratis.",
+    "subtitle": "Begin vandaag gratis: 20 werelden, 31 bedtijdverhalen en nul reclame.",
     "cta": "Gratis proberen"
   },
   "footer": {
@@ -184,7 +193,7 @@
     "privacy": "Privacybeleid",
     "terms": "Algemene voorwaarden",
     "cookies": "Cookiebeleid",
-    "gdpr": "GDPR",
+    "gdpr": "AVG",
     "copyright": "© 2026 Ziggy Technologies SAS. Alle rechten voorbehouden.",
     "made_with": "Gemaakt met",
     "for_kids": "voor kinderen"
@@ -271,7 +280,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "Nu proberen"
   },
   "games": {
     "badge": "Minispelletjes",

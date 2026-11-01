@@ -71,6 +71,7 @@ export function SayButton({ texts, locale, onIndex, size = 'md', className = '' 
       }}
       aria-label={tr(LISTEN, locale)}
       title={tr(LISTEN, locale)}
+      data-tv-secondary=""
       className={`inline-grid shrink-0 place-items-center rounded-full bg-sky/15 text-sky shadow-sm ring-1 ring-sky/30 transition hover:bg-sky/25 ${dim} ${className}`}
     >
       <motion.span animate={speaking ? { scale: [1, 1.2, 1] } : { scale: 1 }} transition={{ duration: 0.6, repeat: speaking ? Infinity : 0 }} aria-hidden="true">

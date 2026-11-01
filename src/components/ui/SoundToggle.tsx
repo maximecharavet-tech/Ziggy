@@ -1,11 +1,13 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Volume2, VolumeX } from 'lucide-react';
 import { useSound } from '@/hooks/useSound';
 
 export function SoundToggle() {
   const { muted, toggleMute, play } = useSound();
+  const t = useTranslations('nav');
 
   return (
     <button
@@ -14,7 +16,7 @@ export function SoundToggle() {
         toggleMute();
       }}
       className="w-9 h-9 flex items-center justify-center rounded-xl text-text-muted hover:text-green hover:bg-green/10 transition-all"
-      aria-label={muted ? 'Turn sound on' : 'Turn sound off'}
+      aria-label={muted ? t('sound_on') : t('sound_off')}
       aria-pressed={!muted}
     >
       <motion.span

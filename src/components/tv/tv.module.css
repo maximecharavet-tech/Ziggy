@@ -1,0 +1,442 @@
+/*
+ * The TV home, designed on a 1920 × 1080 canvas: --u is one design pixel, so
+ * the page is the same at 1920 × 1080 and at 960 × 540 (most Android TVs),
+ * crisp at both. 5 % margins keep everything inside the overscan-safe area.
+ */
+.root {
+  --u: min(calc(100vw / 1920), calc(100vh / 1080));
+  --side: calc(96 * var(--u));
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
+  overflow-x: clip;
+  padding: calc(48 * var(--u)) var(--side) calc(80 * var(--u));
+  color: #fff8ea;
+  font-size: calc(24 * var(--u));
+  background: radial-gradient(120% 90% at 85% 10%, #2a1f5c 0%, #141238 45%, #090a24 100%);
+}
+.sky {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+.glow {
+  position: absolute;
+  border-radius: 9999px;
+  background: radial-gradient(closest-side, var(--c), transparent);
+  opacity: 0.5;
+}
+
+/* ── Header ── */
+.head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(24 * var(--u));
+  height: calc(76 * var(--u));
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: calc(18 * var(--u));
+}
+.face {
+  position: relative;
+  width: calc(68 * var(--u));
+  height: calc(68 * var(--u));
+  border-radius: 9999px;
+  overflow: hidden;
+  box-shadow: 0 0 0 calc(3 * var(--u)) rgb(255 255 255 / 0.85), 0 calc(8 * var(--u)) calc(24 * var(--u)) rgb(0 0 0 / 0.45);
+}
+.logo {
+  width: calc(150 * var(--u));
+}
+.logo svg {
+  width: 100%;
+  height: auto;
+}
+.hello {
+  font-family: var(--font-display);
+  font-size: calc(34 * var(--u));
+  font-weight: 700;
+  color: #ffe6b0;
+}
+.hint {
+  display: flex;
+  align-items: center;
+  gap: calc(18 * var(--u));
+  font-size: calc(22 * var(--u));
+  color: rgb(255 248 234 / 0.6);
+}
+.key {
+  display: inline-grid;
+  place-items: center;
+  min-width: calc(40 * var(--u));
+  height: calc(40 * var(--u));
+  padding: 0 calc(10 * var(--u));
+  border-radius: calc(12 * var(--u));
+  background: rgb(255 255 255 / 0.1);
+  box-shadow: inset 0 calc(-3 * var(--u)) 0 rgb(0 0 0 / 0.25);
+  color: #fff8ea;
+  font-weight: 700;
+}
+.parents {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(10 * var(--u));
+  height: calc(56 * var(--u));
+  padding: 0 calc(24 * var(--u));
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.08);
+  box-shadow: inset 0 0 0 calc(2 * var(--u)) rgb(255 255 255 / 0.14);
+  font-size: calc(22 * var(--u));
+  font-weight: 700;
+  color: rgb(255 248 234 / 0.8);
+}
+
+/* ── Hero: tonight's story, and Ziggy ── */
+.hero {
+  position: relative;
+  height: calc(460 * var(--u));
+  margin-top: calc(22 * var(--u));
+}
+.billboard {
+  position: absolute;
+  inset: 0 0 0 30%;
+  overflow: hidden;
+  border-radius: calc(44 * var(--u));
+  -webkit-mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+  mask-image: linear-gradient(90deg, transparent 0%, #000 34%);
+}
+.billboard::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgb(9 10 36 / 0) 55%, rgb(9 10 36 / 0.55) 100%);
+}
+.heroText {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(16 * var(--u));
+  height: 100%;
+  max-width: calc(900 * var(--u));
+}
+.heroText > * {
+  flex-shrink: 0;
+}
+.eyebrow {
+  display: inline-flex;
+  align-self: flex-start;
+  align-items: center;
+  gap: calc(10 * var(--u));
+  padding: calc(8 * var(--u)) calc(20 * var(--u));
+  border-radius: 9999px;
+  background: rgb(253 230 138 / 0.12);
+  box-shadow: inset 0 0 0 calc(2 * var(--u)) rgb(253 230 138 / 0.3);
+  color: #fde68a;
+  font-size: calc(24 * var(--u));
+  font-weight: 700;
+}
+.title {
+  font-family: var(--font-display);
+  font-size: calc(70 * var(--u));
+  font-weight: 700;
+  line-height: 1.06;
+  color: #fff8ea;
+  text-shadow: 0 calc(4 * var(--u)) calc(24 * var(--u)) rgb(0 0 0 / 0.45);
+  text-wrap: balance;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  padding-bottom: 0.06em;
+}
+.teaser {
+  max-width: calc(780 * var(--u));
+  font-size: calc(28 * var(--u));
+  line-height: 1.35;
+  color: rgb(255 248 234 / 0.78);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.actions {
+  display: flex;
+  gap: calc(22 * var(--u));
+  margin-top: calc(12 * var(--u));
+}
+.cta,
+.ghost {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(14 * var(--u));
+  height: calc(88 * var(--u));
+  padding: 0 calc(44 * var(--u));
+  border-radius: 9999px;
+  font-size: calc(32 * var(--u));
+  font-weight: 800;
+  white-space: nowrap;
+}
+.cta {
+  color: #24164a;
+  background: linear-gradient(90deg, #fde68a, #fef3c7 45%, #fbcfe8);
+  box-shadow: 0 calc(12 * var(--u)) calc(36 * var(--u)) rgb(255 200 140 / 0.3);
+}
+.ghost {
+  color: rgb(255 248 234 / 0.9);
+  background: rgb(255 255 255 / 0.1);
+  box-shadow: inset 0 0 0 calc(2 * var(--u)) rgb(255 255 255 / 0.18);
+}
+.ziggy {
+  position: absolute;
+  right: calc(10 * var(--u));
+  bottom: calc(-26 * var(--u));
+  z-index: 2;
+  width: calc(290 * var(--u));
+  height: calc(400 * var(--u));
+}
+.bubble {
+  position: absolute;
+  right: calc(270 * var(--u));
+  top: calc(26 * var(--u));
+  z-index: 3;
+  max-width: calc(360 * var(--u));
+  padding: calc(16 * var(--u)) calc(26 * var(--u));
+  border-radius: calc(28 * var(--u)) calc(28 * var(--u)) calc(8 * var(--u)) calc(28 * var(--u));
+  background: #fff8ea;
+  color: #2a1d4f;
+  font-family: var(--font-display);
+  font-size: calc(30 * var(--u));
+  font-weight: 700;
+  line-height: 1.2;
+  box-shadow: 0 calc(16 * var(--u)) calc(40 * var(--u)) rgb(0 0 0 / 0.35);
+}
+
+/* ── Rows ── */
+.row {
+  margin-top: calc(40 * var(--u));
+}
+.rowTitle {
+  display: flex;
+  align-items: center;
+  gap: calc(14 * var(--u));
+  font-family: var(--font-display);
+  font-size: calc(38 * var(--u));
+  font-weight: 700;
+  color: #fff8ea;
+}
+.rowTitle small {
+  font-family: var(--font-sans);
+  font-size: calc(22 * var(--u));
+  font-weight: 600;
+  color: rgb(255 248 234 / 0.5);
+}
+.scroller {
+  display: flex;
+  gap: calc(30 * var(--u));
+  margin: 0 calc(-1 * var(--side));
+  padding: calc(26 * var(--u)) var(--side) calc(34 * var(--u));
+  overflow-x: auto;
+  scroll-padding-inline: var(--side);
+  scrollbar-width: none;
+}
+.scroller::-webkit-scrollbar {
+  display: none;
+}
+
+/* ── Tiles ── */
+.tile {
+  position: relative;
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: calc(30 * var(--u));
+  background: #15173f;
+  box-shadow: 0 calc(18 * var(--u)) calc(40 * var(--u)) rgb(2 3 14 / 0.5), inset 0 0 0 calc(2 * var(--u)) rgb(255 255 255 / 0.08);
+  scroll-margin: 16vh var(--side);
+  transition:
+    scale 260ms var(--ease-out),
+    opacity 260ms var(--ease-out),
+    box-shadow 260ms var(--ease-out);
+}
+.scroller:focus-within .tile:not(:focus) {
+  opacity: 0.66;
+}
+:global(html[data-tv]) .tile:focus,
+:global(html[data-tv]) .tile:focus-visible {
+  scale: 1.08;
+  outline: calc(6 * var(--u)) solid #ffd54a !important;
+  outline-offset: calc(5 * var(--u)) !important;
+  box-shadow: 0 0 0 calc(14 * var(--u)) rgb(255 213 74 / 0.18), 0 calc(24 * var(--u)) calc(70 * var(--u)) rgb(255 170 40 / 0.4) !important;
+  z-index: 1;
+}
+.tile:focus .caption strong {
+  color: #ffe6a0;
+}
+.story {
+  width: calc(400 * var(--u));
+}
+.game {
+  width: calc(290 * var(--u));
+}
+.film {
+  width: calc(400 * var(--u));
+}
+.art {
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+.game .art {
+  aspect-ratio: 1 / 0.82;
+  display: grid;
+  place-items: center;
+}
+.art img,
+.art video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.badge {
+  position: absolute;
+  left: calc(14 * var(--u));
+  top: calc(14 * var(--u));
+  padding: calc(5 * var(--u)) calc(14 * var(--u));
+  border-radius: 9999px;
+  background: rgb(11 14 44 / 0.75);
+  color: #fff;
+  font-size: calc(19 * var(--u));
+  font-weight: 700;
+}
+.play {
+  position: absolute;
+  right: calc(16 * var(--u));
+  bottom: calc(14 * var(--u));
+  display: grid;
+  place-items: center;
+  width: calc(58 * var(--u));
+  height: calc(58 * var(--u));
+  border-radius: 9999px;
+  background: rgb(255 248 234 / 0.92);
+  color: #24164a;
+  font-size: calc(24 * var(--u));
+  opacity: 0;
+  scale: 0.7;
+  transition:
+    opacity 220ms var(--ease-out),
+    scale 220ms var(--ease-out);
+}
+.tile:focus .play {
+  opacity: 1;
+  scale: 1;
+}
+.caption {
+  display: flex;
+  flex-direction: column;
+  gap: calc(6 * var(--u));
+  padding: calc(16 * var(--u)) calc(20 * var(--u)) calc(20 * var(--u));
+}
+.caption strong {
+  font-family: var(--font-display);
+  font-size: calc(28 * var(--u));
+  line-height: 1.15;
+  color: #fff8ea;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 2.3em;
+  transition: color 200ms;
+}
+.caption span {
+  font-size: calc(20 * var(--u));
+  color: rgb(255 248 234 / 0.6);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.token {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: calc(150 * var(--u));
+  height: calc(150 * var(--u));
+  border-radius: 9999px;
+  font-size: calc(76 * var(--u));
+  box-shadow: inset 0 calc(-10 * var(--u)) calc(18 * var(--u)) rgb(0 0 0 / 0.25), inset 0 calc(6 * var(--u)) 0 rgb(255 255 255 / 0.55), 0 calc(12 * var(--u)) 0 rgb(0 0 0 / 0.18);
+}
+.tile:focus .token {
+  animation: bob 1.6s ease-in-out infinite;
+}
+@keyframes bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 calc(-8 * var(--u));
+  }
+}
+
+/* ── Film player ── */
+.player {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  background: #05060f;
+  --u: min(calc(100vw / 1920), calc(100vh / 1080));
+}
+.playerBlur {
+  position: absolute;
+  inset: -5%;
+  width: 110%;
+  height: 110%;
+  object-fit: cover;
+  filter: blur(calc(60 * var(--u))) brightness(0.45) saturate(1.2);
+}
+.playerVideo {
+  position: relative;
+  height: 88vh;
+  aspect-ratio: 640 / 954;
+  border-radius: calc(36 * var(--u));
+  box-shadow: 0 calc(30 * var(--u)) calc(90 * var(--u)) rgb(0 0 0 / 0.6);
+  object-fit: cover;
+  background: #f4f2f1;
+}
+.playerBack {
+  position: absolute;
+  left: calc(96 * var(--u));
+  top: calc(54 * var(--u));
+  display: inline-flex;
+  align-items: center;
+  gap: calc(12 * var(--u));
+  height: calc(76 * var(--u));
+  padding: 0 calc(34 * var(--u));
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.14);
+  color: #fff;
+  font-size: calc(28 * var(--u));
+  font-weight: 800;
+  backdrop-filter: blur(10px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tile,
+  .play {
+    transition: none;
+  }
+  .tile:focus .token {
+    animation: none;
+  }
+}

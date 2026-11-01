@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Play, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ZiggyVideo } from '@/components/ziggy/ZiggyVideo';

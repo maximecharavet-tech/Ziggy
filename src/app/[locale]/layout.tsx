@@ -11,10 +11,15 @@ import { BackToTop } from '@/components/ui/BackToTop';
 import { CookieConsent } from '@/components/ui/CookieConsent';
 import { ScrollProgress } from '@/components/ui/ScrollProgress';
 import { MotionProvider } from '@/components/ui/MotionProvider';
+import { ServiceWorker } from '@/components/ui/ServiceWorker';
 import { RewardCeremony } from '@/components/rewards/RewardCeremony';
 import { ZiggyIntro } from '@/components/ziggy/ZiggyIntro';
 import { BreakReminder } from '@/components/wellbeing/BreakReminder';
 import { SITE_URL } from '@/lib/site-url';
+import { SHELL_BOOT_SCRIPT } from '@/lib/app-shell';
+import { AppShellProvider } from '@/components/app/AppShellProvider';
+import { AppTabBar } from '@/components/app/AppTabBar';
+import { TvTopBar } from '@/components/tv/TvTopBar';
 import type { Metadata } from 'next';
 import '../globals.css';
 
@@ -60,23 +65,6 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     robots: {
       index: true,
       follow: true,
-    },
-    alternates: {
-      canonical: '/',
-      languages: {
-        'fr': '/fr',
-        'en': '/en',
-        'es': '/es',
-        'de': '/de',
-        'pt': '/pt',
-        'it': '/it',
-        'nl': '/nl',
-        'tr': '/tr',
-        'ja': '/ja',
-        'ko': '/ko',
-        'zh': '/zh',
-        'ar': '/ar',
-      },
     },
   };
 }
@@ -140,25 +128,31 @@ export default async function LocaleLayout({
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>
       <body className="min-h-screen bg-bg text-text-body antialiased">
-        <script dangerouslySetInnerHTML={{ __html: `
-  (function(){var d=document.documentElement;d.classList.add('js');try{if(!sessionStorage.getItem('ziggy:intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.dataset.intro='1'}}catch(e){}try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()
+        {/* Before the first paint: the Ziggy app / TV attributes (see app-shell.ts), the intro (website only), the theme. */}
+        <script dangerouslySetInnerHTML={{ __html: `${SHELL_BOOT_SCRIPT};
+  (function(){var d=document.documentElement;d.classList.add('js');try{if(!d.hasAttribute('data-app')&&!sessionStorage.getItem('ziggy:intro')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){d.dataset.intro='1'}}catch(e){}try{var t=localStorage.getItem('theme');if(t==='dark'||(!t&&window.matchMedia('(prefers-color-scheme:dark)').matches)){document.documentElement.classList.add('dark')}}catch(e){}})()
 `}} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <NextIntlClientProvider locale={locale} messages={messages}>
+          <ServiceWorker />
           <MotionProvider>
-          <a href="#main-content" className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-green focus:text-white focus:rounded-lg">Skip to content</a>
+          <AppShellProvider>
+          <a href="#main-content" className="web-only sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[100] focus:px-4 focus:py-2 focus:bg-green focus:text-white focus:rounded-lg">Skip to content</a>
           <ZiggyIntro />
           <ScrollProgress />
           <Navbar />
+          <TvTopBar />
           <main id="main-content">{children}</main>
           <Footer />
           <BackToTop />
           <CookieConsent />
+          <AppTabBar />
           <RewardCeremony />
           <BreakReminder />
+          </AppShellProvider>
           </MotionProvider>
         </NextIntlClientProvider>
       </body>

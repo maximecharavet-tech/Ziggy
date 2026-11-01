@@ -18,6 +18,7 @@ import { nvidiaJson, nvidiaReady, nvidiaVision } from './providers/nvidia';
 import { agnesImage, agnesReady } from './providers/agnes';
 import { ProviderError } from './providers/http';
 import { Capsule } from './capsule';
+import { verifyGameFactory, verifyStory } from './verify';
 import { checkBudget, type Operation } from './cost-guard';
 import { shield } from '@/lib/safety/child-shield';
 import { localStory } from '@/lib/story/local-story';
@@ -36,7 +37,8 @@ import { newRequestId } from '@/lib/analytics/log';
  * ZIGGY ORCHESTRATOR — the brain inside Hyper Engine for Ziggy.
  *
  *   request → CostGuard → provider (DeepSeek / NVIDIA / Agnes)
- *           → strict JSON parse → Zod schema (one controlled correction)
+ *           → strict JSON parse → Zod schema → VERIFY (facts, age rules)
+ *             (one controlled correction with the exact problems found)
  *           → ChildShield → result
  *   any failure → the local, deterministic, human-written fallback.
  *
@@ -61,8 +63,12 @@ const CHILD_RULES = (locale: string, ageGroup: string) =>
       `never ask to read a written word.`
     : '');
 
-/** Ask the text brain for JSON matching `schema`: DeepSeek first, NVIDIA as fallback, one controlled correction. */
-async function aiJson<T>(schema: z.ZodType<T>, system: string, user: string): Promise<{ data: T; provider: string } | null> {
+/**
+ * Ask the text brain for JSON matching `schema`: DeepSeek first, NVIDIA as
+ * fallback. `verify` checks what a schema can't (true facts, age rules); any
+ * problem — schema or verify — goes back to the model once, then it's dropped.
+ */
+async function aiJson<T>(schema: z.ZodType<T>, system: string, user: string, verify: (data: T) => string[] = () => []): Promise<{ data: T; provider: string } | null> {
   const providers: { name: string; call: (s: string, u: string) => Promise<{ text: string }> }[] = [];
   if (deepseekReady()) providers.push({ name: 'deepseek', call: (s, u) => deepseekJson(s, u) });
   if (nvidiaReady()) providers.push({ name: 'nvidia', call: (s, u) => nvidiaJson(s, u) });
@@ -77,10 +83,11 @@ async function aiJson<T>(schema: z.ZodType<T>, system: string, user: string): Pr
           parsed = undefined;
         }
         const result = parsed === undefined ? null : schema.safeParse(parsed);
-        if (result?.success) return { data: result.data, provider: p.name };
+        const problems = result?.success ? verify(result.data) : [];
+        if (result?.success && !problems.length) return { data: result.data, provider: p.name };
         if (attempt === 1) break;
-        // Controlled correction: the same request, plus what was wrong — once.
-        const issues = result ? result.error.issues.slice(0, 6).map((i) => `${i.path.join('.')}: ${i.message}`).join('; ') : 'not valid JSON';
+        // Controlled correction: the same request, plus exactly what was wrong — once.
+        const issues = !result ? 'not valid JSON' : result.success ? problems.slice(0, 8).join('; ') : result.error.issues.slice(0, 6).map((i) => `${i.path.join('.')}: ${i.message}`).join('; ');
         raw = (await p.call(system, `${user}\n\nYour previous answer was invalid (${issues}). Return the corrected JSON object only.`)).text;
       }
     } catch (e) {
@@ -254,7 +261,8 @@ export async function generateStory(ctx: Ctx, choices: StoryChoices): Promise<Ou
       goal: tr(pick(GOALS, choices.goal).label, L),
       sceneLength: choices.ageGroup === '5-7' ? '1–2 short sentences' : '2–4 sentences',
       format: { title: 'string', chapters: [{ title: 'string', scenes: [{ text: 'string', emoji: 'one emoji' }] }], moral: 'string' },
-    })
+    }),
+    (story) => verifyStory(story, choices.ageGroup)
   ).catch(() => null);
   if (!ai) {
     await capsule.status('FAILED', { error: 'no_valid_answer' });
@@ -312,7 +320,8 @@ export async function generateGameContent(
       difficulty,
       skill,
       format: { gameType: gameId, difficulty, skill, questions: [{ prompt: 'string', visual: 'one emoji', options: ['string'], answer: 0, explain: 'one kind sentence' }], story: 'one sentence linking the game to an adventure', reward: { xp: 10, stars: 1 } },
-    })
+    }),
+    (out) => verifyGameFactory(out, { gameType: gameId, difficulty, rounds, mechanic: game.mechanic, ageGroup: ctx.ageGroup })
   ).catch(() => null);
   if (!ai || ai.data.gameType !== gameId) {
     await capsule.status('FAILED', { error: 'no_valid_answer' });

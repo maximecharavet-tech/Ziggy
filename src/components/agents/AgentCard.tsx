@@ -1,6 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { ArrowRight, MessageCircle } from 'lucide-react';
 import { AgentAvatar } from './AgentAvatar';
@@ -15,6 +16,7 @@ interface AgentCardProps {
 }
 
 export function AgentCard({ id, name, description, color, index }: AgentCardProps) {
+  const t = useTranslations('agents');
   return (
     <motion.div
       initial={{ opacity: 0, y: 24 }}
@@ -65,7 +67,7 @@ export function AgentCard({ id, name, description, color, index }: AgentCardProp
               className="inline-flex items-center gap-1.5 text-xs font-bold transition-all duration-300 group-hover:gap-2.5"
               style={{ color }}
             >
-              <span>Try now</span>
+              <span>{t('try_now')}</span>
               <ArrowRight size={14} className="rtl:rotate-180" />
             </div>
           </div>

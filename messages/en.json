@@ -19,8 +19,13 @@
     "theme_light": "Switch to light mode",
     "theme_dark": "Switch to dark mode",
     "world": "Ziggy World",
+    "create": "Create",
     "dodo": "Bedtime",
-    "learn": "Learn"
+    "learn": "Learn",
+    "apps": "Apps",
+    "sound_on": "Turn sound on",
+    "sound_off": "Turn sound off",
+    "switch_language": "Switch language"
   },
   "hero": {
     "badge": "AI Education for Kids Aged 5-12",
@@ -36,7 +41,11 @@
     "bubble_happy": "Hehe, that tickles! 💚",
     "trust_1": "No ads",
     "trust_2": "Data hosted in Europe",
-    "trust_3": "Play without an account"
+    "trust_3": "Play without an account",
+    "facts_worlds": "Worlds to explore",
+    "facts_stories": "Bedtime stories",
+    "facts_games": "Adaptive games",
+    "facts_ads": "Ads"
   },
   "features": {
     "title": "Why Parents Love Ziggy",
@@ -91,7 +100,7 @@
     "family": "Family",
     "family_price_monthly": "€9.90",
     "family_price_yearly": "€7.90",
-    "family_period": "/month",
+    "family_period": "month",
     "family_cta": "Start Free Trial",
     "family_f1": "Unlimited sessions",
     "family_f2": "Up to 3 children",
@@ -102,7 +111,7 @@
     "school": "School",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
-    "school_period": "/month",
+    "school_period": "month",
     "school_cta": "Talk to Sales",
     "school_f1": "Up to 30 students",
     "school_f2": "Teacher dashboard",
@@ -169,7 +178,7 @@
   },
   "cta_final": {
     "title": "Ready to Start Your Child's AI Adventure?",
-    "subtitle": "Join thousands of families already learning with Ziggy. Start free today.",
+    "subtitle": "Start for free today: 20 worlds to explore, 31 bedtime stories and zero ads.",
     "cta": "Start Free Trial"
   },
   "footer": {
@@ -271,7 +280,8 @@
         "What makes ads catchy?",
         "Design a poster idea!"
       ]
-    }
+    },
+    "try_now": "Try now"
   },
   "games": {
     "badge": "Mini-games",

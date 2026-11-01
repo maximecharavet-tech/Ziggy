@@ -1,11 +1,17 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { shuffle } from '../logic';
-import { Feedback, Hint, POP, RoundProgress, SOFT_SHAKE, Stage, alpha, useFinishIfEmpty, useGameRun, useTimers } from './shared';
+import { Feedback, Hint, POP, RoundProgress, Stage, WOBBLE, useFinishIfEmpty, useGameRun, useTimers } from './shared';
+import { ToyTile } from '../stage/Toy';
+import { Burst } from '../stage/Burst';
+import { darken, lighten, mix, rgba } from '../stage/color';
+import css from '../stage/stage.module.css';
+
+const BIN_TINTS = ['#5FB6EA', '#F9A86B', '#A78BFA', '#4FC9C0', '#F472B6', '#7FC85C'];
 import { cheer, ui } from '../ui-text';
 import { useSay } from '../read-aloud';
 
@@ -26,6 +32,7 @@ export function SortMechanic({ content, color, locale, onFinish, onAnswer }: Mec
   const [feedback, setFeedback] = useState<{ tone: 'right' | 'almost'; item: SortItem } | null>(null);
   const [wiggleBin, setWiggleBin] = useState<{ id: string; n: number } | null>(null);
   const [busy, setBusy] = useState(false);
+  const [pop, setPop] = useState<{ id: string; n: number } | null>(null);
 
   const remaining = items.filter((it) => placed[it.id] === undefined);
   const doneCount = total - remaining.length;
@@ -54,6 +61,7 @@ export function SortMechanic({ content, color, locale, onFinish, onAnswer }: Mec
       }, 900);
     } else {
       setPlaced((p) => ({ ...p, [active.id]: active.bin }));
+      setPop((q) => ({ id: binId, n: (q?.n ?? 0) + 1 }));
     }
     setSelected(null);
   };
@@ -81,50 +89,53 @@ export function SortMechanic({ content, color, locale, onFinish, onAnswer }: Mec
       <RoundProgress index={doneCount} total={total} color={color} locale={locale} />
       <Hint say={ui('sortHint', locale)}>{ui('sortHint', locale)}</Hint>
 
-      {/* Item tray */}
-      <div className="flex flex-wrap items-center justify-center gap-2.5 min-h-[96px] mb-5" role="group" aria-label={ui('sortHint', locale)}>
+      {/* Item tray: the chosen item floats up, ready to be dropped */}
+      <div className="mb-6 flex min-h-[112px] flex-wrap items-end justify-center gap-3" role="group" aria-label={ui('sortHint', locale)}>
         <AnimatePresence>
           {remaining.map((it) => {
             const isActive = active?.id === it.id;
             return (
-              <motion.button
+              <motion.div
                 key={it.id}
-                type="button"
                 layout
-                onClick={() => {
-                  playSound('tap');
-                  say('sort-item', it.label);
-                  setSelected(it.id);
-                }}
-                aria-pressed={isActive}
-                aria-label={`${it.label}${isActive ? `, ${ui('selected', locale)}` : ''}`}
-                initial={{ opacity: 0, scale: 0.6 }}
-                animate={{ opacity: isActive ? 1 : 0.7, scale: isActive ? 1.08 : 0.92, y: isActive ? -4 : 0 }}
-                exit={{ opacity: 0, scale: 0.4, y: 40 }}
-                whileTap={{ scale: 0.95 }}
+                initial={{ opacity: 0, scale: 0.5, y: -30 }}
+                animate={{ opacity: isActive ? 1 : 0.8, scale: isActive ? 1.1 : 0.88, y: isActive ? -8 : 0 }}
+                exit={{ opacity: 0, scale: 0.3, y: 90, rotate: 25, transition: { duration: 0.35, ease: 'easeIn' } }}
                 transition={POP}
-                className="min-w-[72px] min-h-[72px] rounded-3xl px-3 py-2 flex flex-col items-center justify-center gap-0.5 border-2 bg-bg-card"
-                style={{
-                  borderColor: isActive ? color : alpha(color, '2E'),
-                  boxShadow: isActive ? `0 12px 26px ${alpha(color, '35')}` : 'none',
-                }}
+                className="relative"
               >
-                <span className="text-4xl leading-none" aria-hidden="true">
-                  {it.emoji}
-                </span>
-                <span className="text-xs font-bold text-text-body max-w-[96px] truncate">{it.label}</span>
-              </motion.button>
+                {isActive ? <span className={`pointer-events-none absolute -inset-2 rounded-[1.8rem] ${css.breathe}`} style={{ background: `radial-gradient(closest-side, ${rgba(color, 0.35)}, transparent)` }} aria-hidden="true" /> : null}
+                <ToyTile
+                  color={color}
+                  tone={isActive ? 'picked' : 'idle'}
+                  onClick={() => {
+                    playSound('tap');
+                    say('sort-item', it.label);
+                    setSelected(it.id);
+                  }}
+                  aria-pressed={isActive}
+                  aria-label={`${it.label}${isActive ? `, ${ui('selected', locale)}` : ''}`}
+                  faceClassName="min-h-[80px] min-w-[80px] flex-col gap-0.5 px-3 py-2"
+                >
+                  <span className={`relative text-4xl leading-none drop-shadow-[0_3px_2px_rgba(0,0,0,0.15)] ${isActive ? css.bob : ''}`} style={{ '--lift': '-4px', '--dur': '1.6s' } as CSSProperties} aria-hidden="true">
+                    {it.emoji}
+                  </span>
+                  <span className="relative max-w-[96px] truncate text-xs font-bold">{it.label}</span>
+                </ToyTile>
+              </motion.div>
             );
           })}
         </AnimatePresence>
       </div>
 
-      {/* Bins */}
-      <div className={`grid gap-3 ${bins.length >= 3 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2'}`} dir="ltr">
+      {/* Boxes: open toy crates with real depth */}
+      <div className={`grid gap-x-3 gap-y-5 ${bins.length >= 3 ? 'grid-cols-2 sm:grid-cols-3' : 'grid-cols-2'}`} dir="ltr">
         {bins.map((bin, bi) => {
           const inside = items.filter((it) => placed[it.id] === bin.id);
           const wiggle = wiggleBin?.id === bin.id;
           const highlight = feedback?.tone === 'almost' && busy && feedback.item.bin === bin.id;
+          const tint = mix(BIN_TINTS[bi % BIN_TINTS.length], color, 0.25);
+          const deep = darken(tint, 0.3);
           return (
             <motion.button
               key={bin.id}
@@ -132,28 +143,41 @@ export function SortMechanic({ content, color, locale, onFinish, onAnswer }: Mec
               onClick={() => drop(bin.id)}
               disabled={!active || busy}
               aria-label={`${ui('bin', locale)} ${bi + 1}: ${bin.label}${active ? ` — ${active.label}` : ''}`}
-              animate={wiggle ? { ...SOFT_SHAKE } : { scale: highlight ? 1.05 : 1 }}
-              whileTap={{ scale: 0.96 }}
-              transition={POP}
-              className="min-h-[120px] rounded-3xl p-3 flex flex-col items-center justify-start gap-1 border-2 border-dashed disabled:cursor-default"
-              style={{
-                borderColor: highlight ? '#22C55E' : alpha(color, '55'),
-                background: `linear-gradient(170deg, ${alpha(color, '1A')}, ${alpha(color, '06')})`,
-              }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={wiggle ? { opacity: 1, y: 0, ...WOBBLE } : { opacity: 1, y: 0, scale: highlight ? 1.06 : 1 }}
+              whileHover={!active || busy ? undefined : { y: -4 }}
+              whileTap={{ scale: 0.95, y: 3 }}
+              transition={{ ...POP, delay: wiggle ? 0 : 0.1 + bi * 0.06 }}
+              className="group relative flex min-h-[150px] flex-col justify-end rounded-[1.6rem] pt-8 outline-none focus-visible:ring-4 disabled:cursor-default"
+              style={{ ['--tw-ring-color' as string]: rgba(tint, 0.6) }}
             >
-              <span className="text-4xl" aria-hidden="true">
-                {bin.emoji}
-              </span>
-              <span className="text-sm sm:text-base font-extrabold text-text-body">{bin.label}</span>
-              <span className="flex flex-wrap justify-center gap-0.5 text-xl min-h-[28px]" aria-hidden="true">
+              {/* Inside of the box */}
+              <span className="absolute inset-x-2 top-3 h-14 rounded-t-[1.2rem]" style={{ background: `linear-gradient(180deg, ${darken(tint, 0.42)}, ${darken(tint, 0.2)})` }} aria-hidden="true" />
+              {/* What is already in it, peeking over the front */}
+              <span className="absolute inset-x-3 top-1 flex flex-wrap justify-center gap-0.5 text-2xl" aria-hidden="true">
                 <AnimatePresence>
-                  {inside.map((it) => (
-                    <motion.span key={it.id} initial={{ scale: 0, y: -20 }} animate={{ scale: 1, y: 0 }} transition={POP}>
+                  {inside.slice(-6).map((it) => (
+                    <motion.span key={it.id} initial={{ y: -70, scale: 0.6, rotate: -20, opacity: 0 }} animate={{ y: 0, scale: 1, rotate: 0, opacity: 1 }} transition={{ type: 'spring', stiffness: 380, damping: 13 }} className="drop-shadow-[0_2px_1px_rgba(0,0,0,0.25)]">
                       {it.emoji}
                     </motion.span>
                   ))}
                 </AnimatePresence>
               </span>
+              {/* Front of the box */}
+              <span
+                className="relative flex min-h-[96px] flex-col items-center justify-center gap-1 rounded-b-[1.6rem] rounded-t-[0.9rem] px-2 pb-2 pt-3"
+                style={{
+                  background: `linear-gradient(180deg, ${lighten(tint, 0.2)} 0%, ${tint} 60%, ${darken(tint, 0.08)} 100%)`,
+                  boxShadow: `0 7px 0 ${deep}, inset 0 3px 0 rgba(255,255,255,0.5), 0 0 0 ${highlight ? 4 : 0}px #4ADE80, 0 18px 26px -14px ${rgba(deep, 0.6)}`,
+                }}
+              >
+                <span className="absolute inset-x-3 top-1.5 h-2 rounded-full bg-white/30" aria-hidden="true" />
+                <span className="grid h-12 w-12 place-items-center rounded-full bg-white text-3xl shadow-[0_3px_0_rgba(0,0,0,0.12),inset_0_-3px_0_rgba(0,0,0,0.05)]" aria-hidden="true">
+                  {bin.emoji}
+                </span>
+                <span className="rounded-full bg-white/90 px-3 py-0.5 text-sm font-extrabold text-[#2A2340] sm:text-base">{bin.label}</span>
+              </span>
+              {pop?.id === bin.id ? <Burst fire={pop.n} color={tint} count={12} spread={100} className="!top-[30%]" /> : null}
             </motion.button>
           );
         })}

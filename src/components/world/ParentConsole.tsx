@@ -63,6 +63,10 @@ const T = {
   confirm: { fr: 'Confirmer ?', en: 'Confirm?' },
   done: { fr: 'Supprimé.', en: 'Deleted.' },
   account: { fr: 'Pour supprimer tout le compte : page Compte.', en: 'To delete the whole account: Account page.' },
+  legal: { fr: 'Confidentialité et conditions', en: 'Privacy and terms' },
+  privacy: { fr: 'Politique de confidentialité', en: 'Privacy policy' },
+  terms: { fr: 'Conditions d’utilisation', en: 'Terms of use' },
+  cookies: { fr: 'Ce que le site garde sur l’appareil', en: 'What the site keeps on the device' },
   none: { fr: 'Rien pour l’instant.', en: 'Nothing yet.' },
 } satisfies Record<string, L>;
 
@@ -130,6 +134,9 @@ export function ParentConsole() {
               {tr(T.login, locale)}
             </Link>
           </div>
+        ) : null}
+        {state === 'guest' ? (
+          <LegalLinks locale={locale} />
         ) : (
           <div className="h-96 animate-pulse rounded-[2rem] bg-bg-card/60" aria-hidden="true" />
         )}
@@ -367,6 +374,25 @@ export function ParentConsole() {
           </Link>
         </p>
       </section>
+      <LegalLinks locale={locale} />
     </AppPage>
+  );
+}
+
+/** The legal pages, reachable from the parents' area (in the app there is no footer). */
+function LegalLinks({ locale }: { locale: string }) {
+  return (
+    <nav aria-label={tr(T.legal, locale)} className="mx-auto mt-6 flex max-w-3xl flex-wrap items-center justify-center gap-x-5 gap-y-2 text-sm text-text-muted">
+      <span className="font-bold">⚖️ {tr(T.legal, locale)} :</span>
+      <Link href="/privacy" className="underline">
+        {tr(T.privacy, locale)}
+      </Link>
+      <Link href="/terms" className="underline">
+        {tr(T.terms, locale)}
+      </Link>
+      <Link href="/cookies" className="underline">
+        {tr(T.cookies, locale)}
+      </Link>
+    </nav>
   );
 }

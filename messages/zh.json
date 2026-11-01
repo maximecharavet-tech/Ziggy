@@ -19,8 +19,13 @@
     "theme_light": "浅色模式",
     "theme_dark": "深色模式",
     "world": "Ziggy World",
+    "create": "创作",
     "dodo": "睡前故事",
-    "learn": "学习方法"
+    "learn": "学习方法",
+    "apps": "应用",
+    "sound_on": "打开声音",
+    "sound_off": "关闭声音",
+    "switch_language": "切换语言"
   },
   "hero": {
     "badge": "面向5-12岁儿童的AI教育",
@@ -36,7 +41,11 @@
     "bubble_happy": "嘻嘻，好痒！💚",
     "trust_1": "无广告",
     "trust_2": "数据存放在欧洲",
-    "trust_3": "无需账户即可玩"
+    "trust_3": "无需账户即可玩",
+    "facts_worlds": "可探索的世界",
+    "facts_stories": "睡前故事",
+    "facts_games": "自适应游戏",
+    "facts_ads": "广告"
   },
   "features": {
     "title": "家长为什么喜爱Ziggy",
@@ -91,7 +100,7 @@
     "family": "家庭版",
     "family_price_monthly": "€9.90",
     "family_price_yearly": "€7.90",
-    "family_period": "/月",
+    "family_period": "月",
     "family_cta": "免费试用",
     "family_f1": "无限课程",
     "family_f2": "最多3个孩子",
@@ -102,7 +111,7 @@
     "school": "学校版",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
-    "school_period": "/月",
+    "school_period": "月",
     "school_cta": "联系销售",
     "school_f1": "最多30名学生",
     "school_f2": "教师仪表盘",
@@ -169,7 +178,7 @@
   },
   "cta_final": {
     "title": "准备好开始孩子的AI冒险了吗？",
-    "subtitle": "加入已经在使用Ziggy学习的数千个家庭。今天免费开始。",
+    "subtitle": "今天免费开始：20个世界、31个睡前故事，零广告。",
     "cta": "免费试用"
   },
   "footer": {
@@ -271,7 +280,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "立即体验"
   },
   "games": {
     "badge": "小游戏",

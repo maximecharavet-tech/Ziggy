@@ -4,6 +4,7 @@ import { Heart } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { HyperBadge } from '@/components/ziggy/HyperBadge';
+import { FR_LANDING_PATHS, LANDING_COPY } from '@/data/landings';
 
 export function Footer() {
   const t = useTranslations('footer');
@@ -19,6 +20,7 @@ export function Footer() {
 
   const companyLinks = [
     { label: tn('demo'), href: '/demo' as const },
+    { label: tn('apps'), href: '/telecharger' as const },
     { label: tn('pricing'), href: '#pricing' },
     { label: tn('account'), href: '/account' as const },
   ];
@@ -31,7 +33,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="border-t border-border/50 bg-gradient-to-b from-bg to-bg-card">
+    <footer className="web-only border-t border-border/50 bg-gradient-to-b from-bg to-bg-card">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
@@ -99,6 +101,15 @@ export function Footer() {
             </ul>
           </div>
         </div>
+
+        {/* French discovery pages (French only for now). */}
+        <nav aria-label="Découvrir Ziggy" lang="fr" className="mt-10 flex flex-wrap gap-x-6 gap-y-2">
+          {FR_LANDING_PATHS.map((path) => (
+            <Link key={path} href={path as '/games'} locale="fr" className="text-sm text-text-muted hover:text-green transition-colors">
+              {LANDING_COPY[path].footer}
+            </Link>
+          ))}
+        </nav>
 
         <div className="mt-12 pt-8 border-t border-border/50 text-center text-sm text-text-dim">
           {t('copyright')}

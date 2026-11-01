@@ -1,14 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  motion,
-  AnimatePresence,
-  useMotionValue,
-  useSpring,
-  useTransform,
-  useReducedMotion,
-} from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { useTranslations } from 'next-intl';
 import { ArrowRight, Play, Check, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
@@ -18,10 +12,12 @@ import { StarBurst } from '@/components/ziggy/StarBurst';
 import { HyperBadge } from '@/components/ziggy/HyperBadge';
 import { ZiggyVideo } from '@/components/ziggy/ZiggyVideo';
 import { Sparkle, ZiggyAvatar } from '@/components/ziggy/Mascot';
+import { WORLDS } from '@/data/worlds';
+import { DODO_STORIES } from '@/data/dodo';
+import { ARCADE_GAMES } from '@/lib/arcade/registry';
 import { useSound } from '@/hooks/useSound';
 import { SplitWords } from '@/components/ui/motion-primitives';
 import { FILMS, FILM_ASPECT } from '@/lib/mascot';
-import type { SiteConfig } from '@/lib/site-config';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -47,7 +43,7 @@ function Sticker({ className, delay, children }: { className: string; delay: num
   );
 }
 
-export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) {
+export function HeroSection() {
   const t = useTranslations('hero');
   const { play } = useSound();
   const reduce = useReducedMotion();
@@ -82,11 +78,12 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
     setTimeout(() => setHappy(false), 1800);
   };
 
+  // Facts about the product itself, counted from the real content — never invented audience figures.
   const stats = [
-    { value: figures.children, label: t('stats_children'), tint: 'text-leaf' },
-    { value: figures.sessions, label: t('stats_sessions'), tint: 'text-sky' },
-    { value: figures.countries, label: t('stats_countries'), tint: 'text-coral' },
-    { value: figures.rating, label: t('stats_rating'), tint: 'text-apricot' },
+    { value: String(WORLDS.length), label: t('facts_worlds'), tint: 'text-leaf' },
+    { value: String(DODO_STORIES.length), label: t('facts_stories'), tint: 'text-sky' },
+    { value: String(Object.keys(ARCADE_GAMES).length + 2), label: t('facts_games'), tint: 'text-coral' },
+    { value: '0', label: t('facts_ads'), tint: 'text-apricot' },
   ];
 
   return (
@@ -130,7 +127,7 @@ export function HeroSection({ stats: figures }: { stats: SiteConfig['stats'] }) 
             custom={3}
             className="mt-9 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
           >
-            <Button href="/signup" size="lg" magnetic className="group gap-2 shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
+            <Button href="/signup" size="lg" magnetic className="web-only group gap-2 shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
               {t('cta_primary')}
               <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
             </Button>

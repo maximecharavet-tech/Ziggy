@@ -19,8 +19,13 @@
     "theme_light": "Passer en mode clair",
     "theme_dark": "Passer en mode sombre",
     "world": "Ziggy World",
+    "create": "Créer",
     "dodo": "Mode dodo",
-    "learn": "Apprendre"
+    "learn": "Apprendre",
+    "apps": "Applis",
+    "sound_on": "Activer le son",
+    "sound_off": "Couper le son",
+    "switch_language": "Changer de langue"
   },
   "hero": {
     "badge": "L'IA éducative pour les 5-12 ans",
@@ -36,7 +41,11 @@
     "bubble_happy": "Hihi, ça chatouille ! 💚",
     "trust_1": "Sans publicité",
     "trust_2": "Données hébergées en Europe",
-    "trust_3": "Jouable sans compte"
+    "trust_3": "Jouable sans compte",
+    "facts_worlds": "Mondes à explorer",
+    "facts_stories": "Histoires du soir",
+    "facts_games": "Jeux qui s’adaptent",
+    "facts_ads": "Publicité"
   },
   "features": {
     "title": "Pourquoi les parents adorent Ziggy",
@@ -91,7 +100,7 @@
     "family": "Famille",
     "family_price_monthly": "€9,90",
     "family_price_yearly": "€7,90",
-    "family_period": "/mois",
+    "family_period": "mois",
     "family_cta": "Essai gratuit",
     "family_f1": "Sessions illimitées",
     "family_f2": "Jusqu'à 3 enfants",
@@ -102,7 +111,7 @@
     "school": "École",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
-    "school_period": "/mois",
+    "school_period": "mois",
     "school_cta": "Contacter les ventes",
     "school_f1": "Jusqu'à 30 élèves",
     "school_f2": "Tableau de bord enseignant",
@@ -169,7 +178,7 @@
   },
   "cta_final": {
     "title": "Prêt à lancer l'aventure IA de votre enfant ?",
-    "subtitle": "Rejoignez des milliers de familles qui apprennent déjà avec Ziggy. Commencez gratuitement aujourd'hui.",
+    "subtitle": "Commencez gratuitement aujourd’hui : 20 mondes à explorer, 31 histoires du soir et zéro publicité.",
     "cta": "Essai gratuit"
   },
   "footer": {
@@ -184,7 +193,7 @@
     "privacy": "Politique de confidentialité",
     "terms": "Conditions d'utilisation",
     "cookies": "Politique de cookies",
-    "gdpr": "GDPR",
+    "gdpr": "RGPD",
     "copyright": "© 2026 Ziggy Technologies SAS. Tous droits réservés.",
     "made_with": "Fait avec",
     "for_kids": "pour les enfants"
@@ -271,7 +280,8 @@
         "Qu'est-ce qui rend une pub mémorable ?",
         "Dessine-moi une affiche !"
       ]
-    }
+    },
+    "try_now": "Essayer"
   },
   "games": {
     "badge": "Mini-jeux",

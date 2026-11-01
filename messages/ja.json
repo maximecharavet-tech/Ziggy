@@ -19,8 +19,13 @@
     "theme_light": "ライトモード",
     "theme_dark": "ダークモード",
     "world": "Ziggy World",
+    "create": "つくる",
     "dodo": "おやすみ",
-    "learn": "まなぶ"
+    "learn": "まなぶ",
+    "apps": "アプリ",
+    "sound_on": "サウンドをオンにする",
+    "sound_off": "サウンドをオフにする",
+    "switch_language": "言語を切り替える"
   },
   "hero": {
     "badge": "5〜12歳向けAI教育",
@@ -36,7 +41,11 @@
     "bubble_happy": "えへへ、くすぐったい！💚",
     "trust_1": "広告なし",
     "trust_2": "データはヨーロッパで保管",
-    "trust_3": "アカウントなしで遊べる"
+    "trust_3": "アカウントなしで遊べる",
+    "facts_worlds": "探検できる世界",
+    "facts_stories": "おやすみのお話",
+    "facts_games": "レベルに合わせたゲーム",
+    "facts_ads": "広告"
   },
   "features": {
     "title": "保護者がZiggyを選ぶ理由",
@@ -91,7 +100,7 @@
     "family": "ファミリー",
     "family_price_monthly": "€9.90",
     "family_price_yearly": "€7.90",
-    "family_period": "/月",
+    "family_period": "月",
     "family_cta": "無料で始める",
     "family_f1": "無制限のセッション",
     "family_f2": "子ども3人まで",
@@ -102,7 +111,7 @@
     "school": "スクール",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
-    "school_period": "/月",
+    "school_period": "月",
     "school_cta": "営業に相談",
     "school_f1": "生徒30人まで",
     "school_f2": "教師用ダッシュボード",
@@ -169,7 +178,7 @@
   },
   "cta_final": {
     "title": "お子さまのAIアドベンチャーを始める準備はできましたか？",
-    "subtitle": "すでにZiggyで学んでいる何千もの家族に加わりましょう。今日から無料で始められます。",
+    "subtitle": "今日から無料で：20の世界、31のおやすみのお話、広告はゼロ。",
     "cta": "無料で始める"
   },
   "footer": {
@@ -271,7 +280,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "試してみる"
   },
   "games": {
     "badge": "ミニゲーム",

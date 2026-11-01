@@ -1,0 +1,7 @@
+[package]
+name = "option-ext"
+version = "0.2.0"
+edition = "2021"
+license = "MIT"
+description = "Ziggy drop-in for option-ext 0.2 (MIT re-implementation of its three methods)"
+publish = false

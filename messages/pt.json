@@ -19,8 +19,13 @@
     "theme_light": "Modo claro",
     "theme_dark": "Modo escuro",
     "world": "Ziggy World",
+    "create": "Criar",
     "dodo": "Hora de dormir",
-    "learn": "Aprender"
+    "learn": "Aprender",
+    "apps": "Apps",
+    "sound_on": "Ativar o som",
+    "sound_off": "Desativar o som",
+    "switch_language": "Mudar de idioma"
   },
   "hero": {
     "badge": "Educação em IA para crianças dos 5 aos 12 anos",
@@ -36,7 +41,11 @@
     "bubble_happy": "Hihi, fazes-me cócegas! 💚",
     "trust_1": "Sem publicidade",
     "trust_2": "Dados alojados na Europa",
-    "trust_3": "Joga-se sem conta"
+    "trust_3": "Joga-se sem conta",
+    "facts_worlds": "Mundos para explorar",
+    "facts_stories": "Histórias para dormir",
+    "facts_games": "Jogos adaptativos",
+    "facts_ads": "Publicidade"
   },
   "features": {
     "title": "Porque é que os pais adoram Ziggy",
@@ -91,7 +100,7 @@
     "family": "Família",
     "family_price_monthly": "€9,90",
     "family_price_yearly": "€7,90",
-    "family_period": "/mês",
+    "family_period": "mês",
     "family_cta": "Teste gratuito",
     "family_f1": "Sessões ilimitadas",
     "family_f2": "Até 3 crianças",
@@ -102,7 +111,7 @@
     "school": "Escola",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
-    "school_period": "/mês",
+    "school_period": "mês",
     "school_cta": "Falar com vendas",
     "school_f1": "Até 30 alunos",
     "school_f2": "Painel do professor",
@@ -169,7 +178,7 @@
   },
   "cta_final": {
     "title": "Pronto para iniciar a aventura IA do seu filho?",
-    "subtitle": "Junte-se a milhares de famílias que já aprendem com Ziggy. Comece grátis hoje.",
+    "subtitle": "Comece grátis hoje: 20 mundos para explorar, 31 histórias para dormir e zero anúncios.",
     "cta": "Teste gratuito"
   },
   "footer": {
@@ -184,7 +193,7 @@
     "privacy": "Política de privacidade",
     "terms": "Termos de serviço",
     "cookies": "Política de cookies",
-    "gdpr": "GDPR",
+    "gdpr": "RGPD",
     "copyright": "© 2026 Ziggy Technologies SAS. Todos os direitos reservados.",
     "made_with": "Feito com",
     "for_kids": "para as crianças"
@@ -271,7 +280,8 @@
         "What makes ads catchy?",
         "Design a poster!"
       ]
-    }
+    },
+    "try_now": "Experimentar"
   },
   "games": {
     "badge": "Minijogos",

@@ -194,6 +194,8 @@ type Recognition = {
 
 export function micSupported(): boolean {
   if (typeof window === 'undefined') return false;
+  // The Ziggy app never listens: no child's voice goes to Google or Apple (the native shell turns speech recognition off).
+  if (document.documentElement.hasAttribute('data-app')) return false;
   const w = window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown };
   return Boolean(w.SpeechRecognition ?? w.webkitSpeechRecognition);
 }

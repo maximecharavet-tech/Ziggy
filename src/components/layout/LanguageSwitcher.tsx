@@ -1,13 +1,14 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { useLocale } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { Globe } from 'lucide-react';
 import { locales, localeNames, type Locale } from '@/i18n/config';
 
 export function LanguageSwitcher() {
   const locale = useLocale();
+  const t = useTranslations('nav');
   const router = useRouter();
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
@@ -33,7 +34,7 @@ export function LanguageSwitcher() {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm text-text-muted hover:text-text-body hover:bg-border/30 transition-colors"
-        aria-label="Switch language"
+        aria-label={t('switch_language')}
       >
         <Globe size={16} />
         <span className="uppercase text-xs font-bold">{locale}</span>

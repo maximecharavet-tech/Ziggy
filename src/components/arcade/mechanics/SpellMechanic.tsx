@@ -1,11 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { normWord, shuffleNotIdentity, spellLetters } from '../logic';
-import { ArcadeButton, Feedback, POP, Prompt, RoundProgress, SOFT_SHAKE, Stage, alpha, useFinishIfEmpty, useGameRun, useTimers } from './shared';
+import { ArcadeButton, Feedback, Prompt, RoundProgress, SOFT_SHAKE, Stage, useFinishIfEmpty, useGameRun, useTimers } from './shared';
+import { chunkyFace } from '../stage/Toy';
+import { Burst } from '../stage/Burst';
+import { darken, rgba, strong } from '../stage/color';
+
+/** A chunky letter block with its own thickness. */
+function blockStyle(color: string, depth: number) {
+  const face = chunkyFace(color);
+  return { ...face, boxShadow: `${face.boxShadow}, 0 ${depth}px 0 ${darken(strong(color), 0.32)}, 0 ${depth + 8}px 14px -6px ${rgba(darken(color, 0.5), 0.4)}` };
+}
 import { cheer, ui } from '../ui-text';
 import { useReadAloud, useSay } from '../read-aloud';
 
@@ -147,80 +156,96 @@ function SpellRound({
         </p>
       ) : null}
 
-      <motion.div
-        key={shake}
-        animate={shake ? SOFT_SHAKE : undefined}
-        className="flex flex-wrap justify-center gap-1.5 sm:gap-2 mb-6"
-        dir="ltr"
-        aria-live="polite"
-      >
-        {cells.map((slotIndex, ci) => {
-          if (slotIndex === null) return <span key={`gap-${ci}`} className="w-4" aria-hidden="true" />;
-          const tileId = slots[slotIndex];
-          const tile = tileId === null ? null : tiles.find((t) => t.id === tileId);
-          const good = phase === 'right' || phase === 'shown';
-          return (
-            <button
-              key={`slot-${ci}`}
-              type="button"
-              onClick={() => unplace(slotIndex)}
-              disabled={locked || !tile}
-              aria-label={tile ? `${ui('letter', locale)} ${tile.ch}` : ui('emptySlot', locale)}
-              className="w-12 h-14 sm:w-14 sm:h-16 rounded-2xl border-2 flex items-center justify-center text-2xl sm:text-3xl font-extrabold text-text-body disabled:cursor-default"
-              style={{
-                borderColor: good ? '#22C55E' : tile ? color : alpha(color, '40'),
-                borderStyle: tile ? 'solid' : 'dashed',
-                backgroundColor: good ? '#22C55E14' : tile ? alpha(color, '14') : 'transparent',
-              }}
-            >
-              <AnimatePresence mode="popLayout">
-                {tile && (
-                  <motion.span key={tile.id} initial={{ scale: 0.3, y: 16 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.3, opacity: 0 }} transition={POP}>
+      <LayoutGroup id={`spell-${round}`}>
+        <motion.div
+          key={shake}
+          animate={shake ? SOFT_SHAKE : undefined}
+          className="relative mb-7 flex flex-wrap justify-center gap-1.5 sm:gap-2"
+          dir="ltr"
+          aria-live="polite"
+        >
+          {cells.map((slotIndex, ci) => {
+            if (slotIndex === null) return <span key={`gap-${ci}`} className="w-4" aria-hidden="true" />;
+            const tileId = slots[slotIndex];
+            const tile = tileId === null ? null : tiles.find((t) => t.id === tileId);
+            const good = phase === 'right' || phase === 'shown';
+            return (
+              <button
+                key={`slot-${ci}`}
+                type="button"
+                onClick={() => unplace(slotIndex)}
+                disabled={locked || !tile}
+                aria-label={tile ? `${ui('letter', locale)} ${tile.ch}` : ui('emptySlot', locale)}
+                className="relative h-[60px] w-[52px] rounded-2xl outline-none focus-visible:ring-4 disabled:cursor-default sm:h-[68px] sm:w-[60px]"
+                style={{
+                  background: rgba(color, 0.08),
+                  boxShadow: `inset 0 5px 10px ${rgba(darken(color, 0.4), 0.2)}, inset 0 -2px 0 rgba(255,255,255,0.8)`,
+                  border: tile ? 'none' : `2px dashed ${rgba(color, 0.35)}`,
+                  ['--tw-ring-color' as string]: rgba(color, 0.5),
+                }}
+              >
+                {tile ? (
+                  <motion.span
+                    layoutId={`tile-${tile.id}`}
+                    className="absolute inset-0 grid place-items-center rounded-2xl font-display text-3xl font-bold sm:text-4xl"
+                    style={blockStyle(good ? '#22C55E' : color, 5)}
+                    animate={good ? { y: [0, -14, 0], rotate: [0, ci % 2 ? 6 : -6, 0] } : { y: 0, rotate: 0 }}
+                    transition={good ? { duration: 0.5, delay: ci * 0.07, ease: 'easeOut' } : { type: 'spring', stiffness: 500, damping: 30 }}
+                  >
                     {tile.ch}
                   </motion.span>
-                )}
-              </AnimatePresence>
-            </button>
-          );
-        })}
-      </motion.div>
+                ) : null}
+              </button>
+            );
+          })}
+          {phase === 'right' ? <Burst fire={round + 1} color={color} count={18} spread={170} /> : null}
+        </motion.div>
 
-      {phase !== 'right' && phase !== 'shown' && (
-        <>
-          <div className="flex flex-wrap justify-center gap-2 sm:gap-2.5" dir="ltr" role="group" aria-label={ui('spellHint', locale)}>
-            {tiles.map((tile, i) => {
-              const isUsed = used.has(tile.id);
-              return (
-                <motion.button
-                  key={tile.id}
-                  type="button"
-                  onClick={() => place(tile)}
-                  disabled={isUsed || locked}
-                  aria-label={`${ui('letter', locale)} ${tile.ch}`}
-                  initial={{ opacity: 0, y: 14 }}
-                  animate={{ opacity: isUsed ? 0.18 : 1, y: 0, scale: isUsed ? 0.85 : 1 }}
-                  whileTap={isUsed ? undefined : { scale: 0.9 }}
-                  transition={{ ...POP, delay: i * 0.025 }}
-                  className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl text-2xl sm:text-3xl font-extrabold text-white"
-                  style={{
-                    background: `linear-gradient(140deg, ${color}, ${alpha(color, 'BB')})`,
-                    boxShadow: isUsed ? 'none' : `0 6px 16px ${alpha(color, '40')}`,
-                  }}
-                >
-                  {tile.ch}
-                </motion.button>
-              );
-            })}
-          </div>
-          <div className="flex justify-center mt-3">
-            <ArcadeButton color={color} variant="soft" onClick={eraseLast} disabled={used.size === 0 || locked} ariaLabel={ui('erase', locale)}>
-              ⌫
-            </ArcadeButton>
-          </div>
-        </>
-      )}
+        {phase !== 'right' && phase !== 'shown' && (
+          <>
+            <div className="flex flex-wrap justify-center gap-2.5 sm:gap-3" dir="ltr" role="group" aria-label={ui('spellHint', locale)}>
+              {tiles.map((tile, i) => {
+                const isUsed = used.has(tile.id);
+                return (
+                  <motion.div
+                    key={tile.id}
+                    className="relative h-[60px] w-[60px] sm:h-[68px] sm:w-[68px]"
+                    initial={{ opacity: 0, y: -40, rotate: i % 2 ? 12 : -12 }}
+                    animate={{ opacity: 1, y: 0, rotate: 0 }}
+                    transition={{ type: 'spring', stiffness: 300, damping: 15, delay: 0.1 + i * 0.05 }}
+                  >
+                    {/* The spot a tile leaves behind */}
+                    <span className="absolute inset-0 rounded-2xl border-2 border-dashed" style={{ borderColor: rgba(color, 0.25), background: rgba(color, 0.05) }} aria-hidden="true" />
+                    <motion.button
+                      type="button"
+                      onClick={() => place(tile)}
+                      disabled={isUsed || locked}
+                      aria-label={`${ui('letter', locale)} ${tile.ch}`}
+                      whileHover={isUsed || locked ? undefined : { y: -3, rotate: -2 }}
+                      whileTap={isUsed ? undefined : { scale: 0.9, y: 4 }}
+                      className={`absolute inset-0 rounded-2xl outline-none focus-visible:ring-4 ${isUsed ? 'pointer-events-none' : ''}`}
+                      style={{ ['--tw-ring-color' as string]: rgba(color, 0.5) }}
+                    >
+                      {!isUsed ? (
+                        <motion.span layoutId={`tile-${tile.id}`} className="absolute inset-0 grid place-items-center rounded-2xl font-display text-3xl font-bold sm:text-4xl" style={blockStyle(color, 6)} transition={{ type: 'spring', stiffness: 500, damping: 30 }}>
+                          {tile.ch}
+                        </motion.span>
+                      ) : null}
+                    </motion.button>
+                  </motion.div>
+                );
+              })}
+            </div>
+            <div className="mt-4 flex justify-center">
+              <ArcadeButton color={color} variant="soft" onClick={eraseLast} disabled={used.size === 0 || locked} ariaLabel={ui('erase', locale)}>
+                ⌫
+              </ArcadeButton>
+            </div>
+          </>
+        )}
+      </LayoutGroup>
 
-      <div className="mt-4">
+      <div className="mt-5 flex min-h-[72px] flex-wrap items-center justify-center gap-x-4 gap-y-2">
         <Feedback
           tone={phase === 'right' ? 'right' : phase === 'retry' || phase === 'shown' ? 'almost' : null}
           title={
@@ -235,9 +260,6 @@ function SpellRound({
             </>
           )}
         </Feedback>
-      </div>
-
-      <div className="flex justify-center mt-3 min-h-[56px]">
         {(phase === 'right' || phase === 'shown') && (
           <ArcadeButton color={color} onClick={onNext} autoFocus>
             {isLast ? ui('finish', locale) : ui('next', locale)} →

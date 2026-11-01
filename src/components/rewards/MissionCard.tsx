@@ -76,7 +76,7 @@ export function MissionCard({ compact = false }: { compact?: boolean }) {
             )}
           </AnimatePresence>
         </div>
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-[13rem]">
           <p className="text-[11px] font-bold uppercase tracking-[0.18em]" style={{ color }}>
             {t('title')}
           </p>
@@ -92,12 +92,12 @@ export function MissionCard({ compact = false }: { compact?: boolean }) {
             </p>
           )}
         </div>
-        <div className="flex items-center gap-3">
+        <div className="ms-auto flex items-center gap-3">
           <span
             className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-bold ${streak > 0 ? 'bg-[#FF7A1A]/15 text-[#E8590C]' : 'bg-border/40 text-text-dim'}`}
             title={t('streak_hint')}
           >
-            <Flame size={16} className={streak > 0 ? 'fill-[#FF9A3C] animate-pulse' : ''} />
+            <Flame size={16} className={streak > 0 ? 'fill-[#FF9A3C]' : ''} />
             {t('streak', { count: streak })}
           </span>
           {!done && (

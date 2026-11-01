@@ -9,7 +9,7 @@ export function ScrollProgress() {
   return (
     <motion.div
       aria-hidden="true"
-      className="fixed top-0 left-0 right-0 h-[3px] z-[60] origin-left"
+      className="web-only fixed top-0 left-0 right-0 h-[3px] z-[60] origin-left"
       style={{
         scaleX,
         background: 'linear-gradient(90deg, var(--color-coral), #F7A8B8, var(--color-leaf), var(--color-sky), var(--color-teal))',

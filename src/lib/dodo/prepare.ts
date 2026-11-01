@@ -1,6 +1,7 @@
 import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { DODO_STORIES, OUTRO_SCENE, outroText } from '@/data/dodo';
+import { DODO_ART_PROMPTS, DODO_ART_STYLE } from '@/data/dodo/art-prompts';
 import type { DodoStory } from '@/data/dodo/types';
 import { agnesImage, agnesReady } from '@/lib/hyper-engine/providers/agnes';
 import { nvidiaImage, nvidiaImageReady } from '@/lib/hyper-engine/providers/nvidia-image';
@@ -16,8 +17,8 @@ import { logEvent, newRequestId } from '@/lib/analytics/log';
  */
 
 export const DODO_BUCKET = 'ziggy-dodo';
-export const ART_STYLE =
-  "Soft dreamy watercolor and gouache children's bedtime picture-book illustration, rounded friendly characters, gentle glowing light, calm cozy atmosphere, delicate textures, wholesome and safe for young children, no text, no letters, no logos.";
+/** The look of every illustration: the vibrant 3D animated-film style of the Princesse Lili visual. */
+export const ART_STYLE = DODO_ART_STYLE;
 
 export type AssetKind = 'image' | 'audio';
 export type AssetKey = { story: string; scene: number; kind: AssetKind; locale: '-' | 'fr' | 'en' };
@@ -68,7 +69,8 @@ async function referenceDataUri(story: DodoStory, origin: string): Promise<strin
 
 async function makeImage(story: DodoStory, scene: number, origin: string): Promise<{ bytes: Uint8Array; type: string; ext: string; provider: string }> {
   const s = story.scenes[scene - 1];
-  const prompt = `${s.prompt}. ${ART_STYLE}`;
+  // The final prompt repeats the characters' exact look so they stay the same in every picture.
+  const prompt = `${DODO_ART_PROMPTS[story.id]?.[scene - 1] ?? s.prompt} ${ART_STYLE}`;
   const reference = await referenceDataUri(story, origin);
   // A fixed seed per story keeps the look consistent from scene to scene.
   const seed = [...story.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % 1_000_000;
