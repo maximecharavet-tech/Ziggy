@@ -399,7 +399,7 @@ export const solarSystem = definePage(
     ];
     for (const [x, y, r] of stars) b.r('star#', softStar(x, y, r, r * 0.55), 'yellow');
     // The Sun.
-    for (let a = -80; a <= 80; a += 16) b.r('sun-ray#', poly([polar(S[0], S[1], 150, a - 6.5), polar(S[0], S[1], 212, a), polar(S[0], S[1], 150, a + 6.5)]), 'orange');
+    for (let a = -64; a <= 64; a += 16) b.r('sun-ray#', poly([polar(S[0], S[1], 150, a - 6.5), polar(S[0], S[1], 212, a), polar(S[0], S[1], 150, a + 6.5)]), 'orange');
     b.r('sun', circle(S[0], S[1], 172), 'yellow');
     b.r('sun-cheek-left', circle(14, 320, 15), 'pink');
     b.r('sun-cheek-right', circle(104, 320, 15), 'pink');
@@ -417,8 +417,8 @@ export const solarSystem = definePage(
     face(b, vx, vy, 26);
     const [ex, ey] = at(315, -6);
     b.r('earth', circle(ex, ey, 34), 'blue');
-    b.r('earth-land#', smooth([[ex - 30, ey - 8], [ex - 20, ey - 26], [ex - 2, ey - 32], [ex - 6, ey - 22], [ex - 22, ey - 10]]), 'green');
-    b.r('earth-land#', smooth([[ex + 14, ey + 26], [ex + 30, ey + 8], [ex + 32, ey + 18], [ex + 22, ey + 28]]), 'green');
+    b.r('earth-land#', smooth([[ex - 25, ey - 12], [ex - 16, ey - 26], [ex - 1, ey - 25], [ex + 2, ey - 15], [ex - 13, ey - 10]]), 'green');
+    b.r('earth-land#', smooth([[ex + 6, ey + 18], [ex + 21, ey + 6], [ex + 25, ey + 18], [ex + 12, ey + 27]]), 'green');
     face(b, ex, ey, 30);
     b.r('earth-moon', circle(ex + 48, ey - 34, 12), 'grey');
     const [rx, ry] = at(360, 22);
@@ -725,12 +725,12 @@ export const hotAirBalloon = definePage(
     b.r('cloud#', cloud(510, 236, 130, 50), 'white');
     b.r('cloud#', cloud(86, 330, 120, 46), 'white');
     b.d('M420 330q10 -10 20 0q10 -10 20 0M150 210q8 -8 16 0q8 -8 16 0', undefined, 3.5);
-    b.r('hill-back', hill(0, 500, [150, 420], 340, 510, 600), 'green');
-    b.r('hill-back-2', hill(250, 520, [470, 420], 600, 470, 600), 'mint');
+    b.r('hill-back-2', hill(150, 560, [470, 400], 600, 460, 600), 'mint');
+    b.r('hill-back', hill(0, 480, [130, 420], 600, 590, 600), 'green');
     b.r('hill', hill(0, 560, [300, 520], 600, 556, 600), 'lime');
-    for (const x of [74, 520]) {
-      b.r('tree-trunk#', rect(x - 7, 470, 14, 44, 4), 'brown');
-      b.r('tree#', ellipse(x, 456, 30, 36), 'forest');
+    for (const [x, y] of [[70, 452], [530, 444]] as P[]) {
+      b.r('tree-trunk#', rect(x - 10, y + 10, 20, 62, 5), 'brown');
+      b.r('tree#', ellipse(x, y, 34, 40), 'forest');
     }
     tufts(b, [[60, 590], [250, 580], [420, 594], [560, 584]], 9);
 
@@ -753,19 +753,19 @@ export const hotAirBalloon = definePage(
     b.r('skirt', poly([[250, 326], [350, 326], [334, 356], [266, 356]]), 'purple');
     b.d('M268 356L242 420M332 356L358 420', undefined, 3.5);
     // Ziggy waves from the basket.
-    b.r('ziggy', circle(300, 408, 30), 'green');
-    b.deco('M286 384L276 370M314 384L324 370', undefined, 4);
-    b.deco(circle(275, 368, 5.5) + circle(325, 368, 5.5), 'ink');
-    inkEye(b, 290, 404, 5);
-    inkEye(b, 310, 404, 5);
-    b.d(smile(300, 416, 14, 5), undefined, 3);
+    b.r('ziggy', circle(300, 398, 30), 'green');
+    b.deco('M288 372L280 362M312 372L320 362', undefined, 4);
+    b.deco(circle(279, 360, 5.5) + circle(321, 360, 5.5), 'ink');
+    inkEye(b, 290, 392, 5);
+    inkEye(b, 310, 392, 5);
+    b.d(smile(300, 404, 14, 5), undefined, 3);
     b.r('basket', rect(242, 424, 116, 62, 10), 'caramel');
     b.deco('M242 446H358M242 466H358M280 424V486M320 424V486', undefined, 3);
     b.r('basket-rim', rect(232, 414, 136, 20, 10), 'brown');
     // Another balloon, far away.
     b.r('far-balloon', smooth([[470, 330], [500, 344], [500, 380], [478, 404], [462, 404], [440, 380], [440, 344]], true, 0.9), 'purple');
     b.d('M462 404L464 420M478 404L476 420', undefined, 2.5);
-    b.r('far-basket', rect(458, 418, 24, 16, 4), 'caramel');
+    b.r('far-basket', rect(454, 418, 32, 22, 5), 'caramel');
   }
 );
 
@@ -875,7 +875,7 @@ export const ziggyBaker = definePage(
       {
         chef: true,
         armLeft: [176, 432],
-        armRight: [470, 290],
+        armRight: [448, 262],
         hold: (bb, [hx, hy], deg) => {
           // A wooden spoon held up in the mitten (fingers direction = ux, uy).
           const ux = Math.sin((deg * Math.PI) / 180);
