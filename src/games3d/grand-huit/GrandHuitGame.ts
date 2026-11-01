@@ -148,7 +148,9 @@ export class GrandHuitGame {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
     this.renderer.toneMappingExposure = 1.0;
     if (this.lowPower) this.renderer.shadowMap.type = THREE.PCFShadowMap;
-    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.42, radius: 0.45, threshold: 1.0 });
+    // No bloom, even on capable devices: the sunset sky sits close to white, so the glow (and the
+    // post pass's tone mapping of the sky) laid a pale veil over the whole fair. The bulbs have their own halos.
+    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: false });
 
     this.sky = makeSky();
     this.wheel = makeFerrisWheel();
@@ -237,6 +239,8 @@ export class GrandHuitGame {
     this.post.setSize(w, h);
     this.camera.aspect = w / h;
     this.camera.fov = w < h ? 58 : 46;
+    // On a phone held upright, Ziggy's cart a little bigger again (the line is seen from further away).
+    this.cart.group.scale.setScalar(w / h < 0.8 ? CART_SCALE * 1.14 : CART_SCALE);
     this.applyShift(true);
     this.framedAt = -1;
   }
@@ -871,7 +875,7 @@ export class GrandHuitGame {
     const ride = this.ride;
     const forward = !ride || ride.target >= valueAfter(ride.start, ride.preset);
     // A little more from the side than straight down the line: the numbers keep a similar size and we see Ziggy's face.
-    if (a < 0.8) return { yaw: forward ? -0.78 : 0.78, pitch: 0.46 };
+    if (a < 0.8) return { yaw: forward ? -0.84 : 0.84, pitch: 0.46 };
     if (a < 1.25) return { yaw: 0.6, pitch: 0.46 };
     return { yaw: 0.36, pitch: 0.42 };
   }
@@ -880,6 +884,11 @@ export class GrandHuitGame {
   private stationPts(v: number, pts: THREE.Vector3[]) {
     const x = this.layout.x(v);
     pts.push(new THREE.Vector3(x - 0.55, 0.15, 1.1), new THREE.Vector3(x + 0.55, Y0 + 1.95, 0));
+    // The number badge's own width, across the screen (seen from the side in portrait, the line runs into the depth).
+    const { yaw } = this.view();
+    const at = this.line ? this.line.labelPos(v) : new THREE.Vector3(x, Y0 - 0.82, 0.78);
+    const across = new THREE.Vector3(Math.cos(yaw), 0, -Math.sin(yaw)).multiplyScalar(0.6);
+    pts.push(at.clone().add(across), at.clone().sub(across));
   }
 
   /** The cart and Ziggy, with a margin. */
@@ -917,7 +926,7 @@ export class GrandHuitGame {
     if (ride.kind === 'compare') for (const op of ride.palette) this.stationPts(applyOp(ride.start, op), pts);
     this.minWidth(pts, portrait ? 5 : 8);
     const { yaw, pitch } = this.view();
-    this.fitPoints(pts, yaw, pitch, portrait ? 11 : 8);
+    this.fitPoints(pts, yaw, pitch, portrait ? 9.5 : 8);
   }
 
   /** During the ride: frame the piece being ridden (the camera glides from piece to piece). */

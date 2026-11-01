@@ -64,6 +64,7 @@ const T = {
   ride: { fr: 'Trajet', en: 'Ride' },
   rails: { fr: 'Rails', en: 'Rails' },
   lap: { fr: 'Tour d’honneur sur la grande roue !', en: 'A victory lap on the Ferris wheel!' },
+  wheel: { fr: 'Tout là-haut !', en: 'Way up high!' },
   done: { fr: 'Quelle fête foraine !', en: 'What a fair!' },
   doneSub: { fr: 'Cinq trajets pile à la gare !', en: 'Five rides right on the station!' },
   again: { fr: 'Rejouer', en: 'Play again' },
@@ -595,11 +596,18 @@ export function GrandHuitPlayer() {
                 </motion.div>
               ) : null}
 
-              {phase === 'play' && status !== 'build' ? (
-                <div className="mx-auto flex w-fit items-center gap-3 rounded-full bg-white/92 px-4 py-2 font-display text-lg font-bold shadow-lg ring-1 ring-white">
-                  <span aria-hidden="true">{status === 'splash' ? '💦' : status === 'missed' ? '🌀' : '🎢'}</span>
-                  <span>{status === 'splash' ? tr(T.splash, locale) : status === 'missed' ? tr(T.boing, locale) : tr(T.riding, locale)}</span>
-                  {current !== null && status === 'riding' ? (
+              {(phase === 'play' && status !== 'build') || phase === 'lap' ? (
+                // While the cart rides, the remote's focus rests here (OK does nothing), never on a 🔊 or the back button.
+                <div
+                  tabIndex={-1}
+                  data-tv-focusable=""
+                  data-tv-autofocus=""
+                  role="status"
+                  className="mx-auto flex w-fit items-center gap-3 rounded-full bg-white/92 px-4 py-2 font-display text-lg font-bold shadow-lg ring-1 ring-white outline-none focus-visible:ring-4 focus-visible:ring-[#ffcc33]"
+                >
+                  <span aria-hidden="true">{phase === 'lap' ? '🎡' : status === 'splash' ? '💦' : status === 'missed' ? '🌀' : '🎢'}</span>
+                  <span>{phase === 'lap' ? tr(T.wheel, locale) : status === 'splash' ? tr(T.splash, locale) : status === 'missed' ? tr(T.boing, locale) : tr(T.riding, locale)}</span>
+                  {current !== null && status === 'riding' && phase === 'play' ? (
                     <span className="grid min-w-10 place-items-center rounded-full bg-[#5b6fd8] px-2 py-0.5 text-white" aria-live="polite">
                       {current}
                     </span>

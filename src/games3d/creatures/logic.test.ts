@@ -1,6 +1,11 @@
 import { describe, expect, it } from 'vitest';
 import {
   ALBUM_MAX,
+  BAND_CATEGORIES,
+  DRAWER_SIZE,
+  drawerFor,
+  drawerPage,
+  pageWith,
   CATEGORIES,
   CHALLENGES,
   COLOR_IDS,
@@ -248,5 +253,67 @@ describe('The album (La Parade)', () => {
     expect(fixed[0].thumb).toBeUndefined();
     // Entries without an id are dropped, duplicates too.
     expect(parseAlbum('[{"legs":2},{"id":"a"},{"id":"a"}]')).toHaveLength(1);
+  });
+});
+
+describe('What each age sees', () => {
+  it('6 tabs for little ones, more later, every tab with a drawer', () => {
+    expect(BAND_CATEGORIES.little).toHaveLength(6);
+    expect(BAND_CATEGORIES.middle.length).toBe(10);
+    expect(BAND_CATEGORIES.big.length).toBeGreaterThan(10);
+    for (const b of BANDS)
+      for (const cat of BAND_CATEGORIES[b]) {
+        const d = drawerFor(cat, b);
+        expect(d.options.length + (d.stepper ? 1 : 0)).toBeGreaterThan(0);
+      }
+  });
+
+  it('never more tiles than the drawer size, and every option reachable by paging', () => {
+    for (const b of BANDS)
+      for (const cat of BAND_CATEGORIES[b]) {
+        const { options, stepper } = drawerFor(cat, b);
+        const size = DRAWER_SIZE[b] - (stepper ? 2 : 0);
+        const first = drawerPage(options, 0, size);
+        const seen = new Set<string>();
+        for (let p = 0; p < first.pages; p++) {
+          const pg = drawerPage(options, p, size);
+          expect(pg.items.length + (pg.more ? 1 : 0)).toBeLessThanOrEqual(size);
+          for (const o of pg.items) seen.add(o.key);
+        }
+        expect(seen.size).toBe(options.length);
+        // The drawer opens on the page of the current choice.
+        for (const o of options) {
+          const c = o.apply(STARTER);
+          expect(drawerPage(options, pageWith(options, c, size), size).items.map((x) => x.key)).toContain(o.key);
+        }
+      }
+  });
+
+  it('little ones see at most 4 pictures at once (+ “more”)', () => {
+    for (const cat of BAND_CATEGORIES.little) {
+      const pg = drawerPage(drawerFor(cat, 'little').options, 0, DRAWER_SIZE.little);
+      expect(pg.items.length).toBeLessThanOrEqual(4);
+    }
+  });
+
+  it('every challenge can be built with what its age can see', () => {
+    for (const ch of CHALLENGES) {
+      const sol = solveChallenge(ch)!;
+      const band = ch.band;
+      const reach = (field: string, value: unknown) =>
+        BAND_CATEGORIES[band].some((cat) => {
+          const d = drawerFor(cat, band);
+          if (d.stepper && d.stepper.field === field) return typeof value === 'number' && value >= d.stepper.min && value <= d.stepper.max;
+          return d.options.some((o) => (o.apply(STARTER) as unknown as Record<string, unknown>)[field] === value);
+        });
+      for (const r of ch.reqs) {
+        const fields: string[] = { legs: ['legs'], arms: ['arms'], eyes: ['eyes'], wings: ['wings'], wingsIs: ['wings'], tail: ['tail'], top: ['top'], hat: ['hat'], hatIs: ['hat'], mouth: ['mouth'], pattern: ['pattern'], color: ['color'], legStyle: ['legStyle', 'legs'], limbs: ['legs', 'arms'], sumAll: ['legs', 'arms', 'eyes'], eyesEqLegs: ['eyes', 'legs'], oddLegs: ['legs'] }[r.k];
+        for (const f of fields) {
+          const v = (sol as unknown as Record<string, unknown>)[f];
+          if (v === (STARTER as unknown as Record<string, unknown>)[f] && !['legs', 'eyes', 'arms'].includes(f)) continue;
+          expect(reach(f, v), `${ch.id}: ${f}=${String(v)} in ${band}`).toBe(true);
+        }
+      }
+    }
   });
 });

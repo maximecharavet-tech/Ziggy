@@ -1403,17 +1403,17 @@ export class KartGame {
     const along = this.camPos.dot(f.t);
     const side = this.camPos.dot(f.side);
     const flat = Math.hypot(along, side);
-    const minD = portrait ? 6.5 : 5.5;
-    let look = this.camLook;
+    const minD = portrait ? 7.5 : 6.5;
+    let aim = this.camLook;
     if (this.camMode !== 'podium' && flat < minD) {
       const want = Math.sqrt(minD * minD - along * along);
       this.camPos.addScaledVector(f.side, (side >= 0 ? 1 : -1) * Math.max(0, want - Math.abs(side)));
-      look = this.camLook.clone().lerp(f.up.clone().multiplyScalar(1.2), Math.min(1, 1 - flat / minD + 0.3));
+      aim = this.camLook.clone().lerp(f.up.clone().multiplyScalar(1.2), Math.min(1, (portrait ? 2 : 1.6) - flat / minD));
     }
     cam.position.copy(kp).add(this.camPos);
     // A gentle shake when landing a jump or in a turbo.
     if (this.boostT > 0 && !this.paused) cam.position.addScaledVector(f.up, Math.sin(t * 40) * 0.03 * M);
-    cam.lookAt(kp.clone().add(look));
+    cam.lookAt(kp.clone().add(aim));
     this.fovKick *= Math.exp(-dt * 1.5);
     const fov = (portrait ? 74 : 58) + this.fovKick;
     if (Math.abs(cam.fov - fov) > 0.05) {

@@ -145,7 +145,8 @@ export class DetectiveGame {
   private village: Village;
   private sky = makeSky();
   private clouds = makeClouds();
-  private hemi = new THREE.HemisphereLight('#dff1ff', '#8fbf6a', 1.25);
+  // Two lights only (sky + sun): a brighter, slightly warm sky does the old front fill's job.
+  private hemi = new THREE.HemisphereLight('#fff1dc', '#8fbf6a', 1.55);
   private sun = new THREE.DirectionalLight('#fff0d0', 2.3);
   private butterflies: ReturnType<typeof makeButterfly>[] = [];
   private droplets: THREE.Points;
@@ -247,10 +248,6 @@ export class DetectiveGame {
     this.sun.shadow.bias = -0.0006;
     this.sun.shadow.normalBias = 0.03;
     s.add(this.sun);
-    // A warm fill from the front so faces glow.
-    const fill = new THREE.DirectionalLight('#ffe3c0', 0.55);
-    fill.position.set(4, 6, 14);
-    s.add(fill);
 
     s.add(this.village.group);
     mergeStatic(this.village.group, true);

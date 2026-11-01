@@ -113,7 +113,7 @@ export const STARTER: Creature = {
 
 /* ───────────────────────── Categories (the HUD tabs) ───────────────────────── */
 
-export type CategoryId = 'color' | 'body' | 'head' | 'eyes' | 'mouth' | 'legs' | 'arms' | 'wings' | 'tail' | 'top' | 'hat' | 'pattern' | 'size';
+export type CategoryId = 'color' | 'accent' | 'wingtail' | 'body' | 'head' | 'eyes' | 'mouth' | 'legs' | 'arms' | 'wings' | 'tail' | 'top' | 'hat' | 'pattern' | 'size';
 
 export interface Category {
   id: CategoryId;
@@ -122,7 +122,9 @@ export interface Category {
 }
 
 export const CATEGORIES: Category[] = [
-  { id: 'color', icon: '🎨', label: { fr: 'Couleurs', en: 'Colours' } },
+  { id: 'color', icon: '🎨', label: { fr: 'Couleur', en: 'Colour' } },
+  { id: 'accent', icon: '🖌️', label: { fr: 'Détails', en: 'Details' } },
+  { id: 'wingtail', icon: '🦋', label: { fr: 'Ailes et queue', en: 'Wings and tail' } },
   { id: 'body', icon: '🥚', label: { fr: 'Corps', en: 'Body' } },
   { id: 'head', icon: '🙂', label: { fr: 'Tête', en: 'Head' } },
   { id: 'eyes', icon: '👀', label: { fr: 'Yeux', en: 'Eyes' } },
@@ -168,9 +170,20 @@ const armWord = (n: number): L => ({ fr: n === 0 ? 'Pas de bras !' : `${n} bras 
 const eyeWord = (n: number): L => ({ fr: n === 1 ? 'Un seul œil !' : `${n} yeux !`, en: n === 1 ? 'Just one eye!' : `${n} eyes!` });
 
 export const OPTIONS: Record<CategoryId, PartOption[]> = {
-  color: [
-    ...COLOR_IDS.map((id) => opt('color', id, '●', COLORS[id].label, { fr: `Tout ${COLORS[id].label.fr} !`, en: `All ${COLORS[id].label.en}!` })),
-    ...COLOR_IDS.map((id) => opt('accent', id, '◆', COLORS[id].label, { fr: `Des détails ${detailFr(id)} !`, en: `${cap(COLORS[id].label.en)} details!` }, 1)),
+  color: COLOR_IDS.map((id) => opt('color', id, '●', COLORS[id].label, { fr: `Tout ${COLORS[id].label.fr} !`, en: `All ${COLORS[id].label.en}!` })),
+  accent: COLOR_IDS.map((id) => opt('accent', id, '◆', COLORS[id].label, { fr: `Des détails ${detailFr(id)} !`, en: `${cap(COLORS[id].label.en)} details!` })),
+  wingtail: [
+    {
+      key: 'wingtail:none',
+      icon: '✖',
+      label: NONE,
+      say: { fr: 'Ni ailes ni queue !', en: 'No wings, no tail!' },
+      apply: (c) => ({ ...c, wings: 'none', tail: 'none' }),
+      selected: (c) => c.wings === 'none' && c.tail === 'none',
+    },
+    { ...opt('wings', 'bird', '🐦', { fr: 'Oiseau', en: 'Bird' }, { fr: 'Des ailes d’oiseau : elle va voler !', en: 'Bird wings: it can fly!' }), key: 'wingtail:bird' },
+    { ...opt('wings', 'butterfly', '🦋', { fr: 'Papillon', en: 'Butterfly' }, { fr: 'Des ailes de papillon !', en: 'Butterfly wings!' }), key: 'wingtail:butterfly' },
+    { ...opt('tail', 'fish', '🐟', { fr: 'Nageoire', en: 'Fin' }, { fr: 'Une queue de poisson : elle va nager !', en: 'A fish tail: it can swim!' }), key: 'wingtail:fish' },
   ],
   body: [
     opt('body', 'blob', 'blob', { fr: 'Boule', en: 'Ball' }, { fr: 'Un corps tout rond !', en: 'A round body!' }),
@@ -267,9 +280,70 @@ export function categoryOf(key: LookKey): CategoryId {
   if (key === 'legStyle') return 'legs';
   if (key === 'armStyle') return 'arms';
   if (key === 'eyeSize') return 'eyes';
-  if (key === 'accent') return 'color';
   return key;
 }
+
+/* ───────────────────────── What each age sees ───────────────────────── */
+
+/**
+ * Depth is revealed with age, never "unlocked": little ones see 6 tabs with a few
+ * big pictures, older kids more tabs, more choices and exact counters.
+ */
+export const BAND_CATEGORIES: Record<Band, CategoryId[]> = {
+  little: ['color', 'eyes', 'legs', 'wingtail', 'hat', 'mouth'],
+  middle: ['color', 'body', 'eyes', 'mouth', 'legs', 'arms', 'wings', 'tail', 'top', 'hat'],
+  big: ['color', 'accent', 'body', 'head', 'eyes', 'mouth', 'legs', 'arms', 'wings', 'tail', 'top', 'hat', 'pattern', 'size'],
+};
+
+/** "− 6 +" for the exact number of legs or eyes. */
+export interface Stepper {
+  field: 'legs' | 'eyes';
+  min: number;
+  max: number;
+  icon: string;
+}
+
+export interface Drawer {
+  stepper?: Stepper;
+  options: PartOption[];
+}
+
+const keep = (cat: CategoryId, keys: string[]) => keys.map((k) => OPTIONS[cat].find((o) => o.key === k)!);
+
+/** The options shown for a tab at an age (a few at a time; see `drawerPage`). */
+export function drawerFor(cat: CategoryId, band: Band): Drawer {
+  if (band === 'little') {
+    if (cat === 'color') return { options: keep('color', ['color:red', 'color:yellow', 'color:blue', 'color:green', 'color:pink', 'color:purple', 'color:orange', 'color:teal']) };
+    if (cat === 'eyes') return { options: keep('eyes', ['eyes:1', 'eyes:2', 'eyes:3', 'eyes:4']) };
+    if (cat === 'legs') return { options: keep('legs', ['legs:0', 'legs:1', 'legs:2', 'legs:4', 'legs:6', 'legs:8']) };
+    if (cat === 'hat') return { options: keep('hat', ['hat:none', 'hat:top', 'hat:crown', 'hat:propeller', 'hat:party', 'hat:bow']) };
+    if (cat === 'mouth') return { options: keep('mouth', ['mouth:smile', 'mouth:tongue', 'mouth:fangs', 'mouth:beak', 'mouth:oh', 'mouth:teeth']) };
+    return { options: OPTIONS[cat] };
+  }
+  if (cat === 'legs') return { stepper: { field: 'legs', min: 0, max: 8, icon: '🦵' }, options: OPTIONS.legs.filter((o) => o.group === 1) };
+  if (cat === 'eyes' && band === 'big') return { stepper: { field: 'eyes', min: 1, max: 5, icon: '👁️' }, options: OPTIONS.eyes.filter((o) => o.group === 1) };
+  if (cat === 'eyes') return { options: OPTIONS.eyes.filter((o) => o.group !== 1) };
+  return { options: OPTIONS[cat] };
+}
+
+/** At most `size` tiles: when more remain, the last tile becomes "↻ more" (pages loop). */
+export function drawerPage<T>(options: T[], page: number, size: number): { items: T[]; more: boolean; pages: number } {
+  if (options.length <= size) return { items: options, more: false, pages: 1 };
+  const per = size - 1;
+  const pages = Math.ceil(options.length / per);
+  const p = ((page % pages) + pages) % pages;
+  return { items: options.slice(p * per, p * per + per), more: true, pages };
+}
+
+/** The page where the current choice is (so the drawer opens on it). */
+export function pageWith(options: PartOption[], c: Creature, size: number): number {
+  if (options.length <= size) return 0;
+  const i = options.findIndex((o) => o.selected(c));
+  return i < 0 ? 0 : Math.floor(i / (size - 1));
+}
+
+/** Tiles per drawer: 4 big pictures for little ones (+ "more"), up to 6 later. */
+export const DRAWER_SIZE: Record<Band, number> = { little: 5, middle: 6, big: 6 };
 
 /* ───────────────────────── Validation & storage ───────────────────────── */
 
@@ -440,6 +514,8 @@ export type Req =
   | { k: 'tail'; is: TailKind }
   | { k: 'top'; is: TopKind }
   | { k: 'hat' }
+  | { k: 'hatIs'; is: HatKind }
+  | { k: 'mouth'; is: MouthKind }
   | { k: 'pattern'; is: PatternKind }
   | { k: 'color'; is: ColorId }
   | { k: 'legStyle'; is: LegStyle }
@@ -464,8 +540,9 @@ export const CHALLENGES: Challenge[] = [
   { id: 'legs4', band: 'little', skill: 'counting', icon: '🐱', text: { fr: 'Une créature avec 4 pattes, comme un chat !', en: 'A creature with 4 legs, like a cat!' }, reqs: [{ k: 'legs', n: 4 }] },
   { id: 'cyclops', band: 'little', skill: 'counting', icon: '🎩', text: { fr: 'Un monstre rigolo avec 1 seul œil et un chapeau !', en: 'A funny monster with just 1 eye and a hat!' }, reqs: [{ k: 'eyes', n: 1 }, { k: 'hat' }] },
   { id: 'swim', band: 'little', skill: 'vocabulary', icon: '🐟', text: { fr: 'Une créature qui nage : donne-lui une queue de poisson !', en: 'A creature that swims: give it a fish tail!' }, reqs: [{ k: 'tail', is: 'fish' }] },
-  { id: 'yellowDots', band: 'little', skill: 'colors', icon: '🟡', text: { fr: 'Une créature jaune à pois !', en: 'A yellow creature with dots!' }, reqs: [{ k: 'color', is: 'yellow' }, { k: 'pattern', is: 'dots' }] },
-  { id: 'pinkBunny', band: 'little', skill: 'colors', icon: '🐰', text: { fr: 'Une créature rose avec des oreilles de lapin !', en: 'A pink creature with bunny ears!' }, reqs: [{ k: 'color', is: 'pink' }, { k: 'top', is: 'bunny' }] },
+  { id: 'yellowCrown', band: 'little', skill: 'colors', icon: '👑', text: { fr: 'Une créature jaune avec une couronne !', en: 'A yellow creature with a crown!' }, reqs: [{ k: 'color', is: 'yellow' }, { k: 'hatIs', is: 'crown' }] },
+  { id: 'pinkTongue', band: 'little', skill: 'colors', icon: '😛', text: { fr: 'Une créature rose qui tire la langue !', en: 'A pink creature sticking its tongue out!' }, reqs: [{ k: 'color', is: 'pink' }, { k: 'mouth', is: 'tongue' }] },
+  { id: 'bluePogo', band: 'little', skill: 'counting', icon: '🦘', text: { fr: 'Une créature bleue avec 1 seule patte, boing !', en: 'A blue creature with just 1 leg, boing!' }, reqs: [{ k: 'color', is: 'blue' }, { k: 'legs', n: 1 }] },
   // Middle (6-8): two or three parts, bigger numbers, new words.
   { id: 'flySwim', band: 'middle', skill: 'vocabulary', icon: '🐟', text: { fr: 'Fabrique une créature qui peut voler ET nager !', en: 'Make a creature that can fly AND swim!' }, reqs: [{ k: 'wings' }, { k: 'tail', is: 'fish' }] },
   { id: 'insect', band: 'middle', skill: 'counting', icon: '🐜', text: { fr: 'Une créature avec 6 pattes, comme un insecte, et des antennes !', en: 'A creature with 6 legs, like an insect, and antennae!' }, reqs: [{ k: 'legs', n: 6 }, { k: 'top', is: 'antennae' }] },
@@ -500,6 +577,10 @@ export function reqMet(r: Req, c: Creature): boolean {
       return c.top === r.is;
     case 'hat':
       return c.hat !== 'none';
+    case 'hatIs':
+      return c.hat === r.is;
+    case 'mouth':
+      return c.mouth === r.is;
     case 'pattern':
       return c.pattern === r.is;
     case 'color':
@@ -532,6 +613,8 @@ export function solveChallenge(ch: Challenge): Creature | null {
     if (r.k === 'tail') base = { ...base, tail: r.is };
     if (r.k === 'top') base = { ...base, top: r.is };
     if (r.k === 'hat') base = { ...base, hat: 'top' };
+    if (r.k === 'hatIs') base = { ...base, hat: r.is };
+    if (r.k === 'mouth') base = { ...base, mouth: r.is };
     if (r.k === 'pattern') base = { ...base, pattern: r.is };
     if (r.k === 'color') base = { ...base, color: r.is };
     if (r.k === 'legStyle') base = { ...base, legStyle: r.is };
@@ -564,6 +647,10 @@ export function reqChip(r: Req, c: Creature): { icon: string; n?: string; have?:
       return { icon: OPTIONS.top.find((o) => o.key === `top:${r.is}`)!.icon };
     case 'hat':
       return { icon: '🎩' };
+    case 'hatIs':
+      return { icon: OPTIONS.hat.find((o) => o.key === `hat:${r.is}`)!.icon };
+    case 'mouth':
+      return { icon: OPTIONS.mouth.find((o) => o.key === `mouth:${r.is}`)!.icon };
     case 'pattern':
       return { icon: r.is === 'dots' ? '⚬' : r.is === 'stripes' ? '〰️' : r.is === 'stars' ? '⭐' : '◯' };
     case 'color':
@@ -603,7 +690,10 @@ export function reqCategory(r: Req): CategoryId {
     case 'top':
       return 'top';
     case 'hat':
+    case 'hatIs':
       return 'hat';
+    case 'mouth':
+      return 'mouth';
     case 'pattern':
       return 'pattern';
     case 'color':
@@ -660,6 +750,10 @@ export function hintFor(ch: Challenge, c: Creature, locale: string): string {
       return fr ? `Regarde sur sa tête : il faut « ${label('top', `top:${r.is}`)} ».` : `Look on its head: it needs “${label('top', `top:${r.is}`)}”.`;
     case 'hat':
       return fr ? 'Il lui manque un chapeau !' : 'It still needs a hat!';
+    case 'hatIs':
+      return fr ? `Il faut le chapeau « ${label('hat', `hat:${r.is}`)} ».` : `It needs the “${label('hat', `hat:${r.is}`)}” hat.`;
+    case 'mouth':
+      return fr ? `Regarde sa bouche : il faut « ${label('mouth', `mouth:${r.is}`)} ».` : `Look at its mouth: it needs “${label('mouth', `mouth:${r.is}`)}”.`;
     case 'pattern':
       return fr ? `Il faut le motif « ${label('pattern', `pattern:${r.is}`)} ».` : `It needs the “${label('pattern', `pattern:${r.is}`)}” pattern.`;
     case 'color':

@@ -584,7 +584,8 @@ export class PlanetesGame {
         this.target = null;
         this.hover = true;
         this.rocketAt.copy(this.rocket.root.position);
-        for (const id of BODIES) this.halos.get(id)!.visible = d.candidates.includes(id) && !this.tried.includes(id);
+        // The planets already tried lose their halo and their name tag (the tags overlapped in portrait).
+        for (const id of BODIES) this.halos.get(id)!.visible = this.tags.get(id)!.visible = d.candidates.includes(id) && !this.tried.includes(id);
         this.overview();
         this.emit();
       },
@@ -1349,7 +1350,7 @@ export class PlanetesGame {
         if (halo.visible) {
           halo.position.copy(p.group.position);
           const big = reveal && d?.answer === id;
-          halo.scale.setScalar(Math.max(1.3, r * 3.1) * (1 + Math.sin(t * (big ? 6 : 3) + r) * (big ? 0.14 : 0.06) * motion) * (big ? 1.25 : 1));
+          halo.scale.setScalar(Math.max(big ? 2.2 : 1.3, r * 3.1) * (1 + Math.sin(t * (big ? 6 : 3) + r) * (big ? 0.14 : 0.06) * motion) * (big ? 1.25 : 1));
           (halo.material as THREE.SpriteMaterial).color.set(big ? '#fff07a' : '#ffe8a0');
           (halo.material as THREE.SpriteMaterial).opacity = big ? 1 : 0.75;
           if (big && Math.random() < dt * 6) this.sparkles.emit(p.group.position.clone().addScaledVector(camUp, r), { color: '#fff07a', count: 1, spread: r * 2, up: 0.4, life: 0.8, size: 0.35, additive: true });
