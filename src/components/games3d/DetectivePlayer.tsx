@@ -309,7 +309,8 @@ export function DetectivePlayer() {
             const outcome = finishExtraGame('detective', c.skill, { correct: stats.current.correct, mistakes: stats.current.mistakes, total: caseTotal(c) }, performance.now() - stats.current.started);
             const face = live.current.portraits[c.culprit];
             setSolved((prev) => [...prev.filter((x) => x.c.index !== c.index), { c, outcome, face }]);
-            setMagic((prev) => [...prev, ...outcome.magic]);
+            // A moment already won in this game (the same level twice) is shown once.
+            setMagic((prev) => [...prev, ...outcome.magic.filter((m) => !prev.some((x) => x.kind === m.kind && x.ref === m.ref))]);
             setXp({ n: outcome.xpGained, id: Date.now() });
             setStage('party');
             const text = tr(MYSTERY_INFO[c.mystery].party, locale);

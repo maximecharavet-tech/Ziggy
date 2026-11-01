@@ -13,8 +13,8 @@ import { makeSky, mergeStatic } from './fx';
 export const SPOT = {
   /** Where the creature stands (top of the turntable). */
   stage: new THREE.Vector3(0, 0.16, 0),
-  ziggy: new THREE.Vector3(1.75, 0.02, 0.45),
-  ziggyPortrait: new THREE.Vector3(1.32, 0.02, 0.62),
+  ziggy: new THREE.Vector3(1.95, 0.02, 0.1),
+  ziggyPortrait: new THREE.Vector3(1.1, 0.02, -0.95),
   lever: new THREE.Vector3(2.55, 0, -1.55),
   tubeMouth: new THREE.Vector3(0, 3.05, -0.55),
   pond: new THREE.Vector3(5.6, 0, 1.4),

@@ -117,7 +117,7 @@ export class CreaturesGame {
   private shake = 0;
   private steamT = 0;
   private bubbleT = 0;
-  private zig = { pos: V(), yaw: -0.75, target: null as THREE.Vector3 | null, home: V(), costume: null as THREE.Object3D[] | null, costumeKit: null as Kit | null, imitate: 0 };
+  private zig = { pos: V(), yaw: -0.75, target: null as THREE.Vector3 | null, home: V(), costume: null as THREE.Object3D[] | null, costumeKit: null as Kit | null, imitate: 0, showOff: 0 };
   private parade: { actors: CreatureActor[]; ids: string[]; t: number; selected: number } | null = null;
   /** Test hook only (automated playthrough on slow software GL). */
   timeScale = 1;
@@ -233,13 +233,14 @@ export class CreaturesGame {
 
   private frameFor(mode: Mode) {
     const a = this.actor;
-    const ht = Math.max(1.5, (a?.height ?? 1.6) + 0.15);
+    const ht = Math.max(1.4, (a?.height ?? 1.6) + 0.15);
+    const halfH = Math.max(1.0, ht * 0.58);
+    const hw = (a?.halfWidth ?? 0.6) + 0.55;
     if (mode === 'atelier') {
-      const zx = this.zig.home.x;
-      const halfH = Math.max(1.15, ht * 0.62);
-      this.want = { c: V(zx * 0.42, halfH * 0.86, 0.25), w: this.portrait ? zx * 0.5 + 0.95 + (a?.halfWidth ?? 0.6) * 0.5 : 2.6, h: halfH };
-    } else if (mode === 'alive') this.want = { c: V(2.7, 1.55, 0.9), w: 4.6, h: 2.3 };
-    else this.want = { c: V(0.55, 1.05, 0.6), w: 3.5, h: 1.5 };
+      if (this.portrait) this.want = { c: V(0.38, halfH * 0.95, 0.0), w: Math.max(1.62, hw + 0.35), h: halfH * 1.1 };
+      else this.want = { c: V(0.8, halfH * 0.95, 0.1), w: Math.max(3.0, hw + 1.6), h: Math.max(1.4, halfH * 1.2) };
+    } else if (mode === 'alive') this.want = this.portrait ? { c: V(2.5, 1.9, 1.0), w: 2.6, h: 2.0 } : { c: V(2.7, 1.55, 0.9), w: 4.6, h: 2.3 };
+    else this.want = this.portrait ? { c: V(0.15, 1.15, 0.35), w: 2.2, h: 1.4 } : { c: V(0.15, 1.15, 0.35), w: 3.3, h: 1.5 };
   }
 
   private updateCamera(dt: number, t: number) {
@@ -254,7 +255,7 @@ export class CreaturesGame {
     const safeH = Math.max(0.4, (this.size.w - this.insets.left - this.insets.right) / this.size.w);
     const tv = Math.tan(vf) * safeV;
     const th = Math.tan(vf) * this.camera.aspect * safeH;
-    const dist = Math.max(f.h / tv, f.w / th) + 1.2;
+    const dist = Math.max(2.4, f.h / tv, f.w / th);
     const pitch = 0.16;
     const yaw = this.camYaw + (this.reduce ? 0 : Math.sin(t * 0.13) * 0.025);
     this.camera.position.set(f.c.x + Math.sin(yaw) * Math.cos(pitch) * dist, f.c.y + Math.sin(pitch) * dist, f.c.z + Math.cos(yaw) * Math.cos(pitch) * dist);
@@ -459,7 +460,7 @@ export class CreaturesGame {
     this.cb.onSay('alive');
     rig.cue('cheer');
     // Ziggy goes to watch in the meadow.
-    this.zig.target = V(2.9, 0.02, 2.6);
+    this.zig.target = V(4.1, 0.02, -0.4);
     const seq: Step[] = [
       {
         dur: 0.8,
@@ -845,6 +846,7 @@ export class CreaturesGame {
     const rig = this.ziggy.userData.rig;
     if (on && this.actor) {
       this.cb.onSay('disguise');
+      this.zig.showOff = 3.2;
       rig.cue('jump');
       this.confetti(this.ziggy.position.clone().add(V(0, 1.2, 0)), 0.6);
       const v = voiceOf(this.actor.recipe);
@@ -924,6 +926,8 @@ export class CreaturesGame {
     });
     this.parade = { actors, ids: pick.map((c) => c.id), t: 0, selected: -1 };
     if (this.actor) this.actor.root.visible = false;
+    // Ziggy leads the parade from the middle of the turntable.
+    this.zig.target = SPOT.stage.clone();
     this.ziggy.userData.rig.idle = 'dance';
     this.setMode('parade');
     this.audio.fanfare();
@@ -954,6 +958,7 @@ export class CreaturesGame {
     }
     this.parade = null;
     if (this.actor) this.actor.root.visible = true;
+    this.zig.target = this.zig.home.clone();
     this.ziggy.userData.rig.idle = 'calm';
     if (this.mode === 'parade') this.setMode('atelier');
   }
@@ -963,16 +968,18 @@ export class CreaturesGame {
     if (!p) return;
     p.t += dt * (this.reduce ? 0.03 : 0.055);
     const n = p.actors.length;
-    const C = V(0.4, 0, 0.55);
+    const C = V(0.1, 0, 0.35);
     p.actors.forEach((a, i) => {
       const k = p.t + i / Math.max(n, 5);
       const ang = k * Math.PI * 2;
-      const pos = V(C.x + Math.cos(ang) * 2.6, 0, C.z + Math.sin(ang) * 1.25);
+      const rx = this.portrait ? 1.75 : 2.6;
+      const rz = this.portrait ? 1.15 : 1.3;
+      const pos = V(C.x + Math.cos(ang) * rx, 0, C.z + Math.sin(ang) * rz);
       const moves = movesOf(a.recipe);
       const fly = moves[0] === 'fly';
       pos.y = this.ground(pos) + (fly ? 0.7 + Math.sin(this.time * 2 + i) * 0.15 : 0);
       a.root.position.copy(pos);
-      const dir = Math.atan2(-Math.sin(ang), Math.cos(ang) * (1.25 / 2.6));
+      const dir = Math.atan2(-Math.sin(ang) * rx, Math.cos(ang) * rz);
       a.root.rotation.y = lerpAngle(a.root.rotation.y, i === p.selected ? 0 : dir, 0.1);
       a.gait.walk = fly ? 0 : moves[0] === 'pogo' ? 0 : 0.8;
       a.gait.pogo = moves[0] === 'pogo' ? 0.8 : 0;
@@ -1266,17 +1273,20 @@ export class CreaturesGame {
         walking = 1;
       }
     } else {
-      // Facing the creature and the child.
+      // Between the creature and the child (and straight at the child when showing off a costume).
       const a = this.actor;
       const at = a && a.root.visible ? a.root.position : SPOT.stage;
-      const want = Math.atan2(at.x - z.pos.x, at.z - z.pos.z) * 0.55 + 0.3 * 0.45;
-      z.yaw = lerpAngle(z.yaw, this.mode === 'parade' ? 0 : want, 0.06);
+      const toCam = Math.atan2(this.camera.position.x - z.pos.x, this.camera.position.z - z.pos.z);
+      const toIt = Math.atan2(at.x - z.pos.x, at.z - z.pos.z);
+      const want = this.mode === 'parade' || z.showOff > 0 ? toCam : lerpAngle(toCam, toIt, 0.55);
+      z.yaw = lerpAngle(z.yaw, want, 0.08);
     }
+    z.showOff = Math.max(0, z.showOff - dt);
     // Imitation: marching on the spot, hopping, flapping.
     if (z.imitate === 1) walking = Math.max(walking, 0.7);
     if ((z.imitate === 2 || z.imitate === 3) && !rig.busy) rig.cue(z.imitate === 2 ? 'jump' : 'cheer');
     rig.walk = walking;
-    this.ziggy.position.set(z.pos.x, 0.02 + (z.pos.z < 2.2 && Math.abs(z.pos.x) < 4.2 ? 0.03 : 0), z.pos.z);
+    this.ziggy.position.set(z.pos.x, this.ground(z.pos) + 0.01, z.pos.z);
     this.ziggy.rotation.y = z.yaw;
     if (this.pointer && t - this.pointerAt > 3) rig.lookAt(-0.3, 0);
     // Costume: wings flap, tail wags.

@@ -847,7 +847,10 @@ export class DinoGame {
     return out;
   }
 
-  /** Portrait: Ziggy stands just in front of the dinosaur's head (so both fill the narrow screen). */
+  /**
+   * Portrait: Ziggy stands just beside the dinosaur's head, on the screen's side of it
+   * (never between the camera and the dinosaur), so both fill the narrow screen.
+   */
   private portraitZiggySpot(d: DinoModel, yaw = d.root.rotation.y): V3 {
     const was = d.root.rotation.y;
     d.root.rotation.y = yaw;
@@ -855,7 +858,18 @@ export class DinoGame {
     const n = d.nose.getWorldPosition(v());
     d.root.rotation.y = was;
     d.root.updateMatrixWorld(true);
-    return v(n.x + 0.5, 0, Math.max(n.z + 1.5, SITE.stand.z + SITE.standD / 2 + 0.7));
+    // The portrait camera's right and "towards the camera" directions, on the ground.
+    const right = v(Math.cos(PORTRAIT_YAW), 0, -Math.sin(PORTRAIT_YAW));
+    const toCam = v(Math.sin(PORTRAIT_YAW), 0, Math.cos(PORTRAIT_YAW));
+    const p = v(n.x, 0, n.z).addScaledVector(right, 1.35).addScaledVector(toCam, 0.9);
+    // On the ground in front of the stand, never inside it (stepping forward, also a bit right so he stays clear of the head).
+    const front = SITE.stand.z + SITE.standD / 2 + 0.6;
+    const onStand = Math.abs(p.x - SITE.stand.x) < SITE.standW / 2 + 0.5;
+    if (onStand && p.z < front) {
+      p.x += (front - p.z) * 0.65;
+      p.z = front;
+    }
+    return p;
   }
 
   private dinoWorldBox(d: DinoModel): THREE.Box3 {
@@ -926,7 +940,7 @@ export class DinoGame {
       this.after(6.2, () => this.startQuiz(), 'cine');
     } else if (round.fun === 'music') {
       const plates = d.rig.parts.plates;
-      this.ziggyGo(v(d.root.position.x + 0.4, 0, SITE.stand.z + SITE.standD / 2 + 0.9), 0);
+      this.ziggyGo(this.camera.aspect < 0.9 ? this.portraitZiggySpot(d) : v(d.root.position.x + 0.4, 0, SITE.stand.z + SITE.standD / 2 + 0.9), 0);
       d.rig.dance = 0.25;
       this.after(1.2, () => (this.plateShow = { i: 0, t: 0 }), 'cine');
       this.after(1.2 + plates.length * 0.3 + 1.6, () => {
@@ -1062,7 +1076,8 @@ export class DinoGame {
 
   private startMuseum() {
     this.setPhase('museum');
-    this.ziggyTeleport(SITE.museum.clone().add(v(0, 0.5, 3.0)), 0);
+    // Between two pedestals, so he never hides a dinosaur.
+    this.ziggyTeleport(SITE.museum.clone().add(v(this.done.length === 2 ? 0 : -3.3, 0.5, 2.6)), 0.15);
     this.setView('museum');
     this.ziggy.userData.rig.idle = 'wave';
     for (const id of this.done) {

@@ -220,16 +220,16 @@ function bodyGeometry(shape: Creature['body'], low: boolean): THREE.BufferGeomet
     case 'box':
       return new RoundedBoxGeometry(1.05, 0.95, 0.95, low ? 3 : 5, 0.24);
     case 'drop': {
+      // A gumdrop: a wide, softly flat bottom and a round narrower top.
       const pts: THREE.Vector2[] = [];
-      for (let i = 0; i <= 24; i++) {
-        const t = i / 24;
-        // A gumdrop: wide, flat-ish bottom and a round narrow top.
-        const y = -0.5 + t * 1.12;
-        const r = 0.66 * Math.pow(Math.sin(Math.min(1, t * 1.06) * Math.PI * 0.5 + 0.0001), 0.5) * (1 - 0.55 * t * t);
-        pts.push(new THREE.Vector2(t === 1 ? 0 : Math.max(0.0001, i === 0 ? 0 : r), y));
+      const n = 28;
+      for (let i = 0; i <= n; i++) {
+        const a = -Math.PI / 2 + (Math.PI * i) / n;
+        const sy = Math.sin(a);
+        const c = Math.max(0, Math.cos(a));
+        const r = i === 0 || i === n ? 0 : 0.66 * Math.pow(c, sy < 0 ? 0.45 : 0.85) * (1 - 0.3 * Math.max(0, sy));
+        pts.push(new THREE.Vector2(r, sy < 0 ? sy * 0.48 : sy * 0.64));
       }
-      pts[0] = new THREE.Vector2(0, -0.5);
-      pts.splice(1, 0, new THREE.Vector2(0.5, -0.5));
       const g = new THREE.LatheGeometry(pts, seg);
       g.computeVertexNormals();
       return g;
@@ -625,13 +625,13 @@ export class CreatureActor {
     const wingsG = new THREE.Group();
     if (c.wings !== 'none') {
       for (const side of [-1, 1]) {
-        const s = surfaceOf(bodyGeo, V(), V(side * 0.55, 0.42, -0.8));
+        const s = surfaceOf(bodyGeo, V(), V(side * 0.72, 0.45, -0.55));
         const pivot = new THREE.Group();
         pivot.position.copy(s.p).addScaledVector(s.n, -0.04);
-        const w = buildWing(c.wings, k, low, shadow, Math.max(0.85, hx * 1.25));
+        const w = buildWing(c.wings, k, low, shadow, Math.max(1.0, hx * 1.5));
         w.scale.x = side;
         pivot.add(w);
-        const base = -side * 0.55;
+        const base = -side * 0.3;
         pivot.rotation.y = base;
         wingsG.add(pivot);
         this.wings.push({ pivot, side, base });

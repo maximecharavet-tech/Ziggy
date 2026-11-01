@@ -371,8 +371,8 @@ export class PizzaGame {
       if (name === 'oven') this.view.r = 1.3;
       // Customer and Ziggy both whole in the frame (Ziggy used to be cut at the edge).
       if (name === 'street') {
-        this.view.c.set(-1.25, 1.95, 1.6);
-        this.view.r = 2.35;
+        this.view.c.set(-1.4, 1.95, 1.65);
+        this.view.r = 2.6;
         this.view.pitch = 0.2;
         this.view.yaw = 0.05;
       }

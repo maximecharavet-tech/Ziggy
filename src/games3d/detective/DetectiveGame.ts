@@ -79,6 +79,8 @@ const ZIGGY_STAGE = new THREE.Vector3(-1.45, 0, 5.3);
 const ZIGGY_MYSTERY = new THREE.Vector3(2.0, 0, -7.0);
 /** Portrait: Ziggy waits in front of the friends, between the left and middle ones (the narrow view can't reach the side). */
 const ZIGGY_HOME_PORTRAIT = new THREE.Vector3(-1.55, 0, 4.3);
+/** During the line-up Ziggy turns three-quarters towards the child (we see his face, not his back). */
+const LINEUP_LOOK = new THREE.Vector3(-1.0, 0, 12);
 
 const lerpAngle = (a: number, b: number, k: number) => {
   let d = b - a;
@@ -495,7 +497,7 @@ export class DetectiveGame {
     this.after(3.4, () => {
       this.closeUp = false;
       this.frameLineup();
-      this.walkZiggy(this.home(), () => (this.zig.face = this.portrait() ? new THREE.Vector3(-0.6, 0, 12) : new THREE.Vector3(0, 0, 0)));
+      this.walkZiggy(this.home(), () => (this.zig.face = LINEUP_LOOK.clone()));
     });
     this.after(5.2, () => this.cb.onReady());
   }
@@ -570,7 +572,7 @@ export class DetectiveGame {
     this.magnifyTarget = 0;
     this.frameLineup();
     for (const sp of this.bubblesSprites) sp.userData.small = true;
-    this.walkZiggy(this.home(), () => (this.zig.face = this.portrait() ? new THREE.Vector3(-0.6, 0, 12) : new THREE.Vector3(0, 0, 0)));
+    this.walkZiggy(this.home(), () => (this.zig.face = LINEUP_LOOK.clone()));
   }
 
   /** A friend is cleared: a happy hop, then off to the café terrace. */

@@ -59,6 +59,8 @@ export const COLORS = {
   white: { hex: '#f6f2ea', label: { fr: 'blanc', en: 'white' } },
 } as const satisfies Record<string, { hex: string; label: L }>;
 export type ColorId = keyof typeof COLORS;
+/** "une créature verte": French colour words agree with « créature ». */
+export const FEMININE: Record<ColorId, string> = { red: 'rouge', orange: 'orange', yellow: 'jaune', green: 'verte', teal: 'turquoise', blue: 'bleue', purple: 'violette', pink: 'rose', brown: 'marron', white: 'blanche' };
 export const COLOR_IDS = Object.keys(COLORS) as ColorId[];
 
 export interface Creature {
@@ -549,7 +551,7 @@ export const CHALLENGES: Challenge[] = [
   { id: 'eyes3horns', band: 'middle', skill: 'counting', icon: '🐮', text: { fr: 'Une créature avec 3 yeux et 2 cornes !', en: 'A creature with 3 eyes and 2 horns!' }, reqs: [{ k: 'eyes', n: 3 }, { k: 'top', is: 'horns' }] },
   { id: 'spider', band: 'middle', skill: 'counting', icon: '🕷️', text: { fr: 'Une créature avec 8 pattes, comme une araignée !', en: 'A creature with 8 legs, like a spider!' }, reqs: [{ k: 'legs', n: 8 }] },
   { id: 'dragon', band: 'middle', skill: 'vocabulary', icon: '🐉', text: { fr: 'Un petit dragon : des ailes de chauve-souris et une queue de dragon !', en: 'A little dragon: bat wings and a dragon tail!' }, reqs: [{ k: 'wingsIs', is: 'bat' }, { k: 'tail', is: 'dragon' }] },
-  { id: 'crab', band: 'middle', skill: 'vocabulary', icon: '🦀', text: { fr: 'Une créature rouge avec des pinces et 4 bras !', en: 'A red creature with pincers and 4 arms!' }, reqs: [{ k: 'color', is: 'red' }, { k: 'arms', n: 4 }] },
+  { id: 'crab', band: 'middle', skill: 'vocabulary', icon: '🦀', text: { fr: 'Une créature rouge avec 4 bras, comme un crabe géant !', en: 'A red creature with 4 arms, like a giant crab!' }, reqs: [{ k: 'color', is: 'red' }, { k: 'arms', n: 4 }] },
   { id: 'octopus', band: 'middle', skill: 'vocabulary', icon: '🐙', text: { fr: 'Une pieuvre : 8 tentacules et une queue de poisson pour nager !', en: 'An octopus: 8 tentacles and a fish tail to swim!' }, reqs: [{ k: 'legs', n: 8 }, { k: 'legStyle', is: 'tentacle' }, { k: 'tail', is: 'fish' }] },
   // Big kids (8-12): add up, compare, think.
   { id: 'limbs10', band: 'big', skill: 'addition', icon: '➕', text: { fr: 'Pattes + bras = 10 en tout !', en: 'Legs + arms = 10 in all!' }, reqs: [{ k: 'limbs', n: 10 }] },
@@ -757,7 +759,7 @@ export function hintFor(ch: Challenge, c: Creature, locale: string): string {
     case 'pattern':
       return fr ? `Il faut le motif « ${label('pattern', `pattern:${r.is}`)} ».` : `It needs the “${label('pattern', `pattern:${r.is}`)}” pattern.`;
     case 'color':
-      return fr ? `Il faut une créature ${COLORS[r.is].label.fr}${r.is === 'orange' || r.is === 'brown' ? '' : 'e'} !` : `It needs to be ${COLORS[r.is].label.en}!`;
+      return fr ? `Il faut une créature ${FEMININE[r.is]} !` : `It needs to be ${COLORS[r.is].label.en}!`;
     case 'legStyle':
       return fr ? `Il faut des pattes « ${label('legs', `legStyle:${r.is}`)} ».` : `It needs “${label('legs', `legStyle:${r.is}`)}” legs.`;
     case 'limbs':

@@ -187,6 +187,12 @@ describe('Challenges (optional)', () => {
     expect(hintFor(ch, { ...STARTER, legs: 4 }, 'fr')).toContain('6');
   });
 
+  it('French colour words agree with « créature »', () => {
+    const ch = CHALLENGES.find((c) => c.id === 'bluePogo')!;
+    expect(hintFor(ch, STARTER, 'fr')).toBe('Il faut une créature bleue !');
+    expect(hintFor(ch, STARTER, 'en')).toBe('It needs to be blue!');
+  });
+
   it('follows the age: little ones never get sums, big kids get them', () => {
     expect(challengesFor('little').some((c) => c.skill === 'addition')).toBe(false);
     expect(challengesFor('big').some((c) => c.skill === 'addition')).toBe(true);

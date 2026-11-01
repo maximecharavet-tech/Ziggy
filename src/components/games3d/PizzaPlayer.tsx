@@ -246,6 +246,20 @@ export function PizzaPlayer() {
     game.current?.highlightSlice(focusSlice);
   }, [focusSlice]);
 
+  // TV remote: when a step swaps the panel (Coucou → toppings, oven → question…), the
+  // focused button disappears; land on the new step's first button at once instead of
+  // leaving the focus on the page for a moment.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const step0 = view?.step;
+  const round0 = view?.round;
+  useEffect(() => {
+    if (!document.documentElement.hasAttribute('data-tv')) return;
+    const a = document.activeElement;
+    if (a && a !== document.body && a.isConnected) return;
+    const spot = rootRef.current?.querySelector<HTMLElement>('[data-tv-autofocus]:not(:disabled)');
+    spot?.focus({ preventScroll: true });
+  }, [phase, step0, round0]);
+
   const round = view && view.round >= 0 ? rounds[view.round] : null;
   const step = view?.step ?? 'arrive';
   const g = () => game.current;
@@ -515,7 +529,7 @@ export function PizzaPlayer() {
   const interactive = step === 'build' || step === 'ask' || step === 'pay';
 
   return (
-    <div className="fixed inset-0 z-[60] overflow-hidden bg-[#ffe9c9] text-[#33264a]" data-tv-scope="">
+    <div ref={rootRef} className="fixed inset-0 z-[60] overflow-hidden bg-[#ffe9c9] text-[#33264a]" data-tv-scope="">
       <canvas ref={canvas} className="absolute inset-0 h-full w-full touch-none" aria-label={tr(T.title, locale)} />
 
       {phase === 'play' || phase === 'result' ? (

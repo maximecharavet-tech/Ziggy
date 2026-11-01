@@ -228,7 +228,8 @@ export function DinoPlayer() {
   }, []);
   const shown = bubble && bubble.kind !== 'instruction' && bubble.kind !== 'question' ? bubble.text : instruction;
   const totalXp = outcomes.reduce((a, o) => a + o.xpGained, 0);
-  const magic = outcomes.flatMap((o) => o.magic);
+  // The same moment can come from two rounds (a level reached twice in one game): shown once.
+  const magic = outcomes.flatMap((o) => o.magic).filter((m, i, all) => all.findIndex((x) => x.kind === m.kind && x.ref === m.ref) === i);
   const dinoThumb = (d: DinoId) => thumbs?.dino.get(d);
   const rounds = s?.rounds ?? roundsFor(band);
 

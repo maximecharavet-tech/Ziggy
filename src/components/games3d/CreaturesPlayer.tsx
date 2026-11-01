@@ -722,7 +722,7 @@ export function CreaturesPlayer() {
 
   const tabs = (
     <div
-      className={`flex gap-1.5 ${wide ? 'flex-col overflow-y-auto overscroll-contain p-1.5' : 'overflow-x-auto overscroll-contain px-1 pb-1 pt-1'}`}
+      className={`flex gap-1.5 ${wide ? 'flex-col p-1.5' : 'overflow-x-auto overscroll-contain px-1 pb-1 pt-1'}`}
       data-tv-row=""
       data-tv-wrap="false"
       role="tablist"
@@ -764,7 +764,7 @@ export function CreaturesPlayer() {
     </div>
   );
 
-  const tile = (key: string, on: boolean, label: string, onClick: () => void, icon: ReactNode, extra = '') => (
+  const tile = (key: string, on: boolean, label: string, onClick: () => void, icon: ReactNode, extra = '', hideLabel = false) => (
     <motion.button
       key={key}
       type="button"
@@ -776,7 +776,7 @@ export function CreaturesPlayer() {
       className={`relative flex min-h-[72px] min-w-[68px] flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-1 py-1 shadow-sm transition sm:min-h-[80px] sm:max-w-[104px] ${tileLook(on)} ${extra}`}
     >
       {icon}
-      <span className={`max-w-full truncate px-0.5 text-[11px] font-bold leading-tight text-[#5b3f8f] ${band === 'little' ? 'sr-only' : ''}`}>{label}</span>
+      <span className={`max-w-full truncate px-0.5 text-[11px] font-bold leading-tight text-[#5b3f8f] ${band === 'little' || hideLabel ? 'sr-only' : ''}`}>{label}</span>
     </motion.button>
   );
 
@@ -784,12 +784,12 @@ export function CreaturesPlayer() {
     <div className="flex w-full items-stretch gap-1.5" data-tv-row="" data-tv-wrap="false" data-tv-stage="">
       {d.stepper ? (
         <div className="flex items-stretch gap-1">
-          {tile('minus', false, tr(T.less, locale), () => step(d.stepper!.field, -1, d.stepper!.min, d.stepper!.max), <span className="font-display text-4xl font-bold text-[#8a63ff]">−</span>, '!max-w-[64px]')}
+          {tile('minus', false, tr(T.less, locale), () => step(d.stepper!.field, -1, d.stepper!.min, d.stepper!.max), <span className="font-display text-4xl font-bold text-[#8a63ff]">−</span>, '!max-w-[64px]', true)}
           <div className="flex min-w-[70px] flex-col items-center justify-center rounded-2xl bg-[#f3ecff] px-2" aria-live="polite">
             <span className="font-display text-4xl font-bold leading-none text-[#3b2a6b]">{creature[d.stepper.field]}</span>
             <CountIcon kind={d.stepper.field} n={creature[d.stepper.field]} />
           </div>
-          {tile('plus', false, tr(T.plus, locale), () => step(d.stepper!.field, 1, d.stepper!.min, d.stepper!.max), <span className="font-display text-4xl font-bold text-[#8a63ff]">+</span>, '!max-w-[64px]')}
+          {tile('plus', false, tr(T.plus, locale), () => step(d.stepper!.field, 1, d.stepper!.min, d.stepper!.max), <span className="font-display text-4xl font-bold text-[#8a63ff]">+</span>, '!max-w-[64px]', true)}
         </div>
       ) : null}
       {pg.items.map((o) => tile(o.key, o.selected(creature), tr(o.label, locale), () => apply(o), <OptionIcon o={o} cat={cat} c={creature} />))}
@@ -808,7 +808,7 @@ export function CreaturesPlayer() {
       className={`relative flex min-h-[64px] min-w-[64px] items-center justify-center gap-1.5 rounded-2xl px-2 font-display text-lg font-bold text-white shadow-[0_5px_0_rgba(0,0,0,.16)] ${cls}`}
     >
       {icon}
-      {short ? <span className={wide ? 'text-base' : 'text-[15px]'}>{short}</span> : null}
+      {short ? <span className={`whitespace-nowrap ${wide ? 'text-base' : 'text-[15px]'}`}>{short}</span> : null}
       {halo ? (
         <motion.span aria-hidden="true" className="pointer-events-none absolute -inset-1 rounded-[1.2rem] ring-4 ring-[#ff5c8a]" animate={reduce ? { opacity: 0.9 } : { opacity: [0.3, 1, 0.3] }} transition={{ duration: 1.4, repeat: Infinity }} />
       ) : null}
@@ -835,34 +835,39 @@ export function CreaturesPlayer() {
   );
 
   const challengeCard = challenge ? (
-    <div className="pointer-events-auto mx-auto mt-2 flex w-full max-w-xl items-center gap-2 rounded-3xl bg-white/95 p-2 shadow-[0_8px_30px_rgba(90,40,140,.2)] ring-2 ring-[#ffd166]" data-tv-row="" data-tv-wrap="false">
-      <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-[#fff1c2] text-3xl" aria-hidden="true">
-        {challenge.ch.icon}
-      </span>
-      <div className="min-w-0 flex-1">
-        <p className={`text-sm font-bold leading-snug text-[#3b2a6b] ${band === 'little' ? 'sr-only' : ''}`}>{tr(challenge.ch.text, locale)}</p>
-        <div className="mt-0.5 flex flex-wrap items-center gap-1" aria-hidden="true">
+    <div className="pointer-events-auto mx-auto mt-2 w-full max-w-xl rounded-3xl bg-white/95 p-2 shadow-[0_8px_30px_rgba(90,40,140,.2)] ring-2 ring-[#ffd166]">
+      <div className="flex items-center gap-2">
+        <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#fff1c2] text-2xl" aria-hidden="true">
+          {challenge.ch.icon}
+        </span>
+        <p className={`min-w-0 flex-1 text-sm font-bold leading-snug text-[#3b2a6b] ${band === 'little' ? 'sr-only' : ''}`}>{tr(challenge.ch.text, locale)}</p>
+        {band === 'little' ? <span className="flex-1" /> : null}
+        <SayButton texts={[tr(challenge.ch.text, locale)]} locale={locale} size="sm" />
+        <button type="button" onClick={closeChallenge} aria-label={tr(T.close, locale)} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#f3ecff] text-lg font-bold text-[#7c5cff]">
+          ✕
+        </button>
+      </div>
+      <div className="mt-1.5 flex items-center gap-2" data-tv-row="" data-tv-wrap="false">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-1" aria-hidden="true">
           {challenge.ch.reqs.map((r, i) => {
             const chip = reqChip(r, creature);
             const ok = band !== 'big' && checkChallenge(challenge.ch, creature).met[i];
             return (
-              <span key={i} className={`flex items-center gap-0.5 rounded-xl px-1.5 py-0.5 text-lg font-bold ${ok ? 'bg-[#dff5d6] text-[#2f7d32]' : 'bg-[#f3ecff] text-[#3b2a6b]'}`}>
+              <span key={i} className={`flex items-center gap-0.5 rounded-xl px-2 py-1 text-xl font-bold ${ok ? 'bg-[#dff5d6] text-[#2f7d32]' : 'bg-[#f3ecff] text-[#3b2a6b]'}`}>
                 {chip.n ? <span className="font-display">{chip.n}</span> : null}
-                {r.k === 'color' ? <span className="inline-block h-4 w-4 rounded-full ring-1 ring-black/10" style={{ background: COLORS[r.is].hex }} /> : <span>{chip.icon}</span>}
+                {r.k === 'color' ? <span className="inline-block h-5 w-5 rounded-full ring-1 ring-black/10" style={{ background: COLORS[r.is].hex }} /> : <span>{chip.icon}</span>}
                 {ok ? <span className="text-xs">✓</span> : null}
               </span>
             );
           })}
         </div>
+        <motion.button type="button" onClick={checkNow} whileTap={reduce ? undefined : { scale: 0.9 }} className="flex min-h-[56px] shrink-0 items-center gap-1 rounded-2xl bg-gradient-to-b from-[#6bdc6b] to-[#3fae3f] px-3 font-display text-base font-bold text-white shadow" aria-label={tr(T.show, locale)}>
+          <span aria-hidden="true" className="text-2xl">
+            👀
+          </span>
+          <span className={band === 'little' ? 'sr-only' : ''}>{tr(T.show, locale)}</span>
+        </motion.button>
       </div>
-      <SayButton texts={[tr(challenge.ch.text, locale)]} locale={locale} size="sm" />
-      <motion.button type="button" onClick={checkNow} whileTap={reduce ? undefined : { scale: 0.9 }} className="min-h-[64px] shrink-0 rounded-2xl bg-gradient-to-b from-[#6bdc6b] to-[#3fae3f] px-3 font-display text-base font-bold text-white shadow" aria-label={tr(T.show, locale)}>
-        <span aria-hidden="true">👀 </span>
-        <span className={band === 'little' ? 'sr-only' : ''}>{tr(T.show, locale)}</span>
-      </motion.button>
-      <button type="button" onClick={closeChallenge} aria-label={tr(T.close, locale)} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-[#f3ecff] text-lg font-bold text-[#7c5cff]">
-        ✕
-      </button>
     </div>
   ) : null;
 
@@ -902,8 +907,8 @@ export function CreaturesPlayer() {
             const s = album.find((x) => x.id === selected);
             if (!s) return null;
             return (
-              <div className="mt-1.5 flex items-center gap-1.5" data-tv-row="" data-tv-wrap="false">
-                <p className="min-w-0 flex-1 truncate px-1 font-display text-lg font-bold text-[#3b2a6b]">{s.name}</p>
+              <div className="mt-1.5 flex flex-wrap items-center justify-end gap-1.5" data-tv-row="" data-tv-wrap="false">
+                <p className="w-full truncate px-1 font-display text-lg font-bold text-[#3b2a6b] sm:w-auto sm:min-w-0 sm:flex-1">{s.name}</p>
                 <button type="button" onClick={() => resume(s)} aria-label={tr(T.resume, locale)} className="flex min-h-[64px] items-center gap-1 rounded-2xl bg-gradient-to-b from-[#6bdc6b] to-[#3fae3f] px-3 font-bold text-white">
                   <span aria-hidden="true" className="text-2xl">
                     ▶
@@ -946,7 +951,7 @@ export function CreaturesPlayer() {
   );
 
   return (
-    <div ref={rootRef} className="fixed inset-0 z-[60] overflow-hidden bg-[#cdeeff] text-[#33264a]" data-tv-scope="">
+    <div ref={rootRef} className="fixed inset-0 z-[60] overflow-clip bg-[#cdeeff] text-[#33264a]" data-tv-scope="">
       <canvas ref={canvas} className="absolute inset-0 h-full w-full touch-none" aria-label={tr(T.title, locale)} />
 
       {phase === 'play' ? (
@@ -964,7 +969,7 @@ export function CreaturesPlayer() {
                 aria-label={`${creature.name}. ${tr(T.newName, locale)}`}
                 className="flex min-h-12 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-full bg-gradient-to-r from-[#fff4d6] to-[#ffe3f1] px-3"
               >
-                <span className="truncate font-display text-lg font-bold text-[#6a3fd1] sm:text-xl">{creature.name}</span>
+                <span className="line-clamp-2 break-words font-display text-[15px] font-bold leading-[1.05] text-[#6a3fd1] sm:text-xl">{creature.name}</span>
                 <span className="text-xl" aria-hidden="true">
                   🎲
                 </span>
@@ -1015,7 +1020,7 @@ export function CreaturesPlayer() {
           {/* Landscape: kinds of parts on the left, actions on the right */}
           {wide && mode === 'atelier' ? (
             <div ref={leftRef} className="pointer-events-auto absolute bottom-[7.5rem] left-2 top-[5rem] flex flex-col justify-center sm:left-3">
-              <div className="max-h-full rounded-[1.6rem] bg-white/70 shadow-[0_8px_30px_rgba(90,40,140,.16)] ring-1 ring-white">{tabs}</div>
+              <div className="max-h-full overflow-y-auto overscroll-contain rounded-[1.6rem] bg-white/70 shadow-[0_8px_30px_rgba(90,40,140,.16)] ring-1 ring-white">{tabs}</div>
             </div>
           ) : null}
           {wide ? (
