@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'Le Grand Huit des Nombres — jeu 3D',
+          title: 'Le Grand Huit des Nombres : jeu éducatif 3D enfant | Ziggy',
           description: 'Construis le trajet du wagonnet avec des rails +2, −1 ou ×2 et arrête Ziggy pile à la bonne gare, dans une fête foraine en 3D.',
         }
       : {

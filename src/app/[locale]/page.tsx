@@ -20,6 +20,10 @@ import { FAQSection } from '@/components/sections/FAQSection';
 import { CTAFinalSection } from '@/components/sections/CTAFinalSection';
 import { fetchSiteConfig } from '@/lib/site-config.server';
 import { ParentsNotice } from '@/components/app/ParentsNotice';
+import { getTranslations } from 'next-intl/server';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { SITE_URL } from '@/lib/site-url';
+import { localeUrl } from '@/lib/seo';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -33,9 +37,31 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   setRequestLocale(locale);
   const { sections } = await fetchSiteConfig();
+  const meta = await getTranslations({ locale, namespace: 'metadata' });
+  const faq = await getTranslations({ locale, namespace: 'faq' });
+  const website = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Ziggy',
+    url: localeUrl(SITE_URL, locale, ''),
+    description: meta('description'),
+    inLanguage: locale,
+    publisher: { '@type': 'Organization', name: 'Ziggy Technologies SAS', url: SITE_URL },
+  };
+  // Mirrors the FAQ shown on this page (FAQSection, same five questions).
+  const faqPage = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: [1, 2, 3, 4, 5].map((i) => ({
+      '@type': 'Question',
+      name: faq(`q${i}`),
+      acceptedAnswer: { '@type': 'Answer', text: faq(`a${i}`) },
+    })),
+  };
 
   return (
     <PageTransition>
+      <JsonLd data={[website, faqPage]} />
       <HeroSection />
       <TaglineRibbon />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-4">

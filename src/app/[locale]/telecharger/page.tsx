@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
 import { DownloadPage } from '@/components/download/DownloadPage';
-import { alternatesFor } from '@/lib/seo';
+import { alternatesFor, breadcrumbLd, localeUrl } from '@/lib/seo';
+import { SITE_URL } from '@/lib/site-url';
+import { APK_PATH, ANDROID_MIN } from '@/lib/downloads';
+import { JsonLd } from '@/components/seo/JsonLd';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -22,5 +25,24 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function TelechargerPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <DownloadPage />;
+  const fr = locale === 'fr';
+  const app = {
+    '@context': 'https://schema.org',
+    '@type': 'MobileApplication',
+    name: 'Ziggy',
+    operatingSystem: `Android ${ANDROID_MIN}+`,
+    applicationCategory: 'EducationalApplication',
+    downloadUrl: `${SITE_URL}${APK_PATH}`,
+    installUrl: localeUrl(SITE_URL, locale, '/telecharger'),
+    inLanguage: locale,
+    audience: { '@type': 'EducationalAudience', educationalRole: 'student' },
+    publisher: { '@type': 'Organization', name: 'Ziggy Technologies SAS', url: SITE_URL },
+  };
+  const crumbs = breadcrumbLd(SITE_URL, locale, [{ name: fr ? 'Les applis Ziggy' : 'The Ziggy apps', path: '/telecharger' }]);
+  return (
+    <>
+      <JsonLd data={[app, crumbs]} />
+      <DownloadPage />
+    </>
+  );
 }

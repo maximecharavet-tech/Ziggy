@@ -26,13 +26,20 @@ const nextConfig: NextConfig = {
   // The share image reads the mascot from disk at request time.
   outputFileTracingIncludes: {
     '/[locale]/opengraph-image': ['./public/mascot/og-ziggy.png'],
+    '/[locale]/dodo/[story]/opengraph-image': ['./public/mascot/og-ziggy.png', './public/dodo/**/*-og.jpg'],
   },
   images: {
     formats: ['image/avif', 'image/webp'],
   },
   // ziggy-ai.fr/apk: the Android app of the latest release (short enough to type with a TV remote).
   async redirects() {
-    return [{ source: APK_PATH, destination: APK_RELEASE_URL, permanent: false }];
+    return [
+      { source: APK_PATH, destination: APK_RELEASE_URL, permanent: false },
+      // Search Console 404s: crawlers once read the price period ("/mois", "/Monat") and a stray "$" as links.
+      { source: '/mois', destination: '/', permanent: true },
+      { source: '/Monat', destination: '/', permanent: true },
+      { source: '/\\$', destination: '/', permanent: true },
+    ];
   },
   async headers() {
     return [
