@@ -209,7 +209,8 @@ export class KartGame {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
     this.renderer.toneMappingExposure = 1.08;
     if (this.lowPower) this.renderer.shadowMap.type = THREE.PCFShadowMap;
-    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.32, radius: 0.5, threshold: 1.2 });
+    // No bloom on the pastel sky road: on capable devices it veiled everything in white.
+    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: false });
     this.track = new Track(run.pacing.laneGap);
     this.confetti = new Confetti(this.lowPower ? 160 : 280);
 

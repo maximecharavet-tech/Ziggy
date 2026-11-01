@@ -1,6 +1,5 @@
 import * as THREE from 'three';
-import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
-import { createRenderer, disposeTree, prefersLowPower } from '../kit/look';
+import { createRenderer, disposeTree, prefersLowPower, studioEnvironment } from '../kit/look';
 import { makeZiggy, type ZiggyActor } from '../kit/models';
 import { Post } from '../kit/post';
 import { tr } from '@/lib/i18n-text';
@@ -150,8 +149,7 @@ export class PizzaGame {
   private lowPower = prefersLowPower();
   private reduce = typeof window !== 'undefined' && Boolean(window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   private audio = new PizzaAudio();
-  private pmrem: THREE.PMREMGenerator;
-  private env: THREE.Texture;
+  private disposeEnv: () => void;
   private ray = new THREE.Raycaster();
   private ndc = new THREE.Vector2();
 
@@ -228,15 +226,16 @@ export class PizzaGame {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
     this.renderer.toneMappingExposure = 1.0;
     if (this.lowPower) this.renderer.shadowMap.type = THREE.PCFShadowMap;
-    this.pmrem = new THREE.PMREMGenerator(this.renderer);
-    this.env = this.pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
-    this.scene.environment = this.env;
-    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.32, radius: 0.5, threshold: 1.15 });
+    // No bloom here: on capable devices it veiled the sunny square (and Ziggy) in white.
+    // The oven, bulbs and Ziggy's heart already glow with their own sprites.
+    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: false });
 
     this.truck = makeTruck(this.lowPower);
     this.village = makeVillage(this.lowPower);
     this.ziggy = makeZiggy({ lowPower: this.lowPower });
     this.ziggy.userData.model.hatAnchor.add(makeToque());
+    // Soft studio reflections on Ziggy's felt only.
+    this.disposeEnv = studioEnvironment(this.renderer, this.ziggy, 0.3);
     this.ziggy.userData.rig.energy = this.reduce ? 0.35 : 1;
     this.thief = new Pigeon();
     this.bubble = new THREE.Sprite(new THREE.SpriteMaterial({ map: bubbleTexture({ kind: 'text', text: '…' }), transparent: true, depthWrite: false, depthTest: false }));
@@ -1643,8 +1642,7 @@ export class PizzaGame {
     disposeTree(this.scene);
     disposeFood();
     disposeFxTextures();
-    this.env.dispose();
-    this.pmrem.dispose();
+    this.disposeEnv();
     this.post.dispose();
     this.renderer.dispose();
   }

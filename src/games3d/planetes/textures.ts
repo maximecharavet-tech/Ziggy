@@ -223,7 +223,9 @@ export function planetMap(id: BodyId, small = false): THREE.CanvasTexture {
       c = paint(W, H, (u, v) => {
         const f = (v + (turb(u, v) - 0.5) * 0.025) * 10;
         const i = Math.floor(f);
-        return mix(bands[i % bands.length], bands[(i + 1) % bands.length], smooth(0.5, 1, f - i));
+        // f dips below 0 at the north pole: keep the band index positive.
+        const n = bands.length;
+        return mix(bands[((i % n) + n) % n], bands[(((i + 1) % n) + n) % n], smooth(0.5, 1, f - i));
       });
       break;
     }
