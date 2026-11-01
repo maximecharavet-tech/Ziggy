@@ -363,8 +363,10 @@ export function randomCreature(seed: number): Creature {
 const N1 = ['Blou', 'Zou', 'Gri', 'Mo', 'Fla', 'Tou', 'Ki', 'Bou', 'Lu', 'Pla', 'Ri', 'Ga', 'No', 'Zi', 'Fu', 'Ba', 'Glou', 'Wa', 'Pom', 'Tchi', 'Ro', 'Dou', 'Mi', 'Bri'];
 const N2 = ['pi', 'li', 'zou', 'bi', 'mo', 'ga', 'ki', 'nou', 'lo', 'fi', 'ta', 'ri', 'bou', 'dou', 'mi', 'ffy', 'go', 'la'];
 const M1 = ['Tra', 'Gla', 'Bi', 'Pata', 'Fri', 'Moumou', 'Ziggo', 'Tchou', 'Rata', 'Bidou', 'Plou', 'Kiri', 'Mira', 'Gribou', 'Toto', 'Zabou', 'Lolo', 'Firfi'];
-const M2 = ['ca', 'la', 'mi', 'pou', 'ti', 'bou', 'ri', 'zi', 'lou', 'ga', 'no', 'mou'];
+const M2 = ['ca', 'la', 'mi', 'pou', 'fi', 'bou', 'ri', 'zi', 'lou', 'ga', 'no', 'mou'];
 const M3 = ['sin', 'tou', 'flette', 'mouche', 'zinette', 'boulette', 'nouille', 'pette', 'rigolo', 'dodo', 'pouf', 'tilou', 'line', 'chou', 'bidule', 'zou', 'mollet', 'tatin'];
+
+export const NAME_PARTS = { N1, N2, M1, M2, M3 };
 
 /** "Bloupi-Tracassin": two silly words, the same in every language. */
 export function makeName(seed: number): string {

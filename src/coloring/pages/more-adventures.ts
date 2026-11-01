@@ -9,7 +9,6 @@ import {
   heart,
   hill,
   leaf,
-  mirrorX,
   petal,
   polar,
   poly,
@@ -724,11 +723,11 @@ export const hotAirBalloon = definePage(
     b.r('cloud#', cloud(92, 96, 140, 56), 'white');
     b.r('cloud#', cloud(510, 236, 130, 50), 'white');
     b.r('cloud#', cloud(86, 330, 120, 46), 'white');
-    b.d('M420 330q10 -10 20 0q10 -10 20 0M150 210q8 -8 16 0q8 -8 16 0', undefined, 3.5);
-    b.r('hill-back-2', hill(150, 560, [470, 400], 600, 460, 600), 'mint');
-    b.r('hill-back', hill(0, 480, [130, 420], 600, 590, 600), 'green');
+    b.d('M384 296q10 -10 20 0q10 -10 20 0M150 210q8 -8 16 0q8 -8 16 0', undefined, 3.5);
+    b.r('hill-back-2', hill(150, 570, [470, 430], 600, 486, 600), 'mint');
+    b.r('hill-back', hill(0, 500, [130, 446], 600, 596, 600), 'green');
     b.r('hill', hill(0, 560, [300, 520], 600, 556, 600), 'lime');
-    for (const [x, y] of [[70, 452], [530, 444]] as P[]) {
+    for (const [x, y] of [[70, 466], [532, 462]] as P[]) {
       b.r('tree-trunk#', rect(x - 10, y + 10, 20, 62, 5), 'brown');
       b.r('tree#', ellipse(x, y, 34, 40), 'forest');
     }
@@ -751,19 +750,19 @@ export const hotAirBalloon = definePage(
       b.r('gore#', poly([...left, ...right]), c);
     });
     b.r('skirt', poly([[250, 326], [350, 326], [334, 356], [266, 356]]), 'purple');
-    b.d('M268 356L242 420M332 356L358 420', undefined, 3.5);
+    b.d('M268 356L240 432M332 356L360 432', undefined, 3.5);
     // Ziggy waves from the basket.
-    b.r('ziggy', circle(300, 398, 30), 'green');
-    b.deco('M288 372L280 362M312 372L320 362', undefined, 4);
-    b.deco(circle(279, 360, 5.5) + circle(321, 360, 5.5), 'ink');
-    inkEye(b, 290, 392, 5);
-    inkEye(b, 310, 392, 5);
-    b.d(smile(300, 404, 14, 5), undefined, 3);
-    b.r('basket', rect(242, 424, 116, 62, 10), 'caramel');
-    b.deco('M242 446H358M242 466H358M280 424V486M320 424V486', undefined, 3);
-    b.r('basket-rim', rect(232, 414, 136, 20, 10), 'brown');
+    b.r('ziggy', circle(300, 410, 30), 'green');
+    b.deco('M288 384L280 372M312 384L320 372', undefined, 4);
+    b.deco(circle(279, 370, 5.5) + circle(321, 370, 5.5), 'ink');
+    inkEye(b, 290, 404, 5);
+    inkEye(b, 310, 404, 5);
+    b.d(smile(300, 416, 14, 5), undefined, 3);
+    b.r('basket', rect(242, 436, 116, 60, 10), 'caramel');
+    b.deco('M242 458H358M242 477H358M280 436V496M320 436V496', undefined, 3);
+    b.r('basket-rim', rect(232, 426, 136, 20, 10), 'brown');
     // Another balloon, far away.
-    b.r('far-balloon', smooth([[470, 330], [500, 344], [500, 380], [478, 404], [462, 404], [440, 380], [440, 344]], true, 0.9), 'purple');
+    b.r('far-balloon', smooth([[470, 326], [496, 336], [504, 360], [494, 384], [478, 402], [462, 402], [446, 384], [436, 360], [444, 336]], true, 0.9), 'purple');
     b.d('M462 404L464 420M478 404L476 420', undefined, 2.5);
     b.r('far-basket', rect(454, 418, 32, 22, 5), 'caramel');
   }
@@ -875,13 +874,14 @@ export const ziggyBaker = definePage(
       {
         chef: true,
         armLeft: [176, 432],
-        armRight: [448, 262],
+        armRight: [470, 292],
         hold: (bb, [hx, hy], deg) => {
-          // A wooden spoon held up in the mitten (fingers direction = ux, uy).
-          const ux = Math.sin((deg * Math.PI) / 180);
-          const uy = -Math.cos((deg * Math.PI) / 180);
+          // A wooden spoon held straight up in the mitten.
+          const sd = deg - 38;
+          const ux = Math.sin((sd * Math.PI) / 180);
+          const uy = -Math.cos((sd * Math.PI) / 180);
           bb.r('spoon-handle', capsule(hx, hy, hx + ux * 64, hy + uy * 64, 11), 'caramel');
-          bb.r('spoon', ellipse(hx + ux * 82, hy + uy * 82, 15, 22, deg + 90), 'caramel');
+          bb.r('spoon', ellipse(hx + ux * 82, hy + uy * 82, 15, 22, sd + 90), 'caramel');
         },
       }
     );
