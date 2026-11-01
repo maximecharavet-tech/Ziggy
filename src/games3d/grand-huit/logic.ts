@@ -447,6 +447,38 @@ export function planGame(seed: number, band: Band, level: number): Ride[] {
   return out;
 }
 
+export interface SkillTally {
+  correct: number;
+  mistakes: number;
+  total: number;
+  durationMs: number;
+}
+
+/**
+ * Progress is saved once per skill and per game (not after every ride), so a
+ * perfect game moves each skill's level by one step at most. Adds this ride to
+ * its skill's tally and returns the finished tally when it was the last ride
+ * of that skill in the game (null otherwise).
+ */
+export function tallyRide(
+  tally: Map<CoasterSkill, SkillTally>,
+  rides: readonly Pick<Ride, 'skill'>[],
+  index: number,
+  stats: { mistakes: number; durationMs: number }
+): { skill: CoasterSkill; stats: SkillTally } | null {
+  const r = rides[index];
+  if (!r) return null;
+  const t = tally.get(r.skill) ?? { correct: 0, mistakes: 0, total: 0, durationMs: 0 };
+  t.correct += 1;
+  t.total += 1;
+  t.mistakes += Math.max(0, stats.mistakes);
+  t.durationMs += Math.max(0, stats.durationMs);
+  tally.set(r.skill, t);
+  if (rides.slice(index + 1).some((x) => x.skill === r.skill)) return null;
+  tally.delete(r.skill);
+  return { skill: r.skill, stats: t };
+}
+
 /** The skill used to pick the starting level of a game, per band. */
 export const LEAD_SKILL: Record<Band, CoasterSkill> = { little: 'counting', middle: 'addition', big: 'multiplication' };
 

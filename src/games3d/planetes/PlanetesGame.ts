@@ -207,7 +207,9 @@ export class PlanetesGame {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
     if (this.lowPower) this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.toneMappingExposure = 1.05;
-    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.5, radius: 0.55, threshold: 1.05 });
+    // Capable devices: a light glow on what shines brighter than white only (the Sun's core, sparkles),
+    // so space stays crisp and deep black and the Sun never washes over the post office.
+    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.28, radius: 0.35, threshold: 1.2 });
     this.stars = makeStarfield(this.lowPower ? 700 : 1400, 2.2, 11);
     this.brightStars = makeStarfield(this.lowPower ? 90 : 160, 5, 23, '#fff3c8');
     this.belt = makeBelt(this.lowPower ? 150 : 300);
@@ -998,7 +1000,9 @@ export class PlanetesGame {
     this.later(1100, () => alien.cue('joy'));
     this.ziggy.userData.rig.cue('cheer');
     this.audio.play('star');
-    this.sparkles.emit(alien.root.position.clone().add(new THREE.Vector3(0, 2.4, 0)), { color: '#ffe066', count: this.lowPower ? 16 : 34, spread: 3.4, up: 2.6, life: 1.4, size: 0.4, additive: true });
+    // Confetti stars of every colour (soft blobs of dim yellow looked like brown smudges on dark skies).
+    const at = alien.root.position.clone().add(new THREE.Vector3(0, 2.2, 0));
+    for (const color of ['#fff27a', '#ff9ad5', '#8fe3ff', '#b4ff9a']) this.starBurst.emit(at, { color, count: this.lowPower ? 4 : 7, spread: 3.6, up: 2.4, life: 1.1, size: 0.26 });
     this.emit();
     this.cb.onOpened(this.index, { ...this.stats });
   }

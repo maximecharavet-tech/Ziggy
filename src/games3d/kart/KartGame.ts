@@ -488,7 +488,7 @@ export class KartGame {
       top.position.set(-x, 3.0, 0);
       top.castShadow = true;
       const text = step.options[lane];
-      const sign = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.letterTexture(text, lane), transparent: true, depthWrite: false }));
+      const sign = new THREE.Sprite(new THREE.SpriteMaterial({ map: this.letterTexture(text, lane), transparent: true, depthWrite: false, toneMapped: false }));
       sign.scale.setScalar(Math.min(2.3, gap * 0.7));
       sign.position.set(-x, 3.55, 0);
       sign.renderOrder = 2;

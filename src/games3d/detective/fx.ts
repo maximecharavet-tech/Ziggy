@@ -212,3 +212,51 @@ export function groundRing(color: string, r = 0.75): THREE.Mesh {
   m.renderOrder = 2;
   return m;
 }
+
+/**
+ * The party's ring of tulips springing up around the square: two instanced
+ * meshes (stems, flowers) instead of 32 little meshes. `update(dt)` makes
+ * them pop up one after the other.
+ */
+export function makeTulipRing(n = 16, radius = 9.6): THREE.Group {
+  const g = new THREE.Group();
+  const stems = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4, 4), new THREE.MeshLambertMaterial({ color: '#4f9a3f' }), n);
+  const heads = new THREE.InstancedMesh(new THREE.SphereGeometry(0.12, 8, 6), new THREE.MeshLambertMaterial({ color: '#ffffff' }), n);
+  const cols = ['#ff5f8f', '#ffd166', '#ff7a45', '#c99bff'].map((c) => new THREE.Color(c));
+  for (let i = 0; i < n; i++) heads.setColorAt(i, cols[i % cols.length]);
+  g.add(stems, heads);
+  const grow = new Array<number>(n).fill(0.01);
+  const delay = Array.from({ length: n }, (_, i) => i * 0.12);
+  const m = new THREE.Matrix4();
+  const q = new THREE.Quaternion();
+  const s = new THREE.Vector3();
+  const p = new THREE.Vector3();
+  const place = () => {
+    for (let i = 0; i < n; i++) {
+      const a = (i / n) * Math.PI * 2;
+      const k = grow[i];
+      const sc = Math.max(0.01, 1 + Math.sin(k * Math.PI) * 0.3 - (1 - k) * 0.9);
+      const x = Math.cos(a) * radius;
+      const z = Math.sin(a) * radius;
+      stems.setMatrixAt(i, m.compose(p.set(x, 0.2 * sc, z), q, s.set(sc, sc, sc)));
+      heads.setMatrixAt(i, m.compose(p.set(x, 0.45 * sc, z), q, s.set(sc, sc * 1.4, sc)));
+    }
+    stems.instanceMatrix.needsUpdate = true;
+    heads.instanceMatrix.needsUpdate = true;
+  };
+  place();
+  // The ring spans the whole square: never culled as one small box.
+  stems.frustumCulled = heads.frustumCulled = false;
+  g.userData.update = (dt: number) => {
+    let moving = false;
+    for (let i = 0; i < n; i++) {
+      delay[i] -= dt;
+      if (delay[i] <= 0 && grow[i] < 1) {
+        grow[i] = Math.min(1, grow[i] + dt * 2);
+        moving = true;
+      }
+    }
+    if (moving) place();
+  };
+  return g;
+}

@@ -241,6 +241,10 @@ export class NumberLine {
   labelOf(v: number) {
     return this.labels.get(v);
   }
+
+  sprites() {
+    return this.labels.values();
+  }
 }
 
 /* ───────────────────────── Rail pieces ───────────────────────── */

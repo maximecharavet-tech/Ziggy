@@ -137,6 +137,7 @@ export class GrandHuitGame {
   private ray = new THREE.Raycaster();
   private ndc = new THREE.Vector2();
   private perf = { frames: 0, time: 0, ratio: 0 };
+  private tmpV = new THREE.Vector3();
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -394,7 +395,7 @@ export class GrandHuitGame {
       const last = this.pieces[this.pieces.length - 1];
       last.grow = 0;
       (last.group.userData.holder as THREE.Group).scale.set(0.9, 0.01, 1);
-      last.label.scale.setScalar(0.01);
+      last.label.userData.anim = 0.01;
     }
     // Number badges: the stops of the path are always written (big lines skip some numbers).
     const stops = new Set<number>();
@@ -883,7 +884,9 @@ export class GrandHuitGame {
   /** The cart and Ziggy, with a margin. */
   private cartPts(pts: THREE.Vector3[]) {
     const c = this.cart.group.position;
-    pts.push(c.clone().add(new THREE.Vector3(-1.1, -0.2, 0.7)), c.clone().add(new THREE.Vector3(1.1, -0.2, -0.7)), c.clone().add(new THREE.Vector3(0, 2.3, 0)));
+    // All four corners: seen down the line (portrait), the cart's width is across the screen.
+    for (const x of [-1.1, 1.1]) for (const z of [-0.75, 0.75]) pts.push(c.clone().add(new THREE.Vector3(x, -0.2, z)));
+    pts.push(c.clone().add(new THREE.Vector3(0, 2.3, 0)));
   }
 
   /** Never closer than a few stations' width. */
@@ -1139,9 +1142,7 @@ export class GrandHuitGame {
       p.grow = Math.min(1, p.grow + dt * 3);
       const e = 1 + Math.sin(p.grow * Math.PI) * 0.18 * m - (1 - p.grow) * 0.9;
       (p.group.userData.holder as THREE.Group).scale.set(0.9 + 0.1 * p.grow, Math.max(0.01, e), 1);
-      const base = p.label.userData.baseScale as THREE.Vector3;
-      const ls = Math.max(0.01, p.grow);
-      p.label.scale.set(base.x * ls, base.y * ls, 1);
+      p.label.userData.anim = Math.max(0.01, p.grow);
     }
     const growIn = (g: THREE.Object3D | undefined, target?: THREE.Object3D) => {
       if (!g || g.userData.grow === undefined || g.userData.grow >= 1) return;
@@ -1164,9 +1165,7 @@ export class GrandHuitGame {
     for (const q of this.question) q.position.y = (q.userData.base as THREE.Vector3).y + Math.sin(t * 2.4 + q.position.x) * 0.12 * m;
     if (this.gapMarker) {
       const b = this.gapMarker.userData.bubble as THREE.Sprite;
-      const base = b.userData.baseScale as THREE.Vector3;
-      const k = 1 + Math.sin(t * 5) * 0.06 * m;
-      b.scale.set(base.x * k, base.y * k, 1);
+      b.userData.anim = 1 + Math.sin(t * 5) * 0.06 * m;
       const dm = (this.gapMarker.userData.dots as THREE.Points).material as THREE.PointsMaterial;
       dm.opacity = 0.65 + Math.sin(t * 6) * 0.35;
     }
@@ -1190,11 +1189,9 @@ export class GrandHuitGame {
     for (let i = this.bounces.length - 1; i >= 0; i--) {
       const b = this.bounces[i];
       b.t += dt;
-      const base = b.s.userData.baseScale as THREE.Vector3;
-      const k = 1 + Math.sin(Math.min(1, b.t / 0.45) * Math.PI) * 0.4;
-      b.s.scale.set(base.x * k, base.y * k, 1);
+      b.s.userData.anim = 1 + Math.sin(Math.min(1, b.t / 0.45) * Math.PI) * 0.4;
       if (b.t >= 0.45 || !b.s.parent) {
-        b.s.scale.copy(base);
+        b.s.userData.anim = 1;
         this.bounces.splice(i, 1);
       }
     }
@@ -1212,6 +1209,50 @@ export class GrandHuitGame {
     // A little life in the cart while waiting.
     if (this.mode === 'build') this.cart.body.rotation.x = Math.sin(t * 2.2) * 0.02 * m;
     this.stepCamera(dt, t);
+    this.turnZiggy(dt);
+    this.balanceLabels();
+  }
+
+  /**
+   * Ziggy looks where the cart goes, but always turned towards us so we see
+   * his face: in portrait the camera is behind the start, where a fixed turn
+   * showed only the back of his head.
+   */
+  private turnZiggy(dt: number) {
+    const z = this.ziggy;
+    if (z.parent !== this.cart.seat || dt <= 0) return;
+    const local = this.cart.seat.worldToLocal(this.tmpV.copy(this.camera.position));
+    const travel = Math.PI / 2;
+    const toCam = Math.atan2(Math.sin(Math.atan2(local.x, local.z) - travel), Math.cos(Math.atan2(local.x, local.z) - travel));
+    const w = this.mode === 'ride' || this.mode === 'finale' ? 0.5 : 0.75;
+    const want = travel + toCam * w;
+    const e = Math.atan2(Math.sin(want - z.rotation.y), Math.cos(want - z.rotation.y));
+    z.rotation.y += e * Math.min(1, dt * 5);
+  }
+
+  /**
+   * Numbers and rail labels keep a readable size wherever they are: in
+   * portrait the camera looks down the line, so the nearest badges would be
+   * huge and the far ones tiny. Each label is scaled towards the size it has
+   * at the framed centre (only part of the way, so depth still reads).
+   */
+  private balanceLabels() {
+    const cam = this.camera;
+    const ref = Math.max(1, this.camPos.distanceTo(this.camLook));
+    const k = cam.aspect < 0.8 ? 0.62 : cam.aspect < 1.25 ? 0.45 : 0.3;
+    const at = this.tmpV;
+    const apply = (s: THREE.Sprite | undefined) => {
+      const base = s?.userData.baseScale as THREE.Vector3 | undefined;
+      if (!s || !base) return;
+      const d = s.getWorldPosition(at).distanceTo(cam.position);
+      const c = THREE.MathUtils.clamp((d / ref) ** k, 0.6, 1.75);
+      const a = (s.userData.anim as number | undefined) ?? 1;
+      s.scale.set(base.x * a * c, base.y * a * c, 1);
+    };
+    if (this.line) for (const s of this.line.sprites()) apply(s);
+    for (const p of this.pieces) apply(p.label);
+    for (const q of this.question) apply(q);
+    apply(this.gapMarker?.userData.bubble as THREE.Sprite | undefined);
   }
 
   private stepPool(dt: number, t: number) {
