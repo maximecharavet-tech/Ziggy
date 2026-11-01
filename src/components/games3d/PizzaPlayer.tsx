@@ -291,10 +291,20 @@ export function PizzaPlayer() {
                       ))}
                     </span>
                   );
+                // Right amount on the pie: the item turns green with a tick (never for the "?" puzzle).
+                const ok = !hidden && step === 'build' && n === it.n;
                 return (
-                  <span key={it.topping} className="flex items-center gap-1 font-display text-2xl font-bold text-[#4a2a12] sm:text-3xl">
+                  <span
+                    key={it.topping}
+                    className={`relative flex items-center gap-1 rounded-xl px-1 font-display text-2xl font-bold transition-colors sm:text-3xl ${ok ? 'bg-[#dff5d6] text-[#2f7d32]' : 'text-[#4a2a12]'}`}
+                  >
                     <span className={hidden ? 'text-[#ff5c8a]' : ''}>{hidden ? '?' : it.n}</span>
                     <span aria-hidden="true">{e}</span>
+                    {ok ? (
+                      <span className="absolute -right-1.5 -top-1.5 grid h-5 w-5 place-items-center rounded-full bg-[#3fae3f] text-[11px] text-white shadow" aria-hidden="true">
+                        ✓
+                      </span>
+                    ) : null}
                   </span>
                 );
               })}

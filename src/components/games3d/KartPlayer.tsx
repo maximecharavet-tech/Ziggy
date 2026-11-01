@@ -16,6 +16,7 @@ import {
   optionLines,
   planRun,
   questionLines,
+  rightLine,
   wordDoneLine,
   wordSlots,
   type Band,
@@ -138,7 +139,7 @@ export function KartPlayer() {
             speak([line]);
           } else {
             showToast(`${cheerLine(e.n, locale)} ${e.step.answer}`, 'yay');
-            speak([locale === 'fr' ? `${e.step.answer} !` : `${e.step.answer}!`]);
+            speak([rightLine(w, e.step, locale)]);
           }
           break;
         case 'wrong':

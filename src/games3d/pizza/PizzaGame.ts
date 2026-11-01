@@ -224,7 +224,10 @@ export class PizzaGame {
     private cb: PizzaCallbacks
   ) {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
-    this.renderer.toneMappingExposure = 1.0;
+    // Neutral tone mapping keeps the felt, the awning and the toppings as saturated as
+    // their paint (ACES greyed Ziggy's green and creamed the whites).
+    this.renderer.toneMapping = THREE.NeutralToneMapping;
+    this.renderer.toneMappingExposure = 0.95;
     if (this.lowPower) this.renderer.shadowMap.type = THREE.PCFShadowMap;
     // No bloom here: on capable devices it veiled the sunny square (and Ziggy) in white.
     // The oven, bulbs and Ziggy's heart already glow with their own sprites.
@@ -236,9 +239,10 @@ export class PizzaGame {
     this.ziggy.userData.model.hatAnchor.add(makeToque());
     // Soft studio reflections on Ziggy's felt only.
     this.disposeEnv = studioEnvironment(this.renderer, this.ziggy, 0.3);
+    this.trueGreen(this.ziggy);
     this.ziggy.userData.rig.energy = this.reduce ? 0.35 : 1;
     this.thief = new Pigeon();
-    this.bubble = new THREE.Sprite(new THREE.SpriteMaterial({ map: bubbleTexture({ kind: 'text', text: '…' }), transparent: true, depthWrite: false, depthTest: false }));
+    this.bubble = new THREE.Sprite(new THREE.SpriteMaterial({ map: bubbleTexture({ kind: 'text', text: '…' }), transparent: true, depthWrite: false, depthTest: false, toneMapped: false }));
     this.bubble.renderOrder = 10;
     this.huh = canvasSprite(
       128,
@@ -256,6 +260,7 @@ export class PizzaGame {
       0.7
     );
     (this.huh.material as THREE.SpriteMaterial).depthTest = false;
+    (this.huh.material as THREE.SpriteMaterial).toneMapped = false;
     this.huh.renderOrder = 11;
 
     this.views = {
@@ -287,13 +292,12 @@ export class PizzaGame {
     const s = this.scene;
     s.fog = new THREE.Fog('#f5dfc0', 60, 170);
     s.add(makeSky('#3d9be9', '#ffe2b8', '#f5dfc0'));
-    s.add(new THREE.HemisphereLight('#dcefff', '#c99a6e', 0.95));
+    s.add(new THREE.HemisphereLight('#d4e9ff', '#c99a6e', 0.85));
     const sun = this.sun;
     sun.position.set(8, 15, 11);
     sun.target.position.set(-0.5, 0, 1);
     sun.castShadow = true;
     const sm = this.lowPower ? 1024 : 2048;
-    this.renderer.toneMappingExposure = 0.95;
     sun.shadow.mapSize.set(sm, sm);
     Object.assign(sun.shadow.camera, { left: -10, right: 10, top: 9, bottom: -8, near: 2, far: 45 });
     sun.shadow.bias = -0.0006;
@@ -331,12 +335,27 @@ export class PizzaGame {
     s.add(this.pizza.group, this.fx.group, this.glowFx.group, this.bubble, this.huh, this.money);
     this.bubble.visible = false;
     this.huh.visible = false;
+  }
 
-    // Characters and food catch soft studio reflections; the flat world keeps its own light.
-    s.traverse((o) => {
-      const m = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
-      for (const x of Array.isArray(m) ? m : m ? [m] : []) if ((x as THREE.MeshStandardMaterial).isMeshStandardMaterial) (x as THREE.MeshStandardMaterial).envMapIntensity = 0.5;
+  /**
+   * Ziggy's felt as green as the plush in the photos. On capable devices the felt
+   * is a velvet material whose white sheen, under the warm bulbs and the awning's
+   * shade, turned him pale mint: a soft green sheen keeps the fuzz without the
+   * milky edge, and his heart glows without fogging his tummy.
+   */
+  private trueGreen(z: ZiggyActor) {
+    z.traverse((o) => {
+      const mats = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+      for (const m of Array.isArray(mats) ? mats : mats ? [mats] : []) {
+        if (!(m instanceof THREE.MeshStandardMaterial) || !m.normalMap) continue;
+        const green = m.color.g > m.color.r * 1.2 && m.color.g > m.color.b * 1.2;
+        if (m instanceof THREE.MeshPhysicalMaterial && m.sheen > 0) {
+          m.sheen = green ? 0.35 : 0.5;
+          if (green) m.sheenColor.copy(m.color).lerp(new THREE.Color('#d8ffb0'), 0.35);
+        }
+      }
     });
+    (z.userData.model.heartGlow.material as THREE.SpriteMaterial).color.set('#a8853f');
   }
 
   private copyView(v: View): View {
@@ -350,14 +369,18 @@ export class PizzaGame {
       // Portrait phones: a little closer on the pizza and the oven.
       if (name === 'pizza') this.view.r = 0.9;
       if (name === 'oven') this.view.r = 1.3;
+      // Customer and Ziggy both whole in the frame (Ziggy used to be cut at the edge).
       if (name === 'street') {
-        this.view.c.set(-1.35, 2.15, 1.9);
-        this.view.r = 2.1;
-        this.view.pitch = 0.3;
+        this.view.c.set(-1.25, 1.95, 1.6);
+        this.view.r = 2.35;
+        this.view.pitch = 0.2;
+        this.view.yaw = 0.05;
       }
       if (name === 'giraffe') {
-        this.view.c.set(-1.5, 2.9, 1.6);
-        this.view.r = 2.4;
+        this.view.c.set(-1.9, 2.55, 1.5);
+        this.view.r = 2.55;
+        this.view.pitch = 0.16;
+        this.view.yaw = 0.08;
       }
       if (name === 'party') {
         this.view.c.set(-0.6, 1.9, 3.0);
@@ -657,6 +680,16 @@ export class PizzaGame {
     if (r.pigeon && !this.pigeonDone && t === 'olive' && n === want.get('olive')) {
       this.wait(0.5, () => this.pigeonSteal(piece));
       return;
+    }
+    // A topping just right: the customer's face beams in the HUD, a few hearts over the pie.
+    if (r.order.kind === 'count' && r.order.hidden !== t && n === want.get(t)) {
+      this.wait(0.35, () => {
+        if (this.step !== 'build' || (this.state.counts[t] ?? 0) !== n) return;
+        this.cb.onReact('happy');
+        this.audio.ding();
+        const at = this.pizza.group.position.clone().add(new THREE.Vector3(0, 0.2, 0));
+        this.fx.emit(at, { tex: heartTexture(), count: this.lowPower ? 3 : 5, spread: 0.7, up: 0.9, life: 1.2, size: 0.14, gravity: -0.3 });
+      });
     }
     if (!r.autoFinish) return;
     // Little ones: feedback at once.

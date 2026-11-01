@@ -16,6 +16,7 @@ import { tr, type L } from '@/lib/i18n-text';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { MagicMoments, MomentChips } from '@/components/world/MagicMoments';
 import { MascotCutout, ZiggyAvatar } from '@/components/ziggy/Mascot';
+import { isTv, tvStepTarget, useTvStepFocus } from '@/components/games3d/tv-step-focus';
 
 const T = {
   title: { fr: 'Ziggy Paléontologue', en: 'Ziggy the Dino Digger' },
@@ -82,6 +83,7 @@ export function DinoPlayer() {
   const game = useRef<DinoGame | null>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const stageRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState<'intro' | 'loading' | 'play'>('intro');
   const [supported, setSupported] = useState(true);
   const [state, setState] = useState<DinoState | null>(null);
@@ -216,6 +218,14 @@ export function DinoPlayer() {
 
   const s = state;
   const g = () => game.current;
+  // TV remote: every new step puts the focus straight on its main button (Brush, the first answer,
+  // Continue, Next dinosaur, Play again…), never on the page or the 🔊 in between.
+  const step = phase === 'play' && s ? `${s.phase}|${s.round}|${s.step}|${s.canSkip ? 1 : 0}|${s.palms}|${finished ? 1 : 0}|${s.choices.join()}` : null;
+  useTvStepFocus(step, stageRef);
+  // The celebration closed: back to "Play again".
+  const onMagicDone = useCallback(() => {
+    if (isTv()) window.setTimeout(() => tvStepTarget(stageRef.current)?.focus({ preventScroll: true }), 60);
+  }, []);
   const shown = bubble && bubble.kind !== 'instruction' && bubble.kind !== 'question' ? bubble.text : instruction;
   const totalXp = outcomes.reduce((a, o) => a + o.xpGained, 0);
   const magic = outcomes.flatMap((o) => o.magic);
@@ -323,7 +333,7 @@ export function DinoPlayer() {
               </motion.div>
             ) : null}
 
-            <div data-tv-stage className="pointer-events-auto flex w-full max-w-2xl flex-col items-center gap-2">
+            <div ref={stageRef} data-tv-stage className="pointer-events-auto flex w-full max-w-2xl flex-col items-center gap-2">
               {s.phase === 'dig' ? <DigPanel state={s} band={band} locale={locale} onBrush={() => g()?.brushOnce()} /> : null}
 
               {(s.phase === 'digQuestion' || s.phase === 'quiz') && s.question ? (
@@ -379,7 +389,7 @@ export function DinoPlayer() {
                 <motion.button
                   type="button"
                   data-tv-autofocus
-                  initial={reduce ? false : { scale: 0.85, opacity: 0 }}
+                  initial={reduce ? false : { scale: 0.85, opacity: 0.5 }}
                   animate={{ scale: 1, opacity: 1 }}
                   onClick={() => g()?.next()}
                   className={`min-h-[72px] w-full max-w-md rounded-full bg-gradient-to-r from-[#ffb347] to-[#ff7a59] px-8 py-4 text-xl font-bold text-white shadow-[0_10px_30px_rgba(255,122,89,.45)] transition ${s.busy ? 'opacity-70' : ''}`}
@@ -417,11 +427,13 @@ export function DinoPlayer() {
                       {tr(T.back, locale)}
                     </Link>
                   </div>
-                  <MagicMoments key={run} moments={magic} locale={locale} />
                 </motion.div>
               ) : null}
             </div>
           </div>
+
+          {/* The level-up celebration: outside the (moving) museum card, so it really covers the screen. */}
+          {s.phase === 'museum' && finished ? <MagicMoments key={run} moments={magic} locale={locale} onDone={onMagicDone} /> : null}
 
           {/* The museum photo */}
           {flash && !reduce ? (

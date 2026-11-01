@@ -207,7 +207,10 @@ export class KartGame {
     this.seedR = rng(seed + 17);
     this.base = run.pacing.speed;
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
-    this.renderer.toneMappingExposure = 1.08;
+    // Neutral tone mapping keeps the rainbow road as bright as its paint: ACES greyed the
+    // pastel lanes into the pink sky (the "white veil" seen on capable phones).
+    this.renderer.toneMapping = THREE.NeutralToneMapping;
+    this.renderer.toneMappingExposure = 0.95;
     if (this.lowPower) this.renderer.shadowMap.type = THREE.PCFShadowMap;
     // No bloom on the pastel sky road: on capable devices it veiled everything in white.
     this.post = new Post(this.renderer, this.scene, this.camera, { enabled: false });
@@ -231,6 +234,7 @@ export class KartGame {
     this.ziggy = makeZiggy({ lowPower: this.lowPower });
     this.buildWorld(seed);
     this.dropEnv = studioEnvironment(this.renderer, this.ziggy, 0.45);
+    this.trueGreen();
 
     this.resize = new ResizeObserver(() => this.fit());
     this.resize.observe(canvas.parentElement ?? canvas);
@@ -256,7 +260,7 @@ export class KartGame {
     const s = this.scene;
     s.fog = new THREE.Fog('#ffe1f0', this.lowPower ? 55 : 70, this.lowPower ? 260 : 340);
     s.add(makeSky(), makeSun());
-    s.add(new THREE.HemisphereLight('#d6ecff', '#ffd9ee', 1.25));
+    s.add(new THREE.HemisphereLight('#d6ecff', '#ffd9ee', 1.0));
     this.sun.castShadow = true;
     const sm = this.lowPower ? 1024 : 2048;
     this.sun.shadow.mapSize.set(sm, sm);
@@ -301,6 +305,22 @@ export class KartGame {
     this.kart.seat.add(z);
     s.add(this.kart.root, this.trailer.root);
     s.add(this.puffs.group, this.sparkles.group, this.confetti.mesh, this.bubbles.group, this.trail.mesh);
+  }
+
+  /**
+   * Ziggy's felt as green as the plush: on capable devices the velvet sheen is white
+   * and paled him to mint against the pastel sky; a soft green sheen keeps the fuzz.
+   */
+  private trueGreen() {
+    this.ziggy.traverse((o) => {
+      const mats = (o as THREE.Mesh).material as THREE.Material | THREE.Material[] | undefined;
+      for (const m of Array.isArray(mats) ? mats : mats ? [mats] : []) {
+        if (!(m instanceof THREE.MeshPhysicalMaterial) || !m.normalMap || m.sheen <= 0) continue;
+        const green = m.color.g > m.color.r * 1.2 && m.color.g > m.color.b * 1.2;
+        m.sheen = green ? 0.35 : 0.5;
+        if (green) m.sheenColor.copy(m.color).lerp(new THREE.Color('#d8ffb0'), 0.35);
+      }
+    });
   }
 
   /** A candy-striped post (vertex colours), shared by every gate. */
