@@ -130,10 +130,11 @@ function drawZiggy(b: PageBuilder, at: Place, look: ZiggyLook) {
   }
 
   // Ribbed legs and big boots.
+  const small = k < 0.8;
   const legs: [P, P, P, 1 | -1][] = look.space
     ? [
-        [[266, 440], [246, 484], [236, 508], -1],
-        [[334, 440], [362, 476], [376, 496], 1],
+        [[266, 440], [242, 506], [232, 532], -1],
+        [[334, 440], [366, 496], [382, 518], 1],
       ]
     : [
         [[266, 440], [262, 490], [256, 516], -1],
@@ -167,22 +168,26 @@ function drawZiggy(b: PageBuilder, at: Place, look: ZiggyLook) {
     const by = E[1] + uy * 4 * k;
     const nx = -uy * 16.5 * k;
     const ny = ux * 16.5 * k;
-    b.r(`ziggy-band-${side}`, capsule(bx + nx, by + ny, bx - nx, by - ny, 13 * k), limbs);
+    // Too thin to tap on a small Ziggy: the wrist band is then just a line.
+    if (small) b.d(line([bx + nx * 1.3, by + ny * 1.3], [bx - nx * 1.3, by - ny * 1.3]), undefined, dw(4));
+    else b.r(`ziggy-band-${side}`, capsule(bx + nx, by + ny, bx - nx, by - ny, 13 * k), limbs);
   };
   arm('left', [206, 360], look.armLeft);
   arm('right', [394, 360], look.armRight);
 
   // Shoulders, body, apron and the glowing heart.
-  b.r('ziggy-shoulder-left', circle(...T(216, 346), 27 * k), suit);
-  b.r('ziggy-shoulder-right', circle(...T(384, 346), 27 * k), suit);
+  if (!look.space) {
+    b.r('ziggy-shoulder-left', circle(...T(216, 346), 27 * k), suit);
+    b.r('ziggy-shoulder-right', circle(...T(384, 346), 27 * k), suit);
+  }
   b.r('ziggy-body', squircle(...T(300, 378), 84 * k, 76 * k, 3.2), suit);
   b.deco(quad(T(226, 418), T(300, 438), T(374, 418)), undefined, dw(3));
   if (look.chef) {
     b.r('ziggy-apron', smooth([T(246, 318), T(354, 318), T(366, 380), T(372, 446), T(300, 458), T(228, 446), T(234, 380)], true, 0.7), 'white');
     b.deco(rect(...T(318, 414), 34 * k, 26 * k, 6 * k), undefined, dw(3));
   }
-  b.r('ziggy-heart-rim', heart(...T(300, 380), 100 * k), 'orange');
-  b.r('ziggy-heart', heart(...T(300, 379), 73 * k), 'yellow');
+  b.r('ziggy-heart-rim', heart(...T(300, 380), 108 * k), 'orange');
+  b.r('ziggy-heart', heart(...T(300, 380), 70 * k), 'yellow');
 
   // Bubble helmet (astronaut): drawn over the body, under the head.
   if (look.space) {
@@ -190,15 +195,26 @@ function drawZiggy(b: PageBuilder, at: Place, look: ZiggyLook) {
     b.deco(quad(H(140, 150), H(150, 60), H(226, 6)), undefined, dw(5));
   }
 
-  // Antennas with felt balls, round ear pads.
-  b.r('ziggy-antenna-left', capsule(...H(256, 112), ...H(222, 60), 12 * k), 'green');
-  b.r('ziggy-antenna-right', capsule(...H(344, 110), ...H(364, 50), 12 * k), 'green');
-  b.r('ziggy-ball-left', circle(...H(218, 52), 20 * k), 'green');
-  b.r('ziggy-ball-right', circle(...H(366, 40), 20 * k), 'green');
+  // Antennas with felt balls (spread apart under a chef's hat), round ear pads.
+  const antennas: [string, P, P, P][] = look.chef
+    ? [
+        ['left', [252, 112], [206, 76], [200, 66]],
+        ['right', [348, 112], [394, 76], [400, 66]],
+      ]
+    : [
+        ['left', [256, 112], [222, 60], [218, 52]],
+        ['right', [344, 110], [364, 50], [366, 40]],
+      ];
+  for (const [side, s, e, ball] of antennas) {
+    // A small Ziggy's stalk is too thin to fill: draw it as a line.
+    if (small) b.d(line(H(...s), H(...e)), undefined, dw(10));
+    else b.r(`ziggy-antenna-${side}`, capsule(...H(...s), ...H(...e), 12 * k), 'green');
+    b.r(`ziggy-ball-${side}`, circle(...H(...ball), 21 * k), 'green');
+  }
   b.r('ziggy-ear-left', ellipse(...H(156, 214), 33 * k, 50 * k), 'green');
-  b.r('ziggy-ear-left-in', ellipse(...H(146, 214), 17 * k, 33 * k), 'lime');
+  if (!small) b.r('ziggy-ear-left-in', ellipse(...H(146, 214), 17 * k, 33 * k), 'lime');
   b.r('ziggy-ear-right', ellipse(...H(444, 214), 33 * k, 50 * k), 'green');
-  b.r('ziggy-ear-right-in', ellipse(...H(454, 214), 17 * k, 33 * k), 'lime');
+  if (!small) b.r('ziggy-ear-right-in', ellipse(...H(454, 214), 17 * k, 33 * k), 'lime');
 
   // Head and face.
   b.r('ziggy-head', squircle(...H(300, 210), 146 * k, 120 * k, 2.35), 'green');
@@ -222,17 +238,18 @@ function drawZiggy(b: PageBuilder, at: Place, look: ZiggyLook) {
     for (const deg of side === 'left' ? [196, 210, 226] : [314, 330, 344]) lashes += line(onEye(deg, 2), onEye(deg + (side === 'left' ? -6 : 6), 15));
     b.d(lashes, undefined, dw(5));
   }
-  b.r('ziggy-cheek-left', circle(...H(214, 272), 15 * k), 'pink');
-  b.r('ziggy-cheek-right', circle(...H(386, 272), 15 * k), 'pink');
+  b.r('ziggy-cheek-left', circle(...H(212, 274), 17 * k), 'pink');
+  b.r('ziggy-cheek-right', circle(...H(388, 274), 17 * k), 'pink');
   b.d(quad(H(214, 156), H(236, 140), H(262, 150)), undefined, dw(7));
   b.d(quad(H(338, 148), H(364, 136), H(388, 152)), undefined, dw(7));
   b.d(quad(H(272, 274), H(302, 300), H(334, 270)), undefined, dw(6));
 
   if (look.space) b.r('ziggy-collar', ellipse(...H(300, 404), 132 * k, 28 * k), 'grey');
   if (look.chef) {
-    b.r('ziggy-hat-puff', blob([[H(252, 34)[0], H(252, 34)[1], 40 * k], [H(300, 6)[0], H(300, 6)[1], 50 * k], [H(348, 34)[0], H(348, 34)[1], 40 * k]], H(0, 74)[1]), 'white');
-    b.deco(quad(H(276, 70), H(272, 40), H(280, 18)) + quad(H(324, 70), H(328, 40), H(320, 18)), undefined, dw(3));
-    b.r('ziggy-hat-band', rect(...H(246, 68), 108 * k, 34 * k, 10 * k), 'white');
+    const puff = (x: number, y: number, r: number): [number, number, number] => [...H(x, y), r * k];
+    b.r('ziggy-hat-puff', blob([puff(260, 40, 36), puff(300, 14, 44), puff(340, 40, 36)], H(0, 74)[1]), 'white');
+    b.deco(quad(H(280, 70), H(276, 44), H(284, 22)) + quad(H(320, 70), H(324, 44), H(316, 22)), undefined, dw(3));
+    b.r('ziggy-hat-band', rect(...H(252, 66), 96 * k, 34 * k, 10 * k), 'white');
   }
 }
 
@@ -322,32 +339,31 @@ export const ziggyAstronaut = definePage(
   (b) => {
     b.r('space', rect(0, 0, 600, 600), 'navy');
     // Ringed planet and the Earth, far away.
-    b.r('ring-back', ellipseBand(100, 104, 80, 22, 58, 13, -14, false), 'yellow');
-    b.r('planet', circle(100, 104, 42), 'orange');
-    b.deco(quad([62, 92], [100, 82], [138, 88]) + quad([60, 120], [100, 132], [140, 116]), undefined, 3);
-    b.r('ring-front', ellipseBand(100, 104, 80, 22, 58, 13, -14, true), 'yellow');
-    b.r('earth', circle(530, 500, 44), 'blue');
-    b.r('land#', smooth([[506, 474], [534, 466], [550, 482], [532, 498], [512, 494]]), 'green');
-    b.r('land#', smooth([[530, 516], [558, 504], [568, 522], [546, 536]]), 'green');
+    b.r('ring-back', ellipseBand(100, 100, 82, 23, 58, 13, -14, false), 'yellow');
+    b.r('planet', circle(100, 100, 44), 'orange');
+    b.deco(quad([60, 88], [100, 78], [140, 84]) + quad([58, 118], [100, 130], [142, 112]), undefined, 3);
+    b.r('ring-front', ellipseBand(100, 100, 82, 23, 58, 13, -14, true), 'yellow');
+    b.r('earth', circle(532, 504, 44), 'blue');
+    b.r('land#', smooth([[506, 478], [534, 470], [552, 486], [534, 502], [514, 498]]), 'green');
+    b.r('land#', smooth([[532, 520], [560, 508], [570, 526], [548, 540]]), 'green');
     // Stars and a comet.
     const stars: [number, number, number][] = [
-      [214, 52, 16],
-      [262, 150, 10],
-      [560, 70, 18],
-      [40, 236, 13],
-      [176, 228, 10],
-      [560, 360, 14],
-      [440, 560, 11],
-      [516, 190, 10],
-      [300, 40, 9],
+      [226, 52, 19],
+      [196, 170, 15],
+      [560, 66, 19],
+      [36, 300, 16],
+      [562, 372, 16],
+      [430, 560, 15],
+      [548, 190, 14],
+      [330, 34, 13],
     ];
-    for (const [x, y, r] of stars) b.r('star#', softStar(x, y, r, r * 0.45), 'yellow');
-    b.r('comet-tail', smooth([[404, 474], [340, 448], [352, 466], [330, 474], [398, 496]], true, 0.5), 'sky');
-    b.r('comet', circle(410, 484, 15), 'yellow');
+    for (const [x, y, r] of stars) b.r('star#', softStar(x, y, r, r * 0.55), 'yellow');
+    b.r('comet-tail', smooth([[124, 232], [60, 196], [76, 216], [52, 226], [118, 256]], true, 0.5), 'sky');
+    b.r('comet', circle(132, 246, 16), 'yellow');
     // The Moon, with a sleepy smile and Ziggy's flag.
     b.d(line([238, 396], [238, 318]), undefined, 5);
-    b.r('flag', smooth([[238, 318], [292, 324], [282, 340], [292, 356], [238, 352]], true, 0.3), 'red');
-    b.r('flag-heart', heart(260, 336, 20), 'yellow');
+    b.r('flag', smooth([[238, 318], [294, 324], [284, 340], [294, 358], [238, 354]], true, 0.3), 'red');
+    b.r('flag-heart', heart(262, 338, 24), 'yellow');
     b.r('moon', circle(100, 600, 250), 'cream');
     b.r('crater#', circle(40, 412, 22), 'sand');
     b.r('crater#', circle(262, 484, 20), 'sand');
@@ -358,7 +374,7 @@ export const ziggyAstronaut = definePage(
     b.d(happyEye(112, 474, 14) + happyEye(180, 474, 14), undefined, 5);
     b.d(smile(146, 504, 46, 16), undefined, 5);
 
-    drawZiggy(b, { x: 404, y: 196, k: 0.5 }, { space: true, suit: 'white', limbs: 'white', hands: 'grey', boots: 'grey', armLeft: [120, 290], armRight: [494, 256] });
+    drawZiggy(b, { x: 396, y: 206, k: 0.62 }, { space: true, suit: 'white', limbs: 'white', hands: 'grey', boots: 'grey', armLeft: [134, 250], armRight: [482, 250] });
   }
 );
 
@@ -368,72 +384,70 @@ export const solarSystem = definePage(
   (b) => {
     const S: P = [-40, 300];
     b.r('space', rect(0, 0, 600, 600), 'navy');
-    for (const R of [215, 255, 300, 345, 425, 490, 560, 605]) b.deco(arc(S[0], S[1], R, -75, 75), undefined, 2);
+    for (const R of [230, 270, 315, 360, 435, 500, 562, 610]) b.deco(arc(S[0], S[1], R, -75, 75), undefined, 2);
     const stars: [number, number, number][] = [
-      [40, 50, 12],
-      [226, 48, 10],
-      [470, 46, 13],
-      [576, 128, 10],
-      [430, 272, 10],
-      [574, 340, 12],
-      [40, 556, 12],
-      [176, 548, 10],
-      [356, 566, 12],
-      [186, 320, 8],
-      [112, 150, 9],
-      [320, 340, 8],
+      [40, 50, 15],
+      [236, 44, 14],
+      [470, 36, 15],
+      [578, 128, 13],
+      [420, 272, 13],
+      [576, 334, 14],
+      [44, 562, 15],
+      [196, 552, 14],
+      [380, 566, 15],
+      [214, 336, 12],
     ];
-    for (const [x, y, r] of stars) b.r('star#', softStar(x, y, r, r * 0.45), 'yellow');
+    for (const [x, y, r] of stars) b.r('star#', softStar(x, y, r, r * 0.55), 'yellow');
     // The Sun.
-    for (let a = -80; a <= 80; a += 16) b.r('sun-ray#', petal(S[0], S[1], 168, 214, a, 15), 'orange');
+    for (let a = -80; a <= 80; a += 16) b.r('sun-ray#', poly([polar(S[0], S[1], 150, a - 6.5), polar(S[0], S[1], 212, a), polar(S[0], S[1], 150, a + 6.5)]), 'orange');
     b.r('sun', circle(S[0], S[1], 172), 'yellow');
-    b.r('sun-cheek-left', circle(14, 318, 14), 'pink');
-    b.r('sun-cheek-right', circle(102, 318, 14), 'pink');
+    b.r('sun-cheek-left', circle(14, 320, 15), 'pink');
+    b.r('sun-cheek-right', circle(104, 320, 15), 'pink');
     inkEye(b, 30, 276, 10);
-    inkEye(b, 86, 276, 10);
-    b.d(smile(58, 318, 48, 20), undefined, 5);
+    inkEye(b, 88, 276, 10);
+    b.d(smile(59, 318, 50, 20), undefined, 5);
 
     const at = (R: number, deg: number) => polar(S[0], S[1], R, deg);
     // Mercury, Venus, the Earth and its Moon, Mars.
-    const [mx, my] = at(215, -28);
-    b.r('mercury', circle(mx, my, 17), 'grey');
-    face(b, mx, my, 17);
-    const [vx, vy] = at(255, 30);
-    b.r('venus', circle(vx, vy, 23), 'orange');
-    face(b, vx, vy, 23);
-    const [ex, ey] = at(300, -8);
-    b.r('earth', circle(ex, ey, 31), 'blue');
-    b.r('earth-land#', smooth([[ex - 24, ey - 12], [ex - 8, ey - 26], [ex + 6, ey - 20], [ex - 4, ey - 8], [ex - 18, ey - 2]]), 'green');
-    b.r('earth-land#', smooth([[ex + 8, ey + 10], [ex + 26, ey + 4], [ex + 22, ey + 20], [ex + 8, ey + 26]]), 'green');
-    face(b, ex, ey, 31);
-    b.r('earth-moon', circle(ex + 44, ey - 30, 11), 'grey');
-    const [rx, ry] = at(345, 24);
-    b.r('mars', circle(rx, ry, 23), 'red');
-    face(b, rx, ry, 23);
+    const [mx, my] = at(230, -30);
+    b.r('mercury', circle(mx, my, 19), 'grey');
+    face(b, mx, my, 19);
+    const [vx, vy] = at(270, 30);
+    b.r('venus', circle(vx, vy, 26), 'orange');
+    face(b, vx, vy, 26);
+    const [ex, ey] = at(315, -6);
+    b.r('earth', circle(ex, ey, 34), 'blue');
+    b.r('earth-land#', smooth([[ex - 30, ey - 8], [ex - 20, ey - 26], [ex - 2, ey - 32], [ex - 6, ey - 22], [ex - 22, ey - 10]]), 'green');
+    b.r('earth-land#', smooth([[ex + 14, ey + 26], [ex + 30, ey + 8], [ex + 32, ey + 18], [ex + 22, ey + 28]]), 'green');
+    face(b, ex, ey, 30);
+    b.r('earth-moon', circle(ex + 48, ey - 34, 12), 'grey');
+    const [rx, ry] = at(360, 22);
+    b.r('mars', circle(rx, ry, 26), 'red');
+    face(b, rx, ry, 26);
     // Jupiter and its stripes.
-    const [jx, jy] = at(425, -24);
-    b.r('jupiter', circle(jx, jy, 60), 'sand');
-    b.r('jupiter-stripe#', circleBand(jx, jy, 60, jy - 48, jy - 30), 'caramel');
-    b.r('jupiter-stripe#', circleBand(jx, jy, 60, jy + 32, jy + 48), 'caramel');
-    b.r('jupiter-cheek-left', circle(jx - 34, jy + 14, 9), 'pink');
-    b.r('jupiter-cheek-right', circle(jx + 34, jy + 14, 9), 'pink');
-    face(b, jx, jy, 50);
+    const [jx, jy] = at(435, -25);
+    b.r('jupiter', circle(jx, jy, 64), 'sand');
+    b.r('jupiter-stripe#', circleBand(jx, jy, 64, jy - 52, jy - 32), 'caramel');
+    b.r('jupiter-stripe#', circleBand(jx, jy, 64, jy + 34, jy + 52), 'caramel');
+    b.r('jupiter-cheek-left', circle(jx - 36, jy + 14, 10), 'pink');
+    b.r('jupiter-cheek-right', circle(jx + 36, jy + 14, 10), 'pink');
+    face(b, jx, jy, 52);
     // Saturn and its ring.
-    const [sx, sy] = at(490, 14);
-    b.r('saturn-ring-back', ellipseBand(sx, sy, 86, 24, 60, 14, -12, false), 'orange');
-    b.r('saturn', circle(sx, sy, 40), 'yellow');
-    face(b, sx, sy - 8, 34);
-    b.r('saturn-ring-front', ellipseBand(sx, sy, 86, 24, 60, 14, -12, true), 'orange');
+    const [sx, sy] = at(500, 12);
+    b.r('saturn-ring-back', ellipseBand(sx, sy, 92, 26, 64, 15, -12, false), 'orange');
+    b.r('saturn', circle(sx, sy, 44), 'yellow');
+    face(b, sx, sy - 9, 36);
+    b.r('saturn-ring-front', ellipseBand(sx, sy, 92, 26, 64, 15, -12, true), 'orange');
     // Uranus and Neptune.
-    const [ux, uy] = at(560, -10);
-    b.r('uranus', circle(ux, uy, 30), 'turquoise');
-    face(b, ux, uy, 30);
-    const [nx, ny] = at(605, 21);
-    b.r('neptune', circle(nx, ny, 30), 'sky');
-    face(b, nx, ny, 30);
+    const [ux, uy] = at(562, -8);
+    b.r('uranus', circle(ux, uy, 34), 'turquoise');
+    face(b, ux, uy, 34);
+    const [nx, ny] = at(610, 20);
+    b.r('neptune', circle(nx, ny, 34), 'sky');
+    face(b, nx, ny, 34);
     // A comet.
     b.r('comet-tail', smooth([[190, 108], [256, 78], [246, 96], [268, 104], [196, 126]], true, 0.5), 'lavender');
-    b.r('comet', circle(184, 118, 13), 'white');
+    b.r('comet', circle(184, 118, 14), 'white');
   }
 );
 
@@ -455,11 +469,18 @@ export const bubbleDragon = definePage(
     // Tail with a heart tip, wings behind the body.
     b.r('tail', smooth([[150, 488], [100, 500], [62, 476], [50, 432], [72, 412], [86, 442], [112, 462], [148, 454]]), 'green');
     b.r('tail-tip', heart(60, 398, 38), 'orange');
-    const wing: P[] = [[296, 372], [356, 268], [366, 304], [396, 300], [384, 330], [408, 348], [362, 356], [336, 388]];
-    b.r('wing-right', smooth(wing, true, 0.35), 'pink');
-    b.deco(quad([316, 362], [340, 330], [362, 300]) + quad([330, 372], [360, 352], [384, 334]), undefined, 3);
-    b.r('wing-left', smooth(mirrorX(wing, 230), true, 0.35), 'pink');
-    b.deco(quad([144, 362], [120, 330], [98, 300]) + quad([130, 372], [100, 352], [76, 334]), undefined, 3);
+    // Bat-like wings: a curved top edge and three soft scallops below.
+    const wing = (m: (p: P) => P) => {
+      const q = (c: P, e: P) => `Q${xy(m(c))} ${xy(m(e))}`;
+      return `M${xy(m([300, 386]))}Q${xy(m([326, 290]))} ${xy(m([430, 246]))}${q([400, 282], [398, 314])}${q([374, 318], [364, 352])}${q([338, 358], [318, 396])}Z`;
+    };
+    const fingers = (m: (p: P) => P) => quad(m([306, 380]), m([346, 330]), m([398, 314])) + quad(m([310, 386]), m([336, 362]), m([364, 352]));
+    const id = (p: P): P => p;
+    const flip = (p: P): P => [460 - p[0], p[1]];
+    b.r('wing-right', wing(id), 'pink');
+    b.deco(fingers(id), undefined, 3);
+    b.r('wing-left', wing(flip), 'pink');
+    b.deco(fingers(flip), undefined, 3);
 
     // Round body, belly, arms and feet.
     b.r('body', ellipse(230, 432, 100, 100), 'green');
@@ -489,8 +510,8 @@ export const bubbleDragon = definePage(
 
     // The bubbles, each with a little shine.
     const bubbles: [number, number, number, string][] = [
-      [294, 318, 13, 'lavender'],
-      [332, 278, 19, 'sky'],
+      [306, 336, 13, 'lavender'],
+      [340, 290, 19, 'sky'],
       [374, 222, 26, 'pink'],
       [448, 168, 38, 'lavender'],
       [532, 96, 32, 'sky'],
@@ -521,10 +542,10 @@ export const mermaid = definePage(
     b.deco('M40 340q20 -8 40 0M470 330q20 -8 40 0M520 400q20 -8 40 0M30 450q20 -8 40 0', undefined, 3);
 
     // A jumping fish and the seaweed behind the rock.
-    fish(b, 90, 372, 32, 'orange', 'yellow', 1, -24);
-    b.d('M42 404q-8 10 0 18M134 402q8 10 0 18', undefined, 3);
-    b.r('seaweed#', leaf([110, 480], [86, 360], 16), 'green');
-    b.r('seaweed#', leaf([132, 470], [152, 376], 14), 'forest');
+    fish(b, 76, 262, 32, 'orange', 'yellow', 1, -30);
+    b.d('M40 318q-8 -10 0 -20M120 304q10 -8 18 0', undefined, 3);
+    b.r('seaweed#', leaf([104, 490], [74, 330], 20), 'green');
+    b.r('seaweed#', leaf([126, 470], [160, 340], 18), 'forest');
 
     // The rock.
     b.r('rock', blob([[150, 472, 80], [262, 424, 112], [384, 456, 90], [474, 514, 60]], 600), 'grey');
@@ -534,10 +555,12 @@ export const mermaid = definePage(
 
     // Mermaid: hair, tail and fin, body, arms, face.
     b.r('hair-back', smooth([[270, 134], [330, 150], [350, 220], [352, 290], [376, 344], [328, 340], [300, 304], [240, 304], [212, 340], [164, 344], [188, 290], [190, 220], [210, 150]]), 'raspberry');
-    b.r('tail', smooth([[234, 332], [306, 332], [334, 368], [376, 402], [424, 424], [442, 446], [418, 462], [362, 450], [304, 426], [250, 402], [226, 368]], true, 0.8), 'turquoise');
+    b.r('tail', smooth([[234, 332], [306, 332], [334, 368], [376, 400], [420, 428], [436, 448], [420, 462], [362, 450], [304, 426], [250, 402], [226, 368]], true, 0.8), 'turquoise');
     b.deco('M260 360q12 10 24 0M290 380q12 10 24 0M320 398q12 10 24 0M352 414q12 10 24 0M384 428q12 10 24 0M254 386q10 8 20 2', undefined, 3);
-    b.r('fin', smooth([[424, 438], [462, 394], [496, 398], [472, 440], [512, 470], [484, 494], [436, 466]], true, 0.8), 'purple');
-    b.deco('M440 448L476 412M444 456L490 476', undefined, 3);
+    b.r('fin-top', petal(428, 448, 0, 74, -38, 24), 'purple');
+    b.deco(quad([440, 440], [462, 420], [480, 404]), undefined, 3);
+    b.r('fin-bottom', petal(428, 448, 0, 74, 28, 24), 'purple');
+    b.deco(quad([442, 456], [466, 468], [488, 480]), undefined, 3);
     b.r('waist', smooth([[232, 324], [308, 324], [312, 344], [270, 352], [228, 344]], true, 0.6), 'mint');
     b.r('torso', smooth([[250, 256], [290, 256], [302, 292], [304, 330], [236, 330], [238, 292]], true, 0.8), 'peach');
     b.r('shell-left', ellipse(257, 292, 15, 12), 'purple');
@@ -585,41 +608,41 @@ export const pirateShip = definePage(
     b.d('M330 170q10 -10 20 0q10 -10 20 0M420 210q8 -8 16 0q8 -8 16 0', undefined, 3);
 
     // Treasure island: palm tree and an open chest of coins.
-    b.r('island', smooth([[372, 476], [410, 414], [480, 384], [560, 380], [630, 404], [630, 476]], true, 0.7), 'sand');
-    b.r('palm-trunk', smooth([[532, 396], [552, 396], [546, 330], [532, 262], [516, 264], [530, 330]], true, 0.6), 'brown');
-    b.deco('M528 360h20M524 330h18M520 300h16', undefined, 3);
-    const top: P = [526, 258];
+    b.r('island', smooth([[420, 476], [450, 418], [510, 390], [580, 386], [640, 404], [640, 476]], true, 0.7), 'sand');
+    b.r('palm-trunk', smooth([[562, 400], [582, 400], [574, 330], [556, 262], [540, 264], [558, 330]], true, 0.6), 'brown');
+    b.deco('M558 366h20M552 334h18M546 302h16', undefined, 3);
+    const top: P = [550, 258];
     const fronds: [P, string][] = [
-      [[452, 262], 'green'],
-      [[470, 210], 'forest'],
-      [[530, 192], 'green'],
-      [[584, 214], 'forest'],
-      [[598, 266], 'green'],
+      [[474, 264], 'green'],
+      [[492, 208], 'forest'],
+      [[552, 188], 'green'],
+      [[604, 212], 'forest'],
+      [[620, 266], 'green'],
     ];
-    for (const [tip, c] of fronds) b.r('palm-leaf#', leaf(top, tip, 18), c);
-    b.r('coconut#', circle(514, 272, 10), 'caramel');
-    b.r('coconut#', circle(536, 274, 10), 'caramel');
-    b.r('chest-lid', poly([[420, 380], [488, 380], [498, 346], [428, 340]]), 'caramel');
-    for (const [x, y] of [[436, 374], [454, 368], [472, 370], [446, 382], [466, 382]] as P[]) b.r('coin#', circle(x, y, 10), 'gold');
-    b.r('chest', rect(416, 380, 76, 44, 6), 'brown');
-    b.r('chest-band', rect(416, 394, 76, 12), 'yellow');
-    b.r('chest-lock', rect(446, 390, 16, 20, 4), 'orange');
+    for (const [tip, c] of fronds) b.r('palm-leaf#', leaf(top, tip, 19), c);
+    b.r('coconut#', circle(538, 272, 11), 'caramel');
+    b.r('coconut#', circle(561, 274, 11), 'caramel');
+    b.r('chest-lid', poly([[464, 386], [532, 386], [542, 352], [472, 346]]), 'caramel');
+    for (const [x, y] of [[480, 380], [498, 374], [516, 376], [490, 388], [510, 388]] as P[]) b.r('coin#', circle(x, y, 10), 'gold');
+    b.r('chest', rect(460, 386, 76, 44, 6), 'brown');
+    b.r('chest-band', rect(460, 400, 76, 12), 'yellow');
+    b.r('chest-lock', rect(490, 396, 16, 20, 4), 'orange');
 
     // The sea behind the ship.
     b.r('sea', waveTop(0, 446, 600, 154, 7, 5), 'blue');
 
     // Ship: jib and bowsprit, mast, flag, crow's nest with Ziggy, striped sails, hull.
-    b.r('bowsprit', capsule(370, 398, 448, 350, 10), 'brown');
-    b.r('jib', poly([[232, 104], [440, 352], [330, 366]]), 'white');
+    b.r('bowsprit', capsule(370, 398, 436, 356, 11), 'brown');
+    b.r('jib', poly([[232, 104], [428, 356], [330, 368]]), 'white');
     b.r('mast', rect(208, 36, 16, 364, 4), 'brown');
-    b.r('flag', smooth([[224, 30], [292, 40], [280, 54], [294, 70], [224, 76]], true, 0.3), 'black');
+    b.r('flag', smooth([[224, 30], [292, 40], [280, 54], [294, 70], [224, 76]], true, 0.3), 'purple');
     b.r('flag-heart', heart(250, 54, 26), 'red');
-    b.r('ziggy-head', circle(216, 88, 17), 'green');
-    b.deco('M206 76L198 62M226 76L234 62', undefined, 3);
-    b.deco(circle(198, 60, 4) + circle(234, 60, 4), 'ink');
-    inkEye(b, 210, 88, 3.2);
-    inkEye(b, 222, 88, 3.2);
-    b.d(smile(216, 96, 10, 4), undefined, 2.5);
+    b.r('ziggy-head', circle(216, 90, 21), 'green');
+    b.deco('M204 74L194 60M228 74L238 60', undefined, 3.5);
+    b.deco(circle(193, 58, 5) + circle(239, 58, 5), 'ink');
+    inkEye(b, 208, 88, 3.6);
+    inkEye(b, 224, 88, 3.6);
+    b.d(smile(216, 97, 12, 4), undefined, 2.5);
     b.r('crows-nest', rect(186, 98, 60, 24, 6), 'caramel');
     b.deco('M200 98V122M216 98V122M232 98V122', undefined, 2.5);
     sail(b, 'top-sail', 162, 270, 132, 178, 14, ['white', 'red', 'white']);
@@ -638,10 +661,11 @@ export const pirateShip = definePage(
     // Waves in front, fish and a seagull.
     b.r('wave#', waveTop(0, 492, 600, 108, 9, 5), 'turquoise');
     b.deco('M30 520q16 -10 32 0M200 530q16 -10 32 0M420 520q16 -10 32 0', undefined, 3);
-    b.r('wave#', waveTop(0, 552, 600, 48, 7, 4, 2), 'navy');
-    fish(b, 520, 492, 22, 'orange', 'yellow', -1, 30);
-    b.r('splash#', circle(546, 520, 6), 'white');
-    b.r('splash#', circle(492, 524, 5), 'white');
+    b.r('wave#', waveTop(0, 556, 600, 44, 7, 4, 2), 'blue');
+    fish(b, 518, 500, 24, 'orange', 'yellow', -1, 30);
+    b.r('splash#', circle(552, 528, 7), 'white');
+    b.r('splash#', circle(488, 532, 6), 'white');
+    for (const [x, y] of [[90, 574], [300, 580], [440, 572]] as P[]) b.r('bubble#', circle(x, y, 8), 'white');
   }
 );
 
@@ -655,37 +679,42 @@ export const fireTruck = definePage(
     b.r('cloud#', cloud(300, 78, 150, 58), 'white');
     b.r('cloud#', cloud(510, 112, 120, 48), 'white');
     b.r('hill', hill(0, 360, [300, 290], 600, 356, 600), 'green');
-    b.r('road', rect(0, 456, 600, 144), 'grey');
-    b.d(rect(20, 548, 80, 14, 7) + rect(200, 548, 80, 14, 7) + rect(380, 548, 80, 14, 7) + rect(560, 548, 80, 14, 7), undefined, 4);
+    b.r('road', rect(0, 470, 600, 130), 'grey');
+    b.d(rect(20, 572, 80, 12, 6) + rect(200, 572, 80, 12, 6) + rect(380, 572, 80, 12, 6) + rect(560, 572, 80, 12, 6), undefined, 4);
 
-    // Truck.
-    b.r('ladder', rect(96, 166, 314, 38, 12), 'white');
+    // Truck (shifted down onto the road).
+    const Y = 36;
+    const dy = (pts: P[]) => pts.map(([x, y]) => [x, y + Y] as P);
+    b.r('ladder', rect(96, 166 + Y, 314, 38, 12), 'white');
     let rungs = '';
-    for (let x = 124; x < 400; x += 30) rungs += `M${x} 168V202`;
+    for (let x = 124; x < 400; x += 30) rungs += `M${x} ${168 + Y}V${202 + Y}`;
     b.deco(rungs, undefined, 4);
-    b.r('siren', rect(424, 200, 54, 34, 13), 'blue');
-    b.r('body', rect(46, 204, 360, 216, 24), 'red');
-    b.r('hose-reel', circle(144, 300, 56), 'yellow');
-    b.deco(circle(144, 300, 38) + circle(144, 300, 20), undefined, 4);
-    b.deco(circle(144, 300, 7), 'ink');
-    b.r('locker', rect(232, 232, 140, 124, 16), 'orange');
-    b.deco('M302 238V350M280 296H292M312 296H324', undefined, 4);
-    b.r('cab', 'M400 230H470Q498 230 512 256L552 330Q566 350 566 374V420H400Z', 'red');
-    b.r('window', 'M418 250H466Q482 250 490 266L520 326H418Z', 'sky');
-    b.r('ziggy', circle(462, 296, 27), 'green');
-    b.deco('M450 272L442 256M474 272L482 256', undefined, 4);
-    b.deco(circle(442, 254, 5) + circle(482, 254, 5), 'ink');
-    inkEye(b, 453, 292, 4.5);
-    inkEye(b, 471, 292, 4.5);
-    b.d(smile(462, 304, 14, 6), undefined, 3);
-    b.r('stripe', rect(46, 370, 520, 26), 'white');
-    b.r('headlight', ellipse(546, 346, 15, 19), 'yellow');
-    b.r('bumper', rect(516, 408, 72, 26, 13), 'grey');
+    b.r('siren', rect(424, 200 + Y, 54, 34, 13), 'blue');
+    b.r('body', rect(46, 204 + Y, 360, 216, 24), 'red');
+    b.r('hose-reel', circle(144, 300 + Y, 56), 'yellow');
+    b.deco(circle(144, 300 + Y, 38) + circle(144, 300 + Y, 20), undefined, 4);
+    b.deco(circle(144, 300 + Y, 7), 'ink');
+    b.r('locker', rect(232, 232 + Y, 140, 124, 16), 'orange');
+    b.deco(`M302 ${238 + Y}V${350 + Y}M280 ${296 + Y}H292M312 ${296 + Y}H324`, undefined, 4);
+    b.r('cab', `M400 ${230 + Y}H470Q498 ${230 + Y} 512 ${256 + Y}L552 ${330 + Y}Q566 ${350 + Y} 566 ${374 + Y}V${420 + Y}H400Z`, 'red');
+    b.r('window', `M418 ${250 + Y}H466Q482 ${250 + Y} 490 ${266 + Y}L520 ${326 + Y}H418Z`, 'sky');
+    b.r('ziggy', circle(462, 296 + Y, 27), 'green');
+    b.deco(line([450, 272 + Y], [442, 256 + Y]) + line([474, 272 + Y], [482, 256 + Y]), undefined, 4);
+    b.deco(circle(442, 254 + Y, 5) + circle(482, 254 + Y, 5), 'ink');
+    inkEye(b, 453, 292 + Y, 4.5);
+    inkEye(b, 471, 292 + Y, 4.5);
+    b.d(smile(462, 304 + Y, 14, 6), undefined, 3);
+    b.r('stripe', rect(46, 370 + Y, 520, 26), 'white');
+    b.r('headlight', ellipse(546, 346 + Y, 15, 19), 'yellow');
+    b.r('bumper', rect(516, 408 + Y, 72, 26, 13), 'grey');
     for (const x of [150, 466]) {
-      b.r('wheel#', circle(x, 446, 56), 'black');
-      b.r('rim#', circle(x, 446, 26), 'grey');
-      b.deco(circle(x, 446, 7), 'ink');
+      b.r('wheel#', circle(x, 446 + Y, 56), 'black');
+      b.r('rim#', circle(x, 446 + Y, 26), 'grey');
+      b.deco(circle(x, 446 + Y, 7), 'ink');
     }
+    // A fire hydrant on the pavement.
+    b.r('hydrant', poly(dy([[18, 420], [18, 360], [24, 346], [44, 346], [50, 360], [50, 420]])), 'red');
+    b.deco(line([12, 382 + Y], [56, 382 + Y]), undefined, 4);
   }
 );
 

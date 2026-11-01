@@ -204,7 +204,7 @@ export const cowFarm = definePage(
     inkEye(b, 146, 498, 4);
     b.d('M164 564l-4 14M180 564l4 14', undefined, 3.5);
     groundFlower(b, 262, 562, 22, 'pink', 5);
-    groundFlower(b, 46, 572, 18, 'purple', 5);
+    groundFlower(b, 44, 568, 22, 'purple', 5);
     tufts(b, [[230, 500], [340, 590], [560, 588]], 8);
   }
 );

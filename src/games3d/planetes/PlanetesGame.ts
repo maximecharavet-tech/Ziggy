@@ -607,6 +607,9 @@ export class PlanetesGame {
     this.camRate = 3;
     this.audio.play('whoosh');
     this.tween(this.reduceMotion ? 0.5 : 0.9, (k) => {
+      // The fade can end a frame before this dive: once in the landing scene, leave the rocket alone
+      // (its last step used to shrink it to a tenth on the cloud worlds, which never reset the size).
+      if (this.stage) return;
       const e = easeInOut(k);
       this.rocket.root.position.lerpVectors(from, p, e * 0.75);
       this.rocket.root.scale.setScalar(ROCKET_SMALL * (1 - e * 0.6));
@@ -1027,6 +1030,7 @@ export class PlanetesGame {
           const top = rk.position.clone();
           const away = top.clone().add(new THREE.Vector3(3, 14, -6));
           this.tween(0.9, (k) => {
+            if (!this.stage) return;
             rk.position.lerpVectors(top, away, k * k);
             rk.rotation.z = -k * 0.4;
           });
