@@ -7,7 +7,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   return {
     ...{
-      title: `${locale === 'fr' ? 'Atelier d’avatar' : 'Avatar Studio'} — Ziggy World`,
+      title: locale === 'fr' ? 'Crée ton avatar d’aventurier avec Ziggy | Ziggy World' : 'Avatar Studio — Ziggy World',
+      description: locale === 'fr'
+        ? 'Le studio d’avatar de Ziggy World : choisis tes couleurs, ta tenue et ton style, et Ziggy dessine ton avatar d’aventurier !'
+        : 'The Ziggy World avatar studio: choose your colours, outfit and style, and Ziggy draws your explorer avatar!',
     },
     alternates: alternatesFor(locale, '/monde/avatar'),
   };

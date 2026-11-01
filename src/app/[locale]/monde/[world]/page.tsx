@@ -1,4 +1,4 @@
-import { alternatesFor } from '@/lib/seo';
+import { alternatesFor, clampTitle, frSeoTitle, FR_WORLD_KEYWORDS } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   if (!w) return {};
   return {
     ...{
-      title: `${tr(w.name, locale)} — Ziggy World`,
+      title: locale === 'fr' ? frSeoTitle(w.name.fr, FR_WORLD_KEYWORDS) : clampTitle(`${tr(w.name, locale)} — Ziggy World`),
       description: tr(w.description, locale),
     },
     alternates: alternatesFor(locale, `/monde/${world}`),

@@ -1,0 +1,35 @@
+# Ziggy
+
+> Ziggy est un robot amical qui enseigne aux enfants de 5 à 12 ans l'intelligence artificielle, les maths, la logique et la créativité — en jouant, sans pression. Sans publicité, données hébergées en Europe, compte géré par un parent. Disponible en 12 langues (français par défaut).
+
+Édité par Ziggy Technologies SAS. Site : https://ziggy-ai.fr/
+
+## Points clés
+
+- Pour les enfants de 5 à 12 ans : l'IA adapte le langage, la difficulté et le contenu à l'âge et au rythme de l'enfant.
+- Sécurité : aucune publicité, aucun échange avec des inconnus, compte créé et géré par un parent. Seuls le prénom de l'enfant, sa tranche d'âge et ses résultats de jeu sont conservés, stockés en Europe.
+- 12 langues : français, anglais, espagnol, allemand, portugais, italien, néerlandais, turc, japonais, coréen, chinois et arabe.
+- Profil cognitif : 6 dimensions (vitesse, logique, formulation, créativité, persévérance, curiosité) mesurées à travers des interactions naturelles.
+- Labo IA : l'enfant dessine des exemples, entraîne une vraie intelligence artificielle et regarde comment elle réfléchit, sur son appareil.
+
+## Pages principales
+
+- [Accueil](https://ziggy-ai.fr/) : présentation de Ziggy
+- [Jeux éducatifs pour enfants](https://ziggy-ai.fr/jeux-educatifs-enfants) : mini-jeux, arcade et jeux 3D
+- [Les mini-jeux](https://ziggy-ai.fr/games) : mémoire, calcul, logique, IA
+- [Ziggy World](https://ziggy-ai.fr/monde) : mondes, quêtes et jeux 3D
+- [Histoires du soir](https://ziggy-ai.fr/histoires-du-soir) : le mode dodo, des histoires pleines de valeurs racontées par la voix de Ziggy
+- [Mode dodo](https://ziggy-ai.fr/dodo)
+- [Coloriage enfant en ligne](https://ziggy-ai.fr/coloriage-enfant-en-ligne) et [l'atelier coloriage](https://ziggy-ai.fr/coloriage)
+- [Apprendre l'IA aux enfants](https://ziggy-ai.fr/apprendre-ia-enfants) et [le Labo IA](https://ziggy-ai.fr/lab)
+- [Apprendre à apprendre](https://ziggy-ai.fr/apprendre) : six méthodes testées par les chercheurs, expliquées aux enfants
+- [L'Atelier des créateurs](https://ziggy-ai.fr/creer)
+- [Les applis Ziggy](https://ziggy-ai.fr/telecharger) : Android, Android TV, iPhone et iPad
+- [Sécurité et confidentialité pour les parents](https://ziggy-ai.fr/securite-parents)
+
+## Informations légales
+
+- [Politique de confidentialité](https://ziggy-ai.fr/privacy)
+- [Conditions d'utilisation](https://ziggy-ai.fr/terms)
+- [Politique de cookies](https://ziggy-ai.fr/cookies)
+- [Plan du site](https://ziggy-ai.fr/sitemap.xml)

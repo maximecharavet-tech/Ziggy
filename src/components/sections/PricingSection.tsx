@@ -111,7 +111,7 @@ export function PricingSection() {
                 <h3 className="text-lg font-bold text-text-body">{plan.name}</h3>
                 <div className="mt-4 mb-6">
                   <span className="text-4xl font-extrabold text-text-body">{plan.price}</span>
-                  {plan.period && <span className="text-text-muted text-sm ml-1">{plan.period}</span>}
+                  {plan.period && <span className="text-text-muted text-sm ml-1">/{plan.period}</span>}
                 </div>
                 <ul className="space-y-3 mb-8 flex-1">
                   {plan.features.map((f) => (

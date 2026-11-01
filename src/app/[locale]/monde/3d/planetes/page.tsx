@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'Le Facteur des Planètes — jeu 3D',
+          title: 'Le Facteur des Planètes : jeu éducatif 3D enfant | Ziggy',
           description: 'Ziggy livre des colis dans le système solaire : trouve la bonne planète grâce aux énigmes, en 3D.',
         }
       : {

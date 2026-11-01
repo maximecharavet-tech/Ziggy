@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'Le Noël de Ziggy — jeu 3D',
+          title: 'Le Noël de Ziggy : jeu éducatif 3D pour enfants | Ziggy',
           description: 'Livre les cadeaux du village enneigé et illumine le grand sapin, en 3D.',
         }
       : {
