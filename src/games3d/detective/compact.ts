@@ -87,7 +87,7 @@ function mergeKey(m: THREE.Mesh): string | null {
   if (!((mt as unknown as THREE.MeshLambertMaterial).isMeshLambertMaterial || mt.isMeshPhongMaterial || (mt as unknown as THREE.MeshBasicMaterial).isMeshBasicMaterial || (mt as unknown as THREE.MeshStandardMaterial).isMeshStandardMaterial)) return null;
   const parts: (string | number | boolean)[] = [mt.type, mt.transparent, +mt.opacity.toFixed(3), mt.side, Boolean(mt.flatShading), mt.depthWrite, mt.depthTest, mt.toneMapped, mt.blending];
   if (mt.emissive) parts.push(mt.emissive.getHexString(), +((mt.emissiveIntensity ?? 1) as number).toFixed(3));
-  if (mt.isMeshPhongMaterial) parts.push(mt.shininess, mt.specular.getHexString());
+  // Phong parts merge whatever their shininess (tiny eye parts: the first one's is kept).
   const st = mt as unknown as THREE.MeshStandardMaterial;
   if (st.isMeshStandardMaterial) parts.push(+st.roughness.toFixed(3), +st.metalness.toFixed(3));
   return parts.join(',');

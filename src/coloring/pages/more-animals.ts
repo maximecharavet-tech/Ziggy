@@ -114,8 +114,8 @@ export const lion = definePage(
     b.deco('M220 534V554M244 534V554', undefined, 3.5);
     b.r('paw-right', ellipse(368, 546, 46, 28), 'caramel');
     b.deco('M356 534V554M380 534V554', undefined, 3.5);
-    b.r('mane', softStar(300, 250, 178, 138, 16), 'orange');
-    b.r('mane-inner', flower(300, 256, 132, 14), 'yellow');
+    b.r('mane', softStar(300, 250, 198, 140, 16), 'orange');
+    b.r('mane-inner', flower(300, 256, 128, 14), 'yellow');
     b.r('ear-left', circle(222, 172, 30), 'caramel');
     b.deco(arc(222, 172, 15, 180, 330), undefined, 3.5);
     b.r('ear-right', circle(378, 172, 30), 'caramel');
@@ -148,36 +148,36 @@ export const cowFarm = definePage(
     b.r('meadow', hill(0, 424, [300, 398], 600, 424, 600), 'lime');
     // Barn
     b.r('barn', rect(40, 232, 200, 206), 'red');
-    b.deco('M70 252V300M210 252V300M70 450V438', undefined, 3);
+    b.deco('M70 252V300M210 252V300', undefined, 3);
     b.r('barn-roof', poly([[16, 252], [56, 174], [140, 124], [224, 174], [264, 252]]), 'brown');
     b.deco('M56 174L224 174', undefined, 3);
     b.r('hayloft', rect(112, 186, 56, 50, 6), 'yellow');
     b.deco('M122 236L132 206M138 236L144 202M154 236L160 210', undefined, 3);
     b.r('barn-door', rect(80, 318, 120, 120, 4), 'white');
     b.deco('M80 318L140 438M140 318L80 438M140 318L200 438M200 318L140 438M140 318V438', undefined, 3.5);
-    b.r('hay-bale', rect(24, 470, 104, 64, 14), 'yellow');
-    b.deco('M40 486h36M60 502h48M38 518h30', undefined, 3);
+    b.r('haystack', 'M14 548Q18 456 76 450Q134 456 138 548Z', 'yellow');
+    b.deco('M44 520Q50 490 64 474M76 530Q76 500 80 470M108 520Q104 494 92 476M30 536Q36 520 44 512M122 536Q118 522 110 512', undefined, 3);
     // Fence
-    for (const x of [300, 380, 460, 540]) b.r('fence-post#', rect(x, 318, 22, 100, 6), 'white');
+    for (const x of [380, 460, 540]) b.r('fence-post#', rect(x, 318, 22, 100, 6), 'white');
     b.r('fence-rail#', rect(262, 338, 338, 14, 5), 'white');
     b.r('fence-rail#', rect(262, 376, 338, 14, 5), 'white');
     // Cow
     b.r('tail', tube([[560, 420], [580, 452], [586, 498]], 10), 'white');
     b.r('tail-tuft', flower(586, 510, 15, 5, 90), 'black');
-    for (const [i, x] of [470, 516].entries()) {
-      b.r(`leg-back-${i + 1}`, rect(x, 462, 32, 82, 12), 'white');
-      b.r(`hoof-back-${i + 1}`, rect(x, 532, 32, 20, 7), 'black');
+    for (const [i, x] of [488, 530].entries()) {
+      b.r(`leg-back-${i + 1}`, rect(x, 452, 32, 88, 12), 'white');
+      b.r(`hoof-back-${i + 1}`, rect(x, 528, 32, 20, 7), 'black');
     }
-    b.r('udder', ellipse(468, 510, 28, 18), 'pink');
-    b.deco('M456 524v8M468 526v8M480 524v8', undefined, 3);
+    for (const [i, x] of [360, 404].entries()) {
+      b.r(`leg-front-${i + 1}`, rect(x, 462, 32, 88, 12), 'white');
+      b.r(`hoof-front-${i + 1}`, rect(x, 538, 32, 20, 7), 'black');
+    }
+    b.r('udder', ellipse(462, 506, 24, 17), 'pink');
+    b.deco('M452 520v8M462 522v8M472 520v8', undefined, 3);
     b.r('body', ellipse(446, 438, 122, 72), 'white');
     b.r('spot#', blotch(482, 408, 32, 1), 'black');
-    b.r('spot#', blotch(410, 462, 24, 2), 'black');
-    b.r('spot#', blotch(538, 458, 20, 3), 'black');
-    for (const [i, x] of [372, 414].entries()) {
-      b.r(`leg-front-${i + 1}`, rect(x, 470, 32, 82, 12), 'white');
-      b.r(`hoof-front-${i + 1}`, rect(x, 540, 32, 20, 7), 'black');
-    }
+    b.r('spot#', blotch(400, 456, 24, 2), 'black');
+    b.r('spot#', blotch(538, 456, 20, 3), 'black');
     b.r('horn-left', capsule(272, 326, 256, 290, 16), 'cream');
     b.r('horn-right', capsule(328, 326, 344, 290, 16), 'cream');
     b.r('ear-left', ellipse(228, 346, 34, 16, -18), 'white');
@@ -188,7 +188,7 @@ export const cowFarm = definePage(
     b.r('bell', circle(300, 454, 15), 'yellow');
     b.deco('M292 458h16', undefined, 3);
     b.r('head', ellipse(300, 372, 62, 58), 'white');
-    b.r('head-spot', blotch(334, 336, 22, 4), 'black');
+    b.r('head-spot', blotch(342, 326, 19, 4), 'black');
     b.r('muzzle', ellipse(300, 404, 52, 30), 'pink');
     b.deco(ellipse(282, 398, 6, 8) + ellipse(318, 398, 6, 8), 'ink');
     b.d(smile(300, 414, 26, 8), undefined, 4);
@@ -200,11 +200,11 @@ export const cowFarm = definePage(
     b.r('chick', circle(172, 538, 28), 'yellow');
     b.deco(quad([160, 538], [172, 554], [188, 536]), undefined, 3);
     b.r('chick-head', circle(150, 504, 20), 'yellow');
-    b.r('chick-beak', poly([[132, 500], [116, 507], [132, 514]]), 'orange');
+    b.r('chick-beak', poly([[134, 494], [110, 506], [134, 518]]), 'orange');
     inkEye(b, 146, 498, 4);
     b.d('M164 564l-4 14M180 564l4 14', undefined, 3.5);
-    groundFlower(b, 262, 566, 18, 'pink', 5);
-    groundFlower(b, 70, 572, 14, 'purple', 5);
+    groundFlower(b, 262, 562, 22, 'pink', 5);
+    groundFlower(b, 46, 572, 18, 'purple', 5);
     tufts(b, [[230, 500], [340, 590], [560, 588]], 8);
   }
 );
@@ -236,12 +236,21 @@ export const panda = definePage(
     b.r('cheek-left', circle(234, 266, 16), 'pink');
     b.r('cheek-right', circle(366, 266, 16), 'pink');
     // Bamboo stick held in both paws
-    b.r('stick', capsule(190, 506, 404, 298, 26), 'green');
-    b.deco('M226 482l18 18M306 404l18 18M370 342l18 18', undefined, 4);
-    b.r('stick-leaf#', leaf([400, 300], [470, 246], 20), 'forest');
-    b.r('stick-leaf#', leaf([400, 300], [330, 304], 15), 'forest');
-    b.r('arm-left', capsule(204, 356, 262, 434, 54), 'black');
-    b.r('arm-right', capsule(410, 356, 352, 352, 54), 'black');
+    const s0: P = [228, 506];
+    const s1: P = [384, 300];
+    b.r('stick', capsule(...s0, ...s1, 26), 'green');
+    const len = Math.hypot(s1[0] - s0[0], s1[1] - s0[1]);
+    const [ux, uy] = [(s1[0] - s0[0]) / len, (s1[1] - s0[1]) / len];
+    let nodes = '';
+    for (const t of [0.12, 0.5, 0.88]) {
+      const [x, y] = [s0[0] + (s1[0] - s0[0]) * t, s0[1] + (s1[1] - s0[1]) * t];
+      nodes += `M${Math.round(x - uy * 12)} ${Math.round(y + ux * 12)}L${Math.round(x + uy * 12)} ${Math.round(y - ux * 12)}`;
+    }
+    b.deco(nodes, undefined, 4);
+    b.r('stick-leaf#', leaf([384, 300], [454, 246], 20), 'forest');
+    b.r('stick-leaf#', leaf([384, 300], [326, 306], 15), 'forest');
+    b.r('arm-left', capsule(198, 372, 275, 444, 54), 'black');
+    b.r('arm-right', capsule(406, 382, 350, 344, 54), 'black');
     tufts(b, [[60, 560], [300, 590], [540, 560]], 9);
   }
 );
@@ -260,7 +269,7 @@ export const seaTurtle = definePage(
     b.r('rock', ellipse(250, 536, 62, 26), 'grey');
     b.r('starfish', softStar(120, 556, 34, 15, 5), 'orange');
     b.deco(circle(113, 550, 2.5) + circle(127, 550, 2.5), 'ink');
-    b.r('shell', ringSegment(350, 574, 6, 32, 200, 340), 'pink');
+    b.r('seashell', ringSegment(350, 574, 6, 32, 200, 340), 'pink');
     b.deco('M350 574L322 560M350 574L338 544M350 574L362 544M350 574L378 560', undefined, 3);
     // Fish
     fish(b, 476, 108, 1.1, 'yellow', 1, 'orange');
@@ -269,7 +278,7 @@ export const seaTurtle = definePage(
     // Turtle, seen from above, swimming to the left
     b.r('flipper-back-top', leaf([424, 236], [486, 192], 22), 'mint');
     b.r('flipper-back-bottom', leaf([424, 326], [486, 370], 22), 'mint');
-    b.r('tail', smooth([[440, 266], [492, 282], [440, 298]], true, 0.5), 'mint');
+    b.r('tail', smooth([[432, 260], [504, 282], [432, 304]], true, 0.5), 'mint');
     b.r('flipper-front-top', leaf([272, 222], [186, 128], 36), 'mint');
     b.r('flipper-front-bottom', leaf([272, 340], [180, 432], 36), 'mint');
     b.r('head', ellipse(168, 282, 60, 46), 'mint');
@@ -281,9 +290,9 @@ export const seaTurtle = definePage(
       b.r('plate#', softHex(x, y, 25, 21), 'lime');
     }
     inkEye(b, 146, 268, 9);
-    b.r('cheek', circle(166, 298, 9), 'pink');
+    b.r('cheek', circle(168, 298, 11), 'pink');
     b.d(quad([116, 290], [128, 304], [146, 298]), undefined, 4);
-    for (const [x, y, r] of [[86, 236, 13], [66, 196, 10], [80, 162, 9], [300, 132, 12], [328, 102, 9]] as [number, number, number][]) {
+    for (const [x, y, r] of [[84, 232, 14], [64, 190, 12], [82, 150, 11], [298, 130, 13], [328, 98, 11]] as [number, number, number][]) {
       b.r('bubble#', circle(x, y, r), 'white');
       b.deco(`M${x - r * 0.5} ${y - r * 0.1}Q${x - r * 0.5} ${y - r * 0.5} ${x - r * 0.1} ${y - r * 0.55}`, undefined, 2);
     }
@@ -315,9 +324,9 @@ export const hedgehog = definePage(
     // Mushroom
     b.r('mushroom-stem', rect(522, 470, 34, 54, 12), 'cream');
     b.r('mushroom-cap', 'M484 482Q484 424 539 422Q594 424 594 482Z', 'red');
-    b.r('mushroom-dot#', circle(516, 452, 9), 'white');
-    b.r('mushroom-dot#', circle(548, 440, 10), 'white');
-    b.r('mushroom-dot#', circle(574, 466, 8), 'white');
+    b.r('mushroom-dot#', circle(512, 456, 12), 'white');
+    b.r('mushroom-dot#', circle(548, 440, 12), 'white');
+    b.r('mushroom-dot#', circle(574, 466, 10), 'white');
     // Hedgehog
     const hx = 280;
     const hy = 420;
@@ -328,7 +337,7 @@ export const hedgehog = definePage(
     b.deco('M182 404l12 -18l12 18M232 360l12 -18l12 18M206 458l12 -18l12 18M300 368l12 -18l12 18M270 442l12 -18l12 18', undefined, 3);
     b.r('foot-left', ellipse(214, 516, 30, 16), 'caramel');
     b.r('foot-right', ellipse(346, 518, 30, 16), 'caramel');
-    b.r('ear', circle(374, 344, 20), 'sand');
+    b.r('ear', circle(372, 342, 23), 'sand');
     b.r('face', smooth([[348, 342], [410, 352], [470, 394], [500, 426], [478, 452], [410, 478], [350, 490], [318, 428]], true, 0.9), 'sand');
     b.r('nose', circle(500, 426, 15), 'black');
     b.r('cheek', circle(440, 446, 13), 'pink');
@@ -364,13 +373,13 @@ export const koala = definePage(
       [[70, 120], [20, 56]],
       [[74, 118], [96, 36]],
       [[80, 132], [8, 156]],
-      [[144, 222], [96, 270]],
-      [[150, 212], [196, 160]],
+      [[104, 176], [40, 214]],
+      [[132, 214], [96, 270]],
       [[540, 112], [588, 54]],
       [[538, 110], [494, 34]],
       [[530, 124], [596, 156]],
-      [[468, 224], [516, 270]],
-      [[460, 230], [410, 180]],
+      [[496, 176], [560, 214]],
+      [[468, 214], [504, 270]],
     ];
     const greens = ['green', 'mint', 'turquoise'];
     leaves.forEach(([a, t], i) => veinLeaf(b, 'leaf#', a, t, 15, greens[i % 3]));
@@ -414,8 +423,8 @@ function penguin(b: PageBuilder, id: string, cx: number, cy: number, s: number, 
   b.r(`${id}-belly`, smooth(face.map(([x, y]) => S(x, y)), true, 0.9), 'white');
   b.r(`${id}-foot-left`, ellipse(cx - 28 * s, cy + 100 * s, 26 * s, 12 * s), 'orange');
   b.r(`${id}-foot-right`, ellipse(cx + 28 * s, cy + 100 * s, 26 * s, 12 * s), 'orange');
-  b.r(`${id}-cheek-left`, circle(...S(-34, -30), 10 * s), 'pink');
-  b.r(`${id}-cheek-right`, circle(...S(34, -30), 10 * s), 'pink');
+  b.r(`${id}-cheek-left`, circle(...S(-34, -28), 12 * s), 'pink');
+  b.r(`${id}-cheek-right`, circle(...S(34, -28), 12 * s), 'pink');
   if (extra === 'scarf') {
     b.r(`${id}-scarf-tail`, poly([S(16, -4), S(40, -2), S(46, 46), S(24, 48)]), 'red');
     b.deco(`M${S(24, 12).join(' ')}L${S(42, 12).join(' ')}M${S(26, 30).join(' ')}L${S(44, 30).join(' ')}`, undefined, 3);
@@ -427,7 +436,7 @@ function penguin(b: PageBuilder, id: string, cx: number, cy: number, s: number, 
     b.r(`${id}-hat-band`, capsule(hx - 46 * s, hy + 4 * s, hx + 46 * s, hy + 4 * s, 16 * s), 'sky');
     b.r(`${id}-pompom`, circle(hx, hy - 48 * s, 14 * s), 'yellow');
   }
-  b.r(`${id}-beak`, smooth([S(-15, -40), S(15, -40), S(0, -22)], true, 0.5), 'orange');
+  b.r(`${id}-beak`, smooth([S(-18, -42), S(18, -42), S(0, -18)], true, 0.5), 'orange');
   inkEye(b, ...S(-21, -56), 8 * s);
   inkEye(b, ...S(21, -56), 8 * s);
 }
@@ -447,8 +456,8 @@ export const penguins = definePage(
     b.r('ice', smooth([[10, 424], [90, 388], [300, 378], [510, 388], [590, 424], [520, 458], [300, 466], [80, 458]], true, 0.8), 'white');
     b.deco('M450 498l20 -14M140 504l-16 -12', undefined, 3);
     penguin(b, 'mum', 300, 318, 1);
-    penguin(b, 'baby-1', 148, 372, 0.58, 'scarf');
-    penguin(b, 'baby-2', 456, 374, 0.58, 'hat');
+    penguin(b, 'baby-1', 136, 364, 0.7, 'scarf');
+    penguin(b, 'baby-2', 464, 366, 0.7, 'hat');
     fish(b, 120, 556, 1, 'orange', -1, 'yellow');
     b.d('M60 584q8 -10 18 -2M168 582q10 -8 18 2', undefined, 3);
     fish(b, 480, 562, 0.85, 'yellow', 1, 'red');
@@ -467,9 +476,12 @@ export const whale = definePage(
     b.r('sky', rect(0, 0, 600, 600), 'sky');
     b.r('sun', circle(522, 84, 46), 'yellow');
     b.r('cloud', cloud(110, 80, 160, 62), 'white');
-    b.r('spout', smooth([[228, 240], [224, 190], [196, 172], [156, 182], [146, 152], [180, 122], [218, 128], [244, 96], [270, 128], [308, 122], [342, 152], [332, 182], [292, 172], [264, 190], [260, 240]], true, 0.7), 'white');
-    b.r('drop#', drop(140, 226, 12), 'white');
-    b.r('drop#', drop(352, 222, 12), 'white');
+    const jet: P[] = [[234, 244], [226, 196], [204, 154], [168, 132], [128, 142]];
+    b.r('spout-left', tube(jet, 34, 24), 'white');
+    b.r('spout-right', tube(mirrorX(jet, 246), 34, 24), 'white');
+    b.r('drop#', drop(122, 196, 11), 'white');
+    b.r('drop#', drop(370, 196, 11), 'white');
+    b.r('drop#', drop(246, 116, 12), 'white');
     b.r('tail', smooth([[516, 318], [530, 276], [502, 230], [500, 210], [532, 216], [556, 246], [578, 212], [598, 208], [594, 236], [566, 286], [552, 324]], true, 0.6), 'blue');
     b.r('body', smooth([[92, 352], [104, 288], [150, 240], [232, 214], [322, 218], [404, 250], [462, 292], [508, 312], [538, 300], [554, 318], [530, 352], [470, 384], [380, 412], [262, 426], [160, 418], [108, 396]], true, 0.9), 'blue');
     b.r('belly', smooth([[100, 368], [180, 360], [290, 376], [400, 400], [300, 422], [190, 424], [120, 406]], true, 0.8), 'cream');
@@ -513,7 +525,7 @@ export const parrot = definePage(
     for (const [a, t] of [[[244, 40], [222, 60]], [[252, 90], [276, 106]], [[246, 140], [224, 160]], [[390, 36], [412, 52]], [[382, 80], [360, 96]], [[392, 118], [412, 138]]] as [P, P][]) b.r('vine-leaf#', leaf(a, t, 10), 'lime');
     hibiscus(b, 92, 250, 42, 'red', 10);
     hibiscus(b, 522, 254, 40, 'pink', -10);
-    hibiscus(b, 496, 420, 34, 'magenta', 20);
+    hibiscus(b, 476, 336, 32, 'magenta', 20);
     // Tail feathers (behind the branch)
     b.r('tail-blue', tube([[288, 380], [282, 460], [272, 548]], 28, 14), 'blue');
     b.r('tail-yellow', tube([[328, 380], [344, 450], [362, 530]], 26, 12), 'yellow');
@@ -603,7 +615,6 @@ export const flowerGarden = definePage(
     tulip(b, 300, 352, 120, 'pink');
     daisy(b, 366, 364, 108, 30, 8, 'lavender');
     tulip(b, 120, 410, 66, 'purple');
-    groundFlower(b, 404, 452, 14, 'red', 5);
     // Watering can
     b.r('can-handle', ringSegment(526, 446, 30, 46, 180, 360), 'blue');
     b.r('can-spout', poly([[482, 506], [412, 432], [426, 418], [488, 478]]), 'blue');
@@ -618,7 +629,8 @@ export const flowerGarden = definePage(
     b.r('ladybug', ellipse(560, 580, 20, 16, -10), 'red');
     b.deco('M546 574L574 586', undefined, 3);
     b.deco(circle(554, 572, 3) + circle(566, 588, 3), 'ink');
-    tufts(b, [[30, 560], [200, 584], [290, 560]], 8);
+    groundFlower(b, 46, 552, 20, 'red', 5);
+    tufts(b, [[110, 584], [200, 584], [290, 560]], 8);
   }
 );
 

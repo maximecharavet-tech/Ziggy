@@ -41,6 +41,7 @@ import { tr, type L } from '@/lib/i18n-text';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { MascotCutout, ZiggyAvatar } from '@/components/ziggy/Mascot';
 import { MagicMoments, MomentChips } from '@/components/world/MagicMoments';
+import { isTv, tvStepTarget, useTvStepFocus } from '@/components/games3d/tv-step-focus';
 
 const T = {
   title: { fr: 'Ziggy Détective', en: 'Detective Ziggy' },
@@ -112,6 +113,7 @@ export function DetectivePlayer() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const hudRef = useRef<HTMLDivElement>(null);
   const game = useRef<DetectiveGame | null>(null);
   const [phase, setPhase] = useState<'intro' | 'loading' | 'play' | 'notebook'>('intro');
   const [supported, setSupported] = useState(true);
@@ -399,6 +401,13 @@ export function DetectivePlayer() {
     setMusic(!music);
   };
 
+  /* ── TV remote: each step puts the focus on its button (find a clue, see the suspects, the first friend left, next case, new cases) ── */
+  const tvStep = phase === 'play' || phase === 'notebook' ? `${phase}|${caseIdx}|${step}|${stage}|${cleared.length}` : null;
+  useTvStepFocus(tvStep, hudRef);
+  const onMagicDone = useCallback(() => {
+    if (isTv()) window.setTimeout(() => tvStepTarget(hudRef.current)?.focus({ preventScroll: true }), 60);
+  }, []);
+
   /* ── Render ── */
 
   const info = current ? MYSTERY_INFO[current.mystery] : null;
@@ -407,7 +416,7 @@ export function DetectivePlayer() {
   const hintCulprit = current && stage === 'accuse' && misses >= 2 ? current.culprit : null;
 
   return (
-    <div className="fixed inset-0 z-[60] overflow-hidden bg-gradient-to-b from-[#8fd0ff] to-[#ffe9c4] text-[#33264a]">
+    <div ref={hudRef} className="fixed inset-0 z-[60] overflow-hidden bg-gradient-to-b from-[#8fd0ff] to-[#ffe9c4] text-[#33264a]">
       <canvas ref={canvas} className="absolute inset-0 h-full w-full touch-none" aria-label={tr(T.title, locale)} />
 
       {phase === 'play' && current && info ? (
@@ -548,7 +557,7 @@ export function DetectivePlayer() {
         </>
       ) : null}
 
-      {phase === 'notebook' ? <Notebook solved={solved} locale={locale} reduce={reduce} magic={magic} run={run} onAgain={() => void start()} /> : null}
+      {phase === 'notebook' ? <Notebook solved={solved} locale={locale} reduce={reduce} magic={magic} run={run} onAgain={() => void start()} onMagicDone={onMagicDone} /> : null}
 
       {/* Intro */}
       {phase === 'intro' || phase === 'loading' ? (
@@ -685,6 +694,8 @@ function SuspectGrid({
   const at = (row: 'back' | 'front', col: 'left' | 'center' | 'right') => c.suspects.find((s) => s.row === row && s.col === col) ?? null;
   const rows = (['back', 'front'] as const).filter((r) => c.suspects.some((s) => s.row === r));
   const cols = ['left', 'center', 'right'] as const;
+  // TV remote: the focus lands on the first friend still to look at.
+  const first = rows.flatMap((row) => cols.map((col) => at(row, col))).find((s) => s && !cleared.includes(s.id))?.id;
   return (
     <div className="flex flex-col gap-1.5" data-tv-stage="">
       {rows.map((row, ri) => (
@@ -708,6 +719,7 @@ function SuspectGrid({
                   locale={locale}
                   reduce={reduce}
                   help={help.includes(s.id) || hint === s.id}
+                  autoFocus={s.id === first}
                   onTap={onTap}
                   onFocus={onFocus}
                 />
@@ -729,6 +741,7 @@ function SuspectButton({
   locale,
   reduce,
   help,
+  autoFocus,
   onTap,
   onFocus,
 }: {
@@ -738,6 +751,7 @@ function SuspectButton({
   locale: string;
   reduce: boolean;
   help: boolean;
+  autoFocus: boolean;
   onTap: (id: Species) => void;
   onFocus: (id: Species | null) => void;
 }) {
@@ -746,6 +760,7 @@ function SuspectButton({
     <motion.button
       type="button"
       disabled={done}
+      data-tv-autofocus={autoFocus ? '' : undefined}
       onClick={() => onTap(s.id)}
       onFocus={() => onFocus(s.id)}
       onBlur={() => onFocus(null)}
@@ -779,6 +794,7 @@ function Notebook({
   magic,
   run,
   onAgain,
+  onMagicDone,
 }: {
   solved: Solved[];
   locale: string;
@@ -786,9 +802,11 @@ function Notebook({
   magic: MagicMoment[];
   run: number;
   onAgain: () => void;
+  onMagicDone: () => void;
 }) {
   const xp = solved.reduce((n, s) => n + s.outcome.xpGained, 0);
   return (
+    <>
     <div className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[#3b2a5a]/40 p-3 sm:items-center sm:p-6" data-tv-scope="">
       <motion.div
         initial={reduce ? false : { opacity: 0, y: 24, rotate: -1.5 }}
@@ -861,8 +879,10 @@ function Notebook({
             ← {tr(T.back, locale)}
           </Link>
         </div>
-        <MagicMoments key={run} moments={magic} locale={locale} />
       </motion.div>
     </div>
+    {/* The level-up celebration: outside the (moving) notebook, so it really covers the screen. */}
+    <MagicMoments key={run} moments={magic} locale={locale} onDone={onMagicDone} />
+    </>
   );
 }
