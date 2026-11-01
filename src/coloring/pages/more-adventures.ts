@@ -684,7 +684,6 @@ export const fireTruck = definePage(
 
     // Truck (shifted down onto the road).
     const Y = 36;
-    const dy = (pts: P[]) => pts.map(([x, y]) => [x, y + Y] as P);
     b.r('ladder', rect(96, 166 + Y, 314, 38, 12), 'white');
     let rungs = '';
     for (let x = 124; x < 400; x += 30) rungs += `M${x} ${168 + Y}V${202 + Y}`;
@@ -712,34 +711,38 @@ export const fireTruck = definePage(
       b.r('rim#', circle(x, 446 + Y, 26), 'grey');
       b.deco(circle(x, 446 + Y, 7), 'ink');
     }
-    // A fire hydrant on the pavement.
-    b.r('hydrant', poly(dy([[18, 420], [18, 360], [24, 346], [44, 346], [50, 360], [50, 420]])), 'red');
-    b.deco(line([12, 382 + Y], [56, 382 + Y]), undefined, 4);
   }
 );
 
 /** 7. Ziggy's hot-air balloon above the hills. */
 export const hotAirBalloon = definePage(
-  { id: 'hot-air-balloon', theme: 'vehicules', title: { fr: 'La montgolfière', en: 'The hot-air balloon' }, emoji: '🎈', level: 1 },
+  { id: 'hot-air-balloon', theme: 'vehicules', title: { fr: 'La montgolfière au-dessus des collines', en: 'The hot-air balloon above the hills' }, emoji: '🎈', level: 1 },
   (b) => {
     b.r('sky', rect(0, 0, 600, 600), 'sky');
-    b.r('sun', circle(522, 78, 40), 'yellow');
-    b.deco(rays(522, 78, 52, 70), undefined, 5);
-    b.r('cloud#', cloud(96, 110, 140, 56), 'white');
-    b.r('cloud#', cloud(506, 250, 130, 50), 'white');
-    b.r('cloud#', cloud(84, 344, 110, 44), 'white');
-    b.d('M440 330q10 -10 20 0q10 -10 20 0M140 230q8 -8 16 0q8 -8 16 0', undefined, 3.5);
-    b.r('hill-back', hill(0, 470, [150, 380], 340, 484, 600), 'green');
-    b.r('hill-back-2', hill(250, 500, [470, 390], 600, 440, 600), 'mint');
-    b.r('hill', hill(0, 546, [300, 500], 600, 544, 600), 'lime');
-    tufts(b, [[60, 580], [250, 560], [420, 590], [560, 570]], 9);
+    b.r('sun', circle(522, 74, 40), 'yellow');
+    b.deco(rays(522, 74, 52, 70), undefined, 5);
+    b.r('cloud#', cloud(92, 96, 140, 56), 'white');
+    b.r('cloud#', cloud(510, 236, 130, 50), 'white');
+    b.r('cloud#', cloud(86, 330, 120, 46), 'white');
+    b.d('M420 330q10 -10 20 0q10 -10 20 0M150 210q8 -8 16 0q8 -8 16 0', undefined, 3.5);
+    b.r('hill-back', hill(0, 500, [150, 420], 340, 510, 600), 'green');
+    b.r('hill-back-2', hill(250, 520, [470, 420], 600, 470, 600), 'mint');
+    b.r('hill', hill(0, 560, [300, 520], 600, 556, 600), 'lime');
+    for (const x of [74, 520]) {
+      b.r('tree-trunk#', rect(x - 7, 470, 14, 44, 4), 'brown');
+      b.r('tree#', ellipse(x, 456, 30, 36), 'forest');
+    }
+    tufts(b, [[60, 590], [250, 580], [420, 594], [560, 584]], 9);
 
     // Envelope: five gores between curved seams.
     const cx = 300;
-    const hw = (y: number) => (y <= 200 ? Math.sqrt(Math.max(0, 150 * 150 - (200 - y) ** 2)) : 52 + 98 * Math.cos(((y - 200) / 210) * (Math.PI / 2)));
+    const cy = 156;
+    const R = 124;
+    const bottom = 330;
+    const hw = (y: number) => (y <= cy ? Math.sqrt(Math.max(0, R * R - (cy - y) ** 2)) : 44 + (R - 44) * Math.cos(((y - cy) / (bottom - cy)) * (Math.PI / 2)));
     const ys: number[] = [];
-    for (let i = 0; i <= 16; i++) ys.push(200 - 150 * Math.cos(((i / 16) * Math.PI) / 2));
-    for (let i = 1; i <= 14; i++) ys.push(200 + (210 * i) / 14);
+    for (let i = 0; i <= 16; i++) ys.push(cy - R * Math.cos(((i / 16) * Math.PI) / 2));
+    for (let i = 1; i <= 14; i++) ys.push(cy + ((bottom - cy) * i) / 14);
     const seam = (u: number) => ys.map((y) => [cx + hw(y) * Math.sin((u * Math.PI) / 2), y] as P);
     const colors = ['red', 'yellow', 'red', 'yellow', 'red'];
     colors.forEach((c, i) => {
@@ -747,17 +750,22 @@ export const hotAirBalloon = definePage(
       const right = seam(-1 + (2 * (i + 1)) / 5).reverse();
       b.r('gore#', poly([...left, ...right]), c);
     });
-    b.r('skirt', poly([[244, 406], [356, 406], [334, 438], [266, 438]]), 'purple');
-    b.d('M270 438L262 486M330 438L338 486M290 438L292 486M310 438L308 486', undefined, 3.5);
+    b.r('skirt', poly([[250, 326], [350, 326], [334, 356], [266, 356]]), 'purple');
+    b.d('M268 356L242 420M332 356L358 420', undefined, 3.5);
     // Ziggy waves from the basket.
-    b.r('ziggy', circle(300, 470, 26), 'green');
-    b.deco('M288 448L280 430M312 448L320 430', undefined, 4);
-    b.deco(circle(279, 428, 5) + circle(321, 428, 5), 'ink');
-    inkEye(b, 291, 466, 4.5);
-    inkEye(b, 309, 466, 4.5);
-    b.r('basket', rect(246, 486, 108, 66, 10), 'caramel');
-    b.deco('M246 512H354M246 532H354M282 486V552M318 486V552', undefined, 3);
-    b.r('basket-rim', rect(238, 478, 124, 18, 9), 'brown');
+    b.r('ziggy', circle(300, 408, 30), 'green');
+    b.deco('M286 384L276 370M314 384L324 370', undefined, 4);
+    b.deco(circle(275, 368, 5.5) + circle(325, 368, 5.5), 'ink');
+    inkEye(b, 290, 404, 5);
+    inkEye(b, 310, 404, 5);
+    b.d(smile(300, 416, 14, 5), undefined, 3);
+    b.r('basket', rect(242, 424, 116, 62, 10), 'caramel');
+    b.deco('M242 446H358M242 466H358M280 424V486M320 424V486', undefined, 3);
+    b.r('basket-rim', rect(232, 414, 136, 20, 10), 'brown');
+    // Another balloon, far away.
+    b.r('far-balloon', smooth([[470, 330], [500, 344], [500, 380], [478, 404], [462, 404], [440, 380], [440, 344]], true, 0.9), 'purple');
+    b.d('M462 404L464 420M478 404L476 420', undefined, 2.5);
+    b.r('far-basket', rect(458, 418, 24, 16, 4), 'caramel');
   }
 );
 
@@ -778,7 +786,8 @@ export const tractor = definePage(
     b.r('field', rect(0, 384, 600, 216), 'lime');
     b.deco('M0 420Q300 404 600 420M0 470Q300 452 600 470M0 530Q300 512 600 530', undefined, 3);
     // Tractor.
-    b.r('smoke', cloud(484, 120, 86, 44), 'white');
+    b.r('smoke#', cloud(492, 82, 70, 34), 'white');
+    b.r('smoke#', cloud(468, 130, 80, 40), 'white');
     b.r('exhaust', rect(454, 150, 20, 130, 7), 'grey');
     b.r('hood', rect(330, 270, 222, 122, 24), 'green');
     b.deco('M520 294V368M500 294V368', undefined, 4);
@@ -791,11 +800,18 @@ export const tractor = definePage(
     inkEye(b, 264, 246, 5);
     inkEye(b, 284, 246, 5);
     b.d(smile(274, 260, 16, 6), undefined, 3.5);
+    const treads = (cx: number, cy: number, r: number, n: number) => {
+      let d = '';
+      for (let i = 0; i < n; i++) d += line(polar(cx, cy, r - 12, (i * 360) / n), polar(cx, cy, r, (i * 360) / n));
+      return d;
+    };
     b.r('wheel-big', circle(252, 444, 96), 'black');
+    b.deco(treads(252, 444, 96, 20), undefined, 4);
     b.r('rim-big', circle(252, 444, 46), 'yellow');
     b.deco(circle(252, 444, 12), 'ink');
     b.r('mudguard', ringSegment(252, 444, 96, 118, 196, 344), 'green');
     b.r('wheel-small', circle(480, 470, 64), 'black');
+    b.deco(treads(480, 470, 64, 14), undefined, 4);
     b.r('rim-small', circle(480, 470, 30), 'yellow');
     b.deco(circle(480, 470, 9), 'ink');
   }
@@ -822,7 +838,7 @@ export const ziggyBaker = definePage(
     b.r('balloon#', ellipse(548, 182, 30, 38), 'blue');
     b.deco(arc(548, 182, 21, 200, 250), undefined, 4);
     b.r('floor', rect(0, 480, 600, 120), 'sand');
-    b.deco('M0 540H300M120 480V540M240 540V600M60 540V600', undefined, 3);
+    b.deco('M0 520H300M0 562H300', undefined, 3);
 
     // Table and the three-tier cake.
     b.r('tablecloth', rect(276, 420, 340, 200, 10), 'sky');
@@ -855,24 +871,20 @@ export const ziggyBaker = definePage(
     // Ziggy the pastry chef with his wooden spoon.
     drawZiggy(
       b,
-      { x: 166, y: 290, k: 0.56 },
+      { x: 166, y: 286, k: 0.6 },
       {
         chef: true,
         armLeft: [176, 432],
         armRight: [470, 290],
-        hold: (bb, hand, deg) => {
-          const [hx, hy] = hand;
-          const a = ((deg - 90) * Math.PI) / 180;
-          const ux = Math.cos(a);
-          const uy = Math.sin(a);
-          // A spoon held across the mitten, its bowl pointing up and out.
-          const tip: P = [hx + uy * 60 + ux * 6, hy - ux * 60 + uy * 6];
-          bb.r('spoon-handle', capsule(hx - uy * -18, hy + ux * -18, tip[0], tip[1], 9), 'caramel');
-          bb.r('spoon', ellipse(tip[0] + uy * 14, tip[1] - ux * 14, 12, 18, deg), 'caramel');
+        hold: (bb, [hx, hy], deg) => {
+          // A wooden spoon held up in the mitten (fingers direction = ux, uy).
+          const ux = Math.sin((deg * Math.PI) / 180);
+          const uy = -Math.cos((deg * Math.PI) / 180);
+          bb.r('spoon-handle', capsule(hx, hy, hx + ux * 64, hy + uy * 64, 11), 'caramel');
+          bb.r('spoon', ellipse(hx + ux * 82, hy + uy * 82, 15, 22, deg + 90), 'caramel');
         },
       }
     );
-    b.d('M246 400l6 -6M262 120l8 4M560 360l6 6M120 470l-6 4', undefined, 3);
   }
 );
 
@@ -907,8 +919,7 @@ export const mandalaStar = definePage(
     }
     for (let i = 0; i < 8; i++) b.r('outer-dot#', circle(...at(258, i * 45 - 90 + 22.5), 11), 'pink');
     // Ring of tiles.
-    b.r('ring', circle(C, C, 150), 'sky');
-    for (let i = 0; i < 16; i++) b.r('ring-tile#', ringSegment(C, C, 126, 146, i * 22.5 - 90, i * 22.5 - 67.5), i % 2 ? 'orange' : 'yellow');
+    for (let i = 0; i < 16; i++) b.r('ring-tile#', ringSegment(C, C, 126, 150, i * 22.5 - 90, i * 22.5 - 67.5), i % 2 ? 'orange' : 'yellow');
     b.r('inner-disc', circle(C, C, 126), 'cream');
     // Eight-pointed inner star, each point in two halves, with dots in the gaps.
     for (let i = 0; i < 8; i++) {
