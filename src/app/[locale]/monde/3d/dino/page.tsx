@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'Ziggy Paléontologue — jeu 3D',
+          title: 'Ziggy Paléontologue : jeu éducatif 3D pour enfants | Ziggy',
           description: 'Creuse le sable avec Ziggy, reconstruis les squelettes de dinosaures et regarde-les se réveiller, en 3D.',
         }
       : {

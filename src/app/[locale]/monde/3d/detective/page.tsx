@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'Ziggy Détective — jeu 3D',
+          title: 'Ziggy Détective : jeu éducatif 3D pour enfants | Ziggy',
           description: 'Un gentil mystère au village : trouve les indices avec Ziggy, écarte les suspects et découvre qui a mangé le gâteau, en 3D.',
         }
       : {

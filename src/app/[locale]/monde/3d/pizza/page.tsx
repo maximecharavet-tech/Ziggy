@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'La Pizzeria de Ziggy — jeu 3D',
+          title: 'La Pizzeria de Ziggy : jeu éducatif 3D pour enfants | Ziggy',
           description: 'Garnis les pizzas des animaux du village avec Ziggy, en 3D : compter, additionner, moitiés, fractions et monnaie.',
         }
       : {

@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'La Luge des nombres — jeu 3D',
+          title: 'La Luge des nombres : jeu éducatif 3D pour enfants | Ziggy',
           description: 'Dévale la piste avec Ziggy et passe sous l’arche de la bonne réponse, en 3D.',
         }
       : {

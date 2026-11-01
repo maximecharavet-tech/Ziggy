@@ -7,7 +7,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   const { locale } = await params;
   return {
     ...{
-      title: `${locale === 'fr' ? 'Story Builder' : 'Story Builder'} — Ziggy World`,
+      title: locale === 'fr' ? 'Invente ton histoire magique avec Ziggy | Ziggy World' : 'Story Builder — Ziggy World',
+      description: locale === 'fr'
+        ? 'L’atelier des histoires : choisis un héros, un lieu, un ami, un objet et une mission, et Ziggy raconte ton histoire magique !'
+        : 'The story workshop: pick a hero, a place, a friend, an object and a mission, and Ziggy tells your magic story!',
     },
     alternates: alternatesFor(locale, '/monde/histoires'),
   };

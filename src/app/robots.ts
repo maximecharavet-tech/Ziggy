@@ -1,9 +1,26 @@
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/site-url';
 
+/** AI search / answer engines and assistants we explicitly welcome (same rules as everyone). */
+const AI_AND_SEARCH_BOTS = [
+  'GPTBot',
+  'OAI-SearchBot',
+  'ChatGPT-User',
+  'ClaudeBot',
+  'Claude-SearchBot',
+  'PerplexityBot',
+  'Perplexity-User',
+  'Google-Extended',
+  'Applebot-Extended',
+  'Bingbot',
+];
+
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: { userAgent: '*', allow: '/', disallow: '/api/' },
+    rules: [
+      ...AI_AND_SEARCH_BOTS.map((userAgent) => ({ userAgent, allow: '/', disallow: '/api/' })),
+      { userAgent: '*', allow: '/', disallow: '/api/' },
+    ],
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

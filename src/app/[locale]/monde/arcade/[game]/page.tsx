@@ -1,4 +1,4 @@
-import { alternatesFor } from '@/lib/seo';
+import { alternatesFor, clampTitle, frSeoTitle, FR_GAME_KEYWORDS } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
@@ -23,7 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const g = getGame(game);
   return {
     ...{
-      title: `${tr(g.name, locale)} — Ziggy Arcade`,
+      title: locale === 'fr' ? frSeoTitle(g.name.fr, FR_GAME_KEYWORDS) : clampTitle(`${tr(g.name, locale)} — Ziggy Arcade`),
       description: tr(g.description, locale),
     },
     alternates: alternatesFor(locale, `/monde/arcade/${game}`),

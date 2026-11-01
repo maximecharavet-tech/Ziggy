@@ -8,7 +8,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return {
     ...(locale === 'fr'
       ? {
-          title: 'Ziggy Kart des lettres — jeu 3D',
+          title: 'Ziggy Kart des lettres : jeu éducatif 3D enfant | Ziggy',
           description: 'Pilote le kart de Ziggy sur une route arc-en-ciel et passe sous les bonnes lettres pour écrire les mots, en 3D.',
         }
       : {
