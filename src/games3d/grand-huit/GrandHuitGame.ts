@@ -138,6 +138,7 @@ export class GrandHuitGame {
   private ndc = new THREE.Vector2();
   private perf = { frames: 0, time: 0, ratio: 0 };
   private tmpV = new THREE.Vector3();
+  private span = 0;
 
   constructor(
     private canvas: HTMLCanvasElement,
@@ -874,8 +875,13 @@ export class GrandHuitGame {
     const a = this.camera.aspect;
     const ride = this.ride;
     const forward = !ride || ride.target >= valueAfter(ride.start, ride.preset);
-    // A little more from the side than straight down the line: the numbers keep a similar size and we see Ziggy's face.
-    if (a < 0.8) return { yaw: forward ? -0.84 : 0.84, pitch: 0.46 };
+    if (a < 0.8) {
+      // Short rides: a little from the side (even-sized numbers, Ziggy's face). Long rides (up to 30):
+      // more down the line, so the whole ride still fits close enough to read.
+      const deep = THREE.MathUtils.smoothstep(this.span, 9, 22);
+      const yaw = 0.8 + 0.18 * deep;
+      return { yaw: forward ? -yaw : yaw, pitch: 0.46 + 0.04 * deep };
+    }
     if (a < 1.25) return { yaw: 0.6, pitch: 0.46 };
     return { yaw: 0.36, pitch: 0.42 };
   }
@@ -906,9 +912,15 @@ export class GrandHuitGame {
     if (box.max.x - box.min.x < w) pts.push(new THREE.Vector3(cx - w / 2, Y0, 0), new THREE.Vector3(cx + w / 2, Y0, 0));
   }
 
+  /** How long the framed part of the line is (world units): long rides are seen more down the line in portrait. */
+  private spanOf(values: number[]) {
+    this.span = values.length ? (Math.max(...values) - Math.min(...values)) * this.layout.sp : 0;
+  }
+
   private frameBuild() {
     const ride = this.ride;
     if (!ride) return;
+    this.spanOf([ride.start, ...this.pieces.map((p) => p.to), ...(ride.hidden ? [] : [ride.target])]);
     const portrait = this.camera.aspect < 0.8;
     const pts: THREE.Vector3[] = [];
     this.stationPts(ride.start, pts);
@@ -933,6 +945,7 @@ export class GrandHuitGame {
   private frameRide() {
     const p = this.pieces[Math.min(this.run.k, this.pieces.length - 1)];
     if (!p) return;
+    this.spanOf([p.from, p.to]);
     const portrait = this.camera.aspect < 0.8;
     const pts: THREE.Vector3[] = [];
     this.stationPts(p.from, pts);
@@ -980,6 +993,7 @@ export class GrandHuitGame {
       else if (this.mode === 'finale' || this.mode === 'splashed') this.frameFinale();
       else if (this.mode === 'boing') {
         const ride = this.ride!;
+        this.spanOf(ride.hidden ? [] : [ride.target, valueAfter(ride.start, [...ride.preset, ...this.path])]);
         const pts: THREE.Vector3[] = [c.clone().add(new THREE.Vector3(0, -1.4, 1.1))];
         this.cartPts(pts);
         if (!ride.hidden) this.stationPts(ride.target, pts);

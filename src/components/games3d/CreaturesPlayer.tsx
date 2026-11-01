@@ -307,7 +307,7 @@ export function CreaturesPlayer() {
     const a = parseAlbum(readStore(ALBUM_KEY));
     albumRef.current = a;
     setAlbum(a);
-    const onResize = () => setWide(window.innerWidth > window.innerHeight * 1.15 && window.innerHeight >= 480);
+    const onResize = () => setWide(window.innerWidth > window.innerHeight * 1.15);
     onResize();
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
@@ -781,11 +781,11 @@ export function CreaturesPlayer() {
   );
 
   const drawer = (
-    <div className="flex w-full items-stretch gap-1.5" data-tv-row="" data-tv-wrap="false" data-tv-stage="">
+    <div className={wide ? 'flex w-[6.4rem] flex-col items-stretch gap-1.5 p-1.5 [&>button]:!max-w-none [&>button]:!flex-none' : 'flex w-full items-stretch gap-1.5'} data-tv-row="" data-tv-wrap="false" data-tv-stage="">
       {d.stepper ? (
-        <div className="flex items-stretch gap-1">
+        <div className={wide ? 'flex flex-col-reverse items-stretch gap-1 [&>button]:!max-w-none [&>button]:!flex-none' : 'flex items-stretch gap-1'}>
           {tile('minus', false, tr(T.less, locale), () => step(d.stepper!.field, -1, d.stepper!.min, d.stepper!.max), <span className="font-display text-4xl font-bold text-[#8a63ff]">−</span>, '!max-w-[64px]', true)}
-          <div className="flex min-w-[70px] flex-col items-center justify-center rounded-2xl bg-[#f3ecff] px-2" aria-live="polite">
+          <div className="flex min-h-[64px] min-w-[70px] flex-col items-center justify-center rounded-2xl bg-[#f3ecff] px-2" aria-live="polite">
             <span className="font-display text-4xl font-bold leading-none text-[#3b2a6b]">{creature[d.stepper.field]}</span>
             <CountIcon kind={d.stepper.field} n={creature[d.stepper.field]} />
           </div>
@@ -1019,8 +1019,11 @@ export function CreaturesPlayer() {
 
           {/* Landscape: kinds of parts on the left, actions on the right */}
           {wide && mode === 'atelier' ? (
-            <div ref={leftRef} className="pointer-events-auto absolute bottom-[7.5rem] left-2 top-[5rem] flex flex-col justify-center sm:left-3">
-              <div className="max-h-full overflow-y-auto overscroll-contain rounded-[1.6rem] bg-white/70 shadow-[0_8px_30px_rgba(90,40,140,.16)] ring-1 ring-white">{tabs}</div>
+            <div ref={leftRef} className="pointer-events-none absolute bottom-2 left-2 top-[4.75rem] flex items-center gap-2 sm:left-3">
+              <div className="pointer-events-auto max-h-full overflow-y-auto overscroll-contain rounded-[1.6rem] bg-white/70 shadow-[0_8px_30px_rgba(90,40,140,.16)] ring-1 ring-white">{tabs}</div>
+              <div className="pointer-events-auto max-h-full overflow-y-auto overscroll-contain rounded-[1.6rem] bg-white/85 shadow-[0_8px_30px_rgba(90,40,140,.18)] ring-1 ring-white" aria-label={tr(T.options, locale)}>
+                {drawer}
+              </div>
             </div>
           ) : null}
           {wide ? (
@@ -1063,7 +1066,7 @@ export function CreaturesPlayer() {
           </AnimatePresence>
 
           {/* Bottom: Ziggy's words, then the drawer (and the tabs and actions in portrait) */}
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-3" style={wide ? { paddingLeft: mode === 'atelier' ? '6.5rem' : undefined, paddingRight: '7.5rem' } : undefined}>
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 flex flex-col items-center gap-2 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:p-3" style={wide ? { paddingLeft: mode === 'atelier' ? '14rem' : undefined, paddingRight: '7.5rem' } : undefined}>
             <AnimatePresence>
               {toast ? (
                 <motion.div
@@ -1090,10 +1093,12 @@ export function CreaturesPlayer() {
               {mode === 'atelier' ? (
                 <>
                   {!wide ? actions : null}
-                  <div className="w-full rounded-[1.6rem] bg-white/80 p-1.5 shadow-[0_8px_30px_rgba(90,40,140,.18)] ring-1 ring-white" aria-label={tr(T.options, locale)}>
-                    {drawer}
-                    {!wide ? <div className="mt-1.5 border-t border-[#efe7ff] pt-0.5">{tabs}</div> : null}
-                  </div>
+                  {!wide ? (
+                    <div className="w-full rounded-[1.6rem] bg-white/80 p-1.5 shadow-[0_8px_30px_rgba(90,40,140,.18)] ring-1 ring-white" aria-label={tr(T.options, locale)}>
+                      {drawer}
+                      <div className="mt-1.5 border-t border-[#efe7ff] pt-0.5">{tabs}</div>
+                    </div>
+                  ) : null}
                 </>
               ) : null}
               {mode === 'alive' && !wide ? <div className="w-full">{actions}</div> : null}

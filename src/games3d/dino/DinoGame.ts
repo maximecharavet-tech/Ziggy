@@ -124,7 +124,7 @@ interface View {
 
 const Z_AXIS = v(0, 0, 1);
 /** Portrait: the living dinosaurs are seen three-quarters from the head side (their long body foreshortened, so they fill the narrow screen). */
-const PORTRAIT_YAW = 0.55;
+const PORTRAIT_YAW = 0.45;
 /** Once alive, dinosaurs stand three-quarters towards the child. */
 const LIVE_YAW = -0.42;
 const qTurn = (quarters: number) => new THREE.Quaternion().setFromAxisAngle(Z_AXIS, (quarters * Math.PI) / 2);
@@ -1256,7 +1256,8 @@ export class DinoGame {
           // Portrait: the dinosaur's own (turned) box, not the world one, and Ziggy close by.
           const pts = this.dinoCorners(d());
           const top = Math.max(...pts.map((p) => p.y));
-          pts.push(zp.clone().add(v(-0.6, 2.3, 0)), zp.clone().add(v(0.6, 0, 0.4)));
+          // Ziggy with room for his waving arms.
+          pts.push(zp.clone().add(v(-0.9, 2.4, 0)), zp.clone().add(v(0.9, 0, 0.5)));
           if (sneeze) pts.push(v(pts[0].x, top + 1.2, pts[0].z));
           return { box: new THREE.Box3().setFromPoints(pts), pitch: 0.2, yaw: PORTRAIT_YAW, pts };
         }

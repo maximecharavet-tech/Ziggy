@@ -240,7 +240,7 @@ export class CreaturesGame {
       if (this.portrait) this.want = { c: V(0.38, halfH * 0.95, 0.0), w: Math.max(1.62, hw + 0.35), h: halfH * 1.1 };
       else this.want = { c: V(0.8, halfH * 0.95, 0.1), w: Math.max(3.0, hw + 1.6), h: Math.max(1.4, halfH * 1.2) };
     } else if (mode === 'alive') this.want = this.portrait ? { c: V(2.5, 1.9, 1.0), w: 2.6, h: 2.0 } : { c: V(2.7, 1.55, 0.9), w: 4.6, h: 2.3 };
-    else this.want = this.portrait ? { c: V(0.15, 1.15, 0.35), w: 2.2, h: 1.4 } : { c: V(0.15, 1.15, 0.35), w: 3.3, h: 1.5 };
+    else this.want = this.portrait ? { c: V(0.1, 0.62, 0.1), w: 2.0, h: 1.3 } : { c: V(0.1, 1.05, -0.1), w: 3.6, h: 1.6 };
   }
 
   private updateCamera(dt: number, t: number) {
@@ -921,7 +921,7 @@ export class CreaturesGame {
     const actors = pick.map((c) => {
       const a = new CreatureActor(c, { lowPower: this.lowPower, env: this.env, reduce: this.reduce, shadows: !this.lowPower });
       this.scene.add(a.root);
-      a.root.scale.setScalar(0.82);
+      a.root.scale.setScalar(0.72);
       return a;
     });
     this.parade = { actors, ids: pick.map((c) => c.id), t: 0, selected: -1 };
@@ -968,7 +968,7 @@ export class CreaturesGame {
     if (!p) return;
     p.t += dt * (this.reduce ? 0.03 : 0.055);
     const n = p.actors.length;
-    const C = V(0.1, 0, 0.35);
+    const C = V(0.1, 0, -0.05);
     p.actors.forEach((a, i) => {
       const k = p.t + i / Math.max(n, 5);
       const ang = k * Math.PI * 2;
