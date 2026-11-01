@@ -296,6 +296,7 @@ export function CreaturesPlayer() {
   const [confirmDel, setConfirmDel] = useState(false);
   const [dressed, setDressed] = useState(false);
   const [busyPic, setBusyPic] = useState(false);
+  const okRef = useRef<HTMLButtonElement>(null);
   const unlocked = useRef(false);
   const pendingName = useRef(false);
 
@@ -452,6 +453,12 @@ export function CreaturesPlayer() {
     const t = setTimeout(() => setXp(null), 3200);
     return () => clearTimeout(t);
   }, [xp]);
+  // The photo opens: the focus goes to its big OK button (remote, keyboard), never left behind it.
+  useEffect(() => {
+    if (!photo) return;
+    const t = setTimeout(() => okRef.current?.focus({ preventScroll: true }), 60);
+    return () => clearTimeout(t);
+  }, [photo]);
   useEffect(() => {
     if (!flash) return;
     const t = setTimeout(() => setFlash(0), 260);
@@ -1119,7 +1126,7 @@ export function CreaturesPlayer() {
               <p className="text-center font-display text-lg font-bold text-[#6a3fd1]">
                 🎉 {photo.name} {tr(T.joins, locale)}
               </p>
-              <button type="button" onClick={() => setPhoto(null)} data-tv-autofocus="" className="min-h-[64px] w-full rounded-full bg-gradient-to-r from-[#ff8ab3] to-[#ff4f8b] px-6 font-display text-xl font-bold text-white shadow-lg">
+              <button ref={okRef} type="button" onClick={() => setPhoto(null)} data-tv-autofocus="" className="min-h-[64px] w-full rounded-full bg-gradient-to-r from-[#ff8ab3] to-[#ff4f8b] px-6 font-display text-xl font-bold text-white shadow-lg">
                 ✓ {tr(T.ok, locale)}
               </button>
               <p className="mt-1 text-xs font-bold uppercase tracking-wide text-[#8a6ab8]">{tr(T.grownups, locale)}</p>

@@ -223,6 +223,38 @@ export function NestScene() {
   );
 }
 
+/* The Creature Factory: a bubbling machine, a silly creature and Ziggy. */
+export function CreatureScene() {
+  return (
+    <>
+      <Bg style={{ background: 'linear-gradient(180deg, #7b5cff 0%, #b98cff 46%, #ffc1e3 100%)' }} />
+      {[0, 1, 2].map((i) => (
+        <Layer key={i} depth={-2} className="text-xl" style={{ left: `${30 + i * 16}%`, top: '10%' }}>
+          <span className={`block ${fx.rise}`} style={loop({ dur: 3.2, delay: i * 0.9, amp: -40, dx: i % 2 ? 6 : -6 })}>
+            🫧
+          </span>
+        </Layer>
+      ))}
+      <Layer depth={6} className="inset-x-[-10%] bottom-[-30%] h-[62%]">
+        <div className="h-full w-full rounded-[50%] bg-[radial-gradient(70%_60%_at_50%_20%,#ffe3f3,#f7a6cf)] shadow-[inset_0_6px_0_rgba(255,255,255,0.4)]" />
+      </Layer>
+      <Layer depth={8} className="bottom-[24%] left-[10%] text-[3rem]">
+        <Prop cls={fx.sway} style={loop({ dur: 4, tilt: 4, origin: '50% 100%' })}>
+          🏭
+        </Prop>
+      </Layer>
+      <Layer depth={18} className="bottom-[10%] left-[40%] text-[3.2rem]">
+        <Prop style={loop({ dur: 1.4, amp: -12, tilt: 8 })}>👾</Prop>
+      </Layer>
+      <Layer depth={20} className="bottom-[8%] right-[8%]">
+        <Prop style={loop({ dur: 2.2, amp: -6, tilt: 4 })}>
+          <MascotCutout pose="wave" width={56} glow={false} />
+        </Prop>
+      </Layer>
+    </>
+  );
+}
+
 export function StoryScene() {
   return (
     <>

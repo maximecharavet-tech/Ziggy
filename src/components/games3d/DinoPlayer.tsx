@@ -434,7 +434,7 @@ export function DinoPlayer() {
           </div>
 
           {/* The level-up celebration: outside the (moving) museum card, so it really covers the screen. */}
-          {s.phase === 'museum' && finished ? <MagicMoments key={run} moments={magic} locale={locale} onDone={onMagicDone} /> : null}
+          {s.phase === 'museum' && finished ? <MagicMoments key={`magic-${run}`} moments={magic} locale={locale} onDone={onMagicDone} /> : null}
 
           {/* The museum photo */}
           {flash && !reduce ? (
