@@ -870,7 +870,8 @@ export class GrandHuitGame {
     const a = this.camera.aspect;
     const ride = this.ride;
     const forward = !ride || ride.target >= valueAfter(ride.start, ride.preset);
-    if (a < 0.8) return { yaw: forward ? -0.95 : 0.95, pitch: 0.5 };
+    // A little more from the side than straight down the line: the numbers keep a similar size and we see Ziggy's face.
+    if (a < 0.8) return { yaw: forward ? -0.78 : 0.78, pitch: 0.46 };
     if (a < 1.25) return { yaw: 0.6, pitch: 0.46 };
     return { yaw: 0.36, pitch: 0.42 };
   }

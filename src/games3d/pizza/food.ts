@@ -175,6 +175,8 @@ export class Pizza {
   private flags: THREE.Sprite[] = [];
   private chars: THREE.Mesh[] = [];
   private lit = -1;
+  /** The numbered flags only help while topping: off once the pizza heads for the oven. */
+  flagsOn = true;
 
   constructor() {
     const g = this.group;
@@ -260,6 +262,7 @@ export class Pizza {
     }
     this.sectors = [];
     this.flags = [];
+    this.flagsOn = true;
     this.parts = n;
     this.lit = -1;
     if (n < 2) return;
@@ -392,7 +395,10 @@ export class Pizza {
       const want = i === this.lit ? 0.32 + Math.sin(t * 6) * 0.1 : 0;
       m.opacity += (want - m.opacity) * 0.3;
     });
-    this.flags.forEach((f, i) => f.scale.setScalar(i === this.lit ? 0.27 : 0.2));
+    this.flags.forEach((f, i) => {
+      f.visible = this.flagsOn;
+      f.scale.setScalar(i === this.lit ? 0.27 : 0.2);
+    });
   }
 
   dispose() {

@@ -924,6 +924,7 @@ export class PizzaGame {
     this.busy = true;
     this.selected = null;
     this.pizza.highlight(-1);
+    this.pizza.flagsOn = false;
     this.emit();
     this.audio.yay();
     this.say([praiseFor(this.index + this.served, this.L)], 'praise', 'ziggy');

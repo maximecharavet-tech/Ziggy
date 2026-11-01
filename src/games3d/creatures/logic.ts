@@ -205,7 +205,7 @@ export const OPTIONS: Record<CategoryId, PartOption[]> = {
     opt('legStyle', 'tentacle', '🐙', { fr: 'Tentacules', en: 'Tentacles' }, { fr: 'Des tentacules, comme une pieuvre !', en: 'Tentacles, like an octopus!' }, 1),
   ],
   arms: [
-    ...ARM_COUNTS.map((n) => opt('arms', n, String(n), { fr: `${n} bras`, en: n === 1 ? '1 arm' : `${n} arms` }, armWord(n))),
+    ...ARM_COUNTS.map((n) => opt('arms', n, String(n), { fr: `${n} bras`, en: `${n} arms` }, armWord(n))),
     opt('armStyle', 'noodle', '🍝', { fr: 'Spaghetti', en: 'Noodle' }, { fr: 'Des bras spaghetti !', en: 'Noodle arms!' }, 1),
     opt('armStyle', 'pincer', '🦀', { fr: 'Pinces', en: 'Pincers' }, { fr: 'Des pinces, comme un crabe !', en: 'Pincers, like a crab!' }, 1),
     opt('armStyle', 'mitten', '🧤', { fr: 'Moufles', en: 'Mittens' }, { fr: 'Des grosses mains toutes douces !', en: 'Big soft mitten hands!' }, 1),
@@ -259,7 +259,7 @@ function cap(s: string) {
 /** "des détails jaunes", with the right French plural. */
 function detailFr(id: ColorId): string {
   const w = COLORS[id].label.fr;
-  return id === 'orange' || id === 'marron' || id === 'brown' ? w : w.endsWith('s') ? w : `${w}s`;
+  return id === 'orange' || id === 'brown' ? w : w.endsWith('s') ? w : `${w}s`;
 }
 
 /** Which tab a part belongs to (for the hints: "open the legs"). */
@@ -289,7 +289,7 @@ export function sanitize(x: unknown): Creature | null {
     head: pick(HEADS, o.head, STARTER.head),
     legs: int(o.legs, 0, 8, STARTER.legs),
     legStyle: pick(LEG_STYLES, o.legStyle, STARTER.legStyle),
-    arms: pick(ARM_COUNTS, o.arms, STARTER.arms),
+    arms: pick(ARM_COUNTS, o.arms, STARTER.arms as (typeof ARM_COUNTS)[number]),
     armStyle: pick(ARM_STYLES, o.armStyle, STARTER.armStyle),
     wings: pick(WINGS, o.wings, STARTER.wings),
     tail: pick(TAILS, o.tail, STARTER.tail),
@@ -361,10 +361,10 @@ export function randomCreature(seed: number): Creature {
 // Simple consonant-vowel syllables that read the same in French and English
 // text-to-speech, chosen so that no rude word can come out (see the test).
 const N1 = ['Blou', 'Zou', 'Gri', 'Mo', 'Fla', 'Tou', 'Ki', 'Bou', 'Lu', 'Pla', 'Ri', 'Ga', 'No', 'Zi', 'Fu', 'Ba', 'Glou', 'Wa', 'Pom', 'Tchi', 'Ro', 'Dou', 'Mi', 'Bri'];
-const N2 = ['pi', 'li', 'zou', 'bi', 'mo', 'ga', 'ki', 'nou', 'lo', 'fi', 'ta', 'ri', 'bou', 'dou', 'mi', 'ffy', 'go', 'la'];
-const M1 = ['Tra', 'Gla', 'Bi', 'Pata', 'Fri', 'Moumou', 'Ziggo', 'Tchou', 'Rata', 'Bidou', 'Plou', 'Kiri', 'Mira', 'Gribou', 'Toto', 'Zabou', 'Lolo', 'Firfi'];
+const N2 = ['pi', 'li', 'zou', 'bi', 'mo', 'gou', 'tou', 'nou', 'lo', 'fi', 'ta', 'ri', 'bou', 'dou', 'mi', 'ffy', 'go', 'la'];
+const M1 = ['Tra', 'Gla', 'Bi', 'Pata', 'Fri', 'Moumou', 'Ziggo', 'Tchou', 'Rata', 'Bidou', 'Plou', 'Kiri', 'Mira', 'Gribou', 'Toto', 'Zabou', 'Choupi', 'Firfi'];
 const M2 = ['ca', 'la', 'mi', 'pou', 'fi', 'bou', 'ri', 'zi', 'lou', 'ga', 'no', 'mou'];
-const M3 = ['sin', 'tou', 'flette', 'mouche', 'zinette', 'boulette', 'nouille', 'pette', 'rigolo', 'dodo', 'pouf', 'tilou', 'line', 'chou', 'bidule', 'zou', 'mollet', 'tatin'];
+const M3 = ['sin', 'tou', 'lette', 'mouche', 'rinette', 'boulette', 'grouille', 'patine', 'rigolo', 'dodo', 'lala', 'tilou', 'line', 'chou', 'bidule', 'zou', 'mollet', 'tatin'];
 
 export const NAME_PARTS = { N1, N2, M1, M2, M3 };
 
@@ -378,8 +378,8 @@ export function makeName(seed: number): string {
 
 /** Words a generated name must never contain (checked by the tests). */
 export const NAME_BLOCKLIST = [
-  'caca', 'pipi', 'prout', 'cul', 'con', 'bite', 'pute', 'zob', 'merde', 'nique', 'fesse', 'chie', 'pisse', 'mort', 'tue', 'nul', 'moche', 'bete', 'gros',
-  'poop', 'pee', 'fart', 'butt', 'dick', 'ass', 'sex', 'nazi', 'kill', 'dumb', 'stupid', 'idiot', 'fat', 'ugly', 'shit', 'fuck', 'cock', 'tit', 'nig', 'hell', 'damn', 'crap', 'die', 'dead', 'puke', 'gay', 'fag',
+  'caca', 'pipi', 'prout', 'cul', 'con', 'bite', 'pute', 'zob', 'merde', 'nique', 'fesse', 'chie', 'pisse', 'mort', 'tue', 'nul', 'moche', 'bete', 'gros', 'pet', 'pouf', 'pine', 'zizi', 'teub', 'naze', 'boudin', 'nouille', 'crotte', 'vomi', 'bouse', 'kiki', 'lolo', 'gaga', 'zgeg', 'nichon', 'teton', 'foufoune', 'chatte',
+  'poop', 'pee', 'fart', 'butt', 'dick', 'ass', 'sex', 'nazi', 'kill', 'dumb', 'stupid', 'idiot', 'fat', 'ugly', 'shit', 'fuck', 'cock', 'tit', 'nig', 'hell', 'damn', 'crap', 'die', 'dead', 'puke', 'gay', 'fag', 'poo', 'bum', 'turd', 'wee', 'piss', 'boob', 'nude', 'snot',
 ];
 
 /* ───────────────────────── Moves & voice ───────────────────────── */

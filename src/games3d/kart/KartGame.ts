@@ -1397,10 +1397,23 @@ export class KartGame {
     }
     this.camPos.lerp(posOff, ease);
     this.camLook.lerp(lookOff, ease);
+    // Switching between the chase view and the selfie view (word done) must not swoop
+    // through the kart (Ziggy vanished, only his shadow was left): keep a minimum
+    // distance by sliding round his side, and look at him while close.
+    const along = this.camPos.dot(f.t);
+    const side = this.camPos.dot(f.side);
+    const flat = Math.hypot(along, side);
+    const minD = portrait ? 6.5 : 5.5;
+    let look = this.camLook;
+    if (this.camMode !== 'podium' && flat < minD) {
+      const want = Math.sqrt(minD * minD - along * along);
+      this.camPos.addScaledVector(f.side, (side >= 0 ? 1 : -1) * Math.max(0, want - Math.abs(side)));
+      look = this.camLook.clone().lerp(f.up.clone().multiplyScalar(1.2), Math.min(1, 1 - flat / minD + 0.3));
+    }
     cam.position.copy(kp).add(this.camPos);
     // A gentle shake when landing a jump or in a turbo.
     if (this.boostT > 0 && !this.paused) cam.position.addScaledVector(f.up, Math.sin(t * 40) * 0.03 * M);
-    cam.lookAt(kp.clone().add(this.camLook));
+    cam.lookAt(kp.clone().add(look));
     this.fovKick *= Math.exp(-dt * 1.5);
     const fov = (portrait ? 74 : 58) + this.fovKick;
     if (Math.abs(cam.fov - fov) > 0.05) {
