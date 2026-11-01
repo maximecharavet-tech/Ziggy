@@ -33,6 +33,8 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  // Audio streamed by <audio> (Range requests, e.g. the dodo "Version musicale"): let the browser handle it.
+  if (req.headers.has('range')) return;
 
   if (isStatic(url)) {
     event.respondWith(

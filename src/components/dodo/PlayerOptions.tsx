@@ -24,6 +24,11 @@ const T = {
   fallback: { fr: 'Sans enregistrement', en: 'Without a recording' },
   read: { fr: 'Lecture douce', en: 'Quiet reading' },
   device: { fr: 'Voix de l’appareil', en: 'Device voice' },
+  narration: { fr: 'Comment écouter l’histoire', en: 'How to listen to the story' },
+  voice: { fr: 'Voix qui lit', en: 'Reading voice' },
+  voiceHint: { fr: 'Ziggy lit, les mots s’allument', en: 'Ziggy reads, the words light up' },
+  music: { fr: 'Version musicale', en: 'Musical version' },
+  musicHint: { fr: 'L’histoire chantée, en douceur', en: 'The story sung, softly' },
 } satisfies Record<string, L>;
 
 /** Grown-up settings, in a calm sheet (bottom sheet on phones, side panel on big screens). */
@@ -31,14 +36,18 @@ export function PlayerOptions({
   locale,
   settings,
   recorded,
+  hasMusic = false,
   onClose,
 }: {
   locale: string;
   settings: DodoSettings;
   /** The story has Ziggy's recording (the fallback choice is hidden then). */
   recorded: boolean;
+  /** The story has a "Version musicale" in this language (the choice is shown only then). */
+  hasMusic?: boolean;
   onClose: () => void;
 }) {
+  const musical = hasMusic && settings.narration === 'music';
   const box = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const prev = document.activeElement as HTMLElement | null;
@@ -82,6 +91,12 @@ export function PlayerOptions({
           </button>
         </div>
 
+        {hasMusic ? (
+          <Group label={tr(T.narration, locale)}>
+            <NarrationChoice locale={locale} value={settings.narration} />
+          </Group>
+        ) : null}
+
         <Group label={tr(T.size, locale)}>
           <div className="flex items-center gap-3">
             <Round label={tr(T.smaller, locale)} disabled={size <= 0} onClick={() => updateDodo({ textSize: size - 1 })}>
@@ -110,28 +125,32 @@ export function PlayerOptions({
           />
         </Group>
 
-        <Group label={tr(T.highlight, locale)}>
-          <Choice
-            value={settings.highlight}
-            options={[
-              { v: 'word', label: `✨ ${tr(T.word, locale)}` },
-              { v: 'line', label: `〰️ ${tr(T.line, locale)}` },
-            ]}
-            onChange={(v) => updateDodo({ highlight: v })}
-            label={tr(T.highlight, locale)}
-          />
-        </Group>
+        {!musical ? (
+          <>
+            <Group label={tr(T.highlight, locale)}>
+              <Choice
+                value={settings.highlight}
+                options={[
+                  { v: 'word', label: `✨ ${tr(T.word, locale)}` },
+                  { v: 'line', label: `〰️ ${tr(T.line, locale)}` },
+                ]}
+                onChange={(v) => updateDodo({ highlight: v })}
+                label={tr(T.highlight, locale)}
+              />
+            </Group>
 
-        <Group label={tr(T.speed, locale)}>
-          <Choice
-            value={String(settings.speed)}
-            options={SPEEDS.map((s) => ({ v: String(s), label: s < 1 ? `🐢 ${tr(T.slow, locale)}` : s > 1 ? `🐇 ${tr(T.fast, locale)}` : tr(T.normal, locale) }))}
-            onChange={(v) => updateDodo({ speed: Number(v) })}
-            label={tr(T.speed, locale)}
-          />
-        </Group>
+            <Group label={tr(T.speed, locale)}>
+              <Choice
+                value={String(settings.speed)}
+                options={SPEEDS.map((s) => ({ v: String(s), label: s < 1 ? `🐢 ${tr(T.slow, locale)}` : s > 1 ? `🐇 ${tr(T.fast, locale)}` : tr(T.normal, locale) }))}
+                onChange={(v) => updateDodo({ speed: Number(v) })}
+                label={tr(T.speed, locale)}
+              />
+            </Group>
+          </>
+        ) : null}
 
-        {!recorded ? (
+        {!recorded && !musical ? (
           <Group label={tr(T.fallback, locale)}>
             <Choice
               value={settings.fallback}
@@ -146,6 +165,42 @@ export function PlayerOptions({
         ) : null}
 
       </motion.div>
+    </div>
+  );
+}
+
+/**
+ * "Voix qui lit" / "Version musicale": two big cards a child can pick (saved on
+ * this device). Shown only for stories that have a sung track.
+ */
+export function NarrationChoice({ locale, value, compact = false }: { locale: string; value: DodoSettings['narration']; compact?: boolean }) {
+  const options = [
+    { v: 'voice' as const, icon: '📖', label: tr(T.voice, locale), hint: tr(T.voiceHint, locale) },
+    { v: 'music' as const, icon: '🎵', label: tr(T.music, locale), hint: tr(T.musicHint, locale) },
+  ];
+  return (
+    <div role="radiogroup" aria-label={tr(T.narration, locale)} className="grid grid-cols-2 gap-2">
+      {options.map((o) => {
+        const on = value === o.v;
+        return (
+          <button
+            key={o.v}
+            type="button"
+            role="radio"
+            aria-checked={on}
+            onClick={() => updateDodo({ narration: o.v })}
+            className={`flex flex-col items-center justify-center gap-1 rounded-2xl px-3 text-center font-bold ring-2 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-amber-200 ${compact ? 'min-h-14 py-2' : 'min-h-24 py-3'} ${
+              on ? 'bg-amber-200 text-[#24164a] shadow-[0_6px_24px_rgba(253,230,138,.3)] ring-amber-100' : 'bg-white/[0.06] text-white/85 ring-white/10 hover:bg-white/10'
+            }`}
+          >
+            <span aria-hidden="true" className={compact ? 'text-2xl leading-none' : 'text-3xl leading-none'}>
+              {o.icon}
+            </span>
+            <span className={compact ? 'text-sm' : 'text-base'}>{o.label}</span>
+            {!compact ? <span className={`text-xs font-semibold ${on ? 'text-[#24164a]/75' : 'text-white/55'}`}>{o.hint}</span> : null}
+          </button>
+        );
+      })}
     </div>
   );
 }

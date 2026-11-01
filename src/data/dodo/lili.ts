@@ -24,6 +24,8 @@ export const LILI_STORY: DodoStory = {
   // The character art (no painted title or button), so nothing on it looks clickable.
   cover: '/dodo/lili/lili.webp',
   reference: '/dodo/lili/lili-ref.jpg',
+  // The whole story sung over soft music (file: public/dodo/lili/lili-musique.mp3).
+  music: { fr: '/dodo/lili/lili-musique.mp3' },
   scenes: [
     {
       text: {

@@ -76,6 +76,12 @@ export interface DodoStory {
   cover?: string;
   /** Reference picture sent to the image provider so a character stays the same in every scene. */
   reference?: string;
+  /**
+   * Optional "Version musicale": one audio file (e.g. a Suno MP3) that sings or
+   * tells the whole story over soft music, per text language. The player then
+   * offers it next to Ziggy's reading voice. Paths are under /public.
+   */
+  music?: Partial<L>;
 }
 
 export const VALUE_LABEL: Record<DodoValue, L> = {

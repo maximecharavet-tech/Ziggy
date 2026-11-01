@@ -1,3 +1,5 @@
+import { existsSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DODO_STORIES, OUTRO_SCENE, getDodoStory, outroText } from './index';
 import { DODO_SKIES, DODO_VALUES } from './types';
@@ -80,5 +82,19 @@ describe('pre-generation plan', () => {
     const left = missing(planned, [{ story_id: 'lili', scene: 1, kind: 'image', locale: '-', path: 'lili/scene-1.jpg' }]);
     expect(left).toHaveLength(planned.length - 1);
     expect(left.some((k) => k.story === 'lili' && k.scene === 1)).toBe(false);
+  });
+});
+
+describe('Mode dodo — version musicale', () => {
+  it('ships every sung track it promises (an MP3 under public/)', () => {
+    expect(getDodoStory('lili')?.music?.fr).toBe('/dodo/lili/lili-musique.mp3');
+    for (const s of DODO_STORIES) {
+      for (const url of Object.values(s.music ?? {})) {
+        expect(url, s.id).toMatch(/^\/dodo\/[a-z0-9-]+\/[a-z0-9-]+\.mp3$/);
+        const file = join(process.cwd(), 'public', url!);
+        expect(existsSync(file), `${file} is missing`).toBe(true);
+        expect(statSync(file).size, file).toBeGreaterThan(100_000);
+      }
+    }
   });
 });

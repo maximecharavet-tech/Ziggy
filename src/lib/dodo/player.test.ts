@@ -3,6 +3,9 @@ import { DODO_STORIES, getDodoStory, outroText } from '@/data/dodo';
 import { tokenize } from './voice';
 import {
   clampSegment,
+  clock,
+  musicSegment,
+  musicTrack,
   durationBucket,
   forgetPosition,
   gapAfter,
@@ -331,5 +334,33 @@ describe('remembered position', () => {
     expect(resumable({ seg: 0, t: 2, at: now }, 8)).toBe(true);
     expect(resumable({ seg: 3, t: 0, at: now }, 8)).toBe(true);
     expect(resumable({ seg: 8, t: 0, at: now }, 8)).toBe(false);
+  });
+});
+
+describe('version musicale', () => {
+  it('offers Princesse Lili’s sung track in French only, and nothing for stories without one', () => {
+    expect(musicTrack(lili, 'fr')).toBe('/dodo/lili/lili-musique.mp3');
+    expect(musicTrack(lili, 'en')).toBeNull();
+    expect(musicTrack(lili, 'de')).toBeNull();
+    for (const s of DODO_STORIES.filter((x) => x.id !== 'lili')) expect(musicTrack(s, 'fr'), s.id).toBeNull();
+    expect(musicTrack({ music: { fr: '  ' } }, 'fr')).toBeNull();
+  });
+
+  it('splits the song in equal parts for the pictures', () => {
+    expect(musicSegment(0, 279.2, 8)).toBe(0);
+    expect(musicSegment(34, 279.2, 8)).toBe(0);
+    expect(musicSegment(35, 279.2, 8)).toBe(1);
+    expect(musicSegment(200, 279.2, 8)).toBe(5);
+    expect(musicSegment(279.2, 279.2, 8)).toBe(7);
+    expect(musicSegment(999, 279.2, 8)).toBe(7);
+    expect(musicSegment(50, 0, 8)).toBe(0);
+    expect(musicSegment(50, Number.NaN, 8)).toBe(0);
+    expect(musicSegment(50, Infinity, 8)).toBe(0);
+  });
+
+  it('shows the time as m:ss', () => {
+    expect(clock(0)).toBe('0:00');
+    expect(clock(279.2)).toBe('4:39');
+    expect(clock(Number.NaN)).toBe('0:00');
   });
 });

@@ -11,8 +11,11 @@ import { tr, type L } from '@/lib/i18n-text';
 import { bcp47 } from '@/lib/voice';
 import { tokenize, visemeAt, type DodoVoiceTiming } from '@/lib/dodo/voice';
 import {
+  clock,
   minutesOf,
   moralTokens,
+  musicSegment,
+  musicTrack,
   planSeconds,
   planStory,
   resumable,
@@ -29,7 +32,8 @@ import { useAppShell } from '@/lib/use-app-shell';
 import { useBackLayer } from '@/lib/back-layer';
 import { useConductor } from './conductor';
 import { Prompter } from './Prompter';
-import { PlayerOptions } from './PlayerOptions';
+import { NarrationChoice, PlayerOptions } from './PlayerOptions';
+import { useMusic } from './music';
 import { DodoSay } from './DodoSay';
 import { Moon, NightSky, SceneArt, Sparkles } from './Scenery';
 import css from './dodo.module.css';
@@ -71,6 +75,14 @@ const T = {
   exhale: { fr: 'Souffle…', en: 'Breathe out…' },
   again: { fr: 'Réécouter', en: 'Listen again' },
   others: { fr: 'Autres histoires', en: 'Other stories' },
+  musical: { fr: 'Version musicale', en: 'Musical version' },
+  musicMissing: {
+    fr: 'La version musicale n’est pas disponible pour le moment. Choisis « Voix qui lit » pour écouter Ziggy.',
+    en: 'The musical version isn’t available right now. Choose “Reading voice” to listen to Ziggy.',
+  },
+  musicProgress: { fr: 'Avancement de la chanson', en: 'Song progress' },
+  back15: { fr: 'Reculer un peu', en: 'Go back a little' },
+  fwd15: { fr: 'Avancer un peu', en: 'Go forward a little' },
 } satisfies Record<string, L>;
 
 type WakeLock = { release: () => Promise<void> };
@@ -96,6 +108,10 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   const complete = timingComplete(timing, story.scenes.length);
   const total = planSeconds(plans);
   const count = plans.length;
+  // "Version musicale": one sung track for the whole story, chosen in the settings (remembered on this device).
+  const track = musicTrack(story, raw);
+  const musical = Boolean(track) && settings.narration === 'music';
+  const m = useMusic(musical ? track : null);
 
   const [saved, setSaved] = useState<DodoPosition | undefined>(undefined);
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -106,8 +122,21 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   const idle = useRef<number | null>(null);
   const wake = useRef<WakeLock | null>(null);
 
-  const phase = snap.status === 'cover' ? 'cover' : snap.status === 'done' ? 'fin' : 'story';
-  const plan = plans[snap.seg] ?? plans[0];
+  const phase = musical
+    ? m.status === 'idle'
+      ? 'cover'
+      : m.status === 'done'
+        ? 'fin'
+        : 'story'
+    : snap.status === 'cover'
+      ? 'cover'
+      : snap.status === 'done'
+        ? 'fin'
+        : 'story';
+  // In music mode the pictures follow the song: equal parts of the track, by time.
+  const seg = musical ? musicSegment(m.time, m.duration, count) : snap.seg;
+  const paused = musical ? m.status === 'paused' : snap.status === 'paused';
+  const plan = plans[seg] ?? plans[0];
   const scene = sceneOfSegment(plan.id, story.scenes.length);
   const imageOf = useCallback((i: number) => manifest?.images[story.id]?.[i + 1] ?? null, [manifest, story.id]);
   const imageFor = (seg: number) => {
@@ -116,7 +145,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
     return p.id === 'title' ? (story.cover ?? imageOf(0)) : imageOf(sceneOfSegment(p.id, story.scenes.length));
   };
   // undefined while the list of illustrations is loading (the drawn scene must not flash first).
-  const image = plan.id === 'title' && story.cover ? story.cover : manifest ? imageFor(snap.seg) : undefined;
+  const image = plan.id === 'title' && story.cover ? story.cover : manifest ? imageFor(seg) : undefined;
   const sceneKey = plan.id === 'title' && story.cover ? 'cover' : `scene-${scene}`;
 
   useEffect(() => {
@@ -128,19 +157,23 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
 
   // Fetch what comes next: the first recordings while on the cover, the next picture while telling.
   useEffect(() => {
-    if (phase === 'cover') {
+    if (phase === 'cover' && !musical) {
       c.prefetch(resumable(saved, count) ? saved.seg : 0);
       if (!resumable(saved, count)) c.prefetch(1);
     }
-  }, [phase, c, saved, count]);
+  }, [phase, c, saved, count, musical]);
+  // Switching to the musical version: Ziggy's reading stops (switching back, the song stops: see useMusic).
   useEffect(() => {
-    const next = imageFor(snap.seg + 1);
+    if (musical) c.pause();
+  }, [musical, c]);
+  useEffect(() => {
+    const next = imageFor(seg + 1);
     if (!next) return;
     const img = new Image();
     img.decoding = 'async';
     img.src = next;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snap.seg, manifest]);
+  }, [seg, manifest]);
 
   // Controls fade away while Ziggy tells the story; any touch brings them back.
   const poke = useCallback(() => {
@@ -150,7 +183,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
     idle.current = window.setTimeout(() => setUiShown(false), 5000);
   }, []);
   useEffect(() => () => void (idle.current && window.clearTimeout(idle.current)), []);
-  const uiVisible = uiShown || optionsOpen || snap.status === 'paused' || phase !== 'story';
+  const uiVisible = uiShown || optionsOpen || paused || phase !== 'story';
 
   const releaseWake = () => {
     void wake.current?.release().catch(() => undefined);
@@ -160,10 +193,13 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
 
   const begin = (fromSaved: boolean) => {
     // Inside the tap: audio may start (and keep going) on every browser.
-    const pos = fromSaved && resumable(saved, count) ? saved : null;
-    const p = pos ? plans[pos.seg] : null;
-    const t = pos && p ? sentenceStartTime(p.words, sentenceOf(tokenize(p.text)), pos.t) : 0;
-    c.start(pos?.seg ?? 0, t);
+    if (musical) m.play(0);
+    else {
+      const pos = fromSaved && resumable(saved, count) ? saved : null;
+      const p = pos ? plans[pos.seg] : null;
+      const t = pos && p ? sentenceStartTime(p.words, sentenceOf(tokenize(p.text)), pos.t) : 0;
+      c.start(pos?.seg ?? 0, t);
+    }
     poke();
     void (navigator as Navigator & { wakeLock?: { request: (t: 'screen') => Promise<WakeLock> } }).wakeLock
       ?.request('screen')
@@ -195,15 +231,17 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
 
   // The end: silence, and the screen goes to sleep.
   useEffect(() => {
-    if (snap.status !== 'done') return;
-    clearPosition(story.id);
-    setSaved(undefined);
+    if (phase !== 'fin') return;
+    if (!musical) {
+      clearPosition(story.id);
+      setSaved(undefined);
+    }
     releaseWake();
     if (!settings.heard.includes(story.id)) updateDodo({ heard: [...settings.heard, story.id] });
     const t = window.setTimeout(() => setSleepy(true), 25_000);
     return () => window.clearTimeout(t);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snap.status]);
+  }, [phase]);
 
   // Keyboard: space = play/pause, arrows = scenes, Escape closes the settings.
   const onKey = useRef<(e: KeyboardEvent) => void>(() => undefined);
@@ -228,11 +266,15 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
         if (el?.closest('button, a, [role="radio"]')) return;
         e.preventDefault();
         if (phase === 'cover') begin(true);
-        else if (phase === 'story') c.toggle();
+        else if (phase === 'story') {
+          if (musical) m.toggle();
+          else c.toggle();
+        }
         poke();
       } else if (!tv && phase === 'story' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
         e.preventDefault();
-        c.go(c.get().seg + (e.key === 'ArrowRight' ? 1 : -1));
+        if (musical) m.seek(m.time + (e.key === 'ArrowRight' ? 15 : -15));
+        else c.go(c.get().seg + (e.key === 'ArrowRight' ? 1 : -1));
         poke();
       }
     };
@@ -257,7 +299,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
     return () => document.removeEventListener('visibilitychange', again);
   }, [phase]);
 
-  const progress = count > 1 ? snap.seg / (count - 1) : 0;
+  const progress = musical ? (m.duration > 0 ? Math.min(1, m.time / m.duration) : 0) : count > 1 ? snap.seg / (count - 1) : 0;
   // The picture dims slowly as the story goes on; the end screen dims further after a while.
   const dim = phase === 'story' ? 0.06 + progress * 0.32 : 0;
   const k = TEXT_SIZES[settings.textSize] ?? 1;
@@ -307,12 +349,12 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
           <nav aria-label={tr(T.progress, locale)} className="flex items-center rounded-full bg-[#070a22]/55 px-1.5 py-1 ring-1 ring-white/10">
             {plans.map((p, i) => {
               const label = p.id === 'title' ? tr(T.goTitle, locale) : p.id === 'outro' ? tr(T.goOutro, locale) : tr(T.goScene, locale).replace('{n}', p.id.slice(1));
-              const here = i === snap.seg;
+              const here = i === seg;
               return (
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => c.go(i)}
+                  onClick={() => (musical ? m.duration > 0 && m.seek((i / count) * m.duration + 0.25) : c.go(i))}
                   aria-label={label}
                   aria-current={here ? 'step' : undefined}
                   title={label}
@@ -320,7 +362,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                 >
                   {p.id === 'outro' ? (
                     <span
-                      className={`grid h-7 w-7 place-items-center rounded-full text-sm transition duration-700 ${here ? 'bg-amber-200/25 opacity-100 shadow-[0_0_14px_rgba(253,230,138,.55)]' : i < snap.seg ? 'opacity-80' : 'opacity-40'}`}
+                      className={`grid h-7 w-7 place-items-center rounded-full text-sm transition duration-700 ${here ? 'bg-amber-200/25 opacity-100 shadow-[0_0_14px_rgba(253,230,138,.55)]' : i < seg ? 'opacity-80' : 'opacity-40'}`}
                       aria-hidden="true"
                     >
                       🌙
@@ -328,7 +370,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                   ) : (
                     <span
                       aria-hidden="true"
-                      className={`block h-2 rounded-full transition-all duration-700 ${here ? 'w-7 bg-amber-200 shadow-[0_0_10px_rgba(253,230,138,.7)]' : i < snap.seg ? 'w-2 bg-white/75' : 'w-2 bg-white/25'} ${p.id === 'title' && !here ? 'w-1.5' : ''}`}
+                      className={`block h-2 rounded-full transition-all duration-700 ${here ? 'w-7 bg-amber-200 shadow-[0_0_10px_rgba(253,230,138,.7)]' : i < seg ? 'w-2 bg-white/75' : 'w-2 bg-white/25'} ${p.id === 'title' && !here ? 'w-1.5' : ''}`}
                     />
                   )}
                 </button>
@@ -357,8 +399,8 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
           idle={phase === 'fin' ? 'sleep' : 'calm'}
           mood={phase === 'fin' ? 'sleepy' : 'calm'}
           accessory="nightcap"
-          talking={snap.speaking}
-          lipSync={plan.kind === 'voice' && plan.visemes && snap.speaking ? () => visemeAt(plan.visemes!, c.time()) : null}
+          talking={musical ? m.status === 'playing' : snap.speaking}
+          lipSync={!musical && plan.kind === 'voice' && plan.visemes && snap.speaking ? () => visemeAt(plan.visemes!, c.time()) : null}
           framing="bust"
           fallback="heart"
         />
@@ -373,9 +415,9 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                 {story.emoji} {tr(VALUE_LABEL[story.value], locale)}
               </Pill>
               <Pill>
-                ⏱ {minutesOf(total)} {tr(T.minutes, locale)}
+                ⏱ {minutesOf(musical && m.duration > 0 ? m.duration : total)} {tr(T.minutes, locale)}
               </Pill>
-              {timingReady ? <Pill>{recorded ? `🎙️ ${tr(T.told, locale)}` : `📖 ${tr(T.quiet, locale)}`}</Pill> : null}
+              {musical ? <Pill>🎵 {tr(T.musical, locale)}</Pill> : timingReady ? <Pill>{recorded ? `🎙️ ${tr(T.told, locale)}` : `📖 ${tr(T.quiet, locale)}`}</Pill> : null}
             </div>
             <div className="mt-3 flex items-start gap-3">
               <h1 className="font-display text-[clamp(1.75rem,1.2rem+2.4vw,3rem)] font-bold leading-tight text-[#fff8ea] [text-wrap:balance] [@media(orientation:landscape)_and_(max-height:520px)]:text-2xl">{tr(story.title, locale)}</h1>
@@ -383,8 +425,14 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
             </div>
             <p className="mt-2 max-w-xl text-base text-white/75 sm:text-lg">{tr(story.teaser, locale)}</p>
 
+            {track ? (
+              <div className="mt-4 max-w-md">
+                <NarrationChoice locale={locale} value={settings.narration} compact />
+              </div>
+            ) : null}
+
             <div className="mt-5 flex flex-wrap items-center gap-3">
-              {resumable(saved, count) ? (
+              {!musical && resumable(saved, count) ? (
                 <>
                   <BigButton onClick={() => begin(true)} autoFocusTv>
                     ▶ {tr(T.resume, locale)} ·{' '}
@@ -400,12 +448,18 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                 </>
               ) : (
                 <BigButton onClick={() => begin(false)} autoFocusTv>
-                  🌙 {tr(T.listen, locale)}
+                  {musical ? '🎵' : '🌙'} {tr(T.listen, locale)}
                 </BigButton>
               )}
             </div>
 
-            {timingReady && !recorded ? (
+            {musical && m.error ? (
+              <p role="status" className="mt-4 rounded-2xl bg-white/[0.06] p-3 text-sm text-white/80 ring-1 ring-white/10">
+                🎵 {tr(T.musicMissing, locale)}
+              </p>
+            ) : null}
+
+            {!musical && timingReady && !recorded ? (
               <div className="mt-4 rounded-2xl bg-white/[0.06] p-3 text-sm text-white/75 ring-1 ring-white/10">
                 <p>📖 {tr(T.noVoice, locale)}</p>
                 <label className="mt-2 inline-flex min-h-10 cursor-pointer items-center gap-2 font-semibold text-white/90">
@@ -454,7 +508,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
               >
                 <Prompter
                   text={plan.text}
-                  word={snap.word}
+                  word={musical ? -1 : snap.word}
                   mode={settings.highlight}
                   variant={variant}
                   moralCount={variant === 'outro' && plan.text.trim().startsWith(story.moral[locale].trim()) ? moralTokens(story, locale) : 0}
@@ -463,14 +517,59 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
               </motion.div>
             </AnimatePresence>
             {/* Screen readers: the sentence, only when no voice reads it already. */}
-            {snap.kind === 'read' ? <LiveSentence text={plan.text} word={snap.word} /> : null}
+            {!musical && snap.kind === 'read' ? <LiveSentence text={plan.text} word={snap.word} /> : null}
           </motion.section>
         ) : null}
       </AnimatePresence>
 
       {/* Controls */}
       <AnimatePresence>
-        {phase === 'story' ? (
+        {phase === 'story' && musical ? (
+          <motion.nav
+            key="music-dock"
+            className={`${css.dock} flex flex-col items-center justify-center gap-2 px-3`}
+            aria-label={tr(T.musical, locale)}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: uiVisible ? 1 : 0.0 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            style={{ pointerEvents: uiVisible ? 'auto' : 'none' }}
+          >
+            <div className="flex w-full max-w-md items-center gap-2 text-xs font-semibold tabular-nums text-white/75">
+              <span className="w-10 text-end">{clock(m.time)}</span>
+              <input
+                type="range"
+                min={0}
+                max={Math.max(1, Math.round(m.duration))}
+                step={1}
+                value={Math.min(Math.round(m.time), Math.max(1, Math.round(m.duration)))}
+                onChange={(e) => m.seek(Number(e.target.value))}
+                aria-label={tr(T.musicProgress, locale)}
+                aria-valuetext={`${clock(m.time)} / ${clock(m.duration)}`}
+                disabled={!(m.duration > 0)}
+                className="h-8 flex-1 cursor-pointer accent-amber-200"
+              />
+              <span className="w-10">{clock(m.duration)}</span>
+            </div>
+            <div className="flex items-center justify-center gap-2 sm:gap-3">
+              <Ctl label={tr(T.restart, locale)} onClick={() => m.play(0)}>
+                ↺
+              </Ctl>
+              <Ctl label={tr(T.back15, locale)} onClick={() => m.seek(m.time - 15)}>
+                ⏪
+              </Ctl>
+              <Ctl big autoFocusTv label={m.status === 'paused' ? tr(T.play, locale) : tr(T.pause, locale)} onClick={() => m.toggle()}>
+                {m.status === 'paused' ? <span className="ms-1">▶</span> : '❚❚'}
+              </Ctl>
+              <Ctl label={tr(T.fwd15, locale)} onClick={() => m.seek(m.time + 15)} disabled={!(m.duration > 0)}>
+                ⏩
+              </Ctl>
+              <Ctl label={tr(T.options, locale)} onClick={() => setOptionsOpen(true)}>
+                Aa
+              </Ctl>
+            </div>
+          </motion.nav>
+        ) : phase === 'story' ? (
           <motion.nav
             key="dock"
             className={`${css.dock} flex items-center justify-center gap-2 px-3 sm:gap-3`}
@@ -502,11 +601,11 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
 
       {/* Autoplay refused (rare): one tap and Ziggy goes on. */}
       <AnimatePresence>
-        {phase === 'story' && snap.blocked ? (
+        {phase === 'story' && (musical ? m.blocked : snap.blocked) ? (
           <motion.button
             key="blocked"
             type="button"
-            onClick={() => c.resume()}
+            onClick={() => (musical ? m.play() : c.resume())}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -540,7 +639,8 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                   type="button"
                   onClick={() => {
                     setSleepy(false);
-                    c.start(0);
+                    if (musical) m.play(0);
+                    else c.start(0);
                   }}
                   className="min-h-11 rounded-full bg-white/10 px-5 py-2 text-sm font-semibold ring-1 ring-white/15 focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200"
                 >
@@ -570,6 +670,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
             locale={locale}
             settings={settings}
             recorded={complete || recorded}
+            hasMusic={Boolean(track)}
             onClose={() => setOptionsOpen(false)}
           />
         ) : null}

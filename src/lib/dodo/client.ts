@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import type { DodoStory } from '@/data/dodo/types';
-import { forgetPosition, parseTiming, readPositions, rememberPosition, type DodoPosition, type FallbackVoice, type HighlightMode } from './player';
+import { forgetPosition, parseTiming, readPositions, rememberPosition, type DodoPosition, type FallbackVoice, type HighlightMode, type NarrationMode } from './player';
 import { voiceBase, voiceLocale, type DodoVoiceTiming } from './voice';
 
 /* ── Settings kept on this device ── */
@@ -17,6 +17,8 @@ export interface DodoSettings {
   speed: number;
   /** When a story has no recording yet: silent reading at a calm pace, or the device's own voice. */
   fallback: FallbackVoice;
+  /** Stories with a sung track: Ziggy's reading voice (default) or the "Version musicale". */
+  narration: NarrationMode;
   favorites: string[];
   /** Stories already heard (ids), to suggest new ones. */
   heard: string[];
@@ -30,6 +32,7 @@ const DEFAULTS: DodoSettings = {
   highlight: 'word',
   speed: 1,
   fallback: 'read',
+  narration: 'voice',
   favorites: [],
   heard: [],
 };
@@ -48,6 +51,7 @@ function read(): DodoSettings {
     stored.speed = Math.max(0.85, Math.min(1.15, Number(stored.speed) || 1));
     if (stored.highlight !== 'line') stored.highlight = 'word';
     if (stored.fallback !== 'device') stored.fallback = 'read';
+    if (stored.narration !== 'music') stored.narration = 'voice';
     cache = stored;
   } catch {
     cache = DEFAULTS;
