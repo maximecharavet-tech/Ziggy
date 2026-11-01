@@ -54,7 +54,7 @@ const BIG: MagicMoment['kind'][] = ['FIRST_QUEST', 'WORLD_COMPLETE', 'NEW_WORLD'
 
 /**
  * Magic Moments: the big firsts get a full-screen celebration, one after the
- * other (tap to continue); smaller ones are shown as a list by the caller.
+ * other (tap to continue, or wait a few seconds); smaller ones are shown as a list by the caller.
  */
 export function MagicMoments({ moments, locale, onDone }: { moments: MagicMoment[]; locale: string; onDone?: () => void }) {
   const big = moments.filter((m) => BIG.includes(m.kind));
@@ -78,6 +78,13 @@ export function MagicMoments({ moments, locale, onDone }: { moments: MagicMoment
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
+  }, [current]);
+
+  // It moves on by itself too, so a child who doesn't tap is never stuck behind it.
+  useEffect(() => {
+    if (!current) return;
+    const t = window.setTimeout(() => setI((n) => n + 1), 6000);
+    return () => window.clearTimeout(t);
   }, [current]);
 
   useEffect(() => {
