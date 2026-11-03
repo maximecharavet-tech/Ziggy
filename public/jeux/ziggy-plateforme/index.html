@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#10172a">
+  <title>Ziggy et les Étoiles Perdues</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #10172a; }
+    body { display: grid; place-items: center; }
+    #glcanvas { display: block; width: 100vw; height: 100vh; outline: none; background: #10172a; }
+  </style>
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <canvas id="glcanvas" tabindex="0"></canvas>
+  <script>
+    // v10 : quand le jeu est integre dans une page (iframe), le focus du canvas ne fait pas defiler la page parente.
+    (function () { var f = HTMLElement.prototype.focus; HTMLCanvasElement.prototype.focus = function (o) { return f.call(this, Object.assign({ preventScroll: true }, o || {})); }; })();
+  </script>
+  <script>var register_plugin;</script>
+  <script src="mq_js_bundle.js"></script>
+  <script>load("ziggy.wasm");</script>
+</body>
+</html>
