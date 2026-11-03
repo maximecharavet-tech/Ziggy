@@ -13,15 +13,22 @@ export const PT = {
   skill: { fr: 'Adresse · réflexes · orientation', en: 'Skill · reflexes · finding your way' },
   back: { fr: 'Retour à l’arcade', en: 'Back to the arcade' },
   start: {
-    fr: 'Clique sur le jeu, puis appuie sur Entrée pour commencer.',
-    en: 'Click the game, then press Enter to start.',
+    fr: 'Touche ou clique le jeu, puis appuie sur « Jouer ! » (ou Entrée) pour commencer.',
+    en: 'Tap or click the game, then press “Jouer !” (or Enter) to start.',
   },
-  keyboard: {
-    fr: 'Ce jeu se joue avec un clavier (ordinateur).',
-    en: 'This game is played with a keyboard (computer).',
+  devices: {
+    fr: 'Se joue au doigt sur téléphone et tablette, ou au clavier sur ordinateur.',
+    en: 'Play with your fingers on a phone or tablet, or with a keyboard on a computer.',
   },
+  touchTitle: { fr: 'Au doigt (téléphone, tablette)', en: 'With your fingers (phone, tablet)' },
+  keysTitle: { fr: 'Au clavier (ordinateur)', en: 'With a keyboard (computer)' },
+  rotate: {
+    fr: 'Astuce : tourne ton téléphone à l’horizontale pour jouer en grand.',
+    en: 'Tip: turn your phone sideways to play bigger.',
+  },
+  close: { fr: 'Quitter le plein écran', en: 'Exit full screen' },
   fullscreen: { fr: 'Plein écran', en: 'Full screen' },
-  controls: { fr: 'Les touches', en: 'The keys' },
+  controls: { fr: 'Les commandes', en: 'The controls' },
   frame: { fr: 'Jeu Ziggy et les Étoiles Perdues', en: 'Ziggy and the Lost Stars game' },
   badge: { fr: 'Nouveau', en: 'New' },
   play: { fr: 'Jouer', en: 'Play' },
@@ -36,4 +43,14 @@ export const CONTROLS: { keys: string; what: L }[] = [
   { keys: 'X / J', what: { fr: 'Coup de poing (maintenir = plus fort)', en: 'Punch (hold = stronger)' } },
   { keys: 'Échap / P', what: { fr: 'Pause', en: 'Pause' } },
   { keys: '1 … 7', what: { fr: 'Choisir un monde (écran titre)', en: 'Pick a world (title screen)' } },
+];
+
+/** On-screen touch buttons drawn by the game (bottom-left: move, bottom-right: actions, top-right: pause). */
+export const TOUCH_CONTROLS: { icon: string; what: L }[] = [
+  { icon: '◀ ▶', what: { fr: 'En bas à gauche : avancer', en: 'Bottom left: move' } },
+  { icon: '⬆', what: { fr: 'Gros bouton : sauter (maintenir = plus haut, retoucher en l’air = double saut)', en: 'Big button: jump (hold = higher, tap again in the air = double jump)' } },
+  { icon: '⏩', what: { fr: 'Foncer (dash)', en: 'Dash' } },
+  { icon: '⬇', what: { fr: 'En l’air : plonger pour écraser', en: 'In the air: ground-pound' } },
+  { icon: '✸', what: { fr: 'Coup de poing (maintenir = plus fort)', en: 'Punch (hold = stronger)' } },
+  { icon: 'Ⅱ', what: { fr: 'En haut à droite : pause', en: 'Top right: pause' } },
 ];
