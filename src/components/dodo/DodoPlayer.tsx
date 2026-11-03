@@ -15,7 +15,6 @@ import {
   minutesOf,
   moralTokens,
   musicSegment,
-  musicTrack,
   planSeconds,
   planStory,
   resumable,
@@ -26,13 +25,16 @@ import {
   timingComplete,
   type DodoPosition,
 } from '@/lib/dodo/player';
-import { clearPosition, savePosition, savedPosition, TEXT_SIZES, updateDodo, useDodoSettings, useManifest, useTiming } from '@/lib/dodo/client';
+import { clearPosition, savePosition, savedPosition, TEXT_SIZES, updateDodo, useDodoSettings, useManifest, useSongTiming, useTiming } from '@/lib/dodo/client';
 import { Ziggy3D } from '@/components/ziggy3d/Ziggy3D';
 import { useAppShell } from '@/lib/use-app-shell';
 import { useBackLayer } from '@/lib/back-layer';
 import { useConductor } from './conductor';
 import { Prompter } from './Prompter';
-import { NarrationChoice, PlayerOptions } from './PlayerOptions';
+import { NarrationChoice, PlayerOptions, VersionChoice } from './PlayerOptions';
+import { SongPrompter } from './SongPrompter';
+import { neighbourLine, pickVersion, songSegment, songSegmentStart, songVersions, wordsReliable } from '@/lib/dodo/song';
+import { stopSpeaking } from '@/lib/voice';
 import { useMusic } from './music';
 import { DodoSay } from './DodoSay';
 import { Moon, NightSky, SceneArt, Sparkles } from './Scenery';
@@ -81,6 +83,8 @@ const T = {
     en: 'The musical version isn’t available right now. Choose “Reading voice” to listen to Ziggy.',
   },
   musicProgress: { fr: 'Avancement de la chanson', en: 'Song progress' },
+  lyrics: { fr: 'Les paroles de la chanson', en: 'The song’s lyrics' },
+  singFrom: { fr: 'Chanter à partir d’ici', en: 'Sing from here' },
   back15: { fr: 'Reculer un peu', en: 'Go back a little' },
   fwd15: { fr: 'Avancer un peu', en: 'Go forward a little' },
 } satisfies Record<string, L>;
@@ -108,10 +112,24 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   const complete = timingComplete(timing, story.scenes.length);
   const total = planSeconds(plans);
   const count = plans.length;
-  // "Version musicale": one sung track for the whole story, chosen in the settings (remembered on this device).
-  const track = musicTrack(story, raw);
-  const musical = Boolean(track) && settings.narration === 'music';
+  // "Version musicale": the whole story sung. When the story has a song it has priority (default);
+  // Ziggy's reading voice stays a choice. Several versions → « Version 1 / Version 2 » (remembered per story).
+  const versions = useMemo(() => songVersions(story, locale), [story, locale]);
+  const song = pickVersion(versions, settings.songVersion[story.id]);
+  const track = song?.url ?? null;
+  const musical = Boolean(song) && settings.narration === 'music';
   const m = useMusic(musical ? track : null);
+  // The lyrics, synchronised with the song (teleprompter); without them the story text is shown.
+  const songTiming = useSongTiming(musical ? (song?.timing ?? null) : null);
+  // Changing version while the song plays: the new one starts at once (inside the same tap).
+  const resumeSong = useRef(false);
+  useEffect(() => {
+    if (resumeSong.current && musical && track) {
+      resumeSong.current = false;
+      m.play(0);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [track]);
 
   const [saved, setSaved] = useState<DodoPosition | undefined>(undefined);
   const [optionsOpen, setOptionsOpen] = useState(false);
@@ -133,8 +151,8 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
       : snap.status === 'done'
         ? 'fin'
         : 'story';
-  // In music mode the pictures follow the song: equal parts of the track, by time.
-  const seg = musical ? musicSegment(m.time, m.duration, count) : snap.seg;
+  // In music mode the pictures follow the song: by the lyrics' progress when synchronised, else equal parts of the track.
+  const seg = musical ? (songTiming ? songSegment(songTiming, m.time, count) : musicSegment(m.time, m.duration, count)) : snap.seg;
   const paused = musical ? m.status === 'paused' : snap.status === 'paused';
   const plan = plans[seg] ?? plans[0];
   const scene = sceneOfSegment(plan.id, story.scenes.length);
@@ -162,10 +180,18 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
       if (!resumable(saved, count)) c.prefetch(1);
     }
   }, [phase, c, saved, count, musical]);
-  // Switching to the musical version: Ziggy's reading stops (switching back, the song stops: see useMusic).
+  // The song has priority: whenever it is chosen, Ziggy's reading (recorded or device voice) is silenced,
+  // and pausing the song never starts it (switching back to the voice stops the song: see useMusic).
   useEffect(() => {
-    if (musical) c.pause();
+    if (!musical) return;
+    c.pause();
+    stopSpeaking();
   }, [musical, c]);
+  const chooseVersion = (id: string) => {
+    if (id === song?.id) return;
+    if (musical && m.status !== 'idle' && m.status !== 'done') resumeSong.current = true;
+    updateDodo({ songVersion: { ...settings.songVersion, [story.id]: id } });
+  };
   useEffect(() => {
     const next = imageFor(seg + 1);
     if (!next) return;
@@ -193,8 +219,10 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
 
   const begin = (fromSaved: boolean) => {
     // Inside the tap: audio may start (and keep going) on every browser.
-    if (musical) m.play(0);
-    else {
+    if (musical) {
+      stopSpeaking();
+      m.play(0);
+    } else {
       const pos = fromSaved && resumable(saved, count) ? saved : null;
       const p = pos ? plans[pos.seg] : null;
       const t = pos && p ? sentenceStartTime(p.words, sentenceOf(tokenize(p.text)), pos.t) : 0;
@@ -273,7 +301,10 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
         poke();
       } else if (!tv && phase === 'story' && (e.key === 'ArrowRight' || e.key === 'ArrowLeft')) {
         e.preventDefault();
-        if (musical) m.seek(m.time + (e.key === 'ArrowRight' ? 15 : -15));
+        if (musical && songTiming) {
+          const l = songTiming.lines[neighbourLine(songTiming, m.getTime(), e.key === 'ArrowRight' ? 1 : -1)];
+          if (l) m.seek(Math.max(0, l.s - 0.3));
+        } else if (musical) m.seek(m.time + (e.key === 'ArrowRight' ? 15 : -15));
         else c.go(c.get().seg + (e.key === 'ArrowRight' ? 1 : -1));
         poke();
       }
@@ -304,8 +335,9 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   const dim = phase === 'story' ? 0.06 + progress * 0.32 : 0;
   const k = TEXT_SIZES[settings.textSize] ?? 1;
   const variant = plan.id === 'title' ? 'title' : plan.id === 'outro' ? 'outro' : 'scene';
-  const caption =
-    plan.id === 'title'
+  const caption = musical && songTiming
+    ? `🎵 ${tr(T.musical, locale)}${versions.length > 1 && song ? ` · ${song.label}` : ''}`
+    : plan.id === 'title'
       ? `✨ ${tr(T.onceUpon, locale)}`
       : plan.id === 'outro'
         ? `⭐ ${tr(T.moral, locale)}`
@@ -354,7 +386,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                 <button
                   key={p.id}
                   type="button"
-                  onClick={() => (musical ? m.duration > 0 && m.seek((i / count) * m.duration + 0.25) : c.go(i))}
+                  onClick={() => (musical ? (songTiming ? m.seek(songSegmentStart(songTiming, i, count)) : m.duration > 0 && m.seek((i / count) * m.duration + 0.25)) : c.go(i))}
                   aria-label={label}
                   aria-current={here ? 'step' : undefined}
                   title={label}
@@ -428,6 +460,11 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
             {track ? (
               <div className="mt-4 max-w-md">
                 <NarrationChoice locale={locale} value={settings.narration} compact />
+                {musical && versions.length > 1 && song ? (
+                  <div className="mt-2">
+                    <VersionChoice locale={locale} versions={versions} value={song.id} onChange={chooseVersion} />
+                  </div>
+                ) : null}
               </div>
             ) : null}
 
@@ -497,6 +534,23 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                 </SizeButton>
               </motion.div>
             </div>
+            {musical && songTiming ? (
+              <SongPrompter
+                key={song?.id}
+                timing={songTiming}
+                getTime={m.getTime}
+                playing={m.status === 'playing'}
+                tick={m.status === 'playing' ? 0 : m.time}
+                mode={settings.highlight}
+                words={wordsReliable(songTiming)}
+                onSeek={(t) => {
+                  m.seek(t);
+                  poke();
+                }}
+                label={tr(T.lyrics, locale)}
+                seekLabel={tr(T.singFrom, locale)}
+              />
+            ) : (
             <AnimatePresence mode="wait" initial={false}>
               <motion.div
                 key={plan.id}
@@ -516,6 +570,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                 />
               </motion.div>
             </AnimatePresence>
+            )}
             {/* Screen readers: the sentence, only when no voice reads it already. */}
             {!musical && snap.kind === 'read' ? <LiveSentence text={plan.text} word={snap.word} /> : null}
           </motion.section>
@@ -671,6 +726,9 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
             settings={settings}
             recorded={complete || recorded}
             hasMusic={Boolean(track)}
+            versions={versions}
+            version={song?.id}
+            onVersion={chooseVersion}
             onClose={() => setOptionsOpen(false)}
           />
         ) : null}

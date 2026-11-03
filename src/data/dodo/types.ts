@@ -77,11 +77,27 @@ export interface DodoStory {
   /** Reference picture sent to the image provider so a character stays the same in every scene. */
   reference?: string;
   /**
-   * Optional "Version musicale": one audio file (e.g. a Suno MP3) that sings or
-   * tells the whole story over soft music, per text language. The player then
-   * offers it next to Ziggy's reading voice. Paths are under /public.
+   * Optional "Version musicale": the whole story sung over soft music (e.g. Suno
+   * songs). Several versions may be offered (« Version 1 », « Version 2 »…), each
+   * with its own audio file and timing file per text language (paths under
+   * /public). When a story has one, the song is played by default and Ziggy's
+   * reading voice stays available as a choice. Timing files come from
+   * scripts/align-dodo.py (lyrics synchronised with the song, line by line and
+   * word by word).
    */
-  music?: Partial<L>;
+  songs?: DodoSong[];
+}
+
+/** One sung version of a story. */
+export interface DodoSong {
+  /** Stable id, remembered on the device ("v1", "v2"…). */
+  id: string;
+  /** Shown in the version choice; default « Version n ». */
+  label?: Partial<L>;
+  /** The MP3 per text language. */
+  audio: Partial<L>;
+  /** The synchronised lyrics (…timing.json) per text language; without it the song plays with the story text. */
+  timing?: Partial<L>;
 }
 
 export const VALUE_LABEL: Record<DodoValue, L> = {

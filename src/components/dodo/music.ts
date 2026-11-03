@@ -127,5 +127,8 @@ export function useMusic(url: string | null) {
     setState((s) => ({ ...IDLE, duration: s.duration, error: s.error }));
   }, []);
 
-  return { ...state, play, pause, toggle, seek, stop };
+  /** The exact position right now (for the lyrics, read every frame; state.time only ticks ~4×/s). */
+  const getTime = useCallback(() => audio.current?.currentTime ?? 0, []);
+
+  return { ...state, play, pause, toggle, seek, stop, getTime };
 }

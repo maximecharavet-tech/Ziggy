@@ -372,14 +372,8 @@ export function resumable(pos: DodoPosition | undefined, segmentCount: number): 
 
 /* ── Version musicale (one sung track for the whole story) ── */
 
-/** How the story is told: Ziggy reading it (words light up) or the sung version. */
+/** How the story is told: Ziggy reading it (words light up) or the sung version (see song.ts). */
 export type NarrationMode = 'voice' | 'music';
-
-/** The story's sung track for this language, or null (then only the reading voice is offered). */
-export function musicTrack(story: Pick<DodoStory, 'music'>, locale: string): string | null {
-  const url = story.music?.[textLocale(locale)];
-  return typeof url === 'string' && url.trim() ? url : null;
-}
 
 /**
  * Which segment (title, scenes, outro) to show while the sung track plays:

@@ -5,7 +5,6 @@ import {
   clampSegment,
   clock,
   musicSegment,
-  musicTrack,
   durationBucket,
   forgetPosition,
   gapAfter,
@@ -338,14 +337,6 @@ describe('remembered position', () => {
 });
 
 describe('version musicale', () => {
-  it('offers Princesse Lili’s sung track in French only, and nothing for stories without one', () => {
-    expect(musicTrack(lili, 'fr')).toBe('/dodo/lili/lili-musique.mp3');
-    expect(musicTrack(lili, 'en')).toBeNull();
-    expect(musicTrack(lili, 'de')).toBeNull();
-    for (const s of DODO_STORIES.filter((x) => x.id !== 'lili')) expect(musicTrack(s, 'fr'), s.id).toBeNull();
-    expect(musicTrack({ music: { fr: '  ' } }, 'fr')).toBeNull();
-  });
-
   it('splits the song in equal parts for the pictures', () => {
     expect(musicSegment(0, 279.2, 8)).toBe(0);
     expect(musicSegment(34, 279.2, 8)).toBe(0);

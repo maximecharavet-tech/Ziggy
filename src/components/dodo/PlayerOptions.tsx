@@ -28,7 +28,8 @@ const T = {
   voice: { fr: 'Voix qui lit', en: 'Reading voice' },
   voiceHint: { fr: 'Ziggy lit, les mots s’allument', en: 'Ziggy reads, the words light up' },
   music: { fr: 'Version musicale', en: 'Musical version' },
-  musicHint: { fr: 'L’histoire chantée, en douceur', en: 'The story sung, softly' },
+  musicHint: { fr: 'L’histoire chantée, les paroles s’allument', en: 'The story sung, the lyrics light up' },
+  versions: { fr: 'Quelle chanson ?', en: 'Which song?' },
 } satisfies Record<string, L>;
 
 /** Grown-up settings, in a calm sheet (bottom sheet on phones, side panel on big screens). */
@@ -37,6 +38,9 @@ export function PlayerOptions({
   settings,
   recorded,
   hasMusic = false,
+  versions = [],
+  version,
+  onVersion,
   onClose,
 }: {
   locale: string;
@@ -45,6 +49,10 @@ export function PlayerOptions({
   recorded: boolean;
   /** The story has a "Version musicale" in this language (the choice is shown only then). */
   hasMusic?: boolean;
+  /** The sung versions (the choice is shown when there are 2 or more). */
+  versions?: { id: string; label: string }[];
+  version?: string;
+  onVersion?: (id: string) => void;
   onClose: () => void;
 }) {
   const musical = hasMusic && settings.narration === 'music';
@@ -97,6 +105,12 @@ export function PlayerOptions({
           </Group>
         ) : null}
 
+        {musical && versions.length > 1 && version && onVersion ? (
+          <Group label={tr(T.versions, locale)}>
+            <VersionChoice locale={locale} versions={versions} value={version} onChange={onVersion} />
+          </Group>
+        ) : null}
+
         <Group label={tr(T.size, locale)}>
           <div className="flex items-center gap-3">
             <Round label={tr(T.smaller, locale)} disabled={size <= 0} onClick={() => updateDodo({ textSize: size - 1 })}>
@@ -125,20 +139,21 @@ export function PlayerOptions({
           />
         </Group>
 
+        <Group label={tr(T.highlight, locale)}>
+          <Choice
+            value={settings.highlight}
+            options={[
+              { v: 'word', label: `✨ ${tr(T.word, locale)}` },
+              { v: 'line', label: `〰️ ${tr(T.line, locale)}` },
+            ]}
+            onChange={(v) => updateDodo({ highlight: v })}
+            label={tr(T.highlight, locale)}
+          />
+        </Group>
+
+        {/* A song is not sped up: the voice speed is for Ziggy's reading only. */}
         {!musical ? (
           <>
-            <Group label={tr(T.highlight, locale)}>
-              <Choice
-                value={settings.highlight}
-                options={[
-                  { v: 'word', label: `✨ ${tr(T.word, locale)}` },
-                  { v: 'line', label: `〰️ ${tr(T.line, locale)}` },
-                ]}
-                onChange={(v) => updateDodo({ highlight: v })}
-                label={tr(T.highlight, locale)}
-              />
-            </Group>
-
             <Group label={tr(T.speed, locale)}>
               <Choice
                 value={String(settings.speed)}
@@ -174,9 +189,10 @@ export function PlayerOptions({
  * this device). Shown only for stories that have a sung track.
  */
 export function NarrationChoice({ locale, value, compact = false }: { locale: string; value: DodoSettings['narration']; compact?: boolean }) {
+  // The song first: it has priority when the story has one.
   const options = [
-    { v: 'voice' as const, icon: '📖', label: tr(T.voice, locale), hint: tr(T.voiceHint, locale) },
     { v: 'music' as const, icon: '🎵', label: tr(T.music, locale), hint: tr(T.musicHint, locale) },
+    { v: 'voice' as const, icon: '📖', label: tr(T.voice, locale), hint: tr(T.voiceHint, locale) },
   ];
   return (
     <div role="radiogroup" aria-label={tr(T.narration, locale)} className="grid grid-cols-2 gap-2">
@@ -201,6 +217,26 @@ export function NarrationChoice({ locale, value, compact = false }: { locale: st
           </button>
         );
       })}
+    </div>
+  );
+}
+
+/** « Version 1 » / « Version 2 »…: which sung version to play (saved per story on this device). */
+export function VersionChoice({ locale, versions, value, onChange }: { locale: string; versions: { id: string; label: string }[]; value: string; onChange: (id: string) => void }) {
+  return (
+    <div role="radiogroup" aria-label={tr(T.versions, locale)} className="flex flex-wrap gap-1 rounded-2xl bg-white/[0.06] p-1 ring-1 ring-white/10">
+      {versions.map((v) => (
+        <button
+          key={v.id}
+          type="button"
+          role="radio"
+          aria-checked={value === v.id}
+          onClick={() => onChange(v.id)}
+          className={`min-h-11 flex-1 rounded-xl px-3 py-2 text-sm font-bold transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-amber-200 ${value === v.id ? 'bg-amber-200 text-[#24164a] shadow' : 'text-white/80 hover:bg-white/10'}`}
+        >
+          🎶 {v.label}
+        </button>
+      ))}
     </div>
   );
 }

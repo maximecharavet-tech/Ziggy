@@ -24,8 +24,9 @@ export const LILI_STORY: DodoStory = {
   // The character art (no painted title or button), so nothing on it looks clickable.
   cover: '/dodo/lili/lili.webp',
   reference: '/dodo/lili/lili-ref.jpg',
-  // The whole story sung over soft music (file: public/dodo/lili/lili-musique.mp3).
-  music: { fr: '/dodo/lili/lili-musique.mp3' },
+  // The whole story sung over soft music (Suno). Add a version: drop the MP3 in public/dodo/lili/,
+  // run scripts/align-dodo.py for its timing file, and add an entry here.
+  songs: [{ id: 'v1', audio: { fr: '/dodo/lili/lili-v1.mp3' }, timing: { fr: '/dodo/lili/lili-v1.timing.json' } }],
   scenes: [
     {
       text: {
