@@ -9,6 +9,22 @@ their licenses is audited in `docs/evolution/INVENTORY.md`.)
 | @types/three (dev only) | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | © Microsoft Corporation | 0.186.0 |
 | wasm-bindgen (Rust crate compiled into `src/lib/tv/wasm/`, and its generated JS glue) | https://github.com/rustwasm/wasm-bindgen | MIT OR Apache-2.0 | © The wasm-bindgen Developers | 0.2.129 |
 
+Platformer "Ziggy et les Étoiles Perdues" (`public/jeux/ziggy-plateforme/`, page `/monde/ziggy-plateforme`): an
+original Rust game (MIT, © Ziggy) compiled to WebAssembly. All graphics are drawn procedurally in code and the sounds are
+synthesised; no third-party art, music or characters. Crates compiled into `ziggy.wasm`, and the macroquad JS loader
+`mq_js_bundle.js` shipped next to it:
+
+| Name | URL | License | Version |
+|---|---|---|---|
+| macroquad (+ macroquad_macro, `mq_js_bundle.js`) | https://github.com/not-fl3/macroquad | MIT OR Apache-2.0 | 0.4.16 |
+| miniquad | https://github.com/not-fl3/miniquad | MIT OR Apache-2.0 | 0.4.11 |
+| quad-rand | https://github.com/not-fl3/quad-rand | MIT | 0.2.3 |
+| glam | https://github.com/bitshifter/glam-rs | MIT OR Apache-2.0 | 0.27.0 |
+| fontdue, ttf-parser | https://github.com/mooman219/fontdue, https://github.com/harfbuzz/ttf-parser | MIT OR Apache-2.0 (fontdue also Zlib) | 0.9.5 / 0.25.1 |
+| image, png, fdeflate, flate2, miniz_oxide, crc32fast, color_quant, simd-adler32, adler2 | crates.io (image-rs, rust-lang) | MIT and/or Apache-2.0 | see the game's `Cargo.lock` |
+| hashbrown, equivalent, allocator-api2, num-traits, libm, core_maths, cfg-if, bitflags, bytemuck, byteorder, autocfg | crates.io | MIT and/or Apache-2.0 (used under MIT) | see the game's `Cargo.lock` |
+| foldhash (hasher used by hashbrown, pulled in by macroquad/fontdue) | https://github.com/orlp/foldhash | **Zlib** (permissive; owner's OK needed per the licence rule) | 0.1.5 |
+
 TV spatial navigation (`rust/ziggy-tv-nav/`, compiled to `src/lib/tv/wasm/`, and its TypeScript twin
 `src/lib/tv/spatial-nav.ts`): the direction scoring is a port of the ideas of **Norigin Spatial Navigation**
 (https://github.com/NoriginMedia/Norigin-Spatial-Navigation, MIT, © 2022 NoriginMedia) — cut-off at the edge

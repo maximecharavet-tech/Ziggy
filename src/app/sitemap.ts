@@ -22,6 +22,7 @@ const PLAY = [
   '/monde/3d/dino',
   '/monde/3d/detective',
   '/monde/3d/pizza',
+  '/monde/ziggy-plateforme',
   '/monde/musique',
   '/monde/bac-a-sable',
   '/monde/nid',
