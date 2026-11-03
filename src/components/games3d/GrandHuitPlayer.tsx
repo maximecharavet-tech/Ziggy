@@ -20,15 +20,17 @@ import {
   opKey,
   opLabel,
   opSpoken,
-  planRide,
+  planGame,
   praiseFor,
-  rideKey,
   sameOp,
   spokenLines,
   stopsOf,
+  tallyRide,
   type Band,
+  type CoasterSkill,
   type Op,
   type Ride,
+  type SkillTally,
 } from '@/games3d/grand-huit/logic';
 import { getMemory, useHydrated, useWorldMemory } from '@/lib/world/store';
 import { maxDifficulty, readAloudOn } from '@/lib/world/memory';
@@ -62,6 +64,7 @@ const T = {
   ride: { fr: 'Trajet', en: 'Ride' },
   rails: { fr: 'Rails', en: 'Rails' },
   lap: { fr: 'Tour d’honneur sur la grande roue !', en: 'A victory lap on the Ferris wheel!' },
+  wheel: { fr: 'Tout là-haut !', en: 'Way up high!' },
   done: { fr: 'Quelle fête foraine !', en: 'What a fair!' },
   doneSub: { fr: 'Cinq trajets pile à la gare !', en: 'Five rides right on the station!' },
   again: { fr: 'Rejouer', en: 'Play again' },
@@ -143,13 +146,32 @@ export function GrandHuitPlayer() {
   const [misses, setMisses] = useState(0);
   const [current, setCurrent] = useState<number | null>(null);
   const [toast, setToast] = useState<{ text: string; id: number; kind: 'hint' | 'praise' | 'info' } | null>(null);
-  const [xp, setXp] = useState<{ n: number; id: number } | null>(null);
+  /** The XP pop: XP when a skill's progress is saved, a ticket after the other rides. */
+  const [xp, setXp] = useState<{ n: number | null; id: number } | null>(null);
   const [music, setMusic] = useState(true);
   const [totals, setTotals] = useState<{ xp: number; stars: number; magic: MagicMoment[] }>({ xp: 0, stars: 0, magic: [] });
   const [run, setRun] = useState(0);
 
   // The scene's callbacks are created once: they read the live state from refs.
-  const live = useRef({ ride: null as Ride | null, path: [] as Op[], misses: 0, index: 0, started: 0, played: [] as string[], seed: 0, band: 'middle' as Band });
+  const live = useRef({ ride: null as Ride | null, rides: [] as Ride[], path: [] as Op[], misses: 0, index: 0, started: 0, seed: 0, band: 'middle' as Band });
+  /** This game's rides per skill, saved once per skill (see `tallyRide`). */
+  const tally = useRef(new Map<CoasterSkill, SkillTally>());
+
+  /** A game left half-way: still save the rides done (no screen to update). */
+  const flushTally = () => {
+    for (const [skill, t] of tally.current) if (t.total > 0) finishExtraGame(GAME_ID, skill, { correct: t.correct, mistakes: t.mistakes, total: t.total }, t.durationMs);
+    tally.current.clear();
+  };
+
+  /** The five rides of a new game, at the child's level (fixed for the game: the rides already climb). */
+  const planRides = () => {
+    const L = live.current;
+    const m = getMemory();
+    const skill = LEAD_SKILL[L.band];
+    const level = Math.min(m.skills[skill]?.difficulty ?? 1, maxDifficulty(m));
+    L.seed = Math.floor(Math.random() * 1e6);
+    L.rides = planGame(L.seed, L.band, level);
+  };
 
   useEffect(() => setSupported(webglOk()), []);
 
@@ -170,15 +192,12 @@ export function GrandHuitPlayer() {
     game.current?.setPath(p);
   }, []);
 
-  /** Plan and show ride number `i` (the level follows the child's progress, ride after ride). */
+  /** Show ride number `i` of the game. */
   const beginRide = useCallback(
     (i: number) => {
       const L = live.current;
-      const m = getMemory();
-      const skill = LEAD_SKILL[L.band];
-      const level = Math.min(m.skills[skill]?.difficulty ?? 1, maxDifficulty(m));
-      const r = planRide(L.seed, L.band, level, i, L.played);
-      L.played = [...L.played, rideKey(r)];
+      const r = L.rides[i];
+      if (!r) return;
       L.ride = r;
       L.path = [];
       L.misses = 0;
@@ -202,9 +221,9 @@ export function GrandHuitPlayer() {
     game.current?.dispose();
     game.current = null;
     const L = live.current;
+    flushTally();
     L.band = (getMemory().age ?? 'middle') as Band;
-    L.seed = Math.floor(Math.random() * 1e6);
-    L.played = [];
+    planRides();
     let created: GrandHuitGame;
     try {
       const { GrandHuitGame } = await import('@/games3d/grand-huit/GrandHuitGame');
@@ -222,9 +241,14 @@ export function GrandHuitPlayer() {
             if (!r) return;
             if (ok) {
               setStatus('splash');
-              const o = finishExtraGame(GAME_ID, r.skill, { correct: 1, mistakes: Lv.misses, total: 1 }, performance.now() - Lv.started);
-              setXp({ n: o.xpGained, id: Date.now() });
-              setTotals((t) => ({ xp: t.xp + o.xpGained, stars: t.stars + o.stars, magic: [...t.magic, ...o.magic] }));
+              // One save per skill and per game: a perfect game moves each level one step, not five.
+              const done = tallyRide(tally.current, Lv.rides, Lv.index, { mistakes: Lv.misses, durationMs: performance.now() - Lv.started });
+              if (done) {
+                const t = done.stats;
+                const o = finishExtraGame(GAME_ID, done.skill, { correct: t.correct, mistakes: t.mistakes, total: t.total }, t.durationMs);
+                setXp({ n: o.xpGained, id: Date.now() });
+                setTotals((tt) => ({ xp: tt.xp + o.xpGained, stars: tt.stars + o.stars, magic: [...tt.magic, ...o.magic] }));
+              } else setXp({ n: null, id: Date.now() });
               const praise = praiseFor(Lv.index + Lv.seed, locale);
               showToast(praise, 'praise');
               say([praise], 'gh-praise');
@@ -280,9 +304,8 @@ export function GrandHuitPlayer() {
 
   const replay = () => {
     unlockAudio();
-    const L = live.current;
-    L.seed = Math.floor(Math.random() * 1e6);
-    L.played = [];
+    flushTally();
+    planRides();
     setTotals({ xp: 0, stars: 0, magic: [] });
     setPhase('play');
     setRun((n) => n + 1);
@@ -291,6 +314,7 @@ export function GrandHuitPlayer() {
 
   useEffect(
     () => () => {
+      flushTally();
       game.current?.dispose();
       game.current = null;
       stopSpeaking();
@@ -461,7 +485,7 @@ export function GrandHuitPlayer() {
                 role="status"
                 className="pointer-events-none absolute right-3 top-28 rounded-full bg-gradient-to-r from-amber-300 to-pink-300 px-4 py-2 text-base font-bold text-[#4a2350] shadow-lg sm:right-6 sm:top-32 sm:text-lg"
               >
-                +{xp.n} XP ⭐
+                {xp.n === null ? '🎟️ ⭐' : `+${xp.n} XP ⭐`}
               </motion.div>
             ) : null}
           </AnimatePresence>
@@ -572,11 +596,18 @@ export function GrandHuitPlayer() {
                 </motion.div>
               ) : null}
 
-              {phase === 'play' && status !== 'build' ? (
-                <div className="mx-auto flex w-fit items-center gap-3 rounded-full bg-white/92 px-4 py-2 font-display text-lg font-bold shadow-lg ring-1 ring-white">
-                  <span aria-hidden="true">{status === 'splash' ? '💦' : status === 'missed' ? '🌀' : '🎢'}</span>
-                  <span>{status === 'splash' ? tr(T.splash, locale) : status === 'missed' ? tr(T.boing, locale) : tr(T.riding, locale)}</span>
-                  {current !== null && status === 'riding' ? (
+              {(phase === 'play' && status !== 'build') || phase === 'lap' ? (
+                // While the cart rides, the remote's focus rests here (OK does nothing), never on a 🔊 or the back button.
+                <div
+                  tabIndex={-1}
+                  data-tv-focusable=""
+                  data-tv-autofocus=""
+                  role="status"
+                  className="mx-auto flex w-fit items-center gap-3 rounded-full bg-white/92 px-4 py-2 font-display text-lg font-bold shadow-lg ring-1 ring-white outline-none focus-visible:ring-4 focus-visible:ring-[#ffcc33]"
+                >
+                  <span aria-hidden="true">{phase === 'lap' ? '🎡' : status === 'splash' ? '💦' : status === 'missed' ? '🌀' : '🎢'}</span>
+                  <span>{phase === 'lap' ? tr(T.wheel, locale) : status === 'splash' ? tr(T.splash, locale) : status === 'missed' ? tr(T.boing, locale) : tr(T.riding, locale)}</span>
+                  {current !== null && status === 'riding' && phase === 'play' ? (
                     <span className="grid min-w-10 place-items-center rounded-full bg-[#5b6fd8] px-2 py-0.5 text-white" aria-live="polite">
                       {current}
                     </span>

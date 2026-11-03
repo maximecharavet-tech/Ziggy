@@ -20,7 +20,9 @@ import {
   planGame,
   questionText,
   speechText,
+  tallyDelivery,
   wrongText,
+  type SkillTally,
   type Band,
   type BodyId,
   type Delivery,
@@ -245,5 +247,24 @@ describe('Le Facteur des Planètes — words', () => {
     expect(arriveText(fake('saturn'), 'en')).toMatch(/no ground/);
     expect(arriveText(fake('neptune'), 'fr')).toMatch(/sans sol/);
     expect(arriveText(fake('mars'), 'fr')).toMatch(/Atterrissage sur Mars/);
+  });
+
+  it('saves progress once per skill and per round, with the round totals', () => {
+    for (const seed of [1, 7, 42, 999]) {
+      const plan = planGame(seed, 'middle');
+      const tally = new Map<Delivery['skill'], SkillTally>();
+      const calls: { skill: string; stats: SkillTally }[] = [];
+      plan.forEach((_, i) => {
+        const done = tallyDelivery(tally, plan, i, { mistakes: i === 1 ? 2 : 0, durationMs: 1000 });
+        if (done) calls.push(done);
+      });
+      // One call per skill used in the round, nothing left over.
+      expect(calls.map((c) => c.skill).sort()).toEqual([...new Set(plan.map((d) => d.skill))].sort());
+      expect(tally.size).toBe(0);
+      expect(calls.reduce((s, c) => s + c.stats.total, 0)).toBe(plan.length);
+      expect(calls.reduce((s, c) => s + c.stats.correct, 0)).toBe(plan.length);
+      expect(calls.reduce((s, c) => s + c.stats.mistakes, 0)).toBe(2);
+      expect(calls.reduce((s, c) => s + c.stats.durationMs, 0)).toBe(plan.length * 1000);
+    }
   });
 });

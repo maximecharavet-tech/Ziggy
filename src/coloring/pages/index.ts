@@ -7,6 +7,8 @@ import { rocket, ufo } from './space';
 import { car, train } from './vehicles';
 import { house, mandala, mandalaFlower } from './zen';
 import { ziggy } from './ziggy';
+import { MORE_ANIMALS } from './more-animals';
+import { MORE_ADVENTURES } from './more-adventures';
 
 export const THEMES: { id: ThemeId; emoji: string; color: string; name: L }[] = [
   { id: 'noel', emoji: '🎄', color: '#E5484D', name: { fr: 'Noël', en: 'Christmas' } },
@@ -36,6 +38,8 @@ export const PAGES: ColoringPage[] = [
   owl,
   ufo,
   mandalaFlower,
+  ...MORE_ANIMALS,
+  ...MORE_ADVENTURES,
 ];
 
 export const pageById = (id: string): ColoringPage | undefined => PAGES.find((p) => p.id === id);

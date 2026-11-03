@@ -5,7 +5,7 @@ import { Puffs } from '../kit/world';
 import { heartTex, makeButterfly, makeClouds, makeSky, mergeStatic } from '../nid/garden';
 import { makeAlibiProp, makeBalloon, makeBouquet, makeCrumbs, makeMud, makeSuspect, makeTrumpet, type SuspectActor } from './animals';
 import { DetectiveAudio, type Sfx } from './audio';
-import { Bubbles, Flakes, groundRing, noteTexture } from './fx';
+import { Bubbles, Flakes, groundRing, makeTulipRing, noteTexture } from './fx';
 import { makeDetectiveCap, makeMagnifier, type Magnifier } from './gear';
 import { HUE_HEX, SPECIES_INFO, litHolds, type Case, type Clue, type MysteryId, type Species } from './logic';
 import { clueCanvas, type PortraitMap } from './pictos';
@@ -77,6 +77,10 @@ const RING = 5.6;
 const STAGE = new THREE.Vector3(0, 0, 5.7);
 const ZIGGY_STAGE = new THREE.Vector3(-1.45, 0, 5.3);
 const ZIGGY_MYSTERY = new THREE.Vector3(2.0, 0, -7.0);
+/** Portrait: Ziggy waits in front of the friends, between the left and middle ones (the narrow view can't reach the side). */
+const ZIGGY_HOME_PORTRAIT = new THREE.Vector3(-1.55, 0, 4.3);
+/** During the line-up Ziggy turns three-quarters towards the child (we see his face, not his back). */
+const LINEUP_LOOK = new THREE.Vector3(-1.0, 0, 12);
 
 const lerpAngle = (a: number, b: number, k: number) => {
   let d = b - a;
@@ -143,7 +147,8 @@ export class DetectiveGame {
   private village: Village;
   private sky = makeSky();
   private clouds = makeClouds();
-  private hemi = new THREE.HemisphereLight('#dff1ff', '#8fbf6a', 1.25);
+  // Two lights only (sky + sun): a brighter, slightly warm sky does the old front fill's job.
+  private hemi = new THREE.HemisphereLight('#fff1dc', '#8fbf6a', 1.55);
   private sun = new THREE.DirectionalLight('#fff0d0', 2.3);
   private butterflies: ReturnType<typeof makeButterfly>[] = [];
   private droplets: THREE.Points;
@@ -245,10 +250,6 @@ export class DetectiveGame {
     this.sun.shadow.bias = -0.0006;
     this.sun.shadow.normalBias = 0.03;
     s.add(this.sun);
-    // A warm fill from the front so faces glow.
-    const fill = new THREE.DirectionalLight('#ffe3c0', 0.55);
-    fill.position.set(4, 6, 14);
-    s.add(fill);
 
     s.add(this.village.group);
     mergeStatic(this.village.group, true);
@@ -317,6 +318,14 @@ export class DetectiveGame {
     model.arms[1].wrist.add(mg);
     z.position.copy(ZIGGY_HOME);
     z.scale.setScalar(0.92);
+    // Only Ziggy's big felt pieces cast shadows (dozens of little parts would double the shadow pass).
+    const parts: THREE.Mesh[] = [];
+    z.traverse((o) => {
+      const m = o as THREE.Mesh;
+      if (m.isMesh && m.castShadow) parts.push(m);
+    });
+    const tris = (m: THREE.Mesh) => (m.geometry.index ? m.geometry.index.count : m.geometry.attributes.position.count);
+    parts.sort((a, b) => tris(b) - tris(a)).slice(10).forEach((m) => (m.castShadow = false));
     z.userData.rig.energy = this.reduceMotion ? 0.4 : 1;
     this.scene.add(z);
     for (let i = 0; i < 3; i++) {
@@ -368,9 +377,14 @@ export class DetectiveGame {
     this.view.yaw = yaw;
   }
 
+  /** Where Ziggy waits during the line-up (always in view). */
+  private home() {
+    return this.portrait() ? ZIGGY_HOME_PORTRAIT : ZIGGY_HOME;
+  }
+
   private frameLineup() {
     this.mode = 'lineup';
-    if (this.portrait()) this.setView(new THREE.Vector3(0, 0.7, 0.5), 4.4, 3.3, 0.62, 0);
+    if (this.portrait()) this.setView(new THREE.Vector3(-0.1, 0.7, 1.0), 4.4, 3.7, 0.62, 0);
     else this.setView(new THREE.Vector3(-0.9, 0.75, 0.7), 5.15, 2.5, 0.52, 0.05);
   }
 
@@ -483,7 +497,7 @@ export class DetectiveGame {
     this.after(3.4, () => {
       this.closeUp = false;
       this.frameLineup();
-      this.walkZiggy(ZIGGY_HOME, () => (this.zig.face = new THREE.Vector3(0, 0, 0)));
+      this.walkZiggy(this.home(), () => (this.zig.face = LINEUP_LOOK.clone()));
     });
     this.after(5.2, () => this.cb.onReady());
   }
@@ -558,7 +572,7 @@ export class DetectiveGame {
     this.magnifyTarget = 0;
     this.frameLineup();
     for (const sp of this.bubblesSprites) sp.userData.small = true;
-    this.walkZiggy(ZIGGY_HOME, () => (this.zig.face = new THREE.Vector3(0, 0, 0)));
+    this.walkZiggy(this.home(), () => (this.zig.face = LINEUP_LOOK.clone()));
   }
 
   /** A friend is cleared: a happy hop, then off to the café terrace. */
@@ -763,22 +777,9 @@ export class DetectiveGame {
       });
     });
     if (c.mystery === 'flowers') {
-      for (let i = 0; i < 16; i++) {
-        const a = (i / 16) * Math.PI * 2;
-        const f = new THREE.Group();
-        const stem = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 0.4, 4), new THREE.MeshLambertMaterial({ color: '#4f9a3f' }));
-        stem.position.y = 0.2;
-        const tulip = new THREE.Mesh(new THREE.SphereGeometry(0.12, 8, 6), new THREE.MeshLambertMaterial({ color: ['#ff5f8f', '#ffd166', '#ff7a45', '#c99bff'][i % 4] }));
-        tulip.scale.y = 1.4;
-        tulip.position.y = 0.45;
-        f.add(stem, tulip);
-        f.position.set(Math.cos(a) * 9.6, 0, Math.sin(a) * 9.6);
-        f.scale.setScalar(0.01);
-        f.userData.grow = 0.01;
-        f.userData.delay = i * 0.12;
-        this.scene.add(f);
-        this.caseObjs.push(f);
-      }
+      const tulips = makeTulipRing(16, 9.6);
+      this.scene.add(tulips);
+      this.caseObjs.push(tulips);
     }
     if (c.mystery === 'mud') this.bubbles.start(this.reduceMotion ? 4 : 9);
     this.walkZiggy(new THREE.Vector3(0, 0, 2.6), () => {
@@ -1002,6 +1003,7 @@ export class DetectiveGame {
     }
     for (const o of this.caseObjs) {
       const u = o.userData;
+      if (u.update) (u.update as (dt: number) => void)(dt);
       if (u.grow !== undefined && u.grow < 1) {
         u.delay = (u.delay ?? 0) - dt;
         if (u.delay <= 0) {
@@ -1066,7 +1068,9 @@ export class DetectiveGame {
     for (const rp of this.ripples) {
       const k = (t * 0.35 + (rp.userData.phase as number)) % 1;
       rp.scale.setScalar(1 + k * 3.2);
-      (rp.material as THREE.MeshBasicMaterial).opacity = (1 - k) * 0.45 * motion;
+      const rm = rp.material as THREE.MeshBasicMaterial;
+      rm.opacity = (1 - k) * 0.45 * motion;
+      rm.visible = rm.opacity > 0.01;
     }
   }
 
@@ -1097,6 +1101,8 @@ export class DetectiveGame {
       arm.elbow.rotation.z = THREE.MathUtils.lerp(arm.elbow.rotation.z, 0.35, k);
       (this.magnifier.shine.material as THREE.SpriteMaterial).opacity = k * (0.5 + Math.sin(t * 5) * 0.3);
     } else (this.magnifier.shine.material as THREE.SpriteMaterial).opacity = 0;
+    const shine = this.magnifier.shine.material as THREE.SpriteMaterial;
+    shine.visible = shine.opacity > 0.01;
     // Bonk! The magnifier taps his cap.
     if (this.bonk > 0) {
       this.bonk = Math.max(0, this.bonk - dt / 1.6);
@@ -1114,6 +1120,7 @@ export class DetectiveGame {
         (s.material as THREE.SpriteMaterial).opacity = p > 0.2 ? Math.min(1, this.bonk * 2.5) : 0;
       });
     } else for (const s of this.stars) (s.material as THREE.SpriteMaterial).opacity = 0;
+    for (const s of this.stars) s.visible = (s.material as THREE.SpriteMaterial).opacity > 0.01;
   }
 
   private stepPal(p: Pal, dt: number, t: number, motion: number) {
@@ -1206,13 +1213,17 @@ export class DetectiveGame {
     // Blush.
     p.blushK += (p.blushTarget - p.blushK) * Math.min(1, dt * 2);
     for (const b of p.a.blush) {
-      (b.material as THREE.SpriteMaterial).opacity = p.blushK * (0.75 + Math.sin(t * 4) * 0.15);
+      const bm = b.material as THREE.SpriteMaterial;
+      bm.opacity = p.blushK * (0.75 + Math.sin(t * 4) * 0.15);
+      // Not drawn at all while invisible (a draw call each otherwise).
+      bm.visible = bm.opacity > 0.01;
       b.scale.setScalar(0.45 + p.blushK * 0.15);
     }
     // Highlight ring.
     p.glow += (p.glowTarget - p.glow) * Math.min(1, dt * 8);
     const rm = p.ring.material as THREE.MeshBasicMaterial;
     rm.opacity = p.glow * (0.75 + Math.sin(t * 6) * 0.2);
+    rm.visible = rm.opacity > 0.01;
     p.ring.scale.setScalar(1 + Math.sin(t * 5) * 0.06 * motion);
     // Alibi prop above the head.
     if (p.prop) {

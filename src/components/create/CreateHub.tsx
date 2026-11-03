@@ -7,11 +7,20 @@ import { SayButton } from '@/components/arcade/read-aloud';
 import { DioramaCard } from './fx/DioramaCard';
 import { fx, shade } from './fx/toy';
 import { HubHero } from './HubHero';
-import { AvatarScene, ColorScene, MusicScene, NestScene, SandScene, StoryScene } from './HubScenes';
+import { AvatarScene, ColorScene, CreatureScene, MusicScene, NestScene, SandScene, StoryScene } from './HubScenes';
 
 type App = { href: string; title: L; text: L; from: string; to: string; tag: L; scene: (label: string) => ReactNode };
 
 const APPS: App[] = [
+  {
+    href: '/creer/creatures',
+    title: { fr: 'L’Usine à Créatures', en: 'The Creature Factory' },
+    text: { fr: 'Pattes, ailes, yeux, chapeaux… fabrique des créatures loufoques et donne-leur vie !', en: 'Legs, wings, eyes, hats… build silly creatures and bring them to life!' },
+    from: '#8a63ff',
+    to: '#ff6fb5',
+    tag: { fr: '3D · invention', en: '3D · invention' },
+    scene: () => <CreatureScene />,
+  },
   {
     href: '/coloriage',
     title: { fr: 'Colorie avec Ziggy', en: 'Colour with Ziggy' },

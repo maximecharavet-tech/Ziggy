@@ -12,7 +12,7 @@ import { FR_LANDING_PATHS } from '@/data/landings';
 // /agents*, /hyper and /monde/jouer?… (query-driven quest pages).
 // No lastmod / changefreq / priority: we have no real per-page modification date,
 // and uniform values are ignored by search engines.
-const MAIN = ['', '/monde', '/monde/arcade', '/creer', '/coloriage', '/dodo', '/apprendre', '/lab', '/telecharger', '/games', '/privacy', '/terms', '/cookies'];
+const MAIN = ['', '/monde', '/monde/arcade', '/creer', '/creer/creatures', '/coloriage', '/dodo', '/apprendre', '/lab', '/telecharger', '/games', '/privacy', '/terms', '/cookies'];
 const PLAY = [
   '/monde/3d/noel',
   '/monde/3d/luge',

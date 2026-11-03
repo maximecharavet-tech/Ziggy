@@ -945,9 +945,43 @@ export function planGame(seed: number, band: Band, levels: Partial<Record<Planet
   }));
 }
 
+/* ───────────────────────── Progress ───────────────────────── */
+
+export interface SkillTally {
+  correct: number;
+  mistakes: number;
+  total: number;
+  durationMs: number;
+}
+
+/**
+ * Progress is saved once per skill and per round (not after every delivery),
+ * so a perfect round moves each skill's level by one step at most. Adds this
+ * delivery to its skill's tally and returns the finished tally when it was the
+ * last delivery of that skill in the round (null otherwise).
+ */
+export function tallyDelivery(
+  tally: Map<PlanetesSkill, SkillTally>,
+  plan: readonly Pick<Riddle, 'skill'>[],
+  index: number,
+  stats: { mistakes: number; durationMs: number }
+): { skill: PlanetesSkill; stats: SkillTally } | null {
+  const d = plan[index];
+  if (!d) return null;
+  const t = tally.get(d.skill) ?? { correct: 0, mistakes: 0, total: 0, durationMs: 0 };
+  t.correct += 1;
+  t.total += 1;
+  t.mistakes += Math.max(0, stats.mistakes);
+  t.durationMs += Math.max(0, stats.durationMs);
+  tally.set(d.skill, t);
+  if (plan.slice(index + 1).some((x) => x.skill === d.skill)) return null;
+  tally.delete(d.skill);
+  return { skill: d.skill, stats: t };
+}
+
 /* ───────────────────────── Words ───────────────────────── */
 
-export const questionText = (d: Riddle, locale: string) => tr(d.text, locale);
+export const questionText =(d: Riddle, locale: string) => tr(d.text, locale);
 
 /** The candidates' names, read one by one for children who can't read yet. */
 export const candidateWords = (d: Riddle, locale: string) => d.candidates.map((b) => tr(BODY[b].label, locale));

@@ -207,7 +207,9 @@ export class PlanetesGame {
     this.renderer = createRenderer(canvas, { lowPower: this.lowPower });
     if (this.lowPower) this.renderer.shadowMap.type = THREE.PCFShadowMap;
     this.renderer.toneMappingExposure = 1.05;
-    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.5, radius: 0.55, threshold: 1.05 });
+    // Capable devices: a light glow on what shines brighter than white only (the Sun's core, sparkles),
+    // so space stays crisp and deep black and the Sun never washes over the post office.
+    this.post = new Post(this.renderer, this.scene, this.camera, { enabled: !this.lowPower, strength: 0.28, radius: 0.35, threshold: 1.2 });
     this.stars = makeStarfield(this.lowPower ? 700 : 1400, 2.2, 11);
     this.brightStars = makeStarfield(this.lowPower ? 90 : 160, 5, 23, '#fff3c8');
     this.belt = makeBelt(this.lowPower ? 150 : 300);
@@ -582,7 +584,8 @@ export class PlanetesGame {
         this.target = null;
         this.hover = true;
         this.rocketAt.copy(this.rocket.root.position);
-        for (const id of BODIES) this.halos.get(id)!.visible = d.candidates.includes(id) && !this.tried.includes(id);
+        // The planets already tried lose their halo and their name tag (the tags overlapped in portrait).
+        for (const id of BODIES) this.halos.get(id)!.visible = this.tags.get(id)!.visible = d.candidates.includes(id) && !this.tried.includes(id);
         this.overview();
         this.emit();
       },
@@ -605,6 +608,9 @@ export class PlanetesGame {
     this.camRate = 3;
     this.audio.play('whoosh');
     this.tween(this.reduceMotion ? 0.5 : 0.9, (k) => {
+      // The fade can end a frame before this dive: once in the landing scene, leave the rocket alone
+      // (its last step used to shrink it to a tenth on the cloud worlds, which never reset the size).
+      if (this.stage) return;
       const e = easeInOut(k);
       this.rocket.root.position.lerpVectors(from, p, e * 0.75);
       this.rocket.root.scale.setScalar(ROCKET_SMALL * (1 - e * 0.6));
@@ -998,7 +1004,9 @@ export class PlanetesGame {
     this.later(1100, () => alien.cue('joy'));
     this.ziggy.userData.rig.cue('cheer');
     this.audio.play('star');
-    this.sparkles.emit(alien.root.position.clone().add(new THREE.Vector3(0, 2.4, 0)), { color: '#ffe066', count: this.lowPower ? 16 : 34, spread: 3.4, up: 2.6, life: 1.4, size: 0.4, additive: true });
+    // Confetti stars of every colour (soft blobs of dim yellow looked like brown smudges on dark skies).
+    const at = alien.root.position.clone().add(new THREE.Vector3(0, 2.2, 0));
+    for (const color of ['#fff27a', '#ff9ad5', '#8fe3ff', '#b4ff9a']) this.starBurst.emit(at, { color, count: this.lowPower ? 4 : 7, spread: 3.6, up: 2.4, life: 1.1, size: 0.26 });
     this.emit();
     this.cb.onOpened(this.index, { ...this.stats });
   }
@@ -1023,6 +1031,7 @@ export class PlanetesGame {
           const top = rk.position.clone();
           const away = top.clone().add(new THREE.Vector3(3, 14, -6));
           this.tween(0.9, (k) => {
+            if (!this.stage) return;
             rk.position.lerpVectors(top, away, k * k);
             rk.rotation.z = -k * 0.4;
           });
@@ -1341,7 +1350,7 @@ export class PlanetesGame {
         if (halo.visible) {
           halo.position.copy(p.group.position);
           const big = reveal && d?.answer === id;
-          halo.scale.setScalar(Math.max(1.3, r * 3.1) * (1 + Math.sin(t * (big ? 6 : 3) + r) * (big ? 0.14 : 0.06) * motion) * (big ? 1.25 : 1));
+          halo.scale.setScalar(Math.max(big ? 2.2 : 1.3, r * 3.1) * (1 + Math.sin(t * (big ? 6 : 3) + r) * (big ? 0.14 : 0.06) * motion) * (big ? 1.25 : 1));
           (halo.material as THREE.SpriteMaterial).color.set(big ? '#fff07a' : '#ffe8a0');
           (halo.material as THREE.SpriteMaterial).opacity = big ? 1 : 0.75;
           if (big && Math.random() < dt * 6) this.sparkles.emit(p.group.position.clone().addScaledVector(camUp, r), { color: '#fff07a', count: 1, spread: r * 2, up: 0.4, life: 0.8, size: 0.35, additive: true });
