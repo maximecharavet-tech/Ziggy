@@ -28,6 +28,8 @@ Output format (v1):
 """
 import argparse, difflib, json, re, sys, unicodedata
 
+import numpy as np
+
 PUNCT_BEFORE = {"«", "“", "(", "‹"}
 
 
@@ -125,20 +127,111 @@ def split_long(text: str):
     return split_long(" ".join(words[:c])) + split_long(" ".join(words[c:]))
 
 
-def transcribe(audio, model_name, prompt):
+_MODELS = {}
+
+
+def transcribe(audio, model_name, prompt, offset=0.0):
+    """audio: a file path or a 16 kHz mono float32 array (then offset = its start in the song)."""
     from faster_whisper import WhisperModel
 
-    model = WhisperModel(model_name, device="cpu", compute_type="int8")
-    segs, info = model.transcribe(
-        load_audio(audio), language="fr", word_timestamps=True, beam_size=5,
-        initial_prompt=prompt, condition_on_previous_text=False, vad_filter=False,
+    if model_name not in _MODELS:
+        _MODELS[model_name] = WhisperModel(model_name, device="cpu", compute_type="int8")
+    segs, info = _MODELS[model_name].transcribe(
+        load_audio(audio) if isinstance(audio, str) else audio, language="fr", word_timestamps=True,
+        beam_size=5, initial_prompt=prompt, condition_on_previous_text=False, vad_filter=False,
     )
     words = []
     for s in segs:
         for w in s.words or []:
-            words.append((w.start, w.end, w.word.strip(), w.probability))
-        print(f"  [{s.start:7.2f} → {s.end:7.2f}] {s.text.strip()[:90]}", file=sys.stderr)
+            words.append((w.start + offset, w.end + offset, w.word.strip(), w.probability))
+        print(f"  [{s.start + offset:7.2f} → {s.end + offset:7.2f}] {s.text.strip()[:90]}", file=sys.stderr)
     return words, info.duration
+
+
+def phrases(clip, sr=16000, gap=0.35, min_len=1.5):
+    """Split a vocals clip at its silences into sung phrases (sample ranges), merged up to ~min_len s."""
+    env = np.sqrt(np.convolve(clip ** 2, np.ones(800) / 800, "same"))
+    on = env > max(0.01, 0.12 * float(np.percentile(env, 95)))
+    out, start, quiet = [], None, 0
+    for k in range(0, len(on), 160):
+        if on[k]:
+            if start is None:
+                start = k
+            quiet = 0
+        elif start is not None:
+            quiet += 160
+            if quiet >= gap * sr:
+                out.append([start, k - quiet])
+                start, quiet = None, 0
+    if start is not None:
+        out.append([start, len(clip)])
+    merged = []
+    for a, b in out:
+        if merged and (merged[-1][1] - merged[-1][0] < min_len * sr):
+            merged[-1][1] = b
+        else:
+            merged.append([a, b])
+    return [(max(0, a - sr // 4), min(len(clip), b + sr // 4)) for a, b in merged]
+
+
+def retry_gaps(flat, asr, duration, src, model_name, min_run=2, passes=3):
+    """Run _retry_gaps until it stops helping (each pass narrows the remaining gaps)."""
+    audio = load_audio(src)
+    for _ in range(passes):
+        before = align(flat, asr)[1]
+        asr = _retry_gaps(flat, asr, duration, audio, model_name, min_run)
+        if align(flat, asr)[1] <= before:
+            break
+    return asr
+
+
+def _retry_gaps(flat, asr, duration, audio, model_name, min_run):
+    """
+    Whisper sometimes loses a whole passage (often the first verse after a long intro).
+    For each run of >= min_run unmatched lyric words, transcribe again only the audio
+    between its matched neighbours, hinting Whisper with the expected words, and keep
+    the new words if they match better.
+    """
+    times, ratio = align(flat, asr)
+    i = 0
+    while i < len(flat):
+        if times[i] is not None:
+            i += 1
+            continue
+        j = i
+        while j < len(flat) and times[j] is None:
+            j += 1
+        if j - i >= min_run:
+            t0 = times[i - 1][1] if i > 0 else 0.0
+            t1 = times[j][0] if j < len(flat) else duration
+            if t1 - t0 > 1.0:
+                sr = 16000
+                g0, g1 = int(max(0.0, t0 - 0.3) * sr), int(min(duration, t1 + 0.3) * sr)
+                # Whisper often returns nothing (or garbage) for a clip that starts with long silence or
+                # right on the voice: try a few starts just before the voice, plain, hinted and phrase by phrase.
+                env = np.sqrt(np.convolve(audio[g0:g1] ** 2, np.ones(800) / 800, "same"))
+                loud = np.nonzero(env > max(0.01, 0.15 * float(np.percentile(env, 95))))[0]
+                v0 = g0 + (int(loud[0]) if len(loud) else 0)
+                a1 = g0 + (min(g1 - g0, int(loud[-1]) + sr) if len(loud) else g1 - g0)
+                print(f"retry {t0:.2f}-{t1:.2f} for {j - i} words: {' '.join(flat[i:i + 8])}…", file=sys.stderr)
+                tries = [(max(g0, v0 - k * sr), "plain") for k in (1, 2, 3)] + [(max(g0, v0 - sr), "hint"), (g0, "phrases")]
+                for a0, how in tries:
+                    off = a0 / sr
+                    if how == "phrases":
+                        new = []
+                        for p0, p1 in phrases(audio[a0:a1]):
+                            new += transcribe(audio[max(g0, a0 + p0 - sr): a0 + p1], model_name, None, offset=max(g0, a0 + p0 - sr) / sr)[0]
+                    else:
+                        hint = " ".join(flat[i:i + 12]) if how == "hint" else None
+                        new, _ = transcribe(audio[a0:a1], model_name, hint, offset=off)
+                    new = [w for w in new if t0 - 0.3 <= w[0] <= t1 + 0.3]
+                    cand = sorted([w for w in asr if not (t0 < w[0] < t1)] + new, key=lambda w: w[0])
+                    t2, r2 = align(flat, cand)
+                    if r2 > ratio:
+                        asr, times, ratio = cand, t2, r2
+                        print(f"  -> matched {ratio:.1%}", file=sys.stderr)
+        i = j
+    return asr
 
 
 def merge_elisions(asr):
@@ -205,6 +298,7 @@ def main():
     ap.add_argument("--separate", action="store_true", help="isolate vocals with Demucs before ASR")
     ap.add_argument("--vocals", help="already separated vocals file to transcribe")
     ap.add_argument("--prompt", action="store_true", help="bias Whisper with the first lyrics (can hallucinate)")
+    ap.add_argument("--no-retry", action="store_true", help="do not transcribe again the passages Whisper missed")
     a = ap.parse_args()
 
     if a.lyrics.endswith(".json"):
@@ -225,12 +319,15 @@ def main():
             print(f"ASR cache: {len(asr)} words", file=sys.stderr)
         except FileNotFoundError:
             pass
+    src = None
     if asr is None:
         prompt = " ".join(flat[:60]) if a.prompt else None
         src = a.vocals or (separate(a.audio) if a.separate else a.audio)
         asr, duration = transcribe(src, a.model, prompt)
-        if a.asr_cache:
-            json.dump({"duration": duration, "words": asr}, open(a.asr_cache, "w"), ensure_ascii=False)
+    if not a.no_retry and (src or a.vocals or not a.separate):
+        asr = retry_gaps(flat, asr, duration, src or a.vocals or a.audio, a.model)
+    if a.asr_cache:
+        json.dump({"duration": duration, "words": asr}, open(a.asr_cache, "w"), ensure_ascii=False)
 
     times, ratio = align(flat, asr)
     times = fill(times, duration)

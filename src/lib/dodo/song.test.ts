@@ -19,8 +19,9 @@ const T: SongTiming = parseSongTiming({
 describe('sung versions', () => {
   it('offers Lili’s song in French only, and nothing for stories without one', () => {
     const v = songVersions(lili, 'fr');
-    expect(v.length).toBeGreaterThanOrEqual(1);
+    expect(v.length).toBe(2);
     expect(v[0]).toMatchObject({ id: 'v1', label: 'Version 1', url: '/dodo/lili/lili-v1.mp3', timing: '/dodo/lili/lili-v1.timing.json' });
+    expect(v[1]).toMatchObject({ id: 'v2', label: 'Version 2', url: '/dodo/lili/lili-v2.mp3', timing: '/dodo/lili/lili-v2.timing.json' });
     expect(songVersions(lili, 'en')).toEqual([]);
     for (const s of DODO_STORIES.filter((x) => !x.songs?.length)) expect(songVersions(s, 'fr'), s.id).toEqual([]);
     expect(songVersions({ songs: [{ id: 'a', audio: { fr: '  ' } }] }, 'fr')).toEqual([]);
