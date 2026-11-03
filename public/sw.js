@@ -7,7 +7,7 @@
  * - API calls and anything cross-origin: untouched (no data is cached).
  * Bump VERSION to clear old caches.
  */
-const VERSION = 'ziggy-v4';
+const VERSION = 'ziggy-v5';
 const STATIC = `${VERSION}-static`;
 const PAGES = `${VERSION}-pages`;
 const OFFLINE_URL = '/offline.html';
@@ -33,6 +33,8 @@ self.addEventListener('fetch', (event) => {
   if (req.method !== 'GET') return;
   const url = new URL(req.url);
   if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  // Audio streamed by <audio> (Range requests, e.g. the dodo "Version musicale"): let the browser handle it.
+  if (req.headers.has('range')) return;
 
   if (isStatic(url)) {
     event.respondWith(
