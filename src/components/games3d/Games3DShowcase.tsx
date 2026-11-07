@@ -5,7 +5,7 @@ import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
 import { Tilt3D } from '@/components/ui/Tilt3D';
 
-const GAMES: {
+export const GAMES_3D: {
   href: string;
   emoji: string;
   title: L;
@@ -125,7 +125,7 @@ export function Games3DShowcase({ locale, title = true }: { locale: string; titl
         </h2>
       ) : null}
       <div className="grid gap-4 sm:grid-cols-2">
-        {GAMES.map((g, i) => (
+        {GAMES_3D.map((g, i) => (
           <motion.div key={g.href} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 * i }}>
             <Tilt3D className="rounded-[2rem]">
               <Link

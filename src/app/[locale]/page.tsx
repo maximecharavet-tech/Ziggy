@@ -15,6 +15,7 @@ import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { PricingSection } from '@/components/sections/PricingSection';
 import { AgentsSection } from '@/components/sections/AgentsSection';
 import { GamesSection } from '@/components/sections/GamesSection';
+import { PlayShowcase } from '@/components/sections/PlayShowcase';
 import { DemoSection } from '@/components/sections/DemoSection';
 import { FAQSection } from '@/components/sections/FAQSection';
 import { CTAFinalSection } from '@/components/sections/CTAFinalSection';
@@ -64,6 +65,8 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <JsonLd data={[website, faqPage]} />
       <HeroSection />
       <TaglineRibbon />
+      {/* Games and creative workshops right after the hero: what makes children want to come in. */}
+      <PlayShowcase />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-4">
         <MissionCard />
       </div>

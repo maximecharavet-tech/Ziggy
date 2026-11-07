@@ -9,9 +9,9 @@ import { fx, shade } from './fx/toy';
 import { HubHero } from './HubHero';
 import { AvatarScene, ColorScene, CreatureScene, MusicScene, NestScene, SandScene, StoryScene } from './HubScenes';
 
-type App = { href: string; title: L; text: L; from: string; to: string; tag: L; scene: (label: string) => ReactNode };
+export type CreateApp = { href: string; title: L; text: L; from: string; to: string; tag: L; scene: (label: string) => ReactNode };
 
-const APPS: App[] = [
+export const CREATE_APPS: CreateApp[] = [
   {
     href: '/creer/creatures',
     title: { fr: 'L’Usine à Créatures', en: 'The Creature Factory' },
@@ -105,7 +105,7 @@ export function CreateHub() {
         </h2>
 
         <ul className="mt-8 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
-          {APPS.map((a, i) => {
+          {CREATE_APPS.map((a, i) => {
             const title = tr(a.title, locale);
             return (
               <li key={a.href}>
