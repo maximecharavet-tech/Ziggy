@@ -5,7 +5,7 @@ import { existingAssets, missing, plannedAssets, prepareSome, providersReady } f
 import { DODO_STORIES } from '@/data/dodo';
 
 /**
- * Owner only: generate the Mode dodo illustrations (NVIDIA FLUX or Agnes) and
+ * Owner only: generate the Mode dodo illustrations (Agnes Image first, NVIDIA FLUX as fallback) and
  * Ziggy's narration (Gemini TTS) once, a few at a time; the console calls it
  * again until nothing is left.
  */

@@ -12,7 +12,7 @@ type Status = {
 };
 
 /**
- * Owner only: pre-generates every illustration (NVIDIA FLUX or Agnes) once,
+ * Owner only: pre-generates every illustration (Agnes Image first, NVIDIA FLUX as fallback) once,
  * in small batches, until done. Ziggy's voice is no longer made here: it is
  * recorded offline by the Rust voice engine (voice-engine/) and shipped as static files.
  */
