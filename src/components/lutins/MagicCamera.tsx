@@ -367,6 +367,28 @@ export function MagicCamera() {
     return () => clearInterval(t);
   }, [bg, ready]);
 
+  // A gallery photo: stand the elves on the best free surface the Rust engine finds in it (floor, table…).
+  useEffect(() => {
+    if (!ready || bg?.kind !== 'photo') return;
+    let alive = true;
+    void import('@/lib/lutins/client-engine')
+      .then(({ analyzePhoto }) => analyzePhoto(bg.canvas))
+      .then((scene) => {
+        const st = scene.stages?.[0];
+        const box = stageRef.current?.getBoundingClientRect();
+        if (!alive || !st || !box) return;
+        const r = coverRect(bg.canvas.width, bg.canvas.height, box.width, box.height);
+        const px = ((st.x + st.w / 2) * bg.canvas.width - r.sx) / r.sw;
+        const py = ((st.y + st.h * 0.75) * bg.canvas.height - r.sy) / r.sh;
+        // Stay clear of the controls at the bottom; the floor slider fine-tunes the rest.
+        handleRef.current?.placeGroupAt(px * 2 - 1, Math.max(-0.3, 1 - py * 2));
+      })
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, [bg, ready]);
+
   useEffect(() => {
     if (!ready) return;
     setHint(true);

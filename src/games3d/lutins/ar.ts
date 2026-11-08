@@ -60,6 +60,8 @@ export interface LutinsARHandle {
   recenter(): void;
   /** Vertical field of view of the picture under the canvas (degrees). */
   setFov(deg: number): void;
+  /** Moves the whole group so it stands at this picture position (NDC −1..1), e.g. on a stage found in a photo. */
+  placeGroupAt(nx: number, ny: number): void;
   /** Average colour of the camera picture, 0–255. */
   setLight(r: number, g: number, b: number): void;
   /** Where each elf shows in the picture now. */
@@ -575,6 +577,21 @@ export function mountLutinsAR(canvas: HTMLCanvasElement, opts: LutinsAROptions):
         faceCamera(s.el);
         sync(s);
       });
+    },
+    placeGroupAt(nx, ny) {
+      if (!slots.length || !Number.isFinite(nx) || !Number.isFinite(ny)) return;
+      const f = floorAt(THREE.MathUtils.clamp(nx, -1, 1), THREE.MathUtils.clamp(ny, -1, 1), new THREE.Vector3());
+      const c = slots.reduce((a, s) => ({ x: a.x + s.el.x / slots.length, z: a.z + s.el.z / slots.length }), { x: 0, z: 0 });
+      // Nearer → the group closes up (it keeps about the same width in the picture).
+      const dist = (x: number, z: number) => Math.hypot(x - camera.position.x, z - camera.position.z, CAMERA_HEIGHT);
+      const k = THREE.MathUtils.clamp(dist(f.x, f.z) / dist(c.x, c.z), 0.4, 2.5);
+      for (const s of slots) {
+        s.el.x = f.x + (s.el.x - c.x) * k;
+        s.el.z = f.z + (s.el.z - c.z) * k;
+        clampSpot(s.el);
+        faceCamera(s.el);
+        sync(s);
+      }
     },
     setFov(deg) {
       if (!Number.isFinite(deg)) return;
