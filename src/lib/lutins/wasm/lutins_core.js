@@ -102,6 +102,121 @@ export class CardRenderer {
 if (Symbol.dispose) CardRenderer.prototype[Symbol.dispose] = CardRenderer.prototype.free;
 
 /**
+ * Stateful security-camera renderer (same contract as `CardRenderer`).
+ */
+export class CctvRenderer {
+    __destroy_into_raw() {
+        const ptr = this.__wbg_ptr;
+        this.__wbg_ptr = 0;
+        CctvRendererFinalization.unregister(this);
+        return ptr;
+    }
+    free() {
+        const ptr = this.__destroy_into_raw();
+        wasm.__wbg_cctvrenderer_free(ptr, 0);
+    }
+    /**
+     * The zoom target `[x, y]`, normalised to the picture.
+     * @returns {Float32Array}
+     */
+    focus() {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.cctvrenderer_focus(retptr, this.__wbg_ptr);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            var v1 = getArrayF32FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_export2(r0, r1 * 4, 4);
+            return v1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+     * @returns {number}
+     */
+    frame_len() {
+        const ret = wasm.cctvrenderer_frame_len(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @returns {number}
+     */
+    frame_ptr() {
+        const ret = wasm.cctvrenderer_frame_ptr(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @returns {number}
+     */
+    get height() {
+        const ret = wasm.cctvrenderer_height(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * @param {Uint8Array} base
+     * @param {number} w
+     * @param {number} h
+     * @param {number} seed
+     * @param {string} style_json
+     */
+    constructor(base, w, h, seed, style_json) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            const ptr0 = passArray8ToWasm0(base, wasm.__wbindgen_export);
+            const len0 = WASM_VECTOR_LEN;
+            const ptr1 = passStringToWasm0(style_json, wasm.__wbindgen_export, wasm.__wbindgen_export3);
+            const len1 = WASM_VECTOR_LEN;
+            wasm.cctvrenderer_new(retptr, ptr0, len0, w, h, seed, ptr1, len1);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+            if (r2) {
+                throw takeObject(r1);
+            }
+            this.__wbg_ptr = r0;
+            CctvRendererFinalization.register(this, this.__wbg_ptr, this);
+            return this;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+     * Renders the frame at `t` seconds and returns a copy.
+     * @param {number} t
+     * @returns {Uint8Array}
+     */
+    render(t) {
+        try {
+            const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+            wasm.cctvrenderer_render(retptr, this.__wbg_ptr, t);
+            var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+            var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+            var v1 = getArrayU8FromWasm0(r0, r1).slice();
+            wasm.__wbindgen_export2(r0, r1 * 1, 1);
+            return v1;
+        } finally {
+            wasm.__wbindgen_add_to_stack_pointer(16);
+        }
+    }
+    /**
+     * Renders the frame at `t` seconds in place (read it through `frame_ptr` / `frame_len`).
+     * @param {number} t
+     */
+    render_in_place(t) {
+        wasm.cctvrenderer_render_in_place(this.__wbg_ptr, t);
+    }
+    /**
+     * @returns {number}
+     */
+    get width() {
+        const ret = wasm.cctvrenderer_width(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+}
+if (Symbol.dispose) CctvRenderer.prototype[Symbol.dispose] = CctvRenderer.prototype.free;
+
+/**
  * An RGBA8 image returned to JavaScript. Call `free()` when done.
  */
 export class ImageOut {
@@ -231,6 +346,41 @@ export function build_prompt(input_json) {
 }
 
 /**
+ * Where the elves probably are in a picture: `{x,y,w,h}` JSON (normalised)
+ * or `null`.
+ * @param {Uint8Array} base
+ * @param {number} w
+ * @param {number} h
+ * @returns {string}
+ */
+export function cctv_focus(base, w, h) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(base, wasm.__wbindgen_export);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.cctv_focus(retptr, ptr0, len0, w, h);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        var r3 = getDataViewMemory0().getInt32(retptr + 4 * 3, true);
+        var ptr2 = r0;
+        var len2 = r1;
+        if (r3) {
+            ptr2 = 0; len2 = 0;
+            throw takeObject(r2);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_export2(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
  * The crate version (`0.1.0`).
  * @returns {string}
  */
@@ -314,6 +464,40 @@ export function render_card_frame(base, w, h, t, seed, style_json) {
 }
 
 /**
+ * One frame of the security-camera look (RGBA8 of the style's output size,
+ * default the picture's size).
+ * @param {Uint8Array} base
+ * @param {number} w
+ * @param {number} h
+ * @param {number} t
+ * @param {number} seed
+ * @param {string} style_json
+ * @returns {Uint8Array}
+ */
+export function render_cctv_frame(base, w, h, t, seed, style_json) {
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passArray8ToWasm0(base, wasm.__wbindgen_export);
+        const len0 = WASM_VECTOR_LEN;
+        const ptr1 = passStringToWasm0(style_json, wasm.__wbindgen_export, wasm.__wbindgen_export3);
+        const len1 = WASM_VECTOR_LEN;
+        wasm.render_cctv_frame(retptr, ptr0, len0, w, h, t, seed, ptr1, len1);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        var r3 = getDataViewMemory0().getInt32(retptr + 4 * 3, true);
+        if (r3) {
+            throw takeObject(r2);
+        }
+        var v3 = getArrayU8FromWasm0(r0, r1).slice();
+        wasm.__wbindgen_export2(r0, r1 * 1, 1);
+        return v3;
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+    }
+}
+
+/**
  * Verifies a generated picture against the photo → `Verification` JSON.
  * `elves_json`: `["pepin", …]` or `{"elves": [...], "mask": [{x,y,w,h}]}`.
  * @param {Uint8Array} generated
@@ -375,6 +559,9 @@ function __wbg_get_imports() {
 const CardRendererFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_cardrenderer_free(ptr, 1));
+const CctvRendererFinalization = (typeof FinalizationRegistry === 'undefined')
+    ? { register: () => {}, unregister: () => {} }
+    : new FinalizationRegistry(ptr => wasm.__wbg_cctvrenderer_free(ptr, 1));
 const ImageOutFinalization = (typeof FinalizationRegistry === 'undefined')
     ? { register: () => {}, unregister: () => {} }
     : new FinalizationRegistry(ptr => wasm.__wbg_imageout_free(ptr, 1));
@@ -394,6 +581,11 @@ function dropObject(idx) {
     heap_next = idx;
 }
 
+function getArrayF32FromWasm0(ptr, len) {
+    ptr = ptr >>> 0;
+    return getFloat32ArrayMemory0().subarray(ptr / 4, ptr / 4 + len);
+}
+
 function getArrayU8FromWasm0(ptr, len) {
     ptr = ptr >>> 0;
     return getUint8ArrayMemory0().subarray(ptr / 1, ptr / 1 + len);
@@ -405,6 +597,14 @@ function getDataViewMemory0() {
         cachedDataViewMemory0 = new DataView(wasm.memory.buffer);
     }
     return cachedDataViewMemory0;
+}
+
+let cachedFloat32ArrayMemory0 = null;
+function getFloat32ArrayMemory0() {
+    if (cachedFloat32ArrayMemory0 === null || cachedFloat32ArrayMemory0.byteLength === 0) {
+        cachedFloat32ArrayMemory0 = new Float32Array(wasm.memory.buffer);
+    }
+    return cachedFloat32ArrayMemory0;
 }
 
 function getStringFromWasm0(ptr, len) {
@@ -511,6 +711,7 @@ function __wbg_finalize_init(instance, module) {
     wasm = instance.exports;
     wasmModule = module;
     cachedDataViewMemory0 = null;
+    cachedFloat32ArrayMemory0 = null;
     cachedUint8ArrayMemory0 = null;
     return wasm;
 }

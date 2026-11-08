@@ -10,6 +10,7 @@
 //! | [`prompt`] | image-model prompt from the bible + scene + prank, seed, child's caption |
 //! | [`verify`] | does the generated picture keep the room and show the requested elves? |
 //! | [`card`] | on-device animated "magic card" (Ken Burns, snow, sparkles, glow) |
+//! | [`cctv`] | "caught on camera" look: night-vision / CCTV optics, grain, scanlines, interference, slow zoom to the elves |
 //! | [`prepare`] | photo downscale + mild auto white balance before upload |
 //! | [`decode`] | PNG / JPEG / WebP decoding (server side) |
 //! | [`align`] | FFT phase correlation (alignment before verification) |
@@ -26,6 +27,7 @@ pub mod align;
 pub mod analysis;
 pub mod bible;
 pub mod card;
+pub mod cctv;
 pub mod color;
 #[cfg(feature = "decode")]
 pub mod decode;
@@ -40,6 +42,7 @@ mod wasm;
 
 pub use analysis::{analyze_scene, SceneAnalysis};
 pub use card::{render_card_frame, CardRenderer, CardStyle};
+pub use cctv::{focus_elves, render_cctv_frame, CctvLook, CctvRenderer, CctvStyle};
 pub use image::{EngineError, RgbaImage, RgbaView};
 pub use prepare::prepare_photo;
 pub use prompt::{build_prompt, build_prompt_json, PromptInput, PromptOut};

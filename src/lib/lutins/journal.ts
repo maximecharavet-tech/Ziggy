@@ -22,6 +22,13 @@ export type JournalEntry = {
   /** The server's signature of `sourceUrl` (only our own pictures can be animated). */
   sourceSig?: string | null;
   seen?: boolean;
+  /**
+   * Where each elf is in the picture, for the child's "Trouve les lutins" game
+   * (marked by the parent in the studio): centre as fractions of the picture's
+   * width / height, radius as a fraction of its width. Optional: without it the
+   * game asks "Qui a fait la farce ?" instead.
+   */
+  spots?: { id: string; x: number; y: number; r: number }[];
 };
 
 const DB = 'ziggy-lutins';

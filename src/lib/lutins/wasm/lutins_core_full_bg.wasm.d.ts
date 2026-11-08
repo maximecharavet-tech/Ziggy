@@ -2,6 +2,7 @@
 /* eslint-disable */
 export const memory: WebAssembly.Memory;
 export const __wbg_cardrenderer_free: (a: number, b: number) => void;
+export const __wbg_cctvrenderer_free: (a: number, b: number) => void;
 export const __wbg_imageout_free: (a: number, b: number) => void;
 export const analyze_scene: (a: number, b: number, c: number, d: number, e: number) => void;
 export const bible_hash: () => number;
@@ -13,6 +14,15 @@ export const cardrenderer_new: (a: number, b: number, c: number, d: number, e: n
 export const cardrenderer_render: (a: number, b: number, c: number) => void;
 export const cardrenderer_render_in_place: (a: number, b: number) => void;
 export const cardrenderer_width: (a: number) => number;
+export const cctv_focus: (a: number, b: number, c: number, d: number, e: number) => void;
+export const cctvrenderer_focus: (a: number, b: number) => void;
+export const cctvrenderer_frame_len: (a: number) => number;
+export const cctvrenderer_frame_ptr: (a: number) => number;
+export const cctvrenderer_height: (a: number) => number;
+export const cctvrenderer_new: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => void;
+export const cctvrenderer_render: (a: number, b: number, c: number) => void;
+export const cctvrenderer_render_in_place: (a: number, b: number) => void;
+export const cctvrenderer_width: (a: number) => number;
 export const decode_image: (a: number, b: number, c: number) => void;
 export const engine_version: (a: number) => void;
 export const imageout_height: (a: number) => number;
@@ -20,6 +30,7 @@ export const imageout_rgba: (a: number, b: number) => void;
 export const imageout_width: (a: number) => number;
 export const prepare_photo: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
 export const render_card_frame: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
+export const render_cctv_frame: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
 export const verify: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number) => void;
 export const verify_encoded: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
 export const __wbindgen_add_to_stack_pointer: (a: number) => number;
