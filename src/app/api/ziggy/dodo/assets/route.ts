@@ -1,5 +1,6 @@
 import { getServerSupabase } from '@/lib/supabase-server';
 import { DODO_BUCKET } from '@/lib/dodo/prepare';
+import { BUNDLED_DODO_IMAGES } from '@/data/dodo/assets';
 
 /**
  * Mode dodo manifest: which illustrations and narrations are ready, as public
@@ -13,13 +14,16 @@ export type DodoManifest = {
 };
 
 export async function GET() {
-  const empty: DodoManifest = { images: {}, audio: {} };
+  // Fresh copies on every request: merging remote rows must not mutate the fallback.
+  const out: DodoManifest = {
+    images: Object.fromEntries(Object.entries(BUNDLED_DODO_IMAGES).map(([id, scenes]) => [id, { ...scenes }])),
+    audio: {},
+  };
   const sb = getServerSupabase(6000);
   const base = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  if (!sb || !base) return Response.json(empty);
+  if (!sb || !base) return Response.json(out);
   const { data, error } = await sb.from('ziggy_dodo_assets').select('story_id, scene, kind, locale, path, created_at').limit(5000);
-  if (error || !data) return Response.json(empty, { headers: { 'cache-control': 'public, max-age=60' } });
-  const out: DodoManifest = { images: {}, audio: {} };
+  if (error || !data) return Response.json(out, { headers: { 'cache-control': 'public, max-age=60' } });
   for (const r of data) {
     // The version stamp makes a regenerated file bypass caches.
     const url = `${base}/storage/v1/object/public/${DODO_BUCKET}/${r.path}?v=${new Date(r.created_at).getTime().toString(36)}`;
