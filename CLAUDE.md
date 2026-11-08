@@ -34,7 +34,7 @@ device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.
 - Every visible text exists in FR + EN (`tr()` / `L` from `@/lib/i18n-text`); little ones can't read: keep read-aloud (`SayButton`, `useAutoSay`).
 - Reduced motion: import `useReducedMotion` from `@/lib/use-reduced-motion`, never from framer-motion (hydration mismatch).
 - Big tap targets (≥ 56–64 px for game answers). Animate transform/opacity only.
-- Licences: MIT / Apache-2.0 / BSD only (ISC needs the owner's OK). Never GPL/AGPL/LGPL/MPL/NC in the shipped code. List new ones in `THIRD_PARTY_LICENSES.md`.
+- Licences: MIT / Apache-2.0 / BSD only (ISC needs the owner's OK; Unicode-3.0 accepted by the owner on 2026-11-08 for `unicode-ident`'s data tables). Never GPL/AGPL/LGPL/MPL/NC in the shipped code. List new ones in `THIRD_PARTY_LICENSES.md`.
 - Zero new running cost: prefer code-built assets and offline pre-generation.
 - The real Ziggy = the felt plush of `public/mascot/*`: 2D uses `MascotCutout`/`ZiggyAvatar`, 3D uses `<Ziggy3D>` (max one per page) or `makeZiggy()` in game scenes.
 
