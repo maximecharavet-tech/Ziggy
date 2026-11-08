@@ -233,7 +233,7 @@ function CameraAlert({ elves, opening, onOpen }: { elves: string[]; opening: boo
         </motion.button>
       </div>
       <div className="mt-6 flex items-center gap-3">
-        <button type="button" onClick={onOpen} className="min-h-16 rounded-full bg-gradient-to-r from-[#c92a2a] to-[#f03e3e] px-8 font-display text-2xl font-bold text-white shadow-[0_8px_0_#8a1c1c]">
+        <button type="button" onClick={onOpen} className="min-h-16 whitespace-nowrap rounded-full bg-gradient-to-r from-[#c92a2a] to-[#f03e3e] px-6 font-display text-xl font-bold text-white shadow-[0_8px_0_#8a1c1c] sm:px-8 sm:text-2xl">
           ▶ {tr(T.watch, locale)}
         </button>
         <SayButton texts={[tr(T.alertTitle, locale), tr(T.alertBody, locale)]} locale={locale} size="lg" />

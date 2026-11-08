@@ -127,6 +127,7 @@ export function LutinsJournal() {
   const departure = date !== null && !arrival && !fresh && !ceremony && departureDue(settings, date);
   const shelf = date ? lettersReached(settings, date, visible.length > 0).filter((k) => !(k === 'arrival' && arrival) && !(k === 'departure' && departure)) : [];
   const live = ceremony ?? (!arrival ? fresh : null);
+  const gallery = visible.filter((e) => e.id !== ceremony?.id && (e.seen || e.id !== fresh?.id));
 
   const openLetter = (k: 'arrival' | 'departure') => {
     setLetter(k);
@@ -181,17 +182,15 @@ export function LutinsJournal() {
             </section>
           )}
 
-          {visible.length > 0 && (
+          {gallery.length > 0 && (
             <section className="mt-14">
               <h2 className="font-display text-2xl font-bold">{tr(T.all, locale)}</h2>
               <ul className="mt-4 grid grid-cols-2 gap-4 sm:grid-cols-3">
-                {visible
-                  .filter((e) => e.id !== ceremony?.id && (e.seen || e.id !== fresh?.id))
-                  .map((e) => (
-                    <li key={e.id}>
-                      <Thumb entry={e} onOpen={() => setViewing(e)} />
-                    </li>
-                  ))}
+                {gallery.map((e) => (
+                  <li key={e.id}>
+                    <Thumb entry={e} onOpen={() => setViewing(e)} />
+                  </li>
+                ))}
               </ul>
             </section>
           )}
