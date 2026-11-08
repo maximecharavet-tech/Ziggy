@@ -1,9 +1,12 @@
+import { existsSync, readFileSync, statSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { DODO_STORIES, OUTRO_SCENE, getDodoStory, outroText } from './index';
 import { DODO_SKIES, DODO_VALUES } from './types';
 import { classify } from '@/lib/safety/policy';
 import { sentences, storyMinutes, storyOfTheNight } from '@/lib/dodo/client';
 import { missing, plannedAssets } from '@/lib/dodo/prepare';
+import { parseSongTiming } from '@/lib/dodo/song';
 
 const AMBIENCES = ['stars', 'moon', 'fireflies', 'snow', 'bubbles', 'petals', 'sunrise'];
 
@@ -80,5 +83,33 @@ describe('pre-generation plan', () => {
     const left = missing(planned, [{ story_id: 'lili', scene: 1, kind: 'image', locale: '-', path: 'lili/scene-1.jpg' }]);
     expect(left).toHaveLength(planned.length - 1);
     expect(left.some((k) => k.story === 'lili' && k.scene === 1)).toBe(false);
+  });
+});
+
+describe('Mode dodo — version musicale', () => {
+  it('ships every sung version it promises (MP3 + synchronised lyrics under public/)', () => {
+    expect(getDodoStory('lili')?.songs?.[0]?.audio.fr).toBe('/dodo/lili/lili-v1.mp3');
+    for (const s of DODO_STORIES) {
+      const ids = (s.songs ?? []).map((v) => v.id);
+      expect(new Set(ids).size, `${s.id}: version ids must be unique`).toBe(ids.length);
+      for (const song of s.songs ?? []) {
+        for (const url of Object.values(song.audio)) {
+          expect(url, s.id).toMatch(/^\/dodo\/[a-z0-9-]+\/[a-z0-9-]+\.mp3$/);
+          const file = join(process.cwd(), 'public', url!);
+          expect(existsSync(file), `${file} is missing`).toBe(true);
+          const size = statSync(file).size;
+          expect(size, file).toBeGreaterThan(100_000);
+          expect(size, `${file}: keep songs light (~96–128 kbps)`).toBeLessThan(7_000_000);
+        }
+        for (const url of Object.values(song.timing ?? {})) {
+          expect(url, s.id).toMatch(/^\/dodo\/[a-z0-9-]+\/[a-z0-9-]+\.timing\.json$/);
+          const file = join(process.cwd(), 'public', url!);
+          expect(existsSync(file), `${file} is missing`).toBe(true);
+          const timing = parseSongTiming(JSON.parse(readFileSync(file, 'utf8')));
+          expect(timing, `${file} is not a valid timing file`).not.toBeNull();
+          expect(timing!.match, `${file}: lyrics poorly aligned`).toBeGreaterThan(0.8);
+        }
+      }
+    }
   });
 });

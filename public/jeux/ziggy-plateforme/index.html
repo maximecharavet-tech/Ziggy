@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#10172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Ziggy et les Étoiles Perdues</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      width: 100%; height: 100%; margin: 0; overflow: hidden; background: #10172a;
+      /* v11 : pas de zoom, de defilement, de rebond ni de menu d'appui long */
+      touch-action: none; overscroll-behavior: none;
+      -webkit-user-select: none; user-select: none;
+      -webkit-touch-callout: none; -webkit-tap-highlight-color: transparent;
+      -webkit-text-size-adjust: 100%;
+    }
+    body { position: fixed; inset: 0; }
+    #glcanvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; outline: none; background: #10172a; touch-action: none; }
+  </style>
+  <link rel="icon" href="data:,">
+</head>
+<body>
+  <canvas id="glcanvas" tabindex="0"></canvas>
+  <script>
+    (function () {
+      // v10 : quand le jeu est integre dans une page (iframe), le focus du canvas ne fait pas defiler la page parente.
+      var f = HTMLElement.prototype.focus;
+      HTMLCanvasElement.prototype.focus = function (o) { return f.call(this, Object.assign({ preventScroll: true }, o || {})); };
+      // v11 : nettete sur ecrans haute densite, plafonnee a 2x pour garder le jeu fluide sur telephone.
+      try {
+        var dpr = window.devicePixelRatio || 1;
+        Object.defineProperty(window, 'devicePixelRatio', { configurable: true, get: function () { return Math.min(2, dpr); } });
+      } catch (e) {}
+      // v11 : bloque les gestes du navigateur (pincer pour zoomer, double-tap, appui long, tirer pour rafraichir).
+      var stop = function (e) { e.preventDefault(); };
+      ['gesturestart', 'gesturechange', 'gestureend', 'contextmenu', 'selectstart', 'dragstart'].forEach(function (t) { document.addEventListener(t, stop, { passive: false }); });
+      document.addEventListener('touchmove', stop, { passive: false });
+      document.addEventListener('touchstart', function (e) { if (e.touches.length > 1) e.preventDefault(); }, { passive: false });
+      var lastEnd = 0;
+      document.addEventListener('touchend', function (e) { var n = Date.now(); if (n - lastEnd < 320) e.preventDefault(); lastEnd = n; }, { passive: false });
+      // Un appui donne le focus au jeu (clavier) ; le son est debloque par mq_js_bundle au premier appui.
+      document.addEventListener('pointerdown', function () { var c = document.getElementById('glcanvas'); if (c && document.activeElement !== c) c.focus(); });
+      // Rotation / redimensionnement : le canvas suit la taille de la fenetre.
+      var fit = function () { window.dispatchEvent(new Event('resize')); };
+      window.addEventListener('orientationchange', function () { setTimeout(fit, 120); setTimeout(fit, 400); });
+      if (window.visualViewport) window.visualViewport.addEventListener('resize', fit);
+    })();
+  </script>
+  <script>var register_plugin;</script>
+  <script src="mq_js_bundle.js"></script>
+  <script>load("ziggy.wasm");</script>
+</body>
+</html>

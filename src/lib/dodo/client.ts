@@ -2,8 +2,9 @@
 
 import { useEffect, useState, useSyncExternalStore } from 'react';
 import type { DodoStory } from '@/data/dodo/types';
-import { forgetPosition, parseTiming, readPositions, rememberPosition, type DodoPosition, type FallbackVoice, type HighlightMode } from './player';
+import { forgetPosition, parseTiming, readPositions, rememberPosition, type DodoPosition, type FallbackVoice, type HighlightMode, type NarrationMode } from './player';
 import { voiceBase, voiceLocale, type DodoVoiceTiming } from './voice';
+import { parseSongTiming, type SongTiming } from './song';
 
 /* ── Settings kept on this device ── */
 
@@ -17,6 +18,13 @@ export interface DodoSettings {
   speed: number;
   /** When a story has no recording yet: silent reading at a calm pace, or the device's own voice. */
   fallback: FallbackVoice;
+  /**
+   * Stories with a sung version: the "Version musicale" (default: the song has
+   * priority) or Ziggy's reading voice. Stories without a song always use the voice.
+   */
+  narration: NarrationMode;
+  /** The sung version chosen per story (id of DodoSong), when it has several. */
+  songVersion: Record<string, string>;
   favorites: string[];
   /** Stories already heard (ids), to suggest new ones. */
   heard: string[];
@@ -30,6 +38,8 @@ const DEFAULTS: DodoSettings = {
   highlight: 'word',
   speed: 1,
   fallback: 'read',
+  narration: 'music',
+  songVersion: {},
   favorites: [],
   heard: [],
 };
@@ -48,6 +58,8 @@ function read(): DodoSettings {
     stored.speed = Math.max(0.85, Math.min(1.15, Number(stored.speed) || 1));
     if (stored.highlight !== 'line') stored.highlight = 'word';
     if (stored.fallback !== 'device') stored.fallback = 'read';
+    if (stored.narration !== 'voice') stored.narration = 'music';
+    if (!stored.songVersion || typeof stored.songVersion !== 'object' || Array.isArray(stored.songVersion)) stored.songVersion = {};
     cache = stored;
   } catch {
     cache = DEFAULTS;
@@ -179,6 +191,36 @@ export function useAllTimings(locale: string, storyIds: string[], enabled = true
     };
   }, [locale, ids, enabled]);
   return version;
+}
+
+/* ── Synchronised lyrics of a sung version (static …timing.json, see song.ts) ── */
+
+const songTimings = new Map<string, Promise<SongTiming | null>>();
+
+export function loadSongTiming(url: string): Promise<SongTiming | null> {
+  let p = songTimings.get(url);
+  if (!p) {
+    p = fetch(url, { redirect: 'manual' })
+      .then((r) => (r.ok && (r.headers.get('content-type') ?? '').includes('json') ? r.json() : null))
+      .then((j) => parseSongTiming(j))
+      .catch(() => null);
+    songTimings.set(url, p);
+  }
+  return p;
+}
+
+/** The lyrics timing of a version (null while loading, or when it has none / it is unusable). */
+export function useSongTiming(url: string | null): SongTiming | null {
+  const [state, setState] = useState<{ url: string; timing: SongTiming | null } | null>(null);
+  useEffect(() => {
+    if (!url) return;
+    let alive = true;
+    void loadSongTiming(url).then((timing) => alive && setState({ url, timing }));
+    return () => {
+      alive = false;
+    };
+  }, [url]);
+  return url && state?.url === url ? state.timing : null;
 }
 
 /* ── Where each story stopped (this device only) ── */
