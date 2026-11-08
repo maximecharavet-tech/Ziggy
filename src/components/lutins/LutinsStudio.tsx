@@ -165,7 +165,7 @@ export function LutinsStudio() {
   }, []);
 
   const generate = useCallback(
-    async (strict = false): Promise<void> => {
+    async (strict = false, failed: string[] = []): Promise<void> => {
       if (!photo) return;
       setError(null);
       setStep('magic');
@@ -184,6 +184,7 @@ export function LutinsStudio() {
             photo: photo.toDataURL('image/jpeg', 0.86),
             aspect: aspectOf(photo),
             strict,
+            failed,
           }),
         });
         if (!res.ok) {
@@ -200,8 +201,8 @@ export function LutinsStudio() {
         if (Number.isFinite(l)) setLeft(l);
         // On-device check (Rust engine): still the same room, and the elves are really there.
         if (!strict) {
-          const ok = await verifyResult(blob, photo, elves).catch(() => ({ ok: true, reasons: [] as string[] }));
-          if (!ok.ok) return generate(true);
+          const check = await verifyResult(blob, photo, elves).catch(() => null);
+          if (check && !check.ok) return generate(true, check.reasons);
         }
         setResult({ blob, url: URL.createObjectURL(blob), caption, source, sig });
         setAdded(false);

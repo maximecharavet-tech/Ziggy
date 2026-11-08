@@ -63,6 +63,48 @@ pub fn blur5(p: &Plane) -> Plane {
     out
 }
 
+/// Separable Gaussian blur (radius ⌈3σ⌉, normalised weights).
+pub fn gaussian(p: &Plane, sigma: f32) -> Plane {
+    let r = (3.0 * sigma).ceil() as isize;
+    let mut k: Vec<f32> = (-r..=r).map(|i| (-(i * i) as f32 / (2.0 * sigma * sigma)).exp()).collect();
+    let s: f32 = k.iter().sum();
+    k.iter_mut().for_each(|v| *v /= s);
+    let (w, h) = (p.w, p.h);
+    let mut tmp = Plane::new(w, h);
+    for y in 0..h {
+        for x in 0..w {
+            let mut acc = 0.0;
+            for (j, kv) in k.iter().enumerate() {
+                acc += kv * p.get_clamped(x as isize + j as isize - r, y as isize);
+            }
+            tmp.data[y * w + x] = acc;
+        }
+    }
+    let mut out = Plane::new(w, h);
+    for y in 0..h {
+        for x in 0..w {
+            let mut acc = 0.0;
+            for (j, kv) in k.iter().enumerate() {
+                acc += kv * tmp.get_clamped(x as isize, y as isize + j as isize - r);
+            }
+            out.data[y * w + x] = acc;
+        }
+    }
+    out
+}
+
+/// Prewitt gradient magnitude, divided by 3 (the normalisation of GMSD,
+/// Xue et al. 2014).
+pub fn prewitt_magnitude(p: &Plane) -> Plane {
+    Plane::from_fn(p.w, p.h, |x, y| {
+        let (x, y) = (x as isize, y as isize);
+        let v = |dx: isize, dy: isize| p.get_clamped(x + dx, y + dy);
+        let gx = (v(1, -1) + v(1, 0) + v(1, 1) - v(-1, -1) - v(-1, 0) - v(-1, 1)) / 3.0;
+        let gy = (v(-1, 1) + v(0, 1) + v(1, 1) - v(-1, -1) - v(0, -1) - v(1, -1)) / 3.0;
+        (gx * gx + gy * gy).sqrt()
+    })
+}
+
 /// Sobel gradients `(gx, gy)`, divided by 4 so that a unit step edge has a
 /// magnitude of 1. `gx > 0`: brighter to the right; `gy > 0`: brighter below.
 pub fn sobel(p: &Plane) -> (Plane, Plane) {
@@ -84,11 +126,7 @@ pub fn sobel(p: &Plane) -> (Plane, Plane) {
 
 /// Gradient magnitude of a Sobel pair.
 pub fn magnitude(gx: &Plane, gy: &Plane) -> Plane {
-    Plane {
-        data: gx.data.iter().zip(&gy.data).map(|(a, b)| (a * a + b * b).sqrt()).collect(),
-        w: gx.w,
-        h: gx.h,
-    }
+    Plane { data: gx.data.iter().zip(&gy.data).map(|(a, b)| (a * a + b * b).sqrt()).collect(), w: gx.w, h: gx.h }
 }
 
 /// Variance of the 4-neighbour Laplacian over the interior pixels: the
@@ -177,7 +215,7 @@ mod tests {
     fn sobel_unit_step() {
         let p = Plane::from_fn(10, 10, |x, _| if x >= 5 { 1.0 } else { 0.0 });
         let (gx, gy) = sobel(&p);
-        assert!((gx.get(4, 5) - 0.5).abs() < 1e-6 && (gx.get(5, 5) - 0.5).abs() < 1e-6);
+        assert!((gx.get(4, 5) - 1.0).abs() < 1e-6 && (gx.get(5, 5) - 1.0).abs() < 1e-6);
         assert!(gy.data.iter().all(|v| v.abs() < 1e-6));
         let ramp = Plane::from_fn(10, 10, |x, _| x as f32);
         let (gx, _) = sobel(&ramp);

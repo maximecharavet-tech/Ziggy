@@ -330,10 +330,10 @@ mod tests {
     fn cct_estimates() {
         let d65 = cct_kelvin(1.0, 1.0, 1.0);
         assert!((d65 - 6504.0).abs() < 15.0, "{d65}");
-        // Tungsten-like (≈ 2 850 K) linear white: (1.0, 0.71, 0.42) roughly.
-        let warm = cct_kelvin(1.0, 0.68, 0.36);
-        assert!(warm > 2400.0 && warm < 3400.0, "{warm}");
-        let cool = cct_kelvin(0.75, 0.88, 1.0);
+        // CIE illuminant A (2 856 K) in linear sRGB.
+        let warm = cct_kelvin(1.0, 0.448, 0.126);
+        assert!((warm - 2856.0).abs() < 60.0, "{warm}");
+        let cool = cct_kelvin(0.62, 0.8, 1.0);
         assert!(cool > 8500.0, "{cool}");
     }
 }

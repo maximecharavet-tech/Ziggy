@@ -153,7 +153,7 @@ pub struct SceneAnalysis {
 }
 
 /// The working copy and its derived planes.
-pub(crate) struct Work {
+pub struct Work {
     pub img: RgbaImage,
     /// Y′ in 0–1.
     pub luma: Plane,

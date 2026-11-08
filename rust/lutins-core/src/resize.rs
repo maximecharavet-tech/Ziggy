@@ -7,10 +7,12 @@
 //! weights of each output pixel are computed once per axis and normalised to 1.
 //!
 //! Large reductions first run an exact integer box reduction (each output pixel
-//! the mean of a `k × k` block) so the Lanczos pass works on at most about
-//! twice the target size: the same idea as Pillow's `reducing_gap = 2`, it
-//! costs nothing visible and makes a 12 MP → 1536 px downscale several times
-//! faster.
+//! the mean of a `k × k` block) so the Lanczos pass works on three to six
+//! times the target size: the same idea as Pillow's `reducing_gap`, it makes a
+//! 12 MP → 256 px downscale several times faster. The margin of 3 matters: the
+//! box filter leaks a little energy near its Nyquist frequency, and a Lanczos
+//! pass shrinking by ≥ 3 removes that leak (a gap of 2 left visible moiré on a
+//! 1-px checkerboard in the tests).
 //!
 //! The arithmetic is `f32` with an 8-bit intermediate between the passes and
 //! happens on the gamma-encoded values (like browsers and Pillow). Alpha is
@@ -143,8 +145,7 @@ fn pass_h(src: &[u8], sw: usize, h: usize, dw: usize, filter: Filter) -> Vec<u8>
             let (s, n) = (wt.start[x], wt.len[x]);
             let ws = &wt.w[x * wt.taps..x * wt.taps + n];
             let (mut r, mut g, mut b, mut a) = (0.0f32, 0.0f32, 0.0f32, 0.0f32);
-            for (k, &wk) in ws.iter().enumerate() {
-                let p = &srow[(s + k) * 4..(s + k) * 4 + 4];
+            for (p, &wk) in srow[s * 4..(s + n) * 4].chunks_exact(4).zip(ws) {
                 r += wk * p[0] as f32;
                 g += wk * p[1] as f32;
                 b += wk * p[2] as f32;
@@ -238,7 +239,7 @@ pub fn box_reduce(src: RgbaView<'_>, k: usize) -> RgbaImage {
 }
 
 /// The best general-purpose resize: Lanczos-3 for reductions (after an exact
-/// box pre-reduction when the factor is above 4), Catmull-Rom for
+/// box pre-reduction when the factor is 6 or more), Catmull-Rom for
 /// enlargements.
 pub fn resize_hq(src: RgbaView<'_>, dw: usize, dh: usize) -> RgbaImage {
     let (dw, dh) = (dw.max(1), dh.max(1));
@@ -246,7 +247,7 @@ pub fn resize_hq(src: RgbaView<'_>, dw: usize, dh: usize) -> RgbaImage {
     if factor <= 1.0 {
         return resize(src, dw, dh, Filter::CatmullRom);
     }
-    let k = (factor / 2.0).floor() as usize;
+    let k = (factor / 3.0).floor() as usize;
     if k >= 2 {
         let pre = box_reduce(src, k);
         return resize(pre.view(), dw, dh, Filter::Lanczos3);

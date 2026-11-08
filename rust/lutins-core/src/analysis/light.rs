@@ -37,7 +37,7 @@ pub const STRONG_AT: f32 = 1.0;
 /// Weight of the centre-brighter component (vignetting also produces it).
 pub const FRONT_WEIGHT: f32 = 0.7;
 /// Sobel magnitude where a pixel starts / fully counts as an edge (Y′ units;
-/// a unit step edge has magnitude 0.5 on each side, smooth shading < 0.02).
+/// a unit step edge has magnitude 1, a shading slope `s` per pixel has `2s`).
 const EDGE_LO: f32 = 0.02;
 const EDGE_HI: f32 = 0.06;
 /// Fewer usable pixels than this share → no judgement (diffuse).
@@ -64,11 +64,8 @@ pub fn estimate(luma: &Plane) -> Light {
     let yb = box_blur(&box_blur(luma, 1), 1);
     let (gx, gy) = sobel(&yb);
     let mag = magnitude(&gx, &gy);
-    let edge = Plane {
-        data: mag.data.iter().map(|&m| ((m - EDGE_LO) / (EDGE_HI - EDGE_LO)).clamp(0.0, 1.0)).collect(),
-        w,
-        h,
-    };
+    let edge =
+        Plane { data: mag.data.iter().map(|&m| ((m - EDGE_LO) / (EDGE_HI - EDGE_LO)).clamp(0.0, 1.0)).collect(), w, h };
     // Any edge within SPAN + 3 pixels disqualifies the sample.
     let density = box_blur(&edge, SPAN + 3);
     let ln: Vec<f32> = yb.data.iter().map(|&v| (v.max(1e-3)).ln()).collect();

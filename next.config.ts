@@ -29,7 +29,8 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/[locale]/opengraph-image': ['./public/mascot/og-ziggy.png'],
     '/[locale]/pere-noel/opengraph-image': ['./public/mascot/og-ziggy.png'],
-    '/api/lutins/generate': ['./public/lutins/refs/sheet.png'],
+    '/api/lutins/generate': ['./public/lutins/refs/sheet.png', './src/lib/lutins/wasm/lutins_core_full_bg.wasm'],
+    '/api/lutins/**': ['./src/lib/lutins/wasm/lutins_core_full_bg.wasm'],
     '/[locale]/dodo/[story]/opengraph-image': ['./public/mascot/og-ziggy.png', './public/dodo/**/*-og.jpg'],
   },
   images: {

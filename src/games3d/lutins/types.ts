@@ -22,12 +22,15 @@ export interface StageCamera {
 }
 
 /**
- * What a `sheet` render shows (the reference images for the image AI):
- * - `lineup`: the three elves front view, with a small 3/4 and side view each;
+ * What a `sheet` render shows (the reference images for the image AI, see
+ * docs/lutins-research.md recommendations 1–2):
+ * - `lineup`: the three elves side by side, front view, full body, pure white,
+ *   no floor shadow, fixed order Pépin, Grelotte, Noisette, one scale;
+ * - `lineup34`: the same line-up in 3/4 view;
  * - `turnaround`: one elf, front + 3/4 + back;
  * - `avatar`: one elf, a cheerful bust portrait (use with `transparent`).
  */
-export type SheetLayout = { kind: 'lineup' } | { kind: 'turnaround'; elf: ElfId } | { kind: 'avatar'; elf: ElfId };
+export type SheetLayout = { kind: 'lineup' } | { kind: 'lineup34' } | { kind: 'turnaround'; elf: ElfId } | { kind: 'avatar'; elf: ElfId };
 
 export interface LutinsSceneOptions {
   mode: LutinsSceneMode;

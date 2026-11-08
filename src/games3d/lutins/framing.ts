@@ -43,81 +43,55 @@ export function stageCamera(c: { azimuth?: number; elevation?: number; zoom?: nu
   };
 }
 
-/** One view on a reference sheet. Rect in fractions of the image, y from the top. */
-export interface SheetCell {
-  elf: ElfId;
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  /** Elf turned by this angle (radians) around its vertical axis; 0 = front. */
-  yaw: number;
-  /** World units shown across the cell height (orthographic). */
-  span: number;
-  /** Where the floor sits, as a fraction of the cell height from its bottom. */
-  ground: number;
-}
-
 /** Turn for the 3/4 view (the elf's left side toward the camera). */
 export const YAW_THREE_QUARTER = 0.62;
 export const YAW_SIDE = Math.PI / 2;
 export const YAW_BACK = Math.PI;
 
-/**
- * The cells of a reference sheet. `heights` are the elves' full heights
- * (hat included), so one scale serves all of them: on the lineup Noisette
- * really is half as tall as the others. `aspect` = image width / height.
- */
-export function sheetCells(layout: SheetLayout, heights: Record<ElfId, number>, aspect: number): SheetCell[] {
-  if (layout.kind === 'lineup') {
-    const order: ElfId[] = ['pepin', 'grelotte', 'noisette'];
-    const tallest = Math.max(...order.map((id) => heights[id]));
-    const bigH = 0.7;
-    const ground = 0.07;
-    // The tallest elf fills ~86 % of the big row.
-    const span = tallest / (0.86 - ground);
-    const cells: SheetCell[] = [];
-    order.forEach((elf, i) => {
-      const x = i / 3;
-      cells.push({ elf, x, y: 0, w: 1 / 3, h: bigH, yaw: 0, span, ground });
-      // Small views: half the scale of the big ones (same scale for all elves).
-      const smallH = 1 - bigH;
-      const smallSpan = span * 2 * (smallH / bigH);
-      cells.push({ elf, x, y: bigH, w: 1 / 6, h: smallH, yaw: YAW_THREE_QUARTER, span: smallSpan, ground: 0.1 });
-      cells.push({ elf, x: x + 1 / 6, y: bigH, w: 1 / 6, h: smallH, yaw: YAW_SIDE, span: smallSpan, ground: 0.1 });
-    });
-    void aspect;
-    return cells;
-  }
-  if (layout.kind === 'turnaround') {
-    const h = heights[layout.elf];
-    const ground = 0.08;
-    const span = h / (0.88 - ground);
-    return [0, YAW_THREE_QUARTER, YAW_BACK].map((yaw, i) => ({ elf: layout.elf, x: i / 3, y: 0, w: 1 / 3, h: 1, yaw, span, ground }));
-  }
-  return [{ elf: layout.elf, x: 0, y: 0, w: 1, h: 1, yaw: 0, span: 1, ground: 0 }];
+/** The views of a reference sheet, left to right: which elf, turned by how much. */
+export function sheetViews(layout: SheetLayout): { elf: ElfId; yaw: number }[] {
+  const order: ElfId[] = ['pepin', 'grelotte', 'noisette'];
+  if (layout.kind === 'lineup') return order.map((elf) => ({ elf, yaw: 0 }));
+  if (layout.kind === 'lineup34') return order.map((elf) => ({ elf, yaw: YAW_THREE_QUARTER }));
+  if (layout.kind === 'turnaround') return [0, YAW_THREE_QUARTER, YAW_BACK].map((yaw) => ({ elf: layout.elf, yaw }));
+  return [{ elf: layout.elf, yaw: 0 }];
+}
+
+/** Horizontal extent of a silhouette, relative to its own origin. */
+export interface Extent {
+  min: number;
+  max: number;
 }
 
 /**
- * Orthographic frustum for a cell: half width / half height in world units
- * and the camera height, so the floor lands at `cell.ground`.
+ * Places silhouettes side by side, `gap` apart, the whole row centred on 0.
+ * Returns each one's x offset (all keep one scale: Noisette stays half as tall).
  */
-export function cellFrustum(cell: SheetCell, imageW: number, imageH: number) {
-  const pxW = cell.w * imageW;
-  const pxH = cell.h * imageH;
-  const halfH = cell.span / 2;
-  const halfW = halfH * (pxW / Math.max(1, pxH));
-  const centerY = halfH - cell.ground * cell.span;
-  return { halfW, halfH, centerY };
+export function packRow(extents: Extent[], gap: number): number[] {
+  const xs: number[] = [];
+  let cursor = 0;
+  for (const e of extents) {
+    xs.push(cursor - e.min);
+    cursor += e.max - e.min + gap;
+  }
+  const total = cursor - (extents.length ? gap : 0);
+  return xs.map((x) => x - total / 2);
 }
 
-/** Pixel rectangle of a cell for WebGL viewport / scissor (origin bottom-left). */
-export function cellViewport(cell: SheetCell, imageW: number, imageH: number) {
-  const x = Math.round(cell.x * imageW);
-  const w = Math.round((cell.x + cell.w) * imageW) - x;
-  const top = Math.round(cell.y * imageH);
-  const h = Math.round((cell.y + cell.h) * imageH) - top;
-  return { x, y: imageH - top - h, w, h };
+/**
+ * Orthographic frustum showing a box whole, with a `margin` (fraction of
+ * the box) all round, in an image of `aspect` (width / height). `lift`
+ * moves the content down (> 0) so the floor sits lower in the picture.
+ */
+export function fitOrtho(box: { minX: number; maxX: number; minY: number; maxY: number }, aspect: number, margin: number) {
+  const a = Math.max(0.05, aspect);
+  let w = (box.maxX - box.minX) * (1 + margin * 2);
+  let h = (box.maxY - box.minY) * (1 + margin * 2);
+  if (w / h > a) h = w / a;
+  else w = h * a;
+  const cx = (box.minX + box.maxX) / 2;
+  const cy = (box.minY + box.maxY) / 2;
+  return { left: cx - w / 2, right: cx + w / 2, top: cy + h / 2, bottom: cy - h / 2 };
 }
 
 /**
@@ -129,8 +103,8 @@ export function heroView(aspect: number, focus: Vec3, w: number, h: number) {
   const k = wideness(aspect);
   const fov = 34 + (1 - k) * 8;
   const d = fitDistance(w * (1.0 + 0.15 * k), h * (1.25 - 0.1 * k), fov, aspect);
-  const lift = 0.15 + (1 - k) * 0.35;
-  const target = { x: focus.x, y: focus.y + lift * 0.6, z: focus.z };
-  const pos = { x: focus.x + 0.35 * k, y: focus.y + lift + 0.25, z: focus.z + d };
+  // Phones look up a little: the elves sit low, the tree and the snowy window fill the top.
+  const target = { x: focus.x, y: focus.y + 0.09 + (1 - k) * 0.75, z: focus.z };
+  const pos = { x: focus.x + 0.35 * k, y: focus.y + 0.4 * k + 0.2, z: focus.z + d };
   return { pos, target, fov };
 }

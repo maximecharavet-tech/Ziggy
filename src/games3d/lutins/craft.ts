@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { mergeGeometries } from 'three/examples/jsm/utils/BufferGeometryUtils.js';
 import { rng } from '../kit/rng';
-import { felt, type FeltOptions } from '../ziggy/felt';
 import { smoothSeams, taperedTube } from '../santa/fluff';
 
 /**
@@ -238,12 +237,116 @@ export function acornTextures(): KnitTextures {
   return { map: dataTex(map, S, S, true), normalMap: heightToNormal(h, S, S, 3) };
 }
 
-/** A felt material for the elves (the shared fibres, a bit more fuzz up close). */
-export function elfFelt(color: string, opts: FeltOptions & { fuzz?: number } = {}): THREE.MeshStandardMaterial {
-  const m = felt(color, { roughness: 0.96, ...opts });
-  const f = opts.fuzz ?? 0.62;
-  m.normalScale.set(f, f);
-  return m;
+let feltTex: { map: THREE.DataTexture; normalMap: THREE.DataTexture } | null = null;
+
+/**
+ * Close-up wool felt for the dolls (finer and fuzzier than Ziggy's): a dense
+ * mat of short fibres with a few lighter strays, soft thicker/thinner
+ * patches (hand-made irregularity), as a colour multiplier and normal map.
+ */
+export function elfFeltTextures() {
+  if (feltTex) return feltTex;
+  const S = 512;
+  const r = rng(101);
+  const h = new Float32Array(S * S);
+  const tone = new Float32Array(S * S).fill(0);
+  const wrap = (v: number) => ((Math.round(v) % S) + S) % S;
+  for (let i = 0; i < 26000; i++) {
+    const x = r() * S;
+    const y = r() * S;
+    const a = r() * Math.PI * 2;
+    const len = 4 + r() * 14;
+    const hgt = (r() - 0.3) * 0.7;
+    const t = (r() - 0.5) * (r() < 0.04 ? 0.9 : 0.25);
+    const bend = (r() - 0.5) * 0.15;
+    let px = x;
+    let py = y;
+    let ang = a;
+    for (let k = 0; k < len; k++) {
+      const f = Math.sin((k / len) * Math.PI);
+      const o = wrap(py) * S + wrap(px);
+      h[o] += hgt * f;
+      tone[o] += t * f;
+      ang += bend;
+      px += Math.cos(ang);
+      py += Math.sin(ang);
+    }
+  }
+  // Soft lumps: the felt is a little thicker here, thinner there.
+  const grid = 6;
+  const g = Array.from({ length: grid * grid }, () => r());
+  const at = (gx: number, gy: number) => g[(((gy % grid) + grid) % grid) * grid + (((gx % grid) + grid) % grid)];
+  const lump = (x: number, y: number) => {
+    const fx = (x / S) * grid;
+    const fy = (y / S) * grid;
+    const x0 = Math.floor(fx);
+    const y0 = Math.floor(fy);
+    const sx = (fx - x0) * (fx - x0) * (3 - 2 * (fx - x0));
+    const sy = (fy - y0) * (fy - y0) * (3 - 2 * (fy - y0));
+    return (at(x0, y0) * (1 - sx) + at(x0 + 1, y0) * sx) * (1 - sy) + (at(x0, y0 + 1) * (1 - sx) + at(x0 + 1, y0 + 1) * sx) * sy;
+  };
+  const b = new Float32Array(S * S);
+  for (let y = 0; y < S; y++)
+    for (let x = 0; x < S; x++) {
+      let sum = 0;
+      for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) sum += h[wrap(y + dy) * S + wrap(x + dx)] * (dx === 0 && dy === 0 ? 4 : dx === 0 || dy === 0 ? 2 : 1);
+      b[y * S + x] = sum / 16 + lump(x, y) * 0.6;
+    }
+  const map = new Uint8Array(S * S * 4);
+  for (let y = 0; y < S; y++)
+    for (let x = 0; x < S; x++) {
+      const i = y * S + x;
+      const v = 0.86 + (lump(x * 1.7 + 40, y * 1.7) - 0.5) * 0.1 + tone[i] * 0.35 + (b[i] - 0.3) * 0.06 + (r() - 0.5) * 0.03;
+      const c = Math.max(0, Math.min(255, v * 255));
+      map[i * 4] = map[i * 4 + 1] = map[i * 4 + 2] = c;
+      map[i * 4 + 3] = 255;
+    }
+  feltTex = { map: dataTex(map, S, S, true), normalMap: heightToNormal(b, S, S, 1.6) };
+  return feltTex;
+}
+
+export interface ElfFeltOptions {
+  repeat?: number;
+  sheen?: string;
+  roughness?: number;
+  lowPower?: boolean;
+  emissive?: string;
+  emissiveIntensity?: number;
+  /** Strength of the fibres' relief. */
+  fuzz?: number;
+}
+
+/** A felt material for the elves: fuzzy, matte, a soft velvet sheen on the edges. */
+export function elfFelt(color: string, opts: ElfFeltOptions = {}): THREE.MeshStandardMaterial {
+  const t = elfFeltTextures();
+  const rep = (opts.repeat ?? 3) * 1.2;
+  const map = t.map.clone();
+  const normalMap = t.normalMap.clone();
+  map.repeat.set(rep, rep);
+  normalMap.repeat.set(rep, rep);
+  const f = opts.fuzz ?? 0.75;
+  const base = {
+    color,
+    map,
+    normalMap,
+    normalScale: new THREE.Vector2(f, f),
+    roughness: opts.roughness ?? 1,
+    metalness: 0,
+    emissive: opts.emissive ?? '#000000',
+    emissiveIntensity: opts.emissiveIntensity ?? 1,
+  };
+  if (opts.lowPower) return new THREE.MeshStandardMaterial(base);
+  return new THREE.MeshPhysicalMaterial({
+    ...base,
+    sheen: 1,
+    sheenRoughness: 0.55,
+    sheenColor: new THREE.Color(opts.sheen ?? '#ffffff').lerp(new THREE.Color(color), 0.5),
+  });
+}
+
+/** Shared felt textures must survive when one elf is disposed (clones share the source). */
+export function isElfFeltTexture(t: THREE.Texture) {
+  return Boolean(feltTex && (t.source === feltTex.map.source || t.source === feltTex.normalMap.source));
 }
 
 /** Shiny thread colour for stitches (cotton embroidery floss). */

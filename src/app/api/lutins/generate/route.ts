@@ -70,7 +70,20 @@ export async function POST(request: NextRequest) {
   if (!use.ok) return NextResponse.json({ error: use.reason === 'device' ? 'daily_limit' : 'resting' }, { status: 429 });
 
   try {
-    const built = await serverBuildPrompt({ locale, elves, prank: prank ? { id: prank.id, action: prank.action } : null, parentText: text, scene: body.scene, strict: body.strict === true });
+    // The action always comes from the catalogue by id (never from the client); failed checks
+    // from the on-device verification name what to fix on a retry.
+    const failed = Array.isArray(body.failed) ? body.failed.filter((f): f is string => typeof f === 'string' && /^[a-z_]+(:[a-z]+)?$/.test(f)).slice(0, 6) : [];
+    const strict = body.strict === true || failed.length > 0;
+    const built = await serverBuildPrompt({
+      locale,
+      elves,
+      prank: prank ? { id: prank.id, action: prank.action, title: prank.title } : null,
+      parentText: text,
+      scene: body.scene,
+      strict,
+      attempt: strict ? 1 : 0,
+      failed,
+    });
     const { url } = await agnesImage(built.prompt, { references: [photo, await sheetDataUri()], size: SIZES[aspect], timeoutMs: 52_000 });
     const res = url.startsWith('data:') ? null : await fetch(url, { signal: AbortSignal.timeout(20_000) });
     let bytes: Buffer;
