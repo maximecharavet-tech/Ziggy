@@ -38,7 +38,7 @@ export interface LutinsSceneOptions {
   elves?: ElfId[];
   /** Calmer motion (no camera drift, softer gestures). */
   reducedMotion?: boolean;
-  /** Force the light path (no bloom, smaller shadow maps); default: detected. */
+  /** Force the light path (simpler materials, smaller shadow maps); default: detected. */
   lowPower?: boolean;
   /** Transparent background (alpha 0) and a readable drawing buffer, for compositing. */
   transparent?: boolean;

@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { disposeTree, prefersLowPower, studioEnvironment } from '../kit/look';
-import { Post } from '../kit/post';
 import { fitOrtho, fitSphereDistance, orbit, packRow, sheetViews, stageCamera } from './framing';
 import { makeElf, type ElfActor } from './elf';
 import { buildHero, type HeroSet } from './hero';
@@ -137,7 +136,6 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
   };
 
   let hero: HeroSet | null = null;
-  let post: Post | null = null;
   let width = 1;
   let height = 1;
   let disposed = false;
@@ -159,8 +157,8 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       a.userData.rig.snap();
     }
     hero.bind(actors);
-    // Bloom only on bright bulbs (threshold above white), very subtle on felt.
-    post = new Post(renderer, scene, camera, { enabled: !low && !transparent, strength: 0.22, radius: 0.4, threshold: 1.6 });
+    // No bloom: it veils the felt in a milky haze (and once whited out a game);
+    // the bulbs shine with their own glow sprites.
   } else if (opts.mode === 'stage') {
     const ids = (opts.elves?.length ? opts.elves : [...ELF_IDS]).filter((id, i, all) => ELF_IDS.includes(id) && all.indexOf(id) === i);
     const root = new THREE.Group();
@@ -279,7 +277,6 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
     width = Math.max(1, Math.round(canvas.clientWidth || canvas.width / ratio || 1));
     height = Math.max(1, Math.round(canvas.clientHeight || canvas.height / ratio || 1));
     renderer.setSize(width, height, false);
-    post?.setSize(width, height);
     if (sheet) renderSheet();
     else frameCamera();
   };
@@ -315,8 +312,7 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       rig.update(dt);
     }
     hero?.update(dt, time);
-    if (post) post.render(dt);
-    else renderer.render(scene, camera);
+    renderer.render(scene, camera);
   };
   const onVisibility = () => {
     hidden = document.hidden;
@@ -352,7 +348,6 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       document.removeEventListener('visibilitychange', onVisibility);
       ro?.disconnect();
       timer.dispose();
-      post?.dispose();
       envCleanups.forEach((f) => f());
       if (hero) disposeTree(hero.root);
       for (const a of actors) disposeTree(a);
