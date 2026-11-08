@@ -41,6 +41,7 @@ import { tr, type L } from '@/lib/i18n-text';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { MascotCutout, ZiggyAvatar } from '@/components/ziggy/Mascot';
 import { MagicMoments, MomentChips } from '@/components/world/MagicMoments';
+import { isTv, tvStepTarget, useTvStepFocus } from '@/components/games3d/tv-step-focus';
 
 const T = {
   title: { fr: 'Ziggy Détective', en: 'Detective Ziggy' },
@@ -112,6 +113,7 @@ export function DetectivePlayer() {
   const canvas = useRef<HTMLCanvasElement>(null);
   const topRef = useRef<HTMLDivElement>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
+  const hudRef = useRef<HTMLDivElement>(null);
   const game = useRef<DetectiveGame | null>(null);
   const [phase, setPhase] = useState<'intro' | 'loading' | 'play' | 'notebook'>('intro');
   const [supported, setSupported] = useState(true);
@@ -307,7 +309,8 @@ export function DetectivePlayer() {
             const outcome = finishExtraGame('detective', c.skill, { correct: stats.current.correct, mistakes: stats.current.mistakes, total: caseTotal(c) }, performance.now() - stats.current.started);
             const face = live.current.portraits[c.culprit];
             setSolved((prev) => [...prev.filter((x) => x.c.index !== c.index), { c, outcome, face }]);
-            setMagic((prev) => [...prev, ...outcome.magic]);
+            // A moment already won in this game (the same level twice) is shown once.
+            setMagic((prev) => [...prev, ...outcome.magic.filter((m) => !prev.some((x) => x.kind === m.kind && x.ref === m.ref))]);
             setXp({ n: outcome.xpGained, id: Date.now() });
             setStage('party');
             const text = tr(MYSTERY_INFO[c.mystery].party, locale);
@@ -399,6 +402,13 @@ export function DetectivePlayer() {
     setMusic(!music);
   };
 
+  /* ── TV remote: each step puts the focus on its button (find a clue, see the suspects, the first friend left, next case, new cases) ── */
+  const tvStep = phase === 'play' || phase === 'notebook' ? `${phase}|${caseIdx}|${step}|${stage}|${cleared.length}` : null;
+  useTvStepFocus(tvStep, hudRef);
+  const onMagicDone = useCallback(() => {
+    if (isTv()) window.setTimeout(() => tvStepTarget(hudRef.current)?.focus({ preventScroll: true }), 60);
+  }, []);
+
   /* ── Render ── */
 
   const info = current ? MYSTERY_INFO[current.mystery] : null;
@@ -407,7 +417,7 @@ export function DetectivePlayer() {
   const hintCulprit = current && stage === 'accuse' && misses >= 2 ? current.culprit : null;
 
   return (
-    <div className="fixed inset-0 z-[60] overflow-hidden bg-gradient-to-b from-[#8fd0ff] to-[#ffe9c4] text-[#33264a]">
+    <div ref={hudRef} className="fixed inset-0 z-[60] overflow-hidden bg-gradient-to-b from-[#8fd0ff] to-[#ffe9c4] text-[#33264a]">
       <canvas ref={canvas} className="absolute inset-0 h-full w-full touch-none" aria-label={tr(T.title, locale)} />
 
       {phase === 'play' && current && info ? (
@@ -548,7 +558,7 @@ export function DetectivePlayer() {
         </>
       ) : null}
 
-      {phase === 'notebook' ? <Notebook solved={solved} locale={locale} reduce={reduce} magic={magic} run={run} onAgain={() => void start()} /> : null}
+      {phase === 'notebook' ? <Notebook solved={solved} locale={locale} reduce={reduce} magic={magic} run={run} onAgain={() => void start()} onMagicDone={onMagicDone} /> : null}
 
       {/* Intro */}
       {phase === 'intro' || phase === 'loading' ? (
@@ -685,6 +695,8 @@ function SuspectGrid({
   const at = (row: 'back' | 'front', col: 'left' | 'center' | 'right') => c.suspects.find((s) => s.row === row && s.col === col) ?? null;
   const rows = (['back', 'front'] as const).filter((r) => c.suspects.some((s) => s.row === r));
   const cols = ['left', 'center', 'right'] as const;
+  // TV remote: the focus lands on the first friend still to look at.
+  const first = rows.flatMap((row) => cols.map((col) => at(row, col))).find((s) => s && !cleared.includes(s.id))?.id;
   return (
     <div className="flex flex-col gap-1.5" data-tv-stage="">
       {rows.map((row, ri) => (
@@ -708,6 +720,7 @@ function SuspectGrid({
                   locale={locale}
                   reduce={reduce}
                   help={help.includes(s.id) || hint === s.id}
+                  autoFocus={s.id === first}
                   onTap={onTap}
                   onFocus={onFocus}
                 />
@@ -729,6 +742,7 @@ function SuspectButton({
   locale,
   reduce,
   help,
+  autoFocus,
   onTap,
   onFocus,
 }: {
@@ -738,6 +752,7 @@ function SuspectButton({
   locale: string;
   reduce: boolean;
   help: boolean;
+  autoFocus: boolean;
   onTap: (id: Species) => void;
   onFocus: (id: Species | null) => void;
 }) {
@@ -746,6 +761,7 @@ function SuspectButton({
     <motion.button
       type="button"
       disabled={done}
+      data-tv-autofocus={autoFocus ? '' : undefined}
       onClick={() => onTap(s.id)}
       onFocus={() => onFocus(s.id)}
       onBlur={() => onFocus(null)}
@@ -779,6 +795,7 @@ function Notebook({
   magic,
   run,
   onAgain,
+  onMagicDone,
 }: {
   solved: Solved[];
   locale: string;
@@ -786,83 +803,87 @@ function Notebook({
   magic: MagicMoment[];
   run: number;
   onAgain: () => void;
+  onMagicDone: () => void;
 }) {
   const xp = solved.reduce((n, s) => n + s.outcome.xpGained, 0);
   return (
-    <div className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[#3b2a5a]/40 p-3 sm:items-center sm:p-6" data-tv-scope="">
-      <motion.div
-        initial={reduce ? false : { opacity: 0, y: 24, rotate: -1.5 }}
-        animate={{ opacity: 1, y: 0, rotate: 0 }}
-        className="relative my-auto w-full max-w-xl rounded-[1.8rem] bg-[#fffaf0] p-4 pl-9 shadow-2xl ring-1 ring-[#f0d9b5] sm:p-6 sm:pl-12"
-        style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent 0 31px, rgba(127,184,230,.25) 31px 32px)' }}
-      >
-        {/* Spiral binding */}
-        <div className="absolute inset-y-6 left-2 flex flex-col justify-between sm:left-3" aria-hidden="true">
-          {Array.from({ length: 9 }, (_, i) => (
-            <span key={i} className="h-3.5 w-5 rounded-full border-[3px] border-[#9aa3ad] bg-[#e8e1d4]" />
-          ))}
-        </div>
-        <div className="flex items-center gap-3">
-          <ZiggyAvatar size={52} className="shrink-0" />
-          <div className="min-w-0 flex-1">
-            <h2 className="font-display text-2xl font-bold text-[#3b2a5a] sm:text-3xl">📒 {tr(T.notebookTitle, locale)}</h2>
-            <p className="text-sm font-semibold text-[#6b5a86]">{tr(T.bravo, locale)}</p>
+    <>
+      <div className="absolute inset-0 flex items-start justify-center overflow-y-auto bg-[#3b2a5a]/40 p-3 sm:items-center sm:p-6" data-tv-scope="">
+        <motion.div
+          initial={reduce ? false : { opacity: 0, y: 24, rotate: -1.5 }}
+          animate={{ opacity: 1, y: 0, rotate: 0 }}
+          className="relative my-auto w-full max-w-xl rounded-[1.8rem] bg-[#fffaf0] p-4 pl-9 shadow-2xl ring-1 ring-[#f0d9b5] sm:p-6 sm:pl-12"
+          style={{ backgroundImage: 'repeating-linear-gradient(0deg, transparent 0 31px, rgba(127,184,230,.25) 31px 32px)' }}
+        >
+          {/* Spiral binding */}
+          <div className="absolute inset-y-6 left-2 flex flex-col justify-between sm:left-3" aria-hidden="true">
+            {Array.from({ length: 9 }, (_, i) => (
+              <span key={i} className="h-3.5 w-5 rounded-full border-[3px] border-[#9aa3ad] bg-[#e8e1d4]" />
+            ))}
           </div>
-          <SayButton texts={[tr(T.bravo, locale)]} locale={locale} size="sm" />
-        </div>
-        <ol className="mt-4 flex flex-col gap-3">
-          {solved.map(({ c, outcome, face }, i) => {
-            const info = MYSTERY_INFO[c.mystery];
-            return (
-              <motion.li
-                key={c.index}
-                initial={reduce ? false : { opacity: 0, x: -14 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: reduce ? 0 : 0.2 + i * 0.18 }}
-                className="relative rounded-2xl bg-white/90 p-3 shadow-sm ring-1 ring-[#f0e2c8]"
-              >
-                <div className="flex items-center gap-2">
-                  <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#fff1d6] text-2xl" aria-hidden="true">
-                    {info.emoji}
-                  </span>
-                  <p className="min-w-0 flex-1 font-display text-lg font-bold leading-tight">{tr(info.title, locale)}</p>
-                  <span className="rotate-[-8deg] rounded-lg border-2 border-[#3fbf6a] px-2 py-0.5 text-xs font-black uppercase text-[#2f9a52]">{tr(T.solved, locale)}</span>
-                </div>
-                <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <Face id={c.culprit} portraits={face ? { [c.culprit]: face } : {}} size={40} />
-                  <p className="text-sm font-bold">
-                    {tr(T.culprit, locale)} : {SPECIES_INFO[c.culprit].emoji} {locale === 'fr' ? SPECIES_INFO[c.culprit].name.fr : SPECIES_INFO[c.culprit].name.en}
-                  </p>
-                  <span className="ms-auto text-lg" aria-label={`${outcome.stars} ⭐`}>
-                    {'⭐'.repeat(outcome.stars)}
-                  </span>
-                </div>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  {c.clues.map((cl, k) => (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img key={k} src={clueDataUrl(cl)} alt={clueText(cl, locale)} className="h-10 w-auto rounded-lg" draggable={false} />
-                  ))}
-                </div>
-              </motion.li>
-            );
-          })}
-        </ol>
-        <p className="mt-4 text-center font-bold text-[#6b5a86]">
-          ⭐ <span className="text-[#c27a2c]">+{xp} XP</span>
-        </p>
-        <div className="mt-2">
-          <MomentChips moments={magic} locale={locale} />
-        </div>
-        <div className="mt-4 flex flex-wrap justify-center gap-3">
-          <button type="button" onClick={onAgain} data-tv-autofocus="" className="min-h-[64px] rounded-full bg-gradient-to-r from-[#ffb86b] to-[#ff7ab8] px-7 py-3 text-lg font-bold text-white shadow-lg">
-            ↻ {tr(T.again, locale)}
-          </button>
-          <Link href="/monde" className="grid min-h-[64px] place-items-center rounded-full bg-[#f3ecff] px-7 py-3 text-lg font-bold text-[#5b3f8f]">
-            ← {tr(T.back, locale)}
-          </Link>
-        </div>
-        <MagicMoments key={run} moments={magic} locale={locale} />
-      </motion.div>
-    </div>
+          <div className="flex items-center gap-3">
+            <ZiggyAvatar size={52} className="shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h2 className="font-display text-2xl font-bold text-[#3b2a5a] sm:text-3xl">📒 {tr(T.notebookTitle, locale)}</h2>
+              <p className="text-sm font-semibold text-[#6b5a86]">{tr(T.bravo, locale)}</p>
+            </div>
+            <SayButton texts={[tr(T.bravo, locale)]} locale={locale} size="sm" />
+          </div>
+          <ol className="mt-4 flex flex-col gap-3">
+            {solved.map(({ c, outcome, face }, i) => {
+              const info = MYSTERY_INFO[c.mystery];
+              return (
+                <motion.li
+                  key={c.index}
+                  initial={reduce ? false : { opacity: 0, x: -14 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: reduce ? 0 : 0.2 + i * 0.18 }}
+                  className="relative rounded-2xl bg-white/90 p-3 shadow-sm ring-1 ring-[#f0e2c8]"
+                >
+                  <div className="flex items-center gap-2">
+                    <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-[#fff1d6] text-2xl" aria-hidden="true">
+                      {info.emoji}
+                    </span>
+                    <p className="min-w-0 flex-1 font-display text-lg font-bold leading-tight">{tr(info.title, locale)}</p>
+                    <span className="rotate-[-8deg] rounded-lg border-2 border-[#3fbf6a] px-2 py-0.5 text-xs font-black uppercase text-[#2f9a52]">{tr(T.solved, locale)}</span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">
+                    <Face id={c.culprit} portraits={face ? { [c.culprit]: face } : {}} size={40} />
+                    <p className="text-sm font-bold">
+                      {tr(T.culprit, locale)} : {SPECIES_INFO[c.culprit].emoji} {locale === 'fr' ? SPECIES_INFO[c.culprit].name.fr : SPECIES_INFO[c.culprit].name.en}
+                    </p>
+                    <span className="ms-auto text-lg" aria-label={`${outcome.stars} ⭐`}>
+                      {'⭐'.repeat(outcome.stars)}
+                    </span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap gap-1.5">
+                    {c.clues.map((cl, k) => (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img key={k} src={clueDataUrl(cl)} alt={clueText(cl, locale)} className="h-10 w-auto rounded-lg" draggable={false} />
+                    ))}
+                  </div>
+                </motion.li>
+              );
+            })}
+          </ol>
+          <p className="mt-4 text-center font-bold text-[#6b5a86]">
+            ⭐ <span className="text-[#c27a2c]">+{xp} XP</span>
+          </p>
+          <div className="mt-2">
+            <MomentChips moments={magic} locale={locale} />
+          </div>
+          <div className="mt-4 flex flex-wrap justify-center gap-3">
+            <button type="button" onClick={onAgain} data-tv-autofocus="" className="min-h-[64px] rounded-full bg-gradient-to-r from-[#ffb86b] to-[#ff7ab8] px-7 py-3 text-lg font-bold text-white shadow-lg">
+              ↻ {tr(T.again, locale)}
+            </button>
+            <Link href="/monde" className="grid min-h-[64px] place-items-center rounded-full bg-[#f3ecff] px-7 py-3 text-lg font-bold text-[#5b3f8f]">
+              ← {tr(T.back, locale)}
+            </Link>
+          </div>
+        </motion.div>
+      </div>
+      {/* The level-up celebration: outside the (moving) notebook, so it really covers the screen. */}
+      <MagicMoments key={run} moments={magic} locale={locale} onDone={onMagicDone} />
+    </>
   );
 }

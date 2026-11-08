@@ -52,7 +52,7 @@ export function missing(planned: AssetKey[], rows: Row[]): AssetKey[] {
 }
 
 export function providersReady() {
-  return { image: nvidiaImageReady() || agnesReady(), imageProvider: nvidiaImageReady() ? 'nvidia' : agnesReady() ? 'agnes' : null, voice: Boolean(process.env.GEMINI_API_KEY) };
+  return { image: agnesReady() || nvidiaImageReady(), imageProvider: agnesReady() ? 'agnes' : nvidiaImageReady() ? 'nvidia' : null, voice: Boolean(process.env.GEMINI_API_KEY) };
 }
 
 async function referenceDataUri(story: DodoStory, origin: string): Promise<string | undefined> {
@@ -76,12 +76,13 @@ async function makeImage(story: DodoStory, scene: number, origin: string): Promi
   const seed = [...story.id].reduce((h, c) => (h * 31 + c.charCodeAt(0)) >>> 0, 7) % 1_000_000;
   let url: string;
   let provider: string;
-  if (nvidiaImageReady()) {
-    ({ url } = await nvidiaImage(prompt, { width: 1344, height: 768, seed, reference }));
-    provider = 'nvidia';
-  } else if (agnesReady()) {
+  // Agnes Image first (the engine of Hyper Engine's Image MAX Gen): the richest storybook look.
+  if (agnesReady()) {
     ({ url } = await agnesImage(prompt, { size: '1536x1024', reference }));
     provider = 'agnes';
+  } else if (nvidiaImageReady()) {
+    ({ url } = await nvidiaImage(prompt, { width: 1344, height: 768, seed, reference }));
+    provider = 'nvidia';
   } else throw new Error('no_image_provider');
   const img = await fetchImage(url);
   if (!img) throw new Error('image_download_failed');

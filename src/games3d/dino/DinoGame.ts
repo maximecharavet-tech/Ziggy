@@ -114,7 +114,17 @@ interface Task {
   tag: string;
 }
 
+/** What the camera must show: a box (or, tighter, a set of points), seen from `pitch`/`yaw`. */
+interface View {
+  box: THREE.Box3;
+  pitch: number;
+  yaw: number;
+  pts?: V3[];
+}
+
 const Z_AXIS = v(0, 0, 1);
+/** Portrait: the living dinosaurs are seen three-quarters from the head side (their long body foreshortened, so they fill the narrow screen). */
+const PORTRAIT_YAW = 0.45;
 /** Once alive, dinosaurs stand three-quarters towards the child. */
 const LIVE_YAW = -0.42;
 const qTurn = (quarters: number) => new THREE.Quaternion().setFromAxisAngle(Z_AXIS, (quarters * Math.PI) / 2);
@@ -187,7 +197,7 @@ export class DinoGame {
   private camTarget = v(0, 0, 0);
   private goal = { pos: v(0, 9, 14), target: v(0, 0, 0) };
   private viewName: string = 'dig';
-  private viewFn: () => { box: THREE.Box3; pitch: number; yaw: number } = () => this.digView();
+  private viewFn: () => View = () => this.digView();
 
   // Props
   private arrow: THREE.Group;
@@ -804,6 +814,8 @@ export class DinoGame {
     }, 'cine');
     // Alive: it turns three-quarters towards the child (we see its face, its frill, both eyes).
     this.after(1.9, () => this.turnDinoTo(d, LIVE_YAW, 1.0), 'cine');
+    // Portrait: Ziggy trots up to where the head will be (both fill the narrow screen).
+    if (this.camera.aspect < 0.9) this.ziggyGo(this.portraitZiggySpot(d, LIVE_YAW), 0.2);
     this.after(2.5, () => {
       d.rig.awake = 1;
       d.rig.blink();
@@ -824,6 +836,40 @@ export class DinoGame {
       this.ziggy.userData.rig.idle = 'calm';
       this.startFun();
     }, 'cine');
+  }
+
+  /** The 8 corners of the dinosaur's own box, turned and placed as it stands (tighter than a world box). */
+  private dinoCorners(d: DinoModel): V3[] {
+    d.root.updateMatrixWorld(true);
+    const bb = d.box;
+    const out: V3[] = [];
+    for (const x of [bb.min.x, bb.max.x]) for (const y of [bb.min.y, bb.max.y]) for (const z of [bb.min.z, bb.max.z]) out.push(v(x, y, z).applyMatrix4(d.root.matrixWorld));
+    return out;
+  }
+
+  /**
+   * Portrait: Ziggy stands just beside the dinosaur's head, on the screen's side of it
+   * (never between the camera and the dinosaur), so both fill the narrow screen.
+   */
+  private portraitZiggySpot(d: DinoModel, yaw = d.root.rotation.y): V3 {
+    const was = d.root.rotation.y;
+    d.root.rotation.y = yaw;
+    d.root.updateMatrixWorld(true);
+    const n = d.nose.getWorldPosition(v());
+    d.root.rotation.y = was;
+    d.root.updateMatrixWorld(true);
+    // The portrait camera's right and "towards the camera" directions, on the ground.
+    const right = v(Math.cos(PORTRAIT_YAW), 0, -Math.sin(PORTRAIT_YAW));
+    const toCam = v(Math.sin(PORTRAIT_YAW), 0, Math.cos(PORTRAIT_YAW));
+    const p = v(n.x, 0, n.z).addScaledVector(right, 1.35).addScaledVector(toCam, 0.9);
+    // On the ground in front of the stand, never inside it (stepping forward, also a bit right so he stays clear of the head).
+    const front = SITE.stand.z + SITE.standD / 2 + 0.6;
+    const onStand = Math.abs(p.x - SITE.stand.x) < SITE.standW / 2 + 0.5;
+    if (onStand && p.z < front) {
+      p.x += (front - p.z) * 0.65;
+      p.z = front;
+    }
+    return p;
   }
 
   private dinoWorldBox(d: DinoModel): THREE.Box3 {
@@ -894,7 +940,7 @@ export class DinoGame {
       this.after(6.2, () => this.startQuiz(), 'cine');
     } else if (round.fun === 'music') {
       const plates = d.rig.parts.plates;
-      this.ziggyGo(v(d.root.position.x + 0.4, 0, SITE.stand.z + SITE.standD / 2 + 0.9), 0);
+      this.ziggyGo(this.camera.aspect < 0.9 ? this.portraitZiggySpot(d) : v(d.root.position.x + 0.4, 0, SITE.stand.z + SITE.standD / 2 + 0.9), 0);
       d.rig.dance = 0.25;
       this.after(1.2, () => (this.plateShow = { i: 0, t: 0 }), 'cine');
       this.after(1.2 + plates.length * 0.3 + 1.6, () => {
@@ -970,6 +1016,7 @@ export class DinoGame {
     this.palmsShown = 0;
     this.question = q;
     this.setPhase('quiz');
+    if (this.camera.aspect < 0.9) this.ziggyGo(this.portraitZiggySpot(this.dino), 0.2);
     this.setView('dino');
     this.askQuestion(q);
   }
@@ -1029,8 +1076,9 @@ export class DinoGame {
 
   private startMuseum() {
     this.setPhase('museum');
+    // Between two pedestals, so he never hides a dinosaur.
+    this.ziggyTeleport(SITE.museum.clone().add(v(this.done.length === 2 ? 0 : -3.3, 0.5, 2.6)), 0.15);
     this.setView('museum');
-    this.ziggyTeleport(SITE.museum.clone().add(v(0, 0.5, 3.0)), 0);
     this.ziggy.userData.rig.idle = 'wave';
     for (const id of this.done) {
       const d = this.dinos.get(id)!;
@@ -1179,7 +1227,7 @@ export class DinoGame {
   private setView(name: string) {
     this.viewName = name;
     const d = () => this.dino;
-    const views: Record<string, () => { box: THREE.Box3; pitch: number; yaw: number }> = {
+    const views: Record<string, () => View> = {
       dig: () => this.digView(),
       tarp: () => {
         const T = SITE.tarp;
@@ -1202,11 +1250,21 @@ export class DinoGame {
         return { box, pitch: 0.22, yaw: 0 };
       },
       dino: () => {
-        const b = this.dinoWorldBox(d());
         const zp = this.ziggy.position;
+        const sneeze = this.roundPlan?.fun === 'sneeze' && this.phase !== 'quiz';
+        if (this.camera.aspect < 0.9) {
+          // Portrait: the dinosaur's own (turned) box, not the world one, and Ziggy close by.
+          const pts = this.dinoCorners(d());
+          const top = Math.max(...pts.map((p) => p.y));
+          // Ziggy with room for his waving arms.
+          pts.push(zp.clone().add(v(-0.9, 2.4, 0)), zp.clone().add(v(0.9, 0, 0.5)));
+          if (sneeze) pts.push(v(pts[0].x, top + 1.2, pts[0].z));
+          return { box: new THREE.Box3().setFromPoints(pts), pitch: 0.2, yaw: PORTRAIT_YAW, pts };
+        }
+        const b = this.dinoWorldBox(d());
         b.expandByPoint(zp.clone().add(v(-0.75, 2.3, 0)));
         b.expandByPoint(zp.clone().add(v(0.75, 0, 0.4)));
-        if (this.roundPlan?.fun === 'sneeze' && this.phase !== 'quiz') b.max.y += 1.5;
+        if (sneeze) b.max.y += 1.5;
         b.max.y += 0.8;
         return { box: b, pitch: 0.13, yaw: 0 };
       },
@@ -1219,6 +1277,13 @@ export class DinoGame {
         const M = SITE.museum;
         const portrait = this.camera.aspect < 0.9;
         const n = this.done.length;
+        if (portrait && n) {
+          // Portrait: the gallery seen from the side, the dinosaurs in a diagonal row (much bigger than face-on).
+          const pts = this.done.flatMap((id) => this.dinoCorners(this.dinos.get(id)!));
+          const zp = this.ziggy.position;
+          pts.push(zp.clone().add(v(-0.6, 2.3, 0)), zp.clone().add(v(0.6, 0, 0.4)));
+          return { box: new THREE.Box3().setFromPoints(pts), pitch: 0.34, yaw: 0.62, pts };
+        }
         const half = n <= 2 && !portrait ? 9.5 : 9.8;
         return { box: new THREE.Box3(v(M.x - half, 0.3, M.z - 2.2), v(M.x + half, portrait ? 4.2 : 6.2, M.z + 4.2)), pitch: portrait ? 0.32 : 0.2, yaw: 0 };
       },
@@ -1229,7 +1294,7 @@ export class DinoGame {
 
   /** Find a camera position from which the box fits between the HUD bars. */
   private computeGoal() {
-    const { box, pitch, yaw } = this.viewFn();
+    const { box, pitch, yaw, pts } = this.viewFn();
     const c = box.getCenter(v());
     const dir = v(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), Math.cos(yaw) * Math.cos(pitch)).normalize();
     const pr = this.probe;
@@ -1239,8 +1304,8 @@ export class DinoGame {
     const h = Math.max(1, this.canvas.clientHeight || 600);
     const limY = Math.max(0.25, ((h - this.insets.top - this.insets.bottom) / h) * 0.94);
     const limX = 0.94;
-    const corners: V3[] = [];
-    for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) corners.push(v(x, y, z));
+    const corners: V3[] = pts ?? [];
+    if (!pts) for (const x of [box.min.x, box.max.x]) for (const y of [box.min.y, box.max.y]) for (const z of [box.min.z, box.max.z]) corners.push(v(x, y, z));
     let dist = box.getSize(v()).length() * 1.2 + 2;
     const tmp = v();
     for (let it = 0; it < 7; it++) {

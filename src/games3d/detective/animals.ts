@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { glow, mat } from '../kit/look';
 import { makeCompanion, makeScarf } from '../nid/companions3d';
 import { mergeStatic } from '../nid/garden';
+import { mergeLocal } from './compact';
 import { HUE_HEX, type AlibiProp, type Species, type Suspect } from './logic';
 
 /**
@@ -552,6 +553,7 @@ export function makeSuspect(data: Suspect, lowPower: boolean): SuspectActor {
   c.root.userData.suspect = data.id;
   c.hitbox.userData.suspect = data.id;
   mergeCritter(c, hat);
+  compactCritter(c, hat, glasses);
   return { id: data.id, data, c, mouth, blush, hat, glasses };
 }
 
@@ -578,6 +580,29 @@ function mergeCritter(c: Critter, hat: THREE.Object3D | null) {
   mergeStatic(c.body);
   c.head.userData.noMerge = false;
   mergeStatic(c.head);
+}
+
+/**
+ * What `mergeCritter` leaves: inside each moving part (an eye, an ear, a tail,
+ * the hat, the glasses) and among the shiny or see-through bits (eyes, cheeks,
+ * lenses), merge per material. A friend goes from ~30 draw calls to ~12.
+ * The invisible hit box is never drawn (it is only for taps).
+ */
+function compactCritter(c: Critter, hat: THREE.Object3D | null, glasses: THREE.Object3D | null) {
+  const moving = new Set<THREE.Object3D>([c.body, c.head, ...c.eyes, ...c.wiggles.map((w) => w.obj)]);
+  if (hat) moving.add(hat);
+  if (glasses) moving.add(glasses);
+  for (const e of c.eyes) {
+    mergeLocal(e, moving);
+    e.traverse((o) => ((o as THREE.Mesh).isMesh ? (o.castShadow = false) : null));
+  }
+  for (const w of c.wiggles) mergeLocal(w.obj, moving);
+  if (hat) mergeLocal(hat, moving);
+  if (glasses) mergeLocal(glasses, moving);
+  mergeLocal(c.head, moving);
+  mergeLocal(c.body, moving);
+  mergeLocal(c.root, moving);
+  (c.hitbox.material as THREE.Material).visible = false;
 }
 
 /* ───────────────────────── Props ───────────────────────── */

@@ -14,6 +14,8 @@ const securityHeaders = [
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
 ];
 
+const SANTA_PERMISSIONS = { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=()' };
+
 const nextConfig: NextConfig = {
   // Lets a dev server and a production build run side by side (NEXT_DIST_DIR=.next-dev).
   distDir: process.env.NEXT_DIST_DIR || '.next',
@@ -26,6 +28,9 @@ const nextConfig: NextConfig = {
   // The share image reads the mascot from disk at request time.
   outputFileTracingIncludes: {
     '/[locale]/opengraph-image': ['./public/mascot/og-ziggy.png'],
+    '/[locale]/pere-noel/opengraph-image': ['./public/mascot/og-ziggy.png'],
+    '/api/lutins/generate': ['./public/lutins/refs/sheet.png', './src/lib/lutins/wasm/lutins_core_full_bg.wasm'],
+    '/api/lutins/**': ['./src/lib/lutins/wasm/lutins_core_full_bg.wasm'],
     '/[locale]/dodo/[story]/opengraph-image': ['./public/mascot/og-ziggy.png', './public/dodo/**/*-og.jpg'],
   },
   images: {
@@ -35,6 +40,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: APK_PATH, destination: APK_RELEASE_URL, permanent: false },
+      // Short links for the Christmas campaign (TikTok bio, videos): ziggy-ai.fr/noel, /santa.
+      { source: '/noel', destination: '/pere-noel', permanent: false },
+      { source: '/santa', destination: '/en/pere-noel', permanent: false },
       // Search Console 404s: crawlers once read the price period ("/mois", "/Monat") and a stray "$" as links.
       { source: '/mois', destination: '/', permanent: true },
       { source: '/Monat', destination: '/', permanent: true },
@@ -44,8 +52,23 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: '/(.*)', headers: securityHeaders },
+      // L'appli du Père Noël: the call listens with the microphone and shows the child's camera
+      // (both stay on the device), and the photo booth uses the camera. Same origin only.
+      { source: '/pere-noel/:path*', headers: [SANTA_PERMISSIONS] },
+      { source: '/:locale/pere-noel/:path*', headers: [SANTA_PERMISSIONS] },
+      // Les Lutins Farceurs: the parent photographs a room (camera only).
+      { source: '/lutins/:path*', headers: [SANTA_PERMISSIONS] },
+      { source: '/:locale/lutins/:path*', headers: [SANTA_PERMISSIONS] },
       // The service worker must always be re-checked, so updates reach everyone.
       { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }] },
+      // The WebAssembly platformer is embedded by /monde/ziggy-plateforme in a same-origin iframe.
+      {
+        source: '/jeux/ziggy-plateforme/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
+        ],
+      },
       {
         source: '/(mascot|media)/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],

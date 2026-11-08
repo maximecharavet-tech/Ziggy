@@ -15,6 +15,11 @@ import { HowItWorksSection } from '@/components/sections/HowItWorksSection';
 import { PricingSection } from '@/components/sections/PricingSection';
 import { AgentsSection } from '@/components/sections/AgentsSection';
 import { GamesSection } from '@/components/sections/GamesSection';
+import { PlayShowcase } from '@/components/sections/PlayShowcase';
+import { SantaTeaser } from '@/components/sections/SantaTeaser';
+
+/** L'appli du Père Noël is shown on the home page until Epiphany. */
+const SANTA_SEASON_END = Date.parse('2027-01-07T00:00:00+01:00');
 import { DemoSection } from '@/components/sections/DemoSection';
 import { FAQSection } from '@/components/sections/FAQSection';
 import { CTAFinalSection } from '@/components/sections/CTAFinalSection';
@@ -64,6 +69,9 @@ export default async function HomePage({ params }: { params: Promise<{ locale: s
       <JsonLd data={[website, faqPage]} />
       <HeroSection />
       <TaglineRibbon />
+      {Date.now() < SANTA_SEASON_END && <SantaTeaser />}
+      {/* Games and creative workshops right after the hero: what makes children want to come in. */}
+      <PlayShowcase />
       <div className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 pb-4">
         <MissionCard />
       </div>

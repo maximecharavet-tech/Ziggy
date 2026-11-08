@@ -17,7 +17,9 @@ import {
   planRun,
   questionLines,
   reshuffle,
+  rightLine,
   scoreRun,
+  unitSpoken,
   unitsOf,
   wordDoneLine,
   wordSlots,
@@ -184,7 +186,7 @@ describe('Kart des lettres — what Ziggy says', () => {
           const run = planRun(seed, band, 3, locale);
           for (const w of run.words) {
             lines.push(...questionLines(w, run.mode, locale), wordDoneLine(w, run.mode, locale));
-            for (const s of w.steps) lines.push(...optionLines(s.options, locale), hintLine(w, s, run.mode, 1, locale), hintLine(w, s, run.mode, 2, locale));
+            for (const s of w.steps) lines.push(...optionLines(s.options, locale), hintLine(w, s, run.mode, 1, locale), hintLine(w, s, run.mode, 2, locale), rightLine(w, s, locale));
           }
           lines.push(finishLine(run.words.length, run.mode, locale));
           for (let i = 0; i < 5; i++) lines.push(oopsLine(i, locale), cheerLine(i, locale));
@@ -202,7 +204,31 @@ describe('Kart des lettres — what Ziggy says', () => {
     const q = questionLines(run.words[0], 'first', 'fr');
     expect(q.join(' ')).toContain(run.words[0].w);
     const o = optionLines(['C', 'M', 'L'], 'fr');
-    expect(o).toEqual(['À gauche : C.', 'Au milieu : M.', 'À droite : L.']);
-    expect(optionLines(['C', 'M', 'L'], 'en')[0]).toBe('Left: C.');
+    expect(o).toEqual(['À gauche : la lettre C.', 'Au milieu : la lettre M.', 'À droite : la lettre L.']);
+    expect(optionLines(['C', 'M', 'L'], 'en')[0]).toBe('Left: the letter C.');
+  });
+
+  it('never says a lone letter: "la lettre C", "le son ou", "les lettres C et H"', () => {
+    expect(unitSpoken('C', 'fr')).toBe('la lettre C');
+    expect(unitSpoken('C', 'en')).toBe('the letter C');
+    expect(unitSpoken('OU', 'fr')).toBe('le son ou');
+    expect(unitSpoken('OO', 'en')).toBe('the sound oo');
+    expect(unitSpoken('CH', 'fr')).toBe('les lettres C et H');
+    expect(unitSpoken('CK', 'en')).toBe('the letters C and K');
+    for (const band of BANDS)
+      for (const locale of LOCALES)
+        for (const seed of SEEDS.slice(0, 6)) {
+          const run = planRun(seed, band, 4, locale);
+          for (const w of run.words)
+            for (const s of w.steps) {
+              const lines = [rightLine(w, s, locale), hintLine(w, s, run.mode, 2, locale), ...(run.mode === 'first' ? optionLines(s.options, locale) : [])];
+              for (const line of lines) {
+                // No capital standing alone as the whole thing said ("C !").
+                expect(line, line).not.toMatch(/^[A-ZÉÈÂ]{1,3} ?!$/);
+                expect(line, line).toMatch(locale === 'fr' ? /lettre|son/ : /letter|sound/);
+              }
+            }
+          if (run.mode === 'first') expect(wordDoneLine(run.words[0], run.mode, locale)).toMatch(locale === 'fr' ? /la lettre/ : /the letter/);
+        }
   });
 });

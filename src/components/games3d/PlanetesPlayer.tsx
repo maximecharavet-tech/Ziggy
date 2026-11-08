@@ -23,8 +23,11 @@ import {
   planGame,
   questionText,
   speechText,
+  tallyDelivery,
   wrongText,
   type Band,
+  type PlanetesSkill,
+  type SkillTally,
   type BodyId,
   type Delivery,
 } from '@/games3d/planetes/logic';
@@ -103,13 +106,22 @@ export function PlanetesPlayer() {
   const [bubble, setBubble] = useState<Bubble | null>(null);
   const [opened, setOpened] = useState<{ index: number; lines: string[]; fact: string } | null>(null);
   const [count, setCount] = useState<{ n: number; id: number } | null>(null);
-  const [xp, setXp] = useState<{ n: number; id: number } | null>(null);
+  /** The XP pop: XP when a skill's progress is saved, a star after the other deliveries. */
+  const [xp, setXp] = useState<{ n: number | null; id: number } | null>(null);
   const [totalXp, setTotalXp] = useState(0);
   const [magic, setMagic] = useState<MagicMoment[]>([]);
   const [music, setMusic] = useState(true);
   const [run, setRun] = useState(0);
   const planRef = useRef<Delivery[]>([]);
   const seedRef = useRef(0);
+  /** This round's deliveries per skill, saved once per skill (see `tallyDelivery`). */
+  const tallyRef = useRef(new Map<PlanetesSkill, SkillTally>());
+
+  /** A round left half-way: still save what was delivered (no screen to update). */
+  const flushTally = () => {
+    for (const [skill, t] of tallyRef.current) if (t.total > 0) finishExtraGame('planetes', skill, { correct: t.correct, mistakes: t.mistakes, total: t.total }, t.durationMs);
+    tallyRef.current.clear();
+  };
 
   useEffect(() => setSupported(webglOk()), []);
 
@@ -131,6 +143,7 @@ export function PlanetesPlayer() {
     setState(null);
     setTotalXp(0);
     setMagic([]);
+    flushTally();
     game.current?.dispose();
     game.current = null;
     const m = getMemory();
@@ -182,10 +195,15 @@ export function PlanetesPlayer() {
           onOpened: (i, stats) => {
             const d = planRef.current[i];
             if (!d) return;
-            const outcome = finishExtraGame('planetes', d.skill, { correct: 1, mistakes: stats.mistakes, total: 1 }, stats.durationMs);
-            setXp({ n: outcome.xpGained, id: Date.now() });
-            setTotalXp((x) => x + outcome.xpGained);
-            setMagic((mm) => [...mm, ...outcome.magic]);
+            // One save per skill and per round: a perfect round moves each level one step, not five.
+            const done = tallyDelivery(tallyRef.current, planRef.current, i, stats);
+            if (done) {
+              const t = done.stats;
+              const outcome = finishExtraGame('planetes', done.skill, { correct: t.correct, mistakes: t.mistakes, total: t.total }, t.durationMs);
+              setXp({ n: outcome.xpGained, id: Date.now() });
+              setTotalXp((x) => x + outcome.xpGained);
+              setMagic((mm) => [...mm, ...outcome.magic]);
+            } else setXp({ n: null, id: Date.now() });
             const lines = openText(d, locale);
             const fact = factText(d, age, locale, seedRef.current + i);
             setBubble(null);
@@ -216,6 +234,7 @@ export function PlanetesPlayer() {
 
   useEffect(
     () => () => {
+      flushTally();
       game.current?.dispose();
       game.current = null;
       stopSpeaking();
@@ -379,7 +398,7 @@ export function PlanetesPlayer() {
                 className="pointer-events-none absolute right-3 top-20 rounded-full bg-gradient-to-r from-amber-300 to-pink-300 px-4 py-2 text-base font-bold text-[#4a2350] shadow-lg sm:right-6 sm:top-24 sm:text-lg"
                 role="status"
               >
-                +{xp.n} XP ⭐
+                {xp.n === null ? '⭐ 📦' : `+${xp.n} XP ⭐`}
               </motion.div>
             ) : null}
           </AnimatePresence>

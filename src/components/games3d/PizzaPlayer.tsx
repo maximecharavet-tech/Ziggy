@@ -246,6 +246,20 @@ export function PizzaPlayer() {
     game.current?.highlightSlice(focusSlice);
   }, [focusSlice]);
 
+  // TV remote: when a step swaps the panel (Coucou → toppings, oven → question…), the
+  // focused button disappears; land on the new step's first button at once instead of
+  // leaving the focus on the page for a moment.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const step0 = view?.step;
+  const round0 = view?.round;
+  useEffect(() => {
+    if (!document.documentElement.hasAttribute('data-tv')) return;
+    const a = document.activeElement;
+    if (a && a !== document.body && a.isConnected) return;
+    const spot = rootRef.current?.querySelector<HTMLElement>('[data-tv-autofocus]:not(:disabled)');
+    spot?.focus({ preventScroll: true });
+  }, [phase, step0, round0]);
+
   const round = view && view.round >= 0 ? rounds[view.round] : null;
   const step = view?.step ?? 'arrive';
   const g = () => game.current;
@@ -291,10 +305,20 @@ export function PizzaPlayer() {
                       ))}
                     </span>
                   );
+                // Right amount on the pie: the item turns green with a tick (never for the "?" puzzle).
+                const ok = !hidden && step === 'build' && n === it.n;
                 return (
-                  <span key={it.topping} className="flex items-center gap-1 font-display text-2xl font-bold text-[#4a2a12] sm:text-3xl">
+                  <span
+                    key={it.topping}
+                    className={`relative flex items-center gap-1 rounded-xl px-1 font-display text-2xl font-bold transition-colors sm:text-3xl ${ok ? 'bg-[#dff5d6] text-[#2f7d32]' : 'text-[#4a2a12]'}`}
+                  >
                     <span className={hidden ? 'text-[#ff5c8a]' : ''}>{hidden ? '?' : it.n}</span>
                     <span aria-hidden="true">{e}</span>
+                    {ok ? (
+                      <span className="absolute -right-1.5 -top-1.5 grid h-5 w-5 place-items-center rounded-full bg-[#3fae3f] text-[11px] text-white shadow" aria-hidden="true">
+                        ✓
+                      </span>
+                    ) : null}
                   </span>
                 );
               })}
@@ -505,7 +529,7 @@ export function PizzaPlayer() {
   const interactive = step === 'build' || step === 'ask' || step === 'pay';
 
   return (
-    <div className="fixed inset-0 z-[60] overflow-hidden bg-[#ffe9c9] text-[#33264a]" data-tv-scope="">
+    <div ref={rootRef} className="fixed inset-0 z-[60] overflow-hidden bg-[#ffe9c9] text-[#33264a]" data-tv-scope="">
       <canvas ref={canvas} className="absolute inset-0 h-full w-full touch-none" aria-label={tr(T.title, locale)} />
 
       {phase === 'play' || phase === 'result' ? (

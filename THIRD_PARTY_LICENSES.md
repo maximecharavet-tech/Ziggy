@@ -8,6 +8,24 @@ their licenses is audited in `docs/evolution/INVENTORY.md`.)
 | three.js | https://github.com/mrdoob/three.js | MIT | © 2010–2026 three.js authors | 0.186.1 |
 | @types/three (dev only) | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | © Microsoft Corporation | 0.186.0 |
 | wasm-bindgen (Rust crate compiled into `src/lib/tv/wasm/`, and its generated JS glue) | https://github.com/rustwasm/wasm-bindgen | MIT OR Apache-2.0 | © The wasm-bindgen Developers | 0.2.129 |
+| @mediapipe/tasks-vision (Santa photo booth: on-device person segmentation; its wasm runtime is self-hosted in `public/santa/mediapipe/wasm/` by `scripts/santa-mediapipe.mjs`) | https://github.com/google-ai-edge/mediapipe | Apache-2.0 | © Google LLC | 1.2.2 |
+| MediaPipe selfie segmentation models `selfie_segmenter.tflite` (float16) and `selfie_multiclass_256x256.tflite` (float32), self-hosted in `public/santa/mediapipe/` | https://ai.google.dev/edge/mediapipe/solutions/vision/image_segmenter | Apache-2.0 (per their model cards) | © Google LLC | latest (downloaded 2026-11-08) |
+
+Platformer "Ziggy et les Étoiles Perdues" (`public/jeux/ziggy-plateforme/`, page `/monde/ziggy-plateforme`): an
+original Rust game (MIT, © Ziggy) compiled to WebAssembly. All graphics are drawn procedurally in code and the sounds are
+synthesised; no third-party art, music or characters. Crates compiled into `ziggy.wasm`, and the macroquad JS loader
+`mq_js_bundle.js` shipped next to it:
+
+| Name | URL | License | Version |
+|---|---|---|---|
+| macroquad (+ macroquad_macro, `mq_js_bundle.js`) | https://github.com/not-fl3/macroquad | MIT OR Apache-2.0 | 0.4.16 |
+| miniquad | https://github.com/not-fl3/miniquad | MIT OR Apache-2.0 | 0.4.11 |
+| quad-rand | https://github.com/not-fl3/quad-rand | MIT | 0.2.3 |
+| glam | https://github.com/bitshifter/glam-rs | MIT OR Apache-2.0 | 0.27.0 |
+| fontdue, ttf-parser | https://github.com/mooman219/fontdue, https://github.com/harfbuzz/ttf-parser | MIT OR Apache-2.0 (fontdue also Zlib) | 0.9.5 / 0.25.1 |
+| image, png, fdeflate, flate2, miniz_oxide, crc32fast, color_quant, simd-adler32, adler2 | crates.io (image-rs, rust-lang) | MIT and/or Apache-2.0 | see the game's `Cargo.lock` |
+| hashbrown, equivalent, allocator-api2, num-traits, libm, core_maths, cfg-if, bitflags, bytemuck, byteorder, autocfg | crates.io | MIT and/or Apache-2.0 (used under MIT) | see the game's `Cargo.lock` |
+| foldhash (hasher used by hashbrown, pulled in by macroquad/fontdue) | https://github.com/orlp/foldhash | **Zlib** (permissive; owner's OK needed per the licence rule) | 0.1.5 |
 
 TV spatial navigation (`rust/ziggy-tv-nav/`, compiled to `src/lib/tv/wasm/`, and its TypeScript twin
 `src/lib/tv/spatial-nav.ts`): the direction scoring is a port of the ideas of **Norigin Spatial Navigation**
@@ -17,7 +35,7 @@ last-focused-child memory. No Norigin code or package is shipped; the algorithm 
 `wasm-bindgen-cli` 0.2.129 (MIT OR Apache-2.0) builds the glue on the developer's machine (`scripts/build-tv-nav.sh`).
 
 Content:
-- "Jingle Bells" melody (James Lord Pierpont, 1857) — public domain; arranged as a music box in `src/games3d/kit/music.ts`.
+- "Jingle Bells" melody (James Lord Pierpont, 1857) — public domain; arranged as a music box in `src/games3d/kit/music.ts`. Also synthesized as the photo booth clip's jingle in `src/components/santa/booth/jingle.ts`.
 - Ziggy's recorded bedtime voice (`public/dodo/voice/**`, MP3 + word timings + visemes) is generated offline by
   the Rust voice engine `voice-engine/` (ziggy-voice v2) with **Kokoro-82M** — model weights and voice styles
   (`ff_siwis`, `af_heart`, `af_sky`, `bf_lily`, `af_bella`, blended) — © hexgrad, **Apache-2.0**
@@ -80,3 +98,39 @@ Licence notes:
 - App pictures (icons, TV banner, splash marks, store graphics) are drawn by `apps/ziggy-app/scripts/assets/`
   from the official plush pictures of `public/mascot/`; the wordmark text of the banners is rendered with the
   site's Fredoka font (SIL OFL-1.1, already used by the site); the font file itself is not in the apps.
+
+## Les Lutins Farceurs engine (`rust/lutins-core/`, Rust → WebAssembly)
+
+The photo analysis, prompt builder, verifier and magic-card renderer of `/lutins` are our own Rust code
+(MIT), compiled to `src/lib/lutins/wasm/` (`lutins_core` for the browser, `lutins_core_full` for the Node
+API routes, which adds the PNG/JPEG/WebP decoders). Every crate compiled into the WebAssembly
+(`cargo metadata --filter-platform wasm32-unknown-unknown`), with the licence we use it under:
+
+| Name | URL | License (used under) | Copyright | Version |
+|---|---|---|---|---|
+| wasm-bindgen, wasm-bindgen-shared | https://github.com/wasm-bindgen/wasm-bindgen | MIT OR Apache-2.0 (MIT) | © The wasm-bindgen Developers | 0.2.129 |
+| serde, serde_core | https://github.com/serde-rs/serde | MIT OR Apache-2.0 (MIT) | © Erick Tryzelaar, David Tolnay | 1.0.229 |
+| serde_json | https://github.com/serde-rs/json | MIT OR Apache-2.0 (MIT) | © Erick Tryzelaar, David Tolnay | 1.0.154 |
+| itoa, zmij (number formatting for serde_json) | https://github.com/dtolnay/itoa, https://github.com/dtolnay/zmij | MIT OR Apache-2.0 / MIT (MIT) | © David Tolnay | 1.0.18 / 1.0.23 |
+| memchr | https://github.com/BurntSushi/memchr | Unlicense OR MIT (MIT) | © Andrew Gallant | 2.8.3 |
+| once_cell, cfg-if | https://github.com/matklad/once_cell, https://github.com/rust-lang/cfg-if | MIT OR Apache-2.0 (MIT) | © Aleksey Kladov; Alex Crichton | 1.21.4 / 1.0.5 |
+| unicode-ident (via wasm-bindgen-shared) | https://github.com/dtolnay/unicode-ident | (MIT OR Apache-2.0) AND Unicode-3.0 | © David Tolnay; Unicode, Inc. (data tables) | 1.0.27 |
+| *Node build only (`decode` feature):* | | | | |
+| png | https://github.com/image-rs/image-png | MIT OR Apache-2.0 (MIT) | © The image-rs Developers | 0.18.1 |
+| jpeg-decoder | https://github.com/image-rs/jpeg-decoder | MIT OR Apache-2.0 (MIT) | © The image-rs Developers | 0.3.2 |
+| image-webp | https://github.com/image-rs/image-webp | MIT OR Apache-2.0 (MIT) | © The image-rs Developers | 0.2.4 |
+| fdeflate, byteorder-lite | https://github.com/image-rs/fdeflate, https://github.com/image-rs/byteorder-lite | MIT OR Apache-2.0 / Unlicense OR MIT (MIT) | © The image-rs Developers | 0.3.7 / 0.1.0 |
+| flate2 | https://github.com/rust-lang/flate2-rs | MIT OR Apache-2.0 (MIT) | © Alex Crichton, Josh Triplett | 1.1.11 |
+| miniz_oxide | https://github.com/Frommi/miniz_oxide | MIT OR Zlib OR Apache-2.0 (MIT) | © Frommi, oyvindln | 0.8.9 / 0.9.1 |
+| adler2, simd-adler32, crc32fast | https://github.com/oyvindln/adler2, https://github.com/mcountryman/simd-adler32, https://github.com/srijs/rust-crc32fast | 0BSD OR MIT OR Apache-2.0 / MIT / MIT OR Apache-2.0 (MIT) | © oyvindln; Marvin Countryman; Sam Rijs, Alex Crichton | 2.0.1 / 0.3.10 / 1.5.4 |
+| bitflags, quick-error | https://github.com/bitflags/bitflags, https://github.com/tailhook/quick-error | MIT OR Apache-2.0 (MIT) | © The Rust Project Developers; Paul Colomiets | 2.13.2 / 2.0.1 |
+
+Build-time only (procedural macros, not in the WebAssembly): serde_derive, wasm-bindgen-macro(-support),
+syn, quote, proc-macro2, bumpalo, rustversion — all MIT OR Apache-2.0. Build tools: rustc/cargo and the
+wasm-bindgen CLI 0.2.129 (MIT OR Apache-2.0). No GPL / AGPL / LGPL / MPL crate anywhere in the tree
+(checked with `cargo tree`); `zlib-rs` (Zlib) is listed in `Cargo.lock` as an optional backend of flate2 but is
+not compiled. **Owner's note:** `unicode-ident` carries Unicode-3.0 for its data tables (permissive, no
+copyleft); it comes with wasm-bindgen and is already in the shipped TV navigation WebAssembly
+(`src/lib/tv/wasm/`). The algorithms (SSIM, GMSD, CIEDE2000, McCamy CCT, shades of grey, Bradford,
+phase correlation, frequency-tuned saliency, Hoiem et al. scale) are implemented from the papers cited in
+the code; no code was copied.

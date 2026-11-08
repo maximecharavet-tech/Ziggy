@@ -26,12 +26,15 @@ guilt streaks, no failure screens, Ziggy and companions are never sad, the AI
 never claims to be human, no free LLM chat for children, every AI text goes
 through ChildShield, no child image/voice/data to third parties, no invented
 data (reviews, user counts, partners). GDPR for minors.
+Owner-approved exception (2026-11-07): the live AI call of L'appli du Père Noël
+(`/pere-noel`, Pack magique) — parent switches it on, speech transcribed on the
+device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.md`).
 
 ## Code rules
 - Every visible text exists in FR + EN (`tr()` / `L` from `@/lib/i18n-text`); little ones can't read: keep read-aloud (`SayButton`, `useAutoSay`).
 - Reduced motion: import `useReducedMotion` from `@/lib/use-reduced-motion`, never from framer-motion (hydration mismatch).
 - Big tap targets (≥ 56–64 px for game answers). Animate transform/opacity only.
-- Licences: MIT / Apache-2.0 / BSD only (ISC needs the owner's OK). Never GPL/AGPL/LGPL/MPL/NC in the shipped code. List new ones in `THIRD_PARTY_LICENSES.md`.
+- Licences: MIT / Apache-2.0 / BSD only (ISC needs the owner's OK; Unicode-3.0 accepted by the owner on 2026-11-08 for `unicode-ident`'s data tables). Never GPL/AGPL/LGPL/MPL/NC in the shipped code. List new ones in `THIRD_PARTY_LICENSES.md`.
 - Zero new running cost: prefer code-built assets and offline pre-generation.
 - The real Ziggy = the felt plush of `public/mascot/*`: 2D uses `MascotCutout`/`ZiggyAvatar`, 3D uses `<Ziggy3D>` (max one per page) or `makeZiggy()` in game scenes.
 
@@ -43,6 +46,7 @@ data (reviews, user counts, partners). GDPR for minors.
 ## Lessons learned
 - `next dev` rewrites `tsconfig.json` and `next-env.d.ts`: check `git diff tsconfig.json` before committing and drop only next's additions (`.next-*` includes); keep `next-env.d.ts` on `./.next/types/routes.d.ts`.
 - Several dev servers at once: give each its own `NEXT_DIST_DIR=.next-<name>` and port; never `rm -rf .next` while another one runs.
+- `next build` with `NEXT_DIST_DIR` also adds `.next-<name>/types` to `tsconfig.json`: never `git add -A` blind after a build; run `git status --short` first and restore it with `git checkout tsconfig.json` alone (`next-env.d.ts` is not tracked, so `git checkout tsconfig.json next-env.d.ts` fails and restores nothing).
 - `src/lib/motion.ts` holds shared motion tokens (no `'use client'`): don't overwrite it, add new hooks in their own files.
 - Never touch Supabase project `awvgmkoozerfggdvvubi` (another product's data).
 - Projected decals on a curved mesh must be tessellated first (big flat triangles sink into the surface).

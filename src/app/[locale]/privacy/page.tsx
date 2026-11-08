@@ -9,9 +9,9 @@ import { alternatesFor } from '@/lib/seo';
  */
 
 const CONTACT = 'contact@ziggy-ai.fr';
-const UPDATED = { fr: '10 octobre 2026', en: '10 October 2026' };
+const UPDATED = { fr: '8 novembre 2026', en: '8 November 2026' };
 
-type Section = { title: string; body: (string | string[])[] };
+type Section = { title: string; body: (string | string[])[]; /** Anchor (e.g. #pere-noel). */ id?: string };
 
 const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: string; sections: Section[] }> = {
   fr: {
@@ -55,6 +55,26 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         ],
       },
       {
+        id: 'pere-noel',
+        title: '3 ter. L’appli du Père Noël',
+        body: [
+          'Sur l’appareil uniquement : les prénoms, âges, listes de cadeaux, moments de fierté, signatures, dessins, photos et vidéos restent dans le navigateur. Nous ne les recevons jamais. Le montage de la photo avec le Père Noël se fait sur l’appareil : l’image de l’enfant ne le quitte pas. Le parent peut tout effacer d’un clic dans l’espace parents de l’appli.',
+          'Le prénom : pour que le Père Noël dise le prénom de l’enfant, le prénom seul est envoyé à notre serveur, qui fait fabriquer par Google (Gemini API, synthèse vocale) un court fichier audio de ce prénom (« Bonjour Léa ! »). Le même fichier sert ensuite à tous les enfants qui portent ce prénom. Il n’est relié à aucune autre donnée et n’est pas journalisé.',
+          'L’appel en direct (Pack magique, uniquement si le parent l’active sur l’appareil) : la voix de l’enfant est transcrite en texte sur l’appareil et n’est jamais envoyée. Seul le texte de chaque phrase est envoyé à notre serveur, puis à Anthropic (États-Unis), fournisseur du modèle d’IA, pour produire la réponse du Père Noël (NVIDIA, États-Unis, en secours si Anthropic ne répond pas). La réponse du Père Noël, et elle seule, est ensuite mise en voix par Google (Gemini API). Anthropic traite ce texte selon ses conditions commerciales, qui excluent l’utilisation des données de l’API pour entraîner ses modèles ; le transfert est encadré par les clauses contractuelles types de la Commission européenne. Nous ne conservons ni les phrases ni les réponses, et chaque réponse passe par notre filtre ChildShield. Seul un compteur de minutes est gardé, sous une clé pseudonyme (une empreinte cryptographique) qui ne permet pas de vous identifier.',
+          'Le paiement : il est traité par Stripe, qui reçoit l’adresse e-mail et les données de paiement du parent pour le paiement, le reçu et la lutte contre la fraude, et les conserve selon ses propres obligations légales. Nous ne voyons jamais les données bancaires. La preuve d’achat est gardée dans un cookie sécurisé de votre navigateur (« santa_pass » : le numéro de la session de paiement et le pack, signés, jusqu’au 31 janvier 2027).',
+          'Aucun pistage : pas de pixel publicitaire (TikTok ou autre) ni de suivi des achats ; nous mesurons une campagne seulement par son lien et par le nombre de ventes chez Stripe.',
+        ],
+      },
+      {
+        id: 'lutins',
+        title: '3 quater. Les Lutins Farceurs',
+        body: [
+          'Le parent photographie une pièce de la maison (jamais une personne) pour y faire apparaître les lutins. Avant tout envoi, le téléphone vérifie lui-même qu’aucune personne n’est visible sur la photo : si quelqu’un apparaît, la photo est refusée et ne part pas. Aucune image d’enfant n’est donc envoyée.',
+          'La photo est recalculée sur l’appareil (les données du téléphone comme le lieu et la date sont retirées), envoyée à notre serveur puis à notre fournisseur d’images Agnes AI uniquement pour produire l’image de la farce, avec la description de la farce choisie ou écrite par le parent (vérifiée par notre filtre ChildShield). Nous ne conservons ni la photo, ni la description, ni l’image produite.',
+          'Le journal des lutins (images, vidéos, légendes) reste sur l’appareil. Pour l’usage gratuit équitable, un identifiant aléatoire de l’appareil et l’adresse IP sont comptés en mémoire pendant la journée, puis oubliés.',
+        ],
+      },
+      {
         title: '4. Où sont les données',
         body: [
           [
@@ -62,6 +82,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
             'Hébergement du site : Vercel.',
             'Réponses du chat et voix de Ziggy : Google (Gemini API), et DeepSeek ou NVIDIA en secours.',
             'Ziggy World : DeepSeek (textes), NVIDIA (lecture de photo en mémoire, sécurité des contenus), Agnes AI (images d’avatar, à partir de texte seulement).',
+            'L’appli du Père Noël : Anthropic (texte de l’appel en direct, États-Unis), Stripe (paiement), Supabase (compteur de minutes, sans donnée personnelle).',
           ],
           'Ces prestataires traitent les données pour notre compte uniquement. Les échanges avec le site sont chiffrés (HTTPS).',
         ],
@@ -69,7 +90,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '5. Cookies et stockage local',
         body: [
-          'Aucun cookie publicitaire ni de pistage. Le navigateur garde seulement ce qui est nécessaire au fonctionnement : la session de connexion, le thème clair ou sombre, le réglage du son, la langue, votre choix concernant les cookies et, pour les invités, les étoiles gagnées.',
+          'Aucun cookie publicitaire ni de pistage. Le navigateur garde seulement ce qui est nécessaire au fonctionnement : la session de connexion, le thème clair ou sombre, le réglage du son, la langue, votre choix concernant les cookies, pour les invités les étoiles gagnées et, pour l’appli du Père Noël, le pass acheté (cookie « santa_pass ») et les données de la famille gardées sur l’appareil.',
         ],
       },
       {
@@ -128,6 +149,26 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         ],
       },
       {
+        id: 'pere-noel',
+        title: '3b. Santa’s app',
+        body: [
+          'On the device only: first names, ages, wish lists, proud moments, signatures, drawings, photos and videos stay in the browser. We never receive them. The photo with Santa is put together on the device: the child’s picture never leaves it. Parents can erase everything in one tap in the app’s parents’ area.',
+          'The first name: so that Santa can say the child’s first name, the first name alone is sent to our server, which has Google (Gemini API, text-to-speech) make a short audio clip of that name (“Hello Leah!”). The same clip is then used for every child with that name. It is linked to no other data and not logged.',
+          'The live call (Magic Pack, only if the parent switches it on on the device): the child’s voice is turned into text on the device and is never sent. Only the text of each sentence is sent to our server and then to Anthropic (USA), the AI model provider, to produce Santa’s answer (NVIDIA, USA, as a fallback if Anthropic does not answer). Santa’s answer, and only that, is then voiced by Google (Gemini API). Anthropic processes this text under its commercial terms, which exclude using API data to train its models; the transfer is covered by the European Commission’s standard contractual clauses. We keep neither the sentences nor the answers, and every answer goes through our ChildShield filter. Only a minute counter is kept, under a pseudonymous key (a cryptographic hash) that cannot identify you.',
+          'Payment: it is processed by Stripe, which receives the parent’s email address and payment details for the payment, the receipt and fraud prevention, and keeps them under its own legal obligations. We never see bank details. Proof of purchase is kept in a secure cookie in your browser (“santa_pass”: the payment session number and the pack, signed, until 31 January 2027).',
+          'No tracking: no advertising pixel (TikTok or other) and no purchase tracking; we measure a campaign only by its link and the number of sales in Stripe.',
+        ],
+      },
+      {
+        id: 'lutins',
+        title: '3c. The Prankster Elves',
+        body: [
+          'The parent photographs a room of the house (never a person) to make the elves appear in it. Before anything is sent, the phone itself checks that no person is visible in the photo: if someone appears, the photo is refused and is not sent. So no child’s picture is ever sent.',
+          'The photo is redrawn on the device (the phone’s data such as location and date is removed), sent to our server and then to our image provider Agnes AI only to make the prank picture, with the description of the prank chosen or written by the parent (checked by our ChildShield filter). We keep neither the photo, the description nor the picture made.',
+          'The elves’ journal (pictures, videos, captions) stays on the device. For free fair use, a random device identifier and the IP address are counted in memory during the day, then forgotten.',
+        ],
+      },
+      {
         title: '4. Where data lives',
         body: [
           [
@@ -135,6 +176,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
             'Website hosting: Vercel.',
             'Chat replies and Ziggy’s voice: Google (Gemini API), with DeepSeek or NVIDIA as fallbacks.',
             'Ziggy World: DeepSeek (text), NVIDIA (in-memory photo reading, content safety), Agnes AI (avatar images, from text only).',
+            'Santa’s app: Anthropic (live-call text, USA), Stripe (payment), Supabase (minute counter, no personal data).',
           ],
           'These providers process data on our behalf only. Traffic to the site is encrypted (HTTPS).',
         ],
@@ -142,7 +184,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '5. Cookies and local storage',
         body: [
-          'No advertising or tracking cookies. The browser only keeps what the site needs to work: your sign-in session, light or dark theme, sound setting, language, your cookie choice and, for guests, the stars they have won.',
+          'No advertising or tracking cookies. The browser only keeps what the site needs to work: your sign-in session, light or dark theme, sound setting, language, your cookie choice, for guests the stars they have won and, for Santa’s app, the pass you bought (“santa_pass” cookie) and the family’s data kept on the device.',
         ],
       },
       {
@@ -186,7 +228,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
 
         <div className="space-y-8 text-[15px] text-text-muted leading-relaxed">
           {c.sections.map((s) => (
-            <section key={s.title}>
+            <section key={s.title} id={s.id} className={s.id ? 'scroll-mt-28' : undefined}>
               <h2 className="text-xl font-bold text-text-body mb-3">{s.title}</h2>
               <div className="space-y-3">
                 {s.body.map((block, i) =>

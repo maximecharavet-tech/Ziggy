@@ -20,6 +20,8 @@ import {
   opSpoken,
   planGame,
   planRide,
+  tallyRide,
+  type SkillTally,
   praiseFor,
   rideKey,
   solve,
@@ -257,5 +259,23 @@ describe('words', () => {
     }
     expect(praiseFor(7, 'fr')).toBe(PRAISE[7 % PRAISE.length].fr);
     expect(praiseFor(-1, 'en')).toBe(PRAISE[1].en);
+  });
+
+  it('saves progress once per skill and per game, with the game totals', () => {
+    for (const band of ['little', 'middle', 'big'] as const)
+      for (const seed of [3, 11, 2024]) {
+        const rides = planGame(seed, band, 3);
+        const tally = new Map<Ride['skill'], SkillTally>();
+        const calls: { skill: string; stats: SkillTally }[] = [];
+        rides.forEach((_, i) => {
+          const done = tallyRide(tally, rides, i, { mistakes: i === 0 ? 1 : 0, durationMs: 500 });
+          if (done) calls.push(done);
+        });
+        expect(calls.map((c) => c.skill).sort()).toEqual([...new Set(rides.map((r) => r.skill))].sort());
+        expect(tally.size).toBe(0);
+        expect(calls.reduce((s, c) => s + c.stats.total, 0)).toBe(rides.length);
+        expect(calls.reduce((s, c) => s + c.stats.mistakes, 0)).toBe(1);
+        expect(calls.reduce((s, c) => s + c.stats.durationMs, 0)).toBe(rides.length * 500);
+      }
   });
 });

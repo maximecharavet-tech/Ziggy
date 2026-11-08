@@ -16,6 +16,7 @@ import {
   optionLines,
   planRun,
   questionLines,
+  rightLine,
   wordDoneLine,
   wordSlots,
   type Band,
@@ -138,7 +139,7 @@ export function KartPlayer() {
             speak([line]);
           } else {
             showToast(`${cheerLine(e.n, locale)} ${e.step.answer}`, 'yay');
-            speak([locale === 'fr' ? `${e.step.answer} !` : `${e.step.answer}!`]);
+            speak([rightLine(w, e.step, locale)]);
           }
           break;
         case 'wrong':
@@ -378,8 +379,8 @@ export function KartPlayer() {
                       whileTap={reduce ? undefined : { scale: 0.92 }}
                       aria-pressed={on}
                       aria-label={`${laneName(i, locale)}${o ? ` : ${o}` : ''}`}
-                      className={`relative grid h-16 min-w-16 place-items-center rounded-2xl px-2 font-display text-3xl font-bold transition-transform sm:h-20 sm:min-w-24 sm:text-4xl ${on ? 'scale-105 text-[#2b2150] shadow-lg ring-4 ring-white' : 'text-[#2b2150]/80'} ${faded ? 'opacity-40' : on ? '' : 'opacity-90'} ${lit ? 'shadow-[0_0_24px_rgba(255,214,80,.95)]' : ''}`}
-                      style={{ background: on ? LANE_TINT[i] : `color-mix(in srgb, ${LANE_TINT[i]} 45%, white)` }}
+                      className={`relative grid h-16 min-w-16 place-items-center rounded-2xl px-2 font-display text-3xl font-bold transition-transform sm:h-20 sm:min-w-24 sm:text-4xl text-[#2b2150] ${on ? 'scale-105 shadow-lg ring-4 ring-white' : 'ring-1 ring-white/70'} ${faded ? 'opacity-40' : ''} ${lit ? 'shadow-[0_0_24px_rgba(255,214,80,.95)]' : ''}`}
+                      style={{ background: on ? LANE_TINT[i] : `color-mix(in srgb, ${LANE_TINT[i]} 62%, white)` }}
                     >
                       {o ?? '·'}
                       {lit ? (

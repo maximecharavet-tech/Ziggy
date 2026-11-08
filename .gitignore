@@ -10,3 +10,6 @@ next-env.d.ts
 /voice-engine/target/
 /voice-engine/.cache/
 /rust/ziggy-tv-nav/target/
+
+# Santa photo booth: MediaPipe wasm is copied from node_modules at install (scripts/santa-mediapipe.mjs)
+/public/santa/mediapipe/wasm/

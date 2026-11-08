@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ArrowRight, Play, Check, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
@@ -45,6 +45,7 @@ function Sticker({ className, delay, children }: { className: string; delay: num
 
 export function HeroSection() {
   const t = useTranslations('hero');
+  const locale = useLocale();
   const { play } = useSound();
   const reduce = useReducedMotion();
   const [happy, setHappy] = useState(false);
@@ -125,13 +126,20 @@ export function HeroSection() {
             initial="hidden"
             animate="visible"
             custom={3}
-            className="mt-9 flex flex-col sm:flex-row gap-3 justify-center lg:justify-start"
+            className="mt-9 flex flex-col sm:flex-row sm:flex-wrap gap-3 justify-center lg:justify-start"
           >
-            <Button href="/signup" size="lg" magnetic className="web-only group gap-2 shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
+            <Button href="/signup" size="lg" magnetic className="web-only group gap-2 whitespace-nowrap shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
               {t('cta_primary')}
               <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
             </Button>
-            <Button href="/demo" variant="secondary" size="lg" magnetic className="gap-2">
+            <Link
+              href="/monde"
+              className="press inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-full bg-gradient-to-r from-[#8a63ff] to-[#ff6fb5] px-8 py-4 text-lg font-bold text-white shadow-[0_12px_30px_-8px_rgba(255,111,181,0.55)] transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-[#ff6fb5]/40"
+            >
+              <span aria-hidden="true">🎮</span>
+              {locale === 'fr' ? 'Jouer' : 'Play'}
+            </Link>
+            <Button href="/demo" variant="secondary" size="lg" magnetic className="gap-2 whitespace-nowrap">
               <span className="w-7 h-7 rounded-full bg-green/10 text-green flex items-center justify-center">
                 <Play size={13} className="fill-current rtl:rotate-180" />
               </span>

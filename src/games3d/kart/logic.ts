@@ -497,9 +497,43 @@ export function questionLines(word: KartWord, mode: Mode, locale: Locale): strin
   return locale === 'fr' ? [`Complète le mot ${w} !`, 'Trouve les sons qui manquent.'] : [`Finish the word ${w}!`, 'Find the missing sounds.'];
 }
 
+/**
+ * How the voice says a gate. A lone capital ("C!") sounds odd out loud, so a
+ * letter is "la lettre C" / "the letter C"; a tricky vowel sound is said as a
+ * sound ("le son ou"), written the way a voice reads it right; consonant pairs
+ * are named by their letters ("les lettres C et H").
+ */
+const SOUND_SAY: Record<Locale, Record<string, string>> = {
+  fr: { OU: 'ou', ON: 'on', AN: 'an', AM: 'an', IN: 'in', OI: 'oi', AU: 'au', EAU: 'eau', EI: 'è', ILL: 'ille' },
+  en: { EE: 'ee', OO: 'oo', OA: 'oh', OW: 'ow', OU: 'ow', AI: 'ay', AR: 'ar', ER: 'er', IR: 'ir' },
+};
+
+type Said = { kind: 'letter' | 'sound' | 'letters'; text: string; letters: string[] };
+
+function sayUnit(unit: string, locale: Locale): Said {
+  const letters = Array.from(unit);
+  const sound = SOUND_SAY[locale][unit];
+  if (letters.length === 1) return { kind: 'letter', text: locale === 'fr' ? `la lettre ${unit}` : `the letter ${unit}`, letters };
+  if (sound) return { kind: 'sound', text: locale === 'fr' ? `le son ${sound}` : `the sound ${sound}`, letters };
+  const and = locale === 'fr' ? ' et ' : ' and ';
+  return { kind: 'letters', text: (locale === 'fr' ? 'les lettres ' : 'the letters ') + letters.join(and), letters };
+}
+
+/** "la lettre C", "le son ou", "les lettres C et H" (mid-sentence). */
+export const unitSpoken = (unit: string, locale: Locale) => sayUnit(unit, locale).text;
+
+const capFirst = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
+
+/** Said when the kart goes under the right gate: "La lettre C !", "Le son ou, comme dans mouton !". */
+export function rightLine(word: KartWord, step: Step, locale: Locale): string {
+  const s = sayUnit(step.answer, locale);
+  const tail = s.kind === 'letter' ? '' : locale === 'fr' ? `, comme dans ${word.w}` : `, as in ${word.w}`;
+  return `${capFirst(s.text)}${tail}${locale === 'fr' ? ' !' : '!'}`;
+}
+
 /** The three gates, read lane by lane (for children who can't read yet). */
 export function optionLines(options: string[], locale: Locale): string[] {
-  return options.map((o, i) => `${laneName(i, locale)} : ${o}.`).map((l) => (locale === 'fr' ? l : l.replace(' :', ':')));
+  return options.map((o, i) => (locale === 'fr' ? `${laneName(i, locale)} : ${unitSpoken(o, locale)}.` : `${laneName(i, locale)}: ${unitSpoken(o, locale)}.`));
 }
 
 const OOPS: Text[] = [
@@ -518,9 +552,14 @@ export function hintLine(word: KartWord, step: Step, mode: Mode, hint: 1 | 2, lo
     if (mode === 'spell') return locale === 'fr' ? `On écrit ${w}. La bonne porte brille !` : `We’re spelling ${w}. The right gate is sparkling!`;
     return locale === 'fr' ? `Écoute le son dans ${w}. La bonne porte brille !` : `Listen to the sound in ${w}. The right gate is sparkling!`;
   }
-  if (mode === 'first') return locale === 'fr' ? `${w} commence par ${a}. Passe sous le ${a} !` : `${w} starts with ${a}. Drive under the ${a}!`;
-  if (mode === 'spell') return locale === 'fr' ? `La lettre qui suit, c’est ${a} !` : `The next letter is ${a}!`;
-  return locale === 'fr' ? `Ici, on écrit ${a} !` : `Here we write ${a}!`;
+  const said = sayUnit(a, locale);
+  if (mode === 'first') return locale === 'fr' ? `${w} commence par ${said.text}. Passe sous ${said.text} !` : `${w} starts with ${said.text}. Drive under ${said.text}!`;
+  if (mode === 'spell') return locale === 'fr' ? `Maintenant, c’est ${said.text} !` : `Next comes ${said.text}!`;
+  if (said.kind === 'sound') {
+    const letters = said.letters.join(locale === 'fr' ? ' et ' : ' and ');
+    return locale === 'fr' ? `Ici, ${said.text} s’écrit ${letters} !` : `Here, ${said.text} is written ${letters}!`;
+  }
+  return locale === 'fr' ? `Ici, on écrit ${said.text} !` : `Here we write ${said.text}!`;
 }
 
 const CHEERS: Text[] = [
@@ -535,7 +574,7 @@ export const cheerLine = (n: number, locale: Locale) => CHEERS[Math.abs(n) % CHE
 /** The word is complete: rainbow turbo! */
 export function wordDoneLine(word: KartWord, mode: Mode, locale: Locale): string {
   const w = word.w;
-  if (mode === 'first') return locale === 'fr' ? `Bravo ! ${w} commence par ${word.units[0]} !` : `Yay! ${w} starts with ${word.units[0]}!`;
+  if (mode === 'first') return locale === 'fr' ? `Bravo ! ${w} commence par ${unitSpoken(word.units[0], locale)} !` : `Yay! ${w} starts with ${unitSpoken(word.units[0], locale)}!`;
   if (mode === 'spell') return locale === 'fr' ? `Bravo ! Tu as écrit ${w} !` : `Yay! You spelled ${w}!`;
   return locale === 'fr' ? `Super ! Le mot ${w} est complet !` : `Super! The word ${w} is complete!`;
 }
