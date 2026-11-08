@@ -26,6 +26,7 @@ const nextConfig: NextConfig = {
   // The share image reads the mascot from disk at request time.
   outputFileTracingIncludes: {
     '/[locale]/opengraph-image': ['./public/mascot/og-ziggy.png'],
+    '/[locale]/pere-noel/opengraph-image': ['./public/mascot/og-ziggy.png'],
     '/[locale]/dodo/[story]/opengraph-image': ['./public/mascot/og-ziggy.png', './public/dodo/**/*-og.jpg'],
   },
   images: {
@@ -35,6 +36,9 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: APK_PATH, destination: APK_RELEASE_URL, permanent: false },
+      // Short links for the Christmas campaign (TikTok bio, videos): ziggy-ai.fr/noel, /santa.
+      { source: '/noel', destination: '/pere-noel', permanent: false },
+      { source: '/santa', destination: '/en/pere-noel', permanent: false },
       // Search Console 404s: crawlers once read the price period ("/mois", "/Monat") and a stray "$" as links.
       { source: '/mois', destination: '/', permanent: true },
       { source: '/Monat', destination: '/', permanent: true },

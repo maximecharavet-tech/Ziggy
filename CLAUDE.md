@@ -26,6 +26,9 @@ guilt streaks, no failure screens, Ziggy and companions are never sad, the AI
 never claims to be human, no free LLM chat for children, every AI text goes
 through ChildShield, no child image/voice/data to third parties, no invented
 data (reviews, user counts, partners). GDPR for minors.
+Owner-approved exception (2026-11-07): the live AI call of L'appli du Père Noël
+(`/pere-noel`, Pack magique) — parent switches it on, speech transcribed on the
+device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.md`).
 
 ## Code rules
 - Every visible text exists in FR + EN (`tr()` / `L` from `@/lib/i18n-text`); little ones can't read: keep read-aloud (`SayButton`, `useAutoSay`).

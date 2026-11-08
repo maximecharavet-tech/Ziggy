@@ -8,17 +8,22 @@ import 'server-only';
 export const TTS_MODELS = ['gemini-2.5-flash-preview-tts', 'gemini-2.5-pro-preview-tts'];
 const VOICE = 'Puck'; // upbeat, friendly — the same voice day and night, so it is always Ziggy
 
-export type TtsStyle = 'ziggy' | 'bedtime';
+export type TtsStyle = 'ziggy' | 'bedtime' | 'santa';
+
+/** Santa Claus (L'appli du Père Noël): a deep, warm, slightly gravelly grandfather voice. */
+const VOICES: Partial<Record<TtsStyle, string>> = { santa: 'Algenib' };
 
 const STYLES: Record<TtsStyle, string> = {
   ziggy:
     'You are Ziggy, a cheerful little plush robot talking to a young child. Speak warmly and playfully, clearly, a little slower than usual, with a smile in your voice.',
   bedtime:
     'You are Ziggy, a gentle little plush robot telling a bedtime story to a sleepy young child. Speak softly and slowly, warm and calm, close to a whisper but clear, with small pauses between sentences, getting even softer towards the end.',
+  santa:
+    'You are Santa Claus on the phone with a young child: a jolly, deep, warm, slightly gravelly old voice, kind and full of wonder, a big smile in the voice, unhurried, with a hearty belly laugh on "Ho ho ho".',
 };
 
 /** Longest text per call: a live line, or a whole bedtime scene. */
-export const MAX_CHARS: Record<TtsStyle, number> = { ziggy: 420, bedtime: 1200 };
+export const MAX_CHARS: Record<TtsStyle, number> = { ziggy: 420, bedtime: 1200, santa: 420 };
 
 /** Gemini returns raw 16-bit mono PCM; browsers want a WAV header around it. */
 export function pcmToWav(pcm: Uint8Array, rate: number): Uint8Array {
@@ -64,7 +69,7 @@ export async function synthesize(key: string, text: string, style: TtsStyle = 'z
         contents: [{ parts: [{ text: `${STYLES[style]}\nSay exactly this, in its own language, adding nothing:\n${text}` }] }],
         generationConfig: {
           responseModalities: ['AUDIO'],
-          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICE } } },
+          speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: VOICES[style] ?? VOICE } } },
         },
       }),
       signal: AbortSignal.timeout(style === 'bedtime' ? 55_000 : 30_000),

@@ -50,11 +50,13 @@ export function Navbar() {
 
   // Section anchors live on the home page, so they point there from any page.
   // Child-first menu: play, create, sleep, learn. (The business agents and the chat demo stay reachable from the home page.)
-  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde' | '/dodo' | '/creer' | '/monde/arcade' | '/telecharger'; label: string; key: string }[] = [
+  const navLinks: { hash?: string; path?: '/lab' | '/apprendre' | '/monde' | '/dodo' | '/creer' | '/monde/arcade' | '/telecharger' | '/pere-noel'; label: string; key: string }[] = [
     { key: 'world', path: '/monde', label: t('world') },
     { key: 'games', path: '/monde/arcade', label: t('games') },
     { key: 'create', path: '/creer', label: t('create') },
     { key: 'dodo', path: '/dodo', label: `🌙 ${t('dodo')}` },
+    // Seasonal: L'appli du Père Noël (until the end of January).
+    { key: 'santa', path: '/pere-noel', label: `🎅 ${locale === 'fr' ? 'Père Noël' : 'Santa'}` },
     { key: 'learn', path: '/apprendre', label: t('learn') },
     { key: 'lab', path: '/lab', label: t('lab') },
     { key: 'apps', path: '/telecharger', label: t('apps') },
