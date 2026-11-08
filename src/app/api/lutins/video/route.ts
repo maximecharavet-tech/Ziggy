@@ -37,10 +37,11 @@ function safeSourceUrl(raw: unknown): string | null {
 function motionPrompt(prankId: string | null): string {
   const prank = prankById(prankId);
   const motion = prank?.motion ?? 'the felt elves move playfully and giggle, small natural movements';
+  // Video lessons (docs/lutins-research.md §10): fixed camera first, one small action, the room stays still.
   return [
-    `Animate this photo: ${motion}.`,
-    'The small felt plush elves move like stop-motion puppets, cute and gentle, keeping exactly their design and colours.',
-    'The room, the furniture and the camera stay perfectly still; soft natural light, no new objects, no people, no text.',
+    'Fixed camera, static shot.',
+    `The small felt plush elf dolls come to life like stop-motion puppets: ${motion}.`,
+    'Each elf keeps exactly its design, colours and size. The room, the furniture and the light stay perfectly still; no camera movement, no new objects, no people, no text.',
   ].join(' ');
 }
 
@@ -61,7 +62,7 @@ export async function POST(request: NextRequest) {
   if (!use.ok) return NextResponse.json({ error: use.reason === 'device' ? 'daily_limit' : 'resting' }, { status: 429 });
   const portrait = body.portrait !== false;
   try {
-    const id = await agnesVideoCreate(motionPrompt(typeof body.prankId === 'string' ? body.prankId : null), source, portrait ? { width: 768, height: 1152 } : { width: 1152, height: 768 });
+    const id = await agnesVideoCreate(motionPrompt(typeof body.prankId === 'string' ? body.prankId : null), source, { ...(portrait ? { width: 768, height: 1152 } : { width: 1152, height: 768 }), seconds: 5 });
     return NextResponse.json({ id, left: use.left });
   } catch (e) {
     refundUse('video', device, ip);
