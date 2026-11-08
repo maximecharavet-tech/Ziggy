@@ -40,6 +40,10 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
         { title: 'Les mini-jeux de Ziggy', links: mini },
         { title: 'L’arcade de Ziggy World', links: arcade },
         { title: 'Les jeux en 3D', links: GAMES_3D },
+        {
+          title: 'Le jeu de plateforme',
+          links: [{ href: '/monde/ziggy-plateforme', label: 'Ziggy et les Étoiles Perdues', text: 'Saute et rebondis avec Ziggy à travers 7 mondes.' }],
+        },
       ]}
     />
   );
