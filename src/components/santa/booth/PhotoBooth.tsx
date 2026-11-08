@@ -16,7 +16,7 @@ import { ding, scheduleJingle } from './jingle';
 import { applyAdjust, boothOutput, christmasYear, clampAdjust, coverTransform, fitInSlot, mapRect, NO_ADJUST, pinchAdjust, sanitizeSlot, VIDEO_SECONDS, VIDEO_SIZE, type Adjust, type Rect } from './layout';
 import { alphaToRGBA, maskBox, ovalMask, quickMatte, refineMask } from './matte';
 import { canRecordVideo, recordCanvas, type Clip } from './record';
-import { segmentFrame, segmentStill, warmSegmenter } from './segmenter';
+import { prefetchQualityModel, segmentFrame, segmentStill, warmSegmenter } from './segmenter';
 import { shareOrSave } from './share';
 import { SCENES, T, photoTitle } from './text';
 
@@ -656,7 +656,7 @@ export function PhotoBooth({ initialScene = 'cheminee', childName, parentsHref =
             style={{ maxWidth: 'min(100%, calc((100dvh - 200px) * 0.8))' }}
           >
             <div aria-hidden="true" className="pointer-events-none absolute left-0 top-0" style={{ width: BACKDROP_SIZE.w, height: BACKDROP_SIZE.h, transform: `scale(${backdropScale})`, transformOrigin: '0 0' }}>
-              <BoothBackdrop scene={scene} reduce={reduce} onReady={(h) => (handleRef.current = h)} />
+              <BoothBackdrop scene={scene} onReady={(h) => (handleRef.current = h)} />
             </div>
             <canvas
               ref={previewRef}
@@ -754,7 +754,14 @@ export function PhotoBooth({ initialScene = 'cheminee', childName, parentsHref =
                     <SceneButton key={s.id} s={s} active={scene === s.id} label={t(s.label)} onClick={() => setScene(s.id)} />
                   ))}
                 </div>
-                <button type="button" className={btnPrimary} onClick={() => setStep('camera')}>
+                <button
+                  type="button"
+                  className={btnPrimary}
+                  onClick={() => {
+                    prefetchQualityModel();
+                    setStep('camera');
+                  }}
+                >
                   <span aria-hidden="true">📸</span> {t(T.go)}
                 </button>
                 <p className="flex items-center gap-2 text-base text-white/80">

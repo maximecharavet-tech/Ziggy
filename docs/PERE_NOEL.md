@@ -22,7 +22,7 @@ call from Santa, and take a photo (and a short video) with him. Paid by parents.
 |---|---|---|---|
 | Letter to Santa + printable letter | ✓ | ✓ | ✓ |
 | Short voice message from Santa (with the first name) | ✓ | ✓ | ✓ |
-| Photo with Santa | 1, watermarked | unlimited, HD, video | unlimited, HD, video |
+| Photo with Santa | watermarked, medium size | unlimited, HD, video | unlimited, HD, video |
 | Guided calls (3 stories) | first minute | unlimited | unlimited |
 | Live AI call with Santa | | | 20 min in total |
 | Children | 1 | 3 | 3 |

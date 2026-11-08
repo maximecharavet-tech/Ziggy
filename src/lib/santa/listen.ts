@@ -13,19 +13,23 @@ export type Ears = {
   close(): void;
 };
 
-/** Pure decision logic, testable: feed it loudness samples every `stepMs`. */
+/**
+ * Pure decision logic, testable: feed it a loudness sample and the real time
+ * since the previous one (browsers slow timers down, so never assume a step).
+ */
 export function makeTurnDetector(opts: { stepMs: number; noise: number }) {
   const start = Math.max(0.035, opts.noise * 2.6);
   let spoken = 0;
   let silence = 0;
   let speaking = false;
-  return (level: number): 'wait' | 'speaking' | 'done' => {
+  return (level: number, dtMs: number = opts.stepMs): 'wait' | 'speaking' | 'done' => {
+    const dt = Math.max(0, Math.min(dtMs, 1000));
     if (level > start) {
-      spoken += opts.stepMs;
+      spoken += dt;
       silence = 0;
       if (spoken >= 220) speaking = true;
     } else {
-      silence += opts.stepMs;
+      silence += dt;
       if (!speaking && silence > 400) spoken = 0;
     }
     if (speaking && silence >= 1000) return 'done';
@@ -66,16 +70,19 @@ export async function openEars(ctx: AudioContext, given?: MediaStream | null): P
       return new Promise((resolve) => {
         const step = 50;
         const detect = makeTurnDetector({ stepMs: step, noise });
-        let elapsed = 0;
+        const t0 = performance.now();
+        let last = t0;
         let heard = false;
         timer = setInterval(() => {
+          const now = performance.now();
           const v = level();
           onLevel?.(Math.min(1, v * 6));
-          const state = detect(v);
+          const state = detect(v, now - last);
+          last = now;
           if (state === 'speaking') heard = true;
-          elapsed += step;
-          // While the child is still talking, give them more time.
-          if (state === 'done' || (elapsed >= maxMs && state !== 'speaking') || elapsed >= maxMs + 8000) {
+          const elapsed = now - t0;
+          // While the child is still talking, give them a little more time.
+          if (state === 'done' || (elapsed >= maxMs && state !== 'speaking') || elapsed >= maxMs + 4000) {
             if (timer) clearInterval(timer);
             timer = null;
             onLevel?.(0);

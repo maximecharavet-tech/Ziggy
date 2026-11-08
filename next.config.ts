@@ -14,6 +14,8 @@ const securityHeaders = [
   { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
 ];
 
+const SANTA_PERMISSIONS = { key: 'Permissions-Policy', value: 'camera=(self), microphone=(self), geolocation=()' };
+
 const nextConfig: NextConfig = {
   // Lets a dev server and a production build run side by side (NEXT_DIST_DIR=.next-dev).
   distDir: process.env.NEXT_DIST_DIR || '.next',
@@ -48,6 +50,10 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       { source: '/(.*)', headers: securityHeaders },
+      // L'appli du Père Noël: the call listens with the microphone and shows the child's camera
+      // (both stay on the device), and the photo booth uses the camera. Same origin only.
+      { source: '/pere-noel/:path*', headers: [SANTA_PERMISSIONS] },
+      { source: '/:locale/pere-noel/:path*', headers: [SANTA_PERMISSIONS] },
       // The service worker must always be re-checked, so updates reach everyone.
       { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }] },
       {

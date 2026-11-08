@@ -97,6 +97,31 @@ async function ensure(model: SegModel, mode: Mode): Promise<ImageSegmenter> {
   return seg;
 }
 
+/** Drops the segmenter (after a failed model swap), so the next call starts clean. */
+async function reset() {
+  const p = instance;
+  instance = null;
+  current = null;
+  try {
+    (await p)?.close();
+  } catch {
+    /* already gone */
+  }
+}
+
+/**
+ * Warms the HTTP cache with the 16 MB multiclass model (low priority) while the
+ * child gets ready, so the photo itself is not slowed by the download.
+ */
+let prefetched = false;
+export function prefetchQualityModel() {
+  if (prefetched || typeof window === 'undefined') return;
+  prefetched = true;
+  fetch(`${MEDIAPIPE_BASE}/${MODEL_FILE.quality}`, { priority: 'low' } as RequestInit).catch(() => {
+    prefetched = false;
+  });
+}
+
 /** Starts downloading / compiling the runtime early (e.g. while the parent reads the camera note). */
 export function warmSegmenter(model: SegModel = 'fast', mode: Mode = 'VIDEO'): Promise<void> {
   return serial(() => ensure(model, mode)).then(
@@ -134,6 +159,8 @@ export function segmentStill(image: HTMLCanvasElement, model: SegModel = 'qualit
       return await run(model);
     } catch (e) {
       if (model === 'fast') throw e;
+      // Multiclass model missing or failing: start over with the small one.
+      await reset();
       return run('fast');
     }
   });

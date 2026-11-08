@@ -8,6 +8,8 @@ their licenses is audited in `docs/evolution/INVENTORY.md`.)
 | three.js | https://github.com/mrdoob/three.js | MIT | © 2010–2026 three.js authors | 0.186.1 |
 | @types/three (dev only) | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | © Microsoft Corporation | 0.186.0 |
 | wasm-bindgen (Rust crate compiled into `src/lib/tv/wasm/`, and its generated JS glue) | https://github.com/rustwasm/wasm-bindgen | MIT OR Apache-2.0 | © The wasm-bindgen Developers | 0.2.129 |
+| @mediapipe/tasks-vision (Santa photo booth: on-device person segmentation; its wasm runtime is self-hosted in `public/santa/mediapipe/wasm/` by `scripts/santa-mediapipe.mjs`) | https://github.com/google-ai-edge/mediapipe | Apache-2.0 | © Google LLC | 1.2.2 |
+| MediaPipe selfie segmentation models `selfie_segmenter.tflite` (float16) and `selfie_multiclass_256x256.tflite` (float32), self-hosted in `public/santa/mediapipe/` | https://ai.google.dev/edge/mediapipe/solutions/vision/image_segmenter | Apache-2.0 (per their model cards) | © Google LLC | latest (downloaded 2026-11-08) |
 
 TV spatial navigation (`rust/ziggy-tv-nav/`, compiled to `src/lib/tv/wasm/`, and its TypeScript twin
 `src/lib/tv/spatial-nav.ts`): the direction scoring is a port of the ideas of **Norigin Spatial Navigation**
@@ -17,7 +19,7 @@ last-focused-child memory. No Norigin code or package is shipped; the algorithm 
 `wasm-bindgen-cli` 0.2.129 (MIT OR Apache-2.0) builds the glue on the developer's machine (`scripts/build-tv-nav.sh`).
 
 Content:
-- "Jingle Bells" melody (James Lord Pierpont, 1857) — public domain; arranged as a music box in `src/games3d/kit/music.ts`.
+- "Jingle Bells" melody (James Lord Pierpont, 1857) — public domain; arranged as a music box in `src/games3d/kit/music.ts`. Also synthesized as the photo booth clip's jingle in `src/components/santa/booth/jingle.ts`.
 - Ziggy's recorded bedtime voice (`public/dodo/voice/**`, MP3 + word timings + visemes) is generated offline by
   the Rust voice engine `voice-engine/` (ziggy-voice v2) with **Kokoro-82M** — model weights and voice styles
   (`ff_siwis`, `af_heart`, `af_sky`, `bf_lily`, `af_bella`, blended) — © hexgrad, **Apache-2.0**

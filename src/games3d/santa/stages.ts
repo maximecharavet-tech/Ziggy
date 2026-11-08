@@ -15,6 +15,7 @@ import {
   makeElfZiggy,
   makeFireplace,
   makeLightString,
+  makePineBulbs,
   makeReindeer,
   makeShelf,
   makeSleigh,
@@ -117,7 +118,7 @@ export function buildVillage(ctx: StageContext): Stage {
   const ziggies: ZiggyActor[] = [];
 
   root.add(makeNightSky());
-  const aurora = makeAurora({ radius: 70, y: 14, lowPower: low, opacity: 0.95 });
+  const aurora = makeAurora({ radius: 46, y: 10, lowPower: low, opacity: 0.95 });
   aurora.position.z = -10;
   root.add(aurora);
   const ground = makeSnowGround(150, 16);
@@ -243,12 +244,16 @@ export function buildVillage(ctx: StageContext): Stage {
     frame(aspect) {
       // Wide screens see the whole yard; portrait keeps Santa, the door and the sky.
       const k = wideness(aspect);
-      const fov = lerp(42, 38, k);
-      const w = lerp(4.4, 13.8, k);
-      const h = lerp(8.2, 7.2, k);
-      const target = V(lerp(0, -0.5, k), lerp(3.0, 2.75, k), -1.2);
+      // Santa stands a little above the middle of the picture: the hub page
+      // lays its title over the lower part.
+      // The hub page lays its title over the lower half: Santa stands in the
+      // upper part of the picture (about a third from the top on a phone).
+      const fov = lerp(46, 38, k);
+      const w = lerp(5.8, 13.8, k);
+      const h = lerp(8.2, 7.4, k);
+      const target = V(lerp(0, -0.5, k), lerp(-0.25, 1.35, k), -1.2);
       const d = fitDistance(w, h, fov, aspect);
-      const dir = V(0, lerp(0.05, 0.1, k), 1).normalize();
+      const dir = V(0, lerp(0.08, 0.1, k), 1).normalize();
       return { pos: target.clone().addScaledVector(dir, d), target, fov };
     },
     update(dt, t, camera) {
@@ -378,14 +383,10 @@ export function buildOffice(ctx: StageContext): Stage {
   const tree = makeSoftPine(0.75, 7, low);
   tree.position.set(2.75, 0, -0.95);
   root.add(tree);
-  const treeLights: THREE.Mesh[] = [...garland.userData.bulbs];
-  for (let i = 0; i < 3; i++) {
-    const y = 0.7 + i * 0.5;
-    const r = 0.7 - i * 0.18;
-    const str = makeLightString(V(2.75 - r, y + 0.2, -0.95 + 0.35), V(2.75 + r, y, -0.95 + 0.45), 6, 0.1, 0.04);
-    treeLights.push(...str.userData.bulbs);
-    root.add(str);
-  }
+  const tb = makePineBulbs(0.75, 18);
+  tb.position.copy(tree.position);
+  root.add(tb);
+  const treeLights: THREE.Mesh[] = [...garland.userData.bulbs, ...tb.userData.bulbs];
 
   // The desk, with the "nice things" scroll, a candle, cocoa and cookies.
   const deskTop = 0.98 + LIFT * 0;
@@ -428,7 +429,7 @@ export function buildOffice(ctx: StageContext): Stage {
   candle.position.set(0.95, deskTop + 0.11, 0.85);
   const holder = new THREE.Mesh(new THREE.CylinderGeometry(0.11, 0.12, 0.03, 16), new THREE.MeshStandardMaterial({ color: '#f0bd45', metalness: 0.7, roughness: 0.3 }));
   holder.position.set(0.95, deskTop + 0.015, 0.85);
-  const flame = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffd27a').multiplyScalar(2), toneMapped: false }));
+  const flame = new THREE.Mesh(new THREE.SphereGeometry(0.03, 10, 8), new THREE.MeshBasicMaterial({ color: new THREE.Color('#ffd27a').multiplyScalar(2.6), toneMapped: false }));
   flame.scale.set(1, 1.8, 1);
   flame.position.set(0.95, deskTop + 0.27, 0.85);
   const flameGlow = glow('#ffb347', 0.6, 0.7);
@@ -466,7 +467,7 @@ export function buildOffice(ctx: StageContext): Stage {
   const fill = new THREE.PointLight('#ffb070', 1.2, 6, 1.5);
   fill.position.set(0, 2.2, 2.2);
   root.add(fill);
-  frontFill(root, 0.7, V(0, 1.7, 0));
+  frontFill(root, 0.45, V(0, 1.7, 0));
 
   // Ziggy peeks in from the side now and then.
   const ziggy = makeElfZiggy(low);
@@ -484,7 +485,7 @@ export function buildOffice(ctx: StageContext): Stage {
     background: new THREE.Color('#2a1416'),
     fog: null,
     drift: 0.35 * ctx.energy,
-    bloom: { strength: 0.35, radius: 0.45, threshold: 1.6 },
+    bloom: { strength: 0.35, radius: 0.45, threshold: 2.0 },
     frame(aspect) {
       // Chest-up, centred: the head sits a little above the middle.
       const k = wideness(aspect);
@@ -546,8 +547,9 @@ const SLOT = { gap: 0.55, w: 1.2, h: 1.75 };
 /** Framing for a booth: Santa and the child's slot fill the picture, floor near the bottom. */
 function boothFrame(santaX: number, slot: { x0: number; x1: number }, aspect: number): Framing {
   const fov = 36;
-  const x0 = Math.min(santaX - 0.85, slot.x0 - 0.2);
-  const x1 = Math.max(santaX + 0.85, slot.x1 + 0.2);
+  // Room for Santa's tummy and waving arm on one side, the child on the other.
+  const x0 = Math.min(santaX - 1.0, slot.x0 - 0.25);
+  const x1 = Math.max(santaX + 1.0, slot.x1 + 0.25);
   const w = x1 - x0;
   const h = 2.75;
   const d = fitDistance(w, h, fov, aspect);
@@ -602,17 +604,10 @@ function buildCheminee(ctx: StageContext): Stage {
   const tree = makeSoftPine(1.25, 4, low);
   tree.position.set(1.9, 0, -1.7);
   root.add(tree);
-  const treeLights: THREE.Mesh[] = [...garland.userData.bulbs];
-  for (let i = 0; i < 4; i++) {
-    const y = 0.8 + i * 0.6;
-    const r = 1.1 - i * 0.24;
-    const str = makeLightString(V(1.9 - r, y + 0.25, -1.7 + 0.5), V(1.9 + r, y, -1.7 + 0.6), 7, 0.12, 0.05);
-    treeLights.push(...str.userData.bulbs);
-    root.add(str);
-  }
-  const star = glow('#ffe066', 0.9, 0.9);
-  star.position.set(1.9, 3.2, -1.7);
-  root.add(star);
+  const tb = makePineBulbs(1.25, 26);
+  tb.position.copy(tree.position);
+  root.add(tb);
+  const treeLights: THREE.Mesh[] = [...garland.userData.bulbs, ...tb.userData.bulbs];
   ['#3f7fe0', '#ff7ab8', '#3fbf6a'].forEach((c, i) => {
     const gift = makeGift(c, undefined, 0.42 - i * 0.06);
     gift.position.set(1.4 + i * 0.5, 0, -1.0 + (i % 2) * 0.2);
@@ -640,7 +635,7 @@ function buildCheminee(ctx: StageContext): Stage {
     ziggies: [],
     background: new THREE.Color('#2a1416'),
     fog: null,
-    bloom: { strength: 0.35, radius: 0.45, threshold: 1.6 },
+    bloom: { strength: 0.35, radius: 0.45, threshold: 2.0 },
     update(_dt, t) {
       animateFire(fire, t, ctx.energy);
       twinkleBulbs(treeLights, t, ctx.energy);
@@ -701,7 +696,7 @@ function buildTraineau(ctx: StageContext): Stage {
     ziggies: [],
     background: new THREE.Color('#141c48'),
     fog: new THREE.Fog('#1c2657', 14, 60),
-    bloom: { strength: 0.45, radius: 0.5, threshold: 1.5 },
+    bloom: { strength: 0.45, radius: 0.5, threshold: 1.8 },
     update(dt, t) {
       for (const m of aurora.userData.mats) m.uniforms.uTime.value = t * (0.4 + 0.6 * ctx.energy);
       animateReindeer(deer, t, ctx.energy);
@@ -754,7 +749,7 @@ function buildRennes(ctx: StageContext): Stage {
     ziggies: [],
     background: new THREE.Color('#141c48'),
     fog: new THREE.Fog('#1c2657', 12, 50),
-    bloom: { strength: 0.45, radius: 0.5, threshold: 1.5 },
+    bloom: { strength: 0.45, radius: 0.5, threshold: 1.8 },
     update(dt, t) {
       for (const m of aurora.userData.mats) m.uniforms.uTime.value = t * (0.4 + 0.6 * ctx.energy);
       deer.forEach((r) => animateReindeer(r, t, ctx.energy));
@@ -806,27 +801,21 @@ function buildAtelier(ctx: StageContext): Stage {
   // Ziggy the elf waves from a little shelf above the child's place.
   const zx = (base.slot.x0 + base.slot.x1) / 2 - 0.1;
   const plank = makeShelf(0.9);
-  plank.position.set(zx, 2.02, -1.3);
+  plank.position.set(zx, 1.86, -1.3);
   root.add(plank);
   for (const sx of [-1, 1]) {
     const bracket = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.3, 0.3), soft('#6d3d1e'));
-    bracket.position.set(zx + sx * 0.35, 1.84, -1.35);
+    bracket.position.set(zx + sx * 0.35, 1.68, -1.35);
     root.add(shadowed(bracket));
   }
   const ziggy = makeElfZiggy(low);
   ziggy.scale.setScalar(0.48);
-  ziggy.position.set(zx, 2.06, -1.25);
+  ziggy.position.set(zx, 1.9, -1.25);
   ziggy.rotation.y = 0.25;
   ziggy.userData.rig.idle = 'wave';
   ziggy.userData.rig.energy = ctx.energy;
   root.add(ziggy);
-  // Hanging bulbs across the ceiling.
-  const bulbs: THREE.Mesh[] = [];
-  for (const z of [-1.0, -2.0]) {
-    const s = makeLightString(V(-4, 3.6, z), V(4, 3.6, z), 14, 0.35, 0.06);
-    bulbs.push(...s.userData.bulbs);
-    root.add(s);
-  }
+  // (No garland across the top: the photo booth draws its own in the foreground.)
   root.add(new THREE.HemisphereLight('#ffe6cc', '#3a2418', 0.65));
   const key = new THREE.DirectionalLight('#ffe3c4', 1.6);
   key.position.set(2, 5, 6);
@@ -841,9 +830,8 @@ function buildAtelier(ctx: StageContext): Stage {
     ziggies: [ziggy],
     background: new THREE.Color('#2a1a10'),
     fog: null,
-    bloom: { strength: 0.35, radius: 0.45, threshold: 1.6 },
-    update(dt, t) {
-      twinkleBulbs(bulbs, t, ctx.energy);
+    bloom: { strength: 0.35, radius: 0.45, threshold: 2.0 },
+    update(dt) {
       ziggy.userData.rig.update(dt);
     },
   };

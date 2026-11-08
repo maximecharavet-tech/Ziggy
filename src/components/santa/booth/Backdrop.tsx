@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { SantaScene } from '@/components/santa/SantaScene';
 import type { BoothSceneId, SantaSceneHandle } from '@/lib/santa/types';
 import { createFallbackBackdrop } from './fallback-backdrop';
 
@@ -10,15 +11,15 @@ import { createFallbackBackdrop } from './fallback-backdrop';
  * buffer at the 3D scene's 1.5 pixel ratio), which the booth scales down to fit
  * its stage. Hands the current SantaSceneHandle to `onReady`.
  *
- * The 3D scene (src/games3d/santa, loaded lazily) is the real backdrop; the 2D
- * painted stand-in shows while three.js loads and stays when WebGL is missing,
- * fails, or loses its context.
+ * The 3D scene (<SantaScene mode="booth">, three.js loaded lazily) is the real
+ * backdrop; the 2D painted stand-in shows while it loads and stays when WebGL
+ * is missing, fails, or loses its context.
  */
 export const BACKDROP_SIZE = { w: 720, h: 900 };
 
-type Props = { scene: BoothSceneId; reduce: boolean; onReady: (h: SantaSceneHandle) => void };
+type Props = { scene: BoothSceneId; onReady: (h: SantaSceneHandle) => void };
 
-export function FallbackBackdrop({ scene, onReady }: Omit<Props, 'reduce'>) {
+export function FallbackBackdrop({ scene, onReady }: Props) {
   const host = useRef<HTMLDivElement>(null);
   const handle = useRef<SantaSceneHandle | null>(null);
   const first = useRef(scene);
@@ -44,81 +45,23 @@ export function FallbackBackdrop({ scene, onReady }: Omit<Props, 'reduce'>) {
   return <div ref={host} className="absolute inset-0" />;
 }
 
-function webglAvailable(): boolean {
-  try {
-    const c = document.createElement('canvas');
-    return Boolean(c.getContext('webgl2') || c.getContext('webgl'));
-  } catch {
-    return false;
-  }
-}
-
-function Booth3D({ scene, reduce, onReady, onFail }: Props & { onFail: () => void }) {
-  const canvas = useRef<HTMLCanvasElement>(null);
-  const handle = useRef<SantaSceneHandle | null>(null);
-  const first = useRef({ scene, reduce });
-  const cb = useRef({ onReady, onFail });
-  cb.current = { onReady, onFail };
-  const [shown, setShown] = useState(false);
-
-  useEffect(() => {
-    const cv = canvas.current;
-    if (!cv) return;
-    if (!webglAvailable()) {
-      cb.current.onFail();
-      return;
-    }
-    let alive = true;
-    const lost = (e: Event) => {
-      e.preventDefault();
-      cb.current.onFail();
-    };
-    cv.addEventListener('webglcontextlost', lost);
-    import('@/games3d/santa')
-      .then(({ mountSantaScene }) => {
-        if (!alive) return;
-        const h = mountSantaScene(cv, { mode: 'booth', boothScene: first.current.scene, reducedMotion: first.current.reduce });
-        handle.current = h;
-        // Let it draw a frame before it replaces the painted stand-in.
-        requestAnimationFrame(() =>
-          requestAnimationFrame(() => {
-            if (!alive) return;
-            setShown(true);
-            cb.current.onReady(h);
-          }),
-        );
-      })
-      .catch(() => alive && cb.current.onFail());
-    return () => {
-      alive = false;
-      cv.removeEventListener('webglcontextlost', lost);
-      handle.current?.dispose();
-      handle.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    handle.current?.setScene(scene);
-  }, [scene]);
-
-  return <canvas ref={canvas} className="absolute inset-0 block h-full w-full" style={{ opacity: shown ? 1 : 0 }} />;
-}
-
-export function BoothBackdrop({ scene, reduce, onReady }: Props) {
+export function BoothBackdrop({ scene, onReady }: Props) {
   const [failed, setFailed] = useState(false);
   const [ready3d, setReady3d] = useState(false);
   return (
     <div className="relative h-full w-full">
       {(!ready3d || failed) && <FallbackBackdrop scene={scene} onReady={onReady} />}
       {!failed && (
-        <Booth3D
-          scene={scene}
-          reduce={reduce}
+        <SantaScene
+          mode="booth"
+          boothScene={scene}
+          className="absolute inset-0"
           onReady={(h) => {
+            h.canvas.addEventListener('webglcontextlost', () => setFailed(true), { once: true });
             setReady3d(true);
             onReady(h);
           }}
-          onFail={() => setFailed(true)}
+          onError={() => setFailed(true)}
         />
       )}
     </div>

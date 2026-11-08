@@ -3,7 +3,7 @@
  * Self-hosts MediaPipe Tasks Vision for the Santa photo booth
  * (src/components/santa/booth). Run again after upgrading @mediapipe/tasks-vision:
  *
- *   node scripts/santa-mediapipe.mjs            # copy the wasm runtime
+ *   node scripts/santa-mediapipe.mjs            # copy the wasm runtime (offline; also the npm postinstall)
  *   node scripts/santa-mediapipe.mjs --models   # also (re)download the two models
  *
  * - wasm: node_modules/@mediapipe/tasks-vision/wasm/vision_wasm_internal.{js,wasm}
@@ -15,13 +15,18 @@
  *
  * Nothing is fetched from Google at run time: the booth loads only these files.
  */
-import { copyFileSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { copyFileSync, existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const src = join(root, 'node_modules/@mediapipe/tasks-vision/wasm');
 const out = join(root, 'public/santa/mediapipe');
+if (!existsSync(src)) {
+  // Runs as "postinstall": never fail an install (e.g. a partial install without the package).
+  console.warn('santa-mediapipe: @mediapipe/tasks-vision is not installed, nothing copied.');
+  process.exit(0);
+}
 mkdirSync(join(out, 'wasm'), { recursive: true });
 
 for (const f of ['vision_wasm_internal.js', 'vision_wasm_internal.wasm']) {

@@ -13,4 +13,3 @@ next-env.d.ts
 
 # Santa photo booth: MediaPipe wasm is copied from node_modules at install (scripts/santa-mediapipe.mjs)
 /public/santa/mediapipe/wasm/
-/public/santa/mediapipe/selfie_multiclass_256x256.tflite

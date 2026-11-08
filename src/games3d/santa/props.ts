@@ -264,12 +264,7 @@ export function makeSoftPine(scale = 1, seed = 1, lowPower = false): THREE.Group
   const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.16, 0.5, 8), soft('#6b4226'));
   trunk.position.y = 0.25;
   g.add(trunk);
-  const tiers = [
-    { r: 1.0, h: 1.2, y: 0.45 },
-    { r: 0.8, h: 1.05, y: 1.1 },
-    { r: 0.58, h: 0.9, y: 1.7 },
-  ];
-  for (const t of tiers) {
+  for (const t of PINE_TIERS) {
     // A cone with a puffy, slightly scalloped skirt.
     const prof: THREE.Vector2[] = [];
     for (let i = 0; i <= 8; i++) {
@@ -294,6 +289,50 @@ export function makeSoftPine(scale = 1, seed = 1, lowPower = false): THREE.Group
   g.scale.setScalar(scale);
   g.rotation.y = r() * Math.PI;
   return shadowed(g, false);
+}
+
+const PINE_TIERS = [
+  { r: 1.0, h: 1.2, y: 0.45 },
+  { r: 0.8, h: 1.05, y: 1.1 },
+  { r: 0.58, h: 0.9, y: 1.7 },
+];
+
+/** Radius of a soft pine (scale 1) at a height: the widest tier there. */
+function pineRadius(y: number) {
+  let r = 0;
+  for (const t of PINE_TIERS) {
+    const k = (y - t.y) / t.h;
+    if (k >= 0 && k <= 1) r = Math.max(r, t.r * (1 - k) * (1 + 0.12 * Math.sin(k * Math.PI)));
+  }
+  return r;
+}
+
+/** Glowing bulbs spiralling around a soft pine (add to the pine's parent at the pine's place). */
+export function makePineBulbs(scale: number, n = 22, turns = 3.2): THREE.Group & { userData: { bulbs: THREE.Mesh[] } } {
+  const g = new THREE.Group() as THREE.Group & { userData: { bulbs: THREE.Mesh[] } };
+  const colors = ['#ff4d4d', '#ffd23d', '#4dc3ff', '#7cff6b', '#ff7ad9'];
+  const bulbs: THREE.Mesh[] = [];
+  for (let i = 0; i < n; i++) {
+    const t = (i + 0.5) / n;
+    const y = 0.55 + t * 1.85;
+    const a = t * turns * Math.PI * 2;
+    // Only the front half: the back is never seen and costs draw calls.
+    if (Math.cos(a) < -0.35) continue;
+    const r = pineRadius(y) * 0.92 + 0.03;
+    const b = new THREE.Mesh(new THREE.SphereGeometry(0.055, 8, 6), glowMat(colors[i % colors.length], 1.8));
+    b.position.set(Math.sin(a) * r * scale, y * scale, Math.cos(a) * r * scale);
+    b.userData.color = colors[i % colors.length];
+    bulbs.push(b);
+    g.add(b);
+  }
+  const star = new THREE.Mesh(new THREE.OctahedronGeometry(0.16, 0), glowMat('#ffe066', 1.6));
+  star.scale.set(1, 1.25, 0.5);
+  star.position.y = 2.75 * scale;
+  const halo = glow('#ffe066', 0.8 * scale, 0.7);
+  halo.position.set(0, 2.75 * scale, 0.05);
+  g.add(star, halo);
+  g.userData.bulbs = bulbs;
+  return g;
 }
 
 /** A smooth, friendly snowman with a felt scarf and a little hat. */

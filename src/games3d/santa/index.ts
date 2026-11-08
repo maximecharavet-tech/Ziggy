@@ -86,6 +86,7 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
     rig.setPose(pose);
   };
 
+  let disposed = false;
   let width = 1;
   let height = 1;
   const base = { pos: new THREE.Vector3(), target: new THREE.Vector3() };
@@ -101,6 +102,7 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
   };
 
   const resize = () => {
+    if (disposed) return;
     width = Math.max(1, Math.round(canvas.clientWidth || canvas.width || 1));
     height = Math.max(1, Math.round(canvas.clientHeight || canvas.height || 1));
     renderer.setSize(width, height, false);
@@ -144,6 +146,9 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
     clock.getDelta();
   };
   document.addEventListener('visibilitychange', onVisibility);
+  // Follow the canvas box on our own too (the page may forget to call resize()).
+  const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => resize()) : null;
+  ro?.observe(canvas);
   loop();
 
   const disposeStage = (s: Stage) => {
@@ -155,7 +160,6 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
     disposeTree(s.root);
   };
 
-  let disposed = false;
   return {
     canvas,
     setTalk(level: number) {
@@ -194,6 +198,7 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
       disposed = true;
       cancelAnimationFrame(raf);
       document.removeEventListener('visibilitychange', onVisibility);
+      ro?.disconnect();
       disposeStage(stage);
       post?.dispose();
       disposeEnv();

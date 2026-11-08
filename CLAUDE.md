@@ -46,7 +46,7 @@ device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.
 ## Lessons learned
 - `next dev` rewrites `tsconfig.json` and `next-env.d.ts`: check `git diff tsconfig.json` before committing and drop only next's additions (`.next-*` includes); keep `next-env.d.ts` on `./.next/types/routes.d.ts`.
 - Several dev servers at once: give each its own `NEXT_DIST_DIR=.next-<name>` and port; never `rm -rf .next` while another one runs.
-- `next build` with `NEXT_DIST_DIR` also adds `.next-<name>/types` to `tsconfig.json`: never `git add -A` blind after a build; run `git status --short` first and restore `tsconfig.json` (a silenced `git checkout … 2>/dev/null` once let it through).
+- `next build` with `NEXT_DIST_DIR` also adds `.next-<name>/types` to `tsconfig.json`: never `git add -A` blind after a build; run `git status --short` first and restore it with `git checkout tsconfig.json` alone (`next-env.d.ts` is not tracked, so `git checkout tsconfig.json next-env.d.ts` fails and restores nothing).
 - `src/lib/motion.ts` holds shared motion tokens (no `'use client'`): don't overwrite it, add new hooks in their own files.
 - Never touch Supabase project `awvgmkoozerfggdvvubi` (another product's data).
 - Projected decals on a curved mesh must be tessellated first (big flat triangles sink into the surface).

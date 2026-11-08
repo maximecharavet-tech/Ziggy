@@ -94,7 +94,7 @@ export function SantaScene({ mode, boothScene = 'cheminee', className = '', onRe
   return (
     <div
       ref={boxRef}
-      className={`relative overflow-hidden ${className}`}
+      className={`${/\b(absolute|fixed|sticky)\b/.test(className) ? '' : 'relative '}overflow-hidden ${className}`}
       role={label ? 'img' : undefined}
       aria-label={label}
       aria-hidden={label ? undefined : true}

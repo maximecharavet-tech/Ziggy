@@ -56,7 +56,7 @@ export function Navbar() {
     { key: 'create', path: '/creer', label: t('create') },
     { key: 'dodo', path: '/dodo', label: `🌙 ${t('dodo')}` },
     // Seasonal: L'appli du Père Noël (until the end of January).
-    { key: 'santa', path: '/pere-noel', label: `🎅 ${locale === 'fr' ? 'Père Noël' : 'Santa'}` },
+    { key: 'santa', path: '/pere-noel', label: `🎅 ${locale === 'fr' ? 'Noël' : 'Santa'}` },
     { key: 'learn', path: '/apprendre', label: t('learn') },
     { key: 'lab', path: '/lab', label: t('lab') },
     { key: 'apps', path: '/telecharger', label: t('apps') },
@@ -74,7 +74,7 @@ export function Navbar() {
       <nav
         data-scrolled={pill}
         className={`liquid-nav site-nav-bar mx-auto flex items-center justify-between transition-all duration-300 ${
-          scrolled ? 'max-w-6xl h-14 sm:h-16 px-3 sm:px-5 mx-3 sm:mx-auto' : 'max-w-7xl h-16 sm:h-18 px-4 sm:px-6 lg:px-8'
+          scrolled ? 'max-w-7xl h-14 sm:h-16 px-3 sm:px-5 mx-3 sm:mx-auto' : 'max-w-7xl h-16 sm:h-18 px-4 sm:px-6 lg:px-8'
         }`}
       >
         <Link href={shell.app ? homeOf(shell) : '/'} className="relative z-10 flex items-center gap-2 group shrink-0" aria-label="Ziggy — home">
@@ -82,15 +82,15 @@ export function Navbar() {
           <ZiggyLogo size={96} className="transition-transform duration-300 group-hover:-rotate-1" />
         </Link>
 
-        {/* Eight links and the controls fit in every language from 1280 px; the menu button below that. */}
-        <div className="web-only relative z-10 hidden xl:flex items-center gap-1" onMouseLeave={() => setHovered(null)}>
+        {/* Nine links and the controls fit in every language from 1280 px; the menu button below that. */}
+        <div className="web-only relative z-10 hidden xl:flex items-center gap-0.5" onMouseLeave={() => setHovered(null)}>
           {navLinks.map((link) => (
             <Link
               key={link.key}
               href={hrefOf(link)}
               onMouseEnter={() => setHovered(link.key)}
               onFocus={() => setHovered(link.key)}
-              className="relative whitespace-nowrap px-3.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
+              className="relative whitespace-nowrap px-2.5 py-2 text-sm font-semibold text-text-muted hover:text-text-body transition-colors rounded-full"
             >
               {hovered === link.key && (
                 <motion.span
@@ -110,7 +110,7 @@ export function Navbar() {
           <ParentsButton />
         </div>
 
-        <div className="web-only relative z-10 hidden xl:flex items-center gap-3">
+        <div className="web-only relative z-10 hidden xl:flex items-center gap-2">
           <SoundToggle />
           <ThemeToggle />
           <LanguageSwitcher />

@@ -3,7 +3,6 @@ import { setRequestLocale } from 'next-intl/server';
 import { PhotoBooth } from '@/components/santa/booth/PhotoBooth';
 import { alternatesFor } from '@/lib/seo';
 
-// Temporary page (photo booth agent) — the lead owns and rewrites it.
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   return {

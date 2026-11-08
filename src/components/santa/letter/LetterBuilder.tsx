@@ -125,7 +125,7 @@ export function LetterBuilder() {
 
       <AnimatePresence mode="wait">
         {stage === 'write' && (
-          <motion.div key="write" exit={reduced ? undefined : { opacity: 0 }} className="mt-8 grid gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start">
+          <motion.div key="write" exit={reduced ? undefined : { opacity: 0 }} className="mt-8 grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] lg:items-start">
             {/* The letter (parchment) */}
             <div className="santa-letter relative mx-auto w-full max-w-lg rotate-[-1deg] rounded-[1.5rem] bg-[linear-gradient(180deg,#fffaf0,#fdf1d8)] p-6 text-[#4a2c12] shadow-[0_30px_60px_-20px_rgba(0,0,0,0.6)] ring-1 ring-[#e8d2a6] sm:p-8 lg:sticky lg:top-24">
               <div aria-hidden="true" className="pointer-events-none absolute inset-3 rounded-[1.1rem] border-2 border-dashed border-[#e4c48a]" />
@@ -202,7 +202,7 @@ export function LetterBuilder() {
             </div>
 
             {/* Gift picker */}
-            <div className="print:hidden">
+            <div className="min-w-0 print:hidden">
               <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden">
                 <button type="button" onClick={() => setCat('all')} aria-pressed={cat === 'all'} className={`min-h-12 shrink-0 rounded-full px-4 font-bold ${cat === 'all' ? 'bg-white text-[#1b2150]' : 'bg-white/15 text-white ring-1 ring-white/25'}`}>
                   ✨ {tr(T.all, locale)}

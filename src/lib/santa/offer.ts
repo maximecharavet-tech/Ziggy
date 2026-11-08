@@ -52,7 +52,7 @@ const AI_CALL: L = { fr: `Appel en direct avec le Père Noël (IA) : ${SANTA_AI_
 export const SANTA_FREE_FEATURES: L[] = [
   LETTER,
   VOICE,
-  { fr: '1 photo avec le Père Noël (avec filigrane)', en: '1 photo with Santa (watermarked)' },
+  { fr: 'Photos avec le Père Noël (avec filigrane)', en: 'Photos with Santa (watermarked)' },
   { fr: 'Appels guidés : la première minute', en: 'Guided calls: the first minute' },
   { fr: '1 enfant', en: '1 child' },
 ];

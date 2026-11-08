@@ -598,7 +598,7 @@ export class SantaRig {
   private poseT = 0;
   private talkTarget = 0;
   private talk = 0;
-  private blinkAt = 1.2;
+  private blinkAt = 2.6;
   private blinkT = -1;
   private cur: Pose;
   private w = { laugh: 0, wave: 0, write: 0, listen: 0, wink: 0, hug: 0 };
