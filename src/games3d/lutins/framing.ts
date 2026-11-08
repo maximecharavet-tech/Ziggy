@@ -104,7 +104,7 @@ export function heroView(aspect: number, focus: Vec3, w: number, h: number) {
   const fov = 34 + (1 - k) * 8;
   const d = fitDistance(w * (1.0 + 0.15 * k), h * (1.25 - 0.1 * k), fov, aspect);
   // Phones look up a little: the elves sit low, the tree and the snowy window fill the top.
-  const target = { x: focus.x, y: focus.y + 0.09 + (1 - k) * 0.75, z: focus.z };
+  const target = { x: focus.x, y: focus.y + 0.09 + (1 - k) * 0.5, z: focus.z };
   const pos = { x: focus.x + 0.35 * k, y: focus.y + 0.4 * k + 0.2, z: focus.z + d };
   return { pos, target, fov };
 }

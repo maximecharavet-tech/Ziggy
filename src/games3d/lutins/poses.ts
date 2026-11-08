@@ -69,7 +69,8 @@ export function poseTarget(pose: ElfPose, side: 1 | -1 = 1): PoseState {
     turn: 0,
     headPitch: 0.02,
     headYaw: 0,
-    headTilt: 0.05,
+    // A friendly little head tilt, toward the gesture side.
+    headTilt: side * 0.05,
     arms: [REST_ARM(), REST_ARM()],
     legs: [leg(0, 0.04), leg(0, 0.04)],
     happy: 0,
@@ -86,7 +87,7 @@ export function poseTarget(pose: ElfPose, side: 1 | -1 = 1): PoseState {
       P.lean = -0.08;
       P.legs = [leg(1.45, 0.22), leg(1.45, 0.22)];
       P.arms = [arm(0.5, 0.35, 0.35), arm(0.5, 0.35, 0.35)];
-      P.headTilt = 0.12;
+      P.headTilt = side * 0.12;
       P.headPitch = -0.04;
       break;
     case 'wave':
@@ -118,7 +119,8 @@ export function poseTarget(pose: ElfPose, side: 1 | -1 = 1): PoseState {
       P.tiptoe = 1;
       P.lean = 0.14;
       P.arms = [arm(0.55, 0.9, 1.25), arm(0.55, 0.9, 1.25)];
-      P.legs = [leg(0.25, 0.05), leg(-0.12, 0.05)];
+      P.legs[act] = leg(0.25, 0.05);
+      P.legs[other] = leg(-0.12, 0.05);
       P.headYaw = side * 0.35;
       P.headPitch = -0.04;
       P.turn = side * 0.08;

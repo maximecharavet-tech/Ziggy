@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { LutinsScene } from '@/components/lutins/LutinsScene';
 import bible from '@/data/lutins/bible.json';
+import { ElfAvatar } from '@/components/lutins/ElfAvatar';
 
 const T = {
   eyebrow: { fr: 'Gratuit tout le mois de décembre', en: 'Free all through December' },
@@ -67,8 +68,7 @@ export function LutinsHome() {
           {ELVES.map((e, i) => (
             <motion.li key={e.id} initial={reduced ? false : { opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 + i * 0.1 }} className="overflow-hidden rounded-[1.75rem] bg-white/10 ring-1 ring-white/15">
               <div className="aspect-square" style={{ background: `radial-gradient(circle at 50% 35%, ${e.accent}66, ${e.color}44 70%)` }}>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={`/lutins/refs/avatars/${e.id}.png`} alt={tr(e.name, locale)} className="h-full w-full object-contain" />
+                <ElfAvatar id={e.id} alt={tr(e.name, locale)} className="h-full w-full object-contain" />
               </div>
               <div className="p-4">
                 <p className="font-display text-2xl font-bold" style={{ color: e.accent }}>

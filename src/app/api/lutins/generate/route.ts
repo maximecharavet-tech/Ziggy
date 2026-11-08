@@ -9,6 +9,7 @@ import { cleanParentText } from '@/lib/lutins/text';
 import { clientIp, DEVICE_RE, refundUse, takeUse } from '@/lib/lutins/limits';
 import { signSource } from '@/lib/lutins/sign';
 import { serverBuildPrompt } from '@/lib/lutins/server-engine';
+import { canonicalPath, lutinsPublicUrl } from '@/lib/lutins/portraits';
 
 /**
  * Les Lutins Farceurs — put Ziggy's three felt elves into a parent's room photo.
@@ -32,14 +33,28 @@ const PHOTO_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/;
 const ELVES = new Set(['pepin', 'grelotte', 'noisette']);
 const SIZES = { portrait: '1024x1536', landscape: '1536x1024', square: '1024x1024' } as const;
 
-let sheet: Promise<string> | null = null;
-/** The elves' reference sheet, sent with every photo so the AI copies their exact design. */
+let sheet: { at: number; uri: Promise<string> } | null = null;
+/**
+ * The elves' reference sheet, sent with every photo so the AI copies their exact design:
+ * the one the owner approved (made with Agnes, public bucket), else the 3D sheet shipped
+ * with the site. Re-read every 10 minutes, so a new approval is picked up.
+ */
 function sheetDataUri(): Promise<string> {
-  sheet ??= readFile(join(process.cwd(), 'public/lutins/refs/sheet.png')).then((b) => `data:image/png;base64,${b.toString('base64')}`);
-  sheet.catch(() => {
+  if (sheet && Date.now() - sheet.at < 10 * 60_000) return sheet.uri;
+  const uri = (async () => {
+    const approved = lutinsPublicUrl(canonicalPath('sheet'));
+    if (approved) {
+      const res = await fetch(approved, { signal: AbortSignal.timeout(8000) }).catch(() => null);
+      if (res?.ok) return `data:${res.headers.get('content-type')?.split(';')[0] || 'image/png'};base64,${Buffer.from(await res.arrayBuffer()).toString('base64')}`;
+    }
+    const local = await readFile(join(process.cwd(), 'public/lutins/refs/sheet.png'));
+    return `data:image/png;base64,${local.toString('base64')}`;
+  })();
+  sheet = { at: Date.now(), uri };
+  uri.catch(() => {
     sheet = null;
   });
-  return sheet;
+  return uri;
 }
 
 export async function POST(request: NextRequest) {

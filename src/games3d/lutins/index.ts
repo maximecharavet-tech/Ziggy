@@ -72,13 +72,14 @@ function shadowFloor(size: number, opacity: number): THREE.Mesh {
 }
 
 /** Where the stage elves stand (left to right) and how they start. */
-function stagePlacement(ids: ElfId[]): { id: ElfId; x: number; z: number; rotY: number; pose: ElfPose }[] {
+function stagePlacement(ids: ElfId[]): { id: ElfId; x: number; z: number; rotY: number; pose: ElfPose; side: 1 | -1 }[] {
   const defaults: Record<ElfId, ElfPose> = { pepin: 'wave', grelotte: 'stand', noisette: 'sit' };
   const n = ids.length;
   return ids.map((id, i) => {
     const t = n === 1 ? 0 : i / (n - 1) - 0.5;
     const small = id === 'noisette';
-    return { id, x: t * 0.85 * Math.max(1, n - 1), z: small ? 0.22 : 0, rotY: -t * 0.35, pose: defaults[id] };
+    // Gestures go outward (a wave toward the edge, not into a friend's face).
+    return { id, x: t * 0.9 * Math.max(1, n - 1), z: small ? 0.25 : 0, rotY: -t * 0.35, pose: defaults[id], side: t < 0 ? -1 : 1 };
   });
 }
 
@@ -157,6 +158,7 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       a.userData.rig.setPose(opts.poses?.[spot.id] ?? spot.pose, spot.side);
       a.userData.rig.snap();
     }
+    hero.bind(actors);
     // Bloom only on bright bulbs (threshold above white), very subtle on felt.
     post = new Post(renderer, scene, camera, { enabled: !low && !transparent, strength: 0.22, radius: 0.4, threshold: 1.6 });
   } else if (opts.mode === 'stage') {
@@ -169,6 +171,8 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
     let maxX = 0;
     for (const p of stagePlacement(ids)) {
       const a = addElf(p.id, opts.poses?.[p.id] ?? p.pose);
+      a.userData.rig.setPose(opts.poses?.[p.id] ?? p.pose, p.side);
+      a.userData.rig.snap();
       a.position.set(p.x, 0, p.z);
       a.rotation.y = p.rotY;
       const blob = contactBlob(p.id === 'noisette' ? 0.2 : 0.32, p.id === 'noisette' ? 0.16 : 0.22, 0.38);

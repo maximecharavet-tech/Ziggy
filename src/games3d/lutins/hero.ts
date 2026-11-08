@@ -8,6 +8,7 @@ import { makeLightString, makeSoftPine, soft, twinkleBulbs } from '../santa/prop
 import { planksTexture, wallpaperTexture } from '../santa/textures';
 import { bowGeometry, canvasTexture, elfFelt, knitMaterial, knitTextures } from './craft';
 import { heroView } from './framing';
+import type { ElfActor } from './elf';
 import type { ElfId, ElfPose } from './types';
 
 /**
@@ -33,6 +34,8 @@ export interface HeroSet {
   fog: THREE.Fog | null;
   spots: HeroSpot[];
   frame(aspect: number): { pos: THREE.Vector3; target: THREE.Vector3; fov: number };
+  /** Hand the elves to the set (the garland runs through Grelotte's hand). */
+  bind(elves: ElfActor[]): void;
   update(dt: number, t: number): void;
 }
 
@@ -489,7 +492,7 @@ export function buildHero(o: { lowPower: boolean; energy: number }): HeroSet {
 
   // Grelotte's toilet-paper garland: a roll on the floor by her feet, the
   // strip looping up over the books and off to the tree.
-  const paperMat = new THREE.MeshStandardMaterial({ map: paperTexture(), roughness: 0.95, side: THREE.DoubleSide });
+  const paperMat = new THREE.MeshStandardMaterial({ map: paperTexture(), roughness: 0.95, side: THREE.DoubleSide, emissive: '#4a4740', emissiveIntensity: 0.5 });
   const roll = new THREE.Group();
   const rollBody = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 0.13, 28, 1, true), paperMat);
   const rollEnds = new THREE.Mesh(new THREE.RingGeometry(0.035, 0.12, 28), soft('#f2efe8', { side: THREE.DoubleSide }));
@@ -502,8 +505,11 @@ export function buildHero(o: { lowPower: boolean; energy: number }): HeroSet {
   root.add(shadowed(roll));
   const ribbon = new Ribbon(110, 0.12, paperMat);
   root.add(ribbon.mesh);
-  const ribbonPts = [V(0.64, 0.05, 0.6), V(0.3, 0.02, 0.75), V(-0.05, 0.12, 0.55), V(-0.32, books.top + 0.05, 0.35), V(-0.75, books.top + 0.12, 0.18), V(-1.3, books.top + 0.02, -0.1), V(-1.7, 0.9, -0.6), V(-2.1, 1.7, -1.05), V(-2.4, 2.3, -1.3)];
+  // From the roll, up through Grelotte's hand, over the books and Pépin's feet, off to the tree.
+  const hand = V(0.5, 0.45, 0.55);
+  const ribbonPts = [V(0.66, 0.2, 0.6), V(0.62, 0.3, 0.62), hand, V(0.12, 0.3, 0.5), V(-0.3, books.top + 0.04, 0.36), V(-0.75, books.top + 0.08, 0.2), V(-1.3, books.top + 0.02, -0.1), V(-1.7, 0.9, -0.6), V(-2.1, 1.7, -1.05), V(-2.4, 2.3, -1.3)];
   ribbon.set(ribbonPts);
+  let grelotteHand: THREE.Object3D | null = null;
 
   // Lights: a warm lamp from the right, the tree glow, moonlight from the window.
   root.add(new THREE.HemisphereLight('#7f8fd6', '#3a2418', 0.55));
@@ -543,16 +549,21 @@ export function buildHero(o: { lowPower: boolean; energy: number }): HeroSet {
     fog: null,
     spots,
     frame(aspect) {
-      const v = heroView(aspect, focus, 3.3, 1.45);
+      const v = heroView(aspect, focus, 3.5, 1.45);
       return { pos: V(v.pos.x, v.pos.y, v.pos.z), target: V(v.target.x, v.target.y, v.target.z), fov: v.fov };
+    },
+    bind(elves) {
+      const g = elves.find((e) => e.userData.id === 'grelotte');
+      grelotteHand = g ? g.userData.model.arms[1].hand : null;
     },
     update(dt, t) {
       twinkleBulbs(bulbs, t, o.energy);
+      grelotteHand?.getWorldPosition(hand);
       snow.update(dt, t, V(0, 0, 0));
       // The garland flutters a little.
       const k = Math.sin(t * 1.3) * 0.02 * o.energy;
-      ribbonPts[3].y = books.top + 0.05 + k;
-      ribbonPts[6].x = -1.7 + k;
+      ribbonPts[4].y = books.top + 0.04 + k;
+      ribbonPts[7].x = -1.7 + k;
       ribbon.set(ribbonPts, k);
     },
   };

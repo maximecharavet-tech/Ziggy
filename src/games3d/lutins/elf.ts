@@ -51,6 +51,8 @@ export const ELF_COLORS = {
 export interface ElfArm {
   shoulder: THREE.Group;
   elbow: THREE.Group;
+  /** An empty anchor at the centre of the hand (hold props here). */
+  hand: THREE.Object3D;
 }
 
 export interface ElfLeg {
@@ -90,6 +92,8 @@ export interface ElfDims {
   /** Added to every pose's arms (Noisette keeps her hands in front, out of the cape). */
   armSwing?: number;
   armRaise?: number;
+  /** Highest the arms go (Noisette's big hood would hide a hand held higher). */
+  maxRaise?: number;
   /** World height to the top of the head, and with the hat. */
   headTop: number;
   height: number;
@@ -340,8 +344,11 @@ function buildArms(torso: THREE.Group, spec: LimbSpec, sleeve: THREE.Material, m
     thumb.position.set(-sx * spec.handR * 0.2, -spec.fore - spec.handR * 0.6, spec.handR * 0.6);
     thumb.rotation.set(0.9, 0, -sx * 0.3);
     elbow.add(hand, thumb);
+    const anchor = new THREE.Object3D();
+    anchor.position.copy(hand.position);
+    elbow.add(anchor);
     torso.add(shoulder);
-    return { shoulder, elbow };
+    return { shoulder, elbow, hand: anchor };
   }) as [ElfArm, ElfArm];
 }
 
@@ -881,7 +888,7 @@ function buildGrelotte(low: boolean): ElfModel {
       const a = Math.atan2(c.x, c.z); // 0 in front
       const front = Math.cos(a);
       // High on the forehead, down to the ears at the sides and the nape at the back.
-      const line = 0.06 * Math.max(0, front) + -0.02 * Math.max(0, -front) + 0.01;
+      const line = front > 0 ? 0.075 * front - 0.012 * (1 - front) : -0.012 + 0.14 * front;
       return c.y > line;
     });
     const hairCapMat = knitMaterial(yarnTextures(C.braid, 2, 8), [10, 6], low, '#c9a08a');
@@ -1053,7 +1060,7 @@ function buildNoisette(low: boolean): ElfModel {
     sk.torso.add(g);
   }
 
-  const limbs: LimbSpec = { shoulder: V(0.115, 0.27, 0.03), upper: 0.06, fore: 0.06, armR: 0.042, handR: 0.046, legX: 0.075, legR: 0.048, ankleY: 0.075 };
+  const limbs: LimbSpec = { shoulder: V(0.115, 0.27, 0.03), upper: 0.085, fore: 0.075, armR: 0.042, handR: 0.046, legX: 0.075, legR: 0.048, ankleY: 0.075 };
   const arms = buildArms(sk.torso, limbs, elfFelt(C.tunic, { repeat: 1.5, lowPower: low }), m);
   const legs = buildLegs(sk.hips, limbs, tunic, boots, m, { len: 0.085, w: 0.058, h: 0.058, curl: 0 });
 
@@ -1150,7 +1157,7 @@ function buildNoisette(low: boolean): ElfModel {
     (open.userData.open as (x: number, y: number) => void)(0.85 + o * 0.15, 0.7 + o * 0.4);
   };
 
-  return finish('noisette', sk, hp, arms, legs, springs, setMouth, { hipY, seatY: 0.07, heelLift: 0.03, eyeY: headSpec.eye.y, eyeX: headSpec.eye.x, scale: 0.5, armSwing: 0.45, armRaise: -0.12 });
+  return finish('noisette', sk, hp, arms, legs, springs, setMouth, { hipY, seatY: 0.07, heelLift: 0.03, eyeY: headSpec.eye.y, eyeX: headSpec.eye.x, scale: 0.5, armSwing: 0.4, armRaise: -0.12, maxRaise: 1.85 });
 }
 
 // ---------------------------------------------------------------------------
@@ -1288,7 +1295,7 @@ export class ElfRig {
       const sx = i === 0 ? -1 : 1;
       const act = (this.side > 0 ? 1 : 0) === i;
       const sway = Math.sin(t * 1.1 + i * 2) * 0.04 * E * live;
-      m.arms[i].shoulder.rotation.set(-(a.swing + (d.armSwing ?? 0) + sway), 0, sx * Math.max(0.05, a.raise + (d.armRaise ?? 0) + breath * 0.02 + bounce * 0.15));
+      m.arms[i].shoulder.rotation.set(-(a.swing + (d.armSwing ?? 0) + sway), 0, sx * Math.max(0.05, Math.min(d.maxRaise ?? 3, a.raise + (d.armRaise ?? 0)) + breath * 0.02 + bounce * 0.15));
       m.arms[i].elbow.rotation.set(-a.bend, 0, act ? -sx * wave * 0.45 : 0);
     }
     // Legs and tiptoe.

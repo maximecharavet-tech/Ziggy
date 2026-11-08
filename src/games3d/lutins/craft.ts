@@ -344,11 +344,6 @@ export function elfFelt(color: string, opts: ElfFeltOptions = {}): THREE.MeshSta
   });
 }
 
-/** Shared felt textures must survive when one elf is disposed (clones share the source). */
-export function isElfFeltTexture(t: THREE.Texture) {
-  return Boolean(feltTex && (t.source === feltTex.map.source || t.source === feltTex.normalMap.source));
-}
-
 /** Shiny thread colour for stitches (cotton embroidery floss). */
 export function threadMaterial(color: string): THREE.MeshStandardMaterial {
   return new THREE.MeshStandardMaterial({ color, roughness: 0.6, metalness: 0 });

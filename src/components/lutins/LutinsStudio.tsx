@@ -8,6 +8,7 @@ import { tr, type L } from '@/lib/i18n-text';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { SantaGate, gateGraceValid } from '@/components/santa/parents/SantaGate';
 import bible from '@/data/lutins/bible.json';
+import { ElfAvatar } from '@/components/lutins/ElfAvatar';
 import { PRANK_CATEGORIES, PRANKS, MAX_PARENT_TEXT, type PrankCategory } from '@/data/lutins/pranks';
 import { findPeople, warmPeopleDetector } from '@/lib/lutins/people';
 import { deviceId, journal, nextMorning } from '@/lib/lutins/journal';
@@ -272,8 +273,7 @@ export function LutinsStudio() {
                       className={`flex w-full flex-col items-center rounded-[1.75rem] p-3 text-center transition-transform active:scale-95 sm:p-4 ${on ? 'bg-white text-[#1b2150] shadow-[0_10px_0_rgba(0,0,0,0.2)]' : 'bg-white/10 text-white ring-1 ring-white/20'}`}
                     >
                       <span className="relative block aspect-square w-full overflow-hidden rounded-2xl" style={{ background: `radial-gradient(circle at 50% 35%, ${e.accent}55, ${e.color}33)` }}>
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={`/lutins/refs/avatars/${e.id}.png`} alt="" className="h-full w-full object-contain" onError={(ev) => ((ev.target as HTMLImageElement).style.display = 'none')} />
+                        <ElfAvatar id={e.id} className="h-full w-full object-contain" />
                         {on && <span className="absolute right-1.5 top-1.5 grid h-8 w-8 place-items-center rounded-full bg-[#2fb344] text-white">✓</span>}
                       </span>
                       <span className="mt-2 font-display text-xl font-bold">{tr(e.name, locale)}</span>
@@ -397,8 +397,7 @@ export function LutinsStudio() {
             <div className="flex items-end gap-3">
               {elves.map((id, i) => (
                 <motion.span key={id} animate={reduced ? {} : { y: [0, -18, 0] }} transition={{ repeat: Infinity, duration: 0.9, delay: i * 0.15 }} className="block h-24 w-24 overflow-hidden rounded-full bg-white/10 ring-2 ring-white/30">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={`/lutins/refs/avatars/${id}.png`} alt="" className="h-full w-full object-contain" />
+                  <ElfAvatar id={id} alt="" className="h-full w-full object-contain" />
                 </motion.span>
               ))}
             </div>
