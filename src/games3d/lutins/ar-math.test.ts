@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { actionFrame, arCaption, coverFov, lineupDistance, coverRect, deviceQuaternion, hideScale, HIDE_PERIOD, lightFromSample, pitchOf, qrotate, recentered, yawOf } from './ar-math';
+import { actionFrame, arCaption, coverFov, lineupSpacing, coverRect, deviceQuaternion, hideScale, HIDE_PERIOD, lightFromSample, pitchOf, qrotate, recentered, yawOf } from './ar-math';
 
 const close = (a: number[], b: number[], eps = 1e-6) => a.forEach((v, i) => expect(v).toBeCloseTo(b[i], -Math.log10(eps)));
 
@@ -20,16 +20,13 @@ describe('magic camera maths', () => {
     expect(r.sx).toBeCloseTo((640 - r.sw) / 2);
   });
 
-  it('stands the line-up far enough to fit a narrow phone picture', () => {
-    const phone = lineupDistance(3, 52, 390 / 844, 3.2);
-    const wide = lineupDistance(3, 45, 1280 / 800, 3.2);
-    expect(phone).toBeGreaterThan(wide);
-    // At that distance the row of three (≈ 2.8 wide) takes ≤ 70 % of the picture width.
-    const slant = Math.hypot(phone, 3.2);
-    const visibleW = 2 * slant * Math.tan((52 * Math.PI) / 360) * (390 / 844);
-    expect(2.8 / visibleW).toBeLessThanOrEqual(0.71);
-    expect(lineupDistance(1, 60, 1, 3.2)).toBeGreaterThan(0);
-    expect(Number.isFinite(lineupDistance(Number.NaN, Number.NaN, Number.NaN, 3.2))).toBe(true);
+  it('packs the line-up closer on a narrow phone picture', () => {
+    const phone = lineupSpacing(3, 52, 390 / 844, 6);
+    const wide = lineupSpacing(3, 45, 1280 / 800, 6);
+    expect(phone).toBeLessThan(wide);
+    expect(phone).toBeGreaterThanOrEqual(0.45);
+    expect(wide).toBeLessThanOrEqual(0.85);
+    expect(Number.isFinite(lineupSpacing(Number.NaN, Number.NaN, Number.NaN, Number.NaN))).toBe(true);
   });
 
   it('turns the phone orientation into a camera orientation', () => {

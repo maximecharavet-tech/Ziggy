@@ -14,6 +14,8 @@ import { cleanSpots, hintFor, hitSpot, type ElfSpot, type Hint } from '@/lib/lut
 import { ElfAvatar } from '@/components/lutins/ElfAvatar';
 import { ElfLetterDialog, LetterSheet } from '@/components/lutins/ElfLetter';
 import { sfx } from '@/components/lutins/sfx';
+import { CctvPlayer } from '@/components/lutins/CctvPlayer';
+import { PRANK_CATEGORIES, prankById } from '@/data/lutins/pranks';
 
 /**
  * The morning ceremony of the child's journal:
@@ -48,7 +50,6 @@ const T = {
   partySub: { fr: 'Les lutins font la fête. À demain matin pour une nouvelle farce !', en: 'The elves are celebrating. See you tomorrow morning for a new prank!' },
   seeAll: { fr: 'Voir toutes leurs farces', en: 'See all their pranks' },
   replay: { fr: 'Rejouer', en: 'Play again' },
-  cam: { fr: 'CAM 1 · ENREG.', en: 'CAM 1 · REC' },
 } satisfies Record<string, L>;
 
 const HINT: Record<Hint, L> = {
@@ -134,11 +135,13 @@ export function RevealCeremony({ entry, childName, onOpen, onDone }: { entry: Jo
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ type: 'spring', stiffness: 140, damping: 18 }}
-            className="relative mx-auto mt-8 max-w-3xl"
+            className="relative mx-auto mt-8 max-w-3xl lg:max-w-6xl"
           >
             <CloseButton onClose={onDone} />
-            <Media entry={entry} cctv={cctv} />
-            <LetterSheet letter={letter} compact className="-mt-6 w-[94%] -rotate-1" />
+            <div className="lg:grid lg:grid-cols-[minmax(0,1.45fr)_minmax(0,1fr)] lg:items-center lg:gap-8">
+              <Media entry={entry} cctv={cctv} />
+              <LetterSheet letter={letter} compact className={`${cctv ? 'mt-4' : '-mt-6'} w-[94%] -rotate-1 lg:mt-0 lg:w-full lg:rotate-1`} />
+            </div>
             <div className="mt-10 flex flex-col items-center gap-3">
               <div className="flex items-center gap-3">
                 <SayButton texts={letterLines(letter)} locale={locale} size="lg" />
@@ -310,27 +313,33 @@ function Burst({ n = 14, className = '' }: { n?: number; className?: string }) {
 
 /* ── 2. The picture or the clip ── */
 
+const HOUSE: L = { fr: 'Maison', en: 'House' };
+
+/** The camera's room name, from the prank's room (the catalogue's categories). */
+function roomOf(entry: JournalEntry, locale: string): string {
+  const cat = prankById(entry.prankId)?.cat;
+  const c = cat && cat !== 'partout' ? PRANK_CATEGORIES.find((x) => x.id === cat) : null;
+  return tr(c?.label ?? HOUSE, locale);
+}
+
 function Media({ entry, cctv }: { entry: JournalEntry; cctv: Blob | null }) {
   const locale = useLocale();
   const img = useObjectUrl(entry.image);
   const vid = useObjectUrl(entry.video);
-  const cam = useObjectUrl(cctv);
+  // The elves' security-camera clip plays in the camera app made for it.
+  if (cctv)
+    return (
+      <div className="rounded-[1.75rem] ring-4 ring-amber-200/70">
+        <CctvPlayer entry={entry} room={roomOf(entry, locale)} locale={locale} />
+      </div>
+    );
   return (
     <div className="relative overflow-hidden rounded-[1.75rem] bg-black shadow-2xl ring-4 ring-amber-200/70">
-      {cam ? (
-        // HOOK(CctvPlayer): when src/components/lutins/CctvPlayer.tsx lands, render
-        // <CctvPlayer blob={cctv} /> here instead of this plain "security camera" video.
-        <div className="relative">
-          <video src={cam} autoPlay loop muted playsInline controls className="block max-h-[62vh] w-full object-contain" />
-          <span className="pointer-events-none absolute left-3 top-3 flex items-center gap-1.5 rounded bg-black/60 px-2 py-0.5 font-mono text-xs font-bold text-white">
-            <span className="h-2 w-2 animate-pulse rounded-full bg-red-500" /> {tr(T.cam, locale)}
-          </span>
-        </div>
-      ) : vid ? (
-        <video src={vid} autoPlay loop muted playsInline controls className="block max-h-[62vh] w-full object-contain" />
+      {vid ? (
+        <video src={vid} autoPlay loop muted playsInline controls className="block max-h-[62vh] w-full object-contain lg:max-h-[68vh]" />
       ) : (
         // eslint-disable-next-line @next/next/no-img-element
-        img && <img src={img} alt={entry.caption} className="block max-h-[62vh] w-full object-contain" />
+        img && <img src={img} alt={entry.caption} className="block max-h-[62vh] w-full object-contain lg:max-h-[68vh]" />
       )}
     </div>
   );

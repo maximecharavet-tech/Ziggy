@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { disposeTree, prefersLowPower, studioEnvironment } from '../kit/look';
 import { makeElf, type ElfActor } from './elf';
-import { actionFrame, deviceQuaternion, lightFromSample, lineupDistance, recentered, yawOf, type Quat } from './ar-math';
+import { actionFrame, deviceQuaternion, lightFromSample, lineupSpacing, recentered, yawOf, type Quat } from './ar-math';
 import { ELF_IDS, type ElfId, type ElfPose } from './types';
 
 /**
@@ -110,7 +110,7 @@ export function mountLutinsAR(canvas: HTMLCanvasElement, opts: LutinsAROptions):
   const low = opts.lowPower ?? prefersLowPower();
   const reduce = Boolean(opts.reducedMotion);
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !low, alpha: true, premultipliedAlpha: true, powerPreference: low ? 'low-power' : 'high-performance' });
-  const ratio = Math.min(window.devicePixelRatio || 1, low ? 1.25 : 1.75);
+  const ratio = Math.min(window.devicePixelRatio || 1, low ? 1 : 1.5);
   renderer.setPixelRatio(ratio);
   renderer.setClearColor(0x000000, 0);
   renderer.toneMapping = THREE.NeutralToneMapping;
@@ -246,14 +246,19 @@ export function mountLutinsAR(canvas: HTMLCanvasElement, opts: LutinsAROptions):
     return { fwd, right: new THREE.Vector3(-fwd.z, 0, fwd.x) };
   };
 
-  /** Spots for `n` elves, side by side in front of the camera, far enough to all fit the picture. */
+  /**
+   * Spots for `n` elves in front of the camera, standing a little above the
+   * middle of the picture (the controls cover the bottom), side by side; the
+   * middle one of three a step back.
+   */
   const defaultSpot = (i: number, n: number): { x: number; z: number } => {
     const { fwd, right } = heading();
-    // Far enough to fit, and with the feet a little above the middle of the picture (the controls cover the bottom).
-    const mid = floorAt(0, 0.0, new THREE.Vector3());
-    const d = Math.max(lineupDistance(n, camera.fov, camera.aspect, CAMERA_HEIGHT), Math.min(MAX_DIST * 0.6, Math.hypot(mid.x - camera.position.x, mid.z - camera.position.z)));
-    const off = (i - (n - 1) / 2) * 0.85;
-    return { x: camera.position.x + fwd.x * d + right.x * off, z: camera.position.z + fwd.z * d + right.z * off };
+    const mid = floorAt(0, 0.05, new THREE.Vector3());
+    const d = THREE.MathUtils.clamp(Math.hypot(mid.x - camera.position.x, mid.z - camera.position.z), 3, 12);
+    const gap = lineupSpacing(n, camera.fov, camera.aspect, Math.hypot(d, CAMERA_HEIGHT));
+    const off = (i - (n - 1) / 2) * gap;
+    const back = n === 3 && i === 1 ? 0.4 : 0;
+    return { x: camera.position.x + fwd.x * (d + back) + right.x * off, z: camera.position.z + fwd.z * (d + back) + right.z * off };
   };
 
   const ids = opts.elves.filter((id, i, all) => ELF_IDS.includes(id) && all.indexOf(id) === i);
@@ -521,8 +526,24 @@ export function mountLutinsAR(canvas: HTMLCanvasElement, opts: LutinsAROptions):
       sync(s);
     },
     setPitch(deg) {
-      pitch = THREE.MathUtils.clamp(Number.isFinite(deg) ? deg : -32, -85, 5);
-      if (!device) applyManualCamera();
+      const next = THREE.MathUtils.clamp(Number.isFinite(deg) ? deg : -32, -85, 5);
+      if (next === pitch) return;
+      pitch = next;
+      if (device) return;
+      // The slider tilts the floor under the elves: each one keeps its place in
+      // the picture and only the perspective (its size, its shadow) changes.
+      camera.updateMatrixWorld();
+      const where = slots.map((s) => new THREE.Vector3(s.el.x, 0, s.el.z).project(camera));
+      applyManualCamera();
+      slots.forEach((s, i) => {
+        const p = where[i];
+        if (p.z > 1 || Math.abs(p.x) > 1.5 || Math.abs(p.y) > 1.5) return;
+        const f = floorAt(p.x, p.y, new THREE.Vector3());
+        s.el.x = f.x;
+        s.el.z = f.z;
+        clampSpot(s.el);
+        sync(s);
+      });
     },
     setDeviceOrientation(o) {
       if (o && [o.alpha, o.beta, o.gamma].some((v) => v == null || !Number.isFinite(v))) return;

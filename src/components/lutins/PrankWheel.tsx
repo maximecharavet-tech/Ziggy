@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/lib/use-reduced-motion';
 import type { Prank } from '@/data/lutins/pranks';
 import { favouritesFirst, rng } from '@/lib/lutins/family';
 import { sfx } from '@/components/lutins/sfx';
+import { BodyPortal } from '@/components/lutins/BodyPortal';
 
 /**
  * "La roue des farces": a festive wheel of up to 10 pranks of the chosen room
@@ -106,98 +107,100 @@ export function PrankWheel({ pranks, favs, onPick, onClose }: { pranks: Prank[];
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[75] overflow-y-auto overscroll-contain bg-[#0b0a26]/92 px-4 pb-10 pt-6 backdrop-blur-sm"
-      role="dialog"
-      aria-modal="true"
-      aria-label={tr(T.title, locale)}
-    >
-      <div className="mx-auto flex max-w-md flex-col items-center text-center text-white">
-        <div className="flex w-full justify-end">
-          <button type="button" onClick={onClose} className="min-h-12 rounded-full bg-white/15 px-5 font-bold ring-1 ring-white/30">
-            ✕ {tr(T.close, locale)}
-          </button>
-        </div>
-        <h2 className="mt-2 font-display text-3xl font-bold">🎡 {tr(T.title, locale)}</h2>
-        <p className="mt-1 text-white/80">{tr(T.lead, locale)}</p>
-
-        <div className="relative mt-6 aspect-square w-[min(84vw,340px)]">
-          {/* Glow */}
-          <div aria-hidden="true" className="absolute inset-[-8%] rounded-full bg-[radial-gradient(circle,rgba(255,212,59,0.35),transparent_65%)]" />
-          <motion.div className="relative h-full w-full" style={{ rotate: rot }}>
-            <svg viewBox="0 0 200 200" className="h-full w-full drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)]" aria-hidden="true">
-              <circle cx="100" cy="100" r="99" fill="#7a4a1d" />
-              <circle cx="100" cy="100" r="96" fill="#f5c542" />
-              {items.map((p, i) => (
-                <g key={p.id}>
-                  <path d={slice(i * seg, (i + 1) * seg)} fill={COLORS[i % COLORS.length]} stroke="#fffaf0" strokeWidth="1.2" />
-                  <text x="100" y="34" textAnchor="middle" dominantBaseline="middle" fontSize={items.length > 8 ? 17 : 20} transform={`rotate(${(i + 0.5) * seg} 100 100)`}>
-                    {p.emoji}
-                  </text>
-                </g>
-              ))}
-              {/* Bulbs on the rim */}
-              {Array.from({ length: 20 }, (_, i) => {
-                const a = ((i * 18 - 90) * Math.PI) / 180;
-                return <circle key={i} cx={100 + Math.cos(a) * 94} cy={100 + Math.sin(a) * 94} r="2.2" fill={i % 2 ? '#fff9db' : '#ffd43b'} />;
-              })}
-              <circle cx="100" cy="100" r="20" fill="#f5c542" stroke="#7a4a1d" strokeWidth="3" />
-              <circle cx="100" cy="100" r="13" fill="#c92a2a" />
-              <text x="100" y="101" textAnchor="middle" dominantBaseline="middle" fontSize="13">
-                ⭐
-              </text>
-            </svg>
-          </motion.div>
-          {/* Pointer */}
-          <motion.div
-            key={flick}
-            aria-hidden="true"
-            initial={reduced ? false : { rotate: -18 }}
-            animate={{ rotate: 0 }}
-            transition={{ type: 'spring', stiffness: 600, damping: 14 }}
-            className="absolute left-1/2 top-[-6%] h-[16%] w-[12%] origin-top -translate-x-1/2"
-          >
-            <svg viewBox="0 0 40 52" className="h-full w-full drop-shadow-[0_4px_4px_rgba(0,0,0,0.45)]">
-              <path d="M20 50 L4 12 A16 16 0 1 1 36 12 Z" fill="#fffaf0" stroke="#7a4a1d" strokeWidth="3" strokeLinejoin="round" />
-              <circle cx="20" cy="14" r="6" fill="#c92a2a" />
-            </svg>
-          </motion.div>
-        </div>
-
-        <div className="mt-6 min-h-[9.5rem] w-full" aria-live="polite">
-          {result ? (
-            <motion.div initial={reduced ? false : { opacity: 0, y: 12, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="rounded-[1.5rem] bg-white p-4 text-[#1b2150] shadow-xl">
-              <p className="text-sm font-bold uppercase tracking-wide text-[#5c6390]">{tr(T.picked, locale)}</p>
-              <p className="mt-1 flex items-center justify-center gap-2 font-display text-2xl font-bold">
-                <span className="text-4xl" aria-hidden="true">
-                  {result.emoji}
-                </span>
-                {tr(result.title, locale)}
-              </p>
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-center">
-                <button type="button" onClick={() => onPick(result.id)} className="min-h-14 rounded-full bg-[#2fb344] px-6 font-display text-lg font-bold text-white shadow">
-                  ✓ {tr(T.take, locale)}
-                </button>
-                <button type="button" onClick={spin} className="min-h-14 rounded-full bg-[#1b2150]/10 px-6 font-display text-lg font-bold">
-                  🔁 {tr(T.again, locale)}
-                </button>
-              </div>
-            </motion.div>
-          ) : (
-            <button
-              type="button"
-              onClick={spin}
-              disabled={spinning}
-              className="min-h-16 w-full max-w-xs rounded-full bg-gradient-to-r from-[#c92a2a] to-[#f03e3e] px-8 font-display text-2xl font-bold text-white shadow-[0_8px_0_#8a1c1c] transition-transform active:translate-y-1 active:shadow-[0_3px_0_#8a1c1c] disabled:opacity-70"
-            >
-              {spinning ? '🎡 …' : `🎡 ${tr(T.spin, locale)}`}
+    <BodyPortal>
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[80] overflow-y-auto overscroll-contain bg-[#0b0a26]/92 px-4 pb-10 pt-6 backdrop-blur-sm"
+        role="dialog"
+        aria-modal="true"
+        aria-label={tr(T.title, locale)}
+      >
+        <div className="mx-auto flex max-w-md flex-col items-center text-center text-white">
+          <div className="flex w-full justify-end">
+            <button type="button" onClick={onClose} className="min-h-12 rounded-full bg-white/15 px-5 font-bold ring-1 ring-white/30">
+              ✕ {tr(T.close, locale)}
             </button>
-          )}
+          </div>
+          <h2 className="mt-2 font-display text-3xl font-bold">🎡 {tr(T.title, locale)}</h2>
+          <p className="mt-1 text-white/80">{tr(T.lead, locale)}</p>
+
+          <div className="relative mt-6 aspect-square w-[min(84vw,340px)]">
+            {/* Glow */}
+            <div aria-hidden="true" className="absolute inset-[-8%] rounded-full bg-[radial-gradient(circle,rgba(255,212,59,0.35),transparent_65%)]" />
+            <motion.div className="relative h-full w-full" style={{ rotate: rot }}>
+              <svg viewBox="0 0 200 200" className="h-full w-full drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)]" aria-hidden="true">
+                <circle cx="100" cy="100" r="99" fill="#7a4a1d" />
+                <circle cx="100" cy="100" r="96" fill="#f5c542" />
+                {items.map((p, i) => (
+                  <g key={p.id}>
+                    <path d={slice(i * seg, (i + 1) * seg)} fill={COLORS[i % COLORS.length]} stroke="#fffaf0" strokeWidth="1.2" />
+                    <text x="100" y="34" textAnchor="middle" dominantBaseline="middle" fontSize={items.length > 8 ? 17 : 20} transform={`rotate(${(i + 0.5) * seg} 100 100)`}>
+                      {p.emoji}
+                    </text>
+                  </g>
+                ))}
+                {/* Bulbs on the rim */}
+                {Array.from({ length: 20 }, (_, i) => {
+                  const a = ((i * 18 - 90) * Math.PI) / 180;
+                  return <circle key={i} cx={100 + Math.cos(a) * 94} cy={100 + Math.sin(a) * 94} r="2.2" fill={i % 2 ? '#fff9db' : '#ffd43b'} />;
+                })}
+                <circle cx="100" cy="100" r="20" fill="#f5c542" stroke="#7a4a1d" strokeWidth="3" />
+                <circle cx="100" cy="100" r="13" fill="#c92a2a" />
+                <text x="100" y="101" textAnchor="middle" dominantBaseline="middle" fontSize="13">
+                  ⭐
+                </text>
+              </svg>
+            </motion.div>
+            {/* Pointer */}
+            <motion.div
+              key={flick}
+              aria-hidden="true"
+              initial={reduced ? false : { rotate: -18 }}
+              animate={{ rotate: 0 }}
+              transition={{ type: 'spring', stiffness: 600, damping: 14 }}
+              className="absolute left-1/2 top-[-6%] h-[16%] w-[12%] origin-top -translate-x-1/2"
+            >
+              <svg viewBox="0 0 40 52" className="h-full w-full drop-shadow-[0_4px_4px_rgba(0,0,0,0.45)]">
+                <path d="M20 50 L4 12 A16 16 0 1 1 36 12 Z" fill="#fffaf0" stroke="#7a4a1d" strokeWidth="3" strokeLinejoin="round" />
+                <circle cx="20" cy="14" r="6" fill="#c92a2a" />
+              </svg>
+            </motion.div>
+          </div>
+
+          <div className="mt-6 min-h-[9.5rem] w-full" aria-live="polite">
+            {result ? (
+              <motion.div initial={reduced ? false : { opacity: 0, y: 12, scale: 0.95 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="rounded-[1.5rem] bg-white p-4 text-[#1b2150] shadow-xl">
+                <p className="text-sm font-bold uppercase tracking-wide text-[#5c6390]">{tr(T.picked, locale)}</p>
+                <p className="mt-1 flex items-center justify-center gap-2 font-display text-2xl font-bold">
+                  <span className="text-4xl" aria-hidden="true">
+                    {result.emoji}
+                  </span>
+                  {tr(result.title, locale)}
+                </p>
+                <div className="mt-3 flex flex-col gap-2 sm:flex-row sm:justify-center">
+                  <button type="button" onClick={() => onPick(result.id)} className="min-h-14 rounded-full bg-[#2fb344] px-6 font-display text-lg font-bold text-white shadow">
+                    ✓ {tr(T.take, locale)}
+                  </button>
+                  <button type="button" onClick={spin} className="min-h-14 rounded-full bg-[#1b2150]/10 px-6 font-display text-lg font-bold">
+                    🔁 {tr(T.again, locale)}
+                  </button>
+                </div>
+              </motion.div>
+            ) : (
+              <button
+                type="button"
+                onClick={spin}
+                disabled={spinning}
+                className="min-h-16 w-full max-w-xs rounded-full bg-gradient-to-r from-[#c92a2a] to-[#f03e3e] px-8 font-display text-2xl font-bold text-white shadow-[0_8px_0_#8a1c1c] transition-transform active:translate-y-1 active:shadow-[0_3px_0_#8a1c1c] disabled:opacity-70"
+              >
+                {spinning ? '🎡 …' : `🎡 ${tr(T.spin, locale)}`}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+    </BodyPortal>
   );
 }

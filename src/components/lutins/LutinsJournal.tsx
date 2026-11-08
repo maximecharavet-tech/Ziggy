@@ -11,6 +11,7 @@ import { animateEntry, type AnimateState } from '@/lib/lutins/animate';
 import { arrivalDue, departureDue, lettersReached, lutinsStore, seasonYear, useChildName, useLutinsSettings } from '@/lib/lutins/family';
 import { RevealCeremony } from '@/components/lutins/RevealCeremony';
 import { ElfLetterDialog, LetterEnvelope } from '@/components/lutins/ElfLetter';
+import { BodyPortal } from '@/components/lutins/BodyPortal';
 
 const T = {
   title: { fr: 'Le journal des lutins', en: 'The elves’ journal' },
@@ -52,7 +53,8 @@ function Viewer({ entry, onClose }: { entry: JournalEntry; onClose: () => void }
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose, note]);
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[70] flex flex-col items-center justify-center gap-4 bg-[#0b0a26]/95 p-4 text-white backdrop-blur" role="dialog" aria-label={entry.caption}>
+    <BodyPortal>
+    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[78] flex flex-col items-center justify-center gap-4 bg-[#0b0a26]/95 p-4 text-white backdrop-blur" role="dialog" aria-label={entry.caption}>
       <div className="relative w-full max-w-3xl overflow-hidden rounded-[1.5rem] shadow-2xl ring-1 ring-white/20">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {vid ? <video src={vid} autoPlay loop playsInline controls className="block max-h-[70vh] w-full bg-black object-contain" /> : img && <img src={img} alt={entry.caption} className="block max-h-[70vh] w-full object-contain" />}
@@ -86,6 +88,7 @@ function Viewer({ entry, onClose }: { entry: JournalEntry; onClose: () => void }
       </div>
       <AnimatePresence>{note && <ElfLetterDialog kind="morning" prankId={entry.prankId} elves={entry.elves} dateIso={entry.revealAt} onClose={() => setNote(false)} />}</AnimatePresence>
     </motion.div>
+    </BodyPortal>
   );
 }
 

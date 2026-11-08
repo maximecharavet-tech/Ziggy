@@ -210,19 +210,19 @@ export function CctvPlayer({ entry, room, locale, className = '' }: { entry: Jou
       </div>
 
       <div className="flex flex-wrap items-center gap-3 px-4 py-4">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+        <div className="flex min-w-0 basis-full items-center gap-3 sm:basis-0 sm:flex-1">
           <SayButton texts={[sayText]} locale={locale} size="md" className="shrink-0" />
           <div className="min-w-0">
-            <p className="flex items-center gap-1.5 text-sm font-bold text-[#ffd43b]">
+            <p className="flex items-start gap-1.5 text-sm font-bold leading-snug text-[#ffd43b]">
               <span aria-hidden="true">●</span>
-              <span className="truncate">{motion}</span>
+              <span>{motion}</span>
             </p>
             <p className="font-mono text-xs text-white/55">
-              {tr(T.last, locale)} · {formatCctvTime(when, locale)}
+              {tr(T.last, locale)} · <span className="whitespace-nowrap">{formatCctvTime(when, locale)}</span>
             </p>
           </div>
         </div>
-        <div className="flex shrink-0 gap-2">
+        <div className="flex shrink-0 gap-2 max-sm:w-full max-sm:justify-end">
           <button
             type="button"
             onClick={() => setPlaying((p) => !p)}

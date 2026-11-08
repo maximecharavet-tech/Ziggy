@@ -32,16 +32,14 @@ export function coverRect(srcW: number, srcH: number, boxW: number, boxH: number
 }
 
 /**
- * Floor distance (from the point under the camera) at which a line-up of `n`
- * elves, `spacing` apart and about `elfHeight` tall, fits the picture: the row
- * takes at most 70 % of the width and an elf at most 30 % of the height.
+ * Side-by-side spacing of a line-up of `n` elves seen `slant` away: the row
+ * takes about 60 % of the picture width (a narrow phone picture packs them
+ * closer), never closer than 0.45 nor farther than 0.85 elf units.
  */
-export function lineupDistance(n: number, vfovDeg: number, aspect: number, camHeight: number, spacing = 0.85, elfHeight = 1): number {
+export function lineupSpacing(n: number, vfovDeg: number, aspect: number, slant: number): number {
   const tv = Math.tan((clamp(Number.isFinite(vfovDeg) ? vfovDeg : 55, 15, 120) * DEG) / 2);
-  const th = tv * clamp(Number.isFinite(aspect) ? aspect : 1, 0.2, 5);
-  const row = spacing * (Number.isFinite(n) ? Math.max(0, n - 1) : 0) + 1.1;
-  const slant = Math.max(row / (1.4 * th), elfHeight / (0.6 * tv), camHeight * 1.1);
-  return Math.sqrt(Math.max(0.25, slant * slant - camHeight * camHeight));
+  const visibleW = 2 * Math.max(0.5, Number.isFinite(slant) ? slant : 5) * tv * clamp(Number.isFinite(aspect) ? aspect : 1, 0.2, 5);
+  return clamp((visibleW * 0.6) / Math.max(1, Number.isFinite(n) ? n : 1), 0.45, 0.85);
 }
 
 export type Quat = [number, number, number, number];

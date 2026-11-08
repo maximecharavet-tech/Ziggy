@@ -8,6 +8,7 @@ import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { PRANKS, PRANK_CATEGORIES, prankById, type PrankCategory } from '@/data/lutins/pranks';
 import { autoPlan, decemberNights, doneNights, favouritesFirst, lutinsStore, seasonYear, tonightNight, useLutinsSettings, type Night } from '@/lib/lutins/family';
 import type { JournalEntry } from '@/lib/lutins/journal';
+import { BodyPortal } from '@/components/lutins/BodyPortal';
 
 /**
  * "Mon calendrier des lutins": the 24 nights of December. The parent gives
@@ -74,7 +75,7 @@ export function NightPlanner({ entries, onPrepareTonight }: { entries: JournalEn
             </span>
           )}
         </div>
-        <ol className="mt-5 grid grid-cols-3 gap-2 min-[400px]:grid-cols-4 sm:grid-cols-6 sm:gap-3">
+        <ol className="mt-5 grid grid-cols-3 gap-2 min-[400px]:grid-cols-4 sm:grid-cols-6 sm:gap-3 lg:grid-cols-8">
           {nights.map((n) => {
             const p = prankById(s.plan[n.key]);
             const isDone = done.has(n.key);
@@ -176,84 +177,86 @@ function NightSheet({ night, current, favs, reduced, onPick, onClose }: { night:
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 z-[75] flex items-end justify-center bg-[#0b0a26]/80 backdrop-blur-sm sm:items-center"
-      role="dialog"
-      aria-modal="true"
-      aria-label={tr(T.night, locale).replace('{d}', String(night.n))}
-      onClick={(e) => e.target === e.currentTarget && onClose()}
-    >
+    <BodyPortal>
       <motion.div
-        initial={reduced ? false : { y: 60 }}
-        animate={{ y: 0 }}
-        exit={reduced ? undefined : { y: 60 }}
-        className="flex max-h-[88svh] w-full max-w-2xl flex-col rounded-t-[2rem] bg-[#16134a] p-4 text-white shadow-2xl ring-1 ring-white/15 sm:rounded-[2rem] sm:p-6"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-[80] flex items-end justify-center bg-[#0b0a26]/80 backdrop-blur-sm sm:items-center"
+        role="dialog"
+        aria-modal="true"
+        aria-label={tr(T.night, locale).replace('{d}', String(night.n))}
+        onClick={(e) => e.target === e.currentTarget && onClose()}
       >
-        <div className="flex items-center justify-between gap-3">
-          <h3 className="font-display text-2xl font-bold">🌙 {tr(T.night, locale).replace('{d}', String(night.n))}</h3>
-          <button type="button" onClick={onClose} aria-label={tr(T.close, locale)} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/15 text-xl">
-            ✕
-          </button>
-        </div>
-        <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden">
-          {favs.length > 0 && (
-            <button
-              type="button"
-              aria-pressed={cat === 'favs'}
-              onClick={() => setCat('favs')}
-              className={`min-h-11 shrink-0 rounded-full px-4 text-sm font-bold ${cat === 'favs' ? 'bg-white text-[#1b2150]' : 'bg-white/15 ring-1 ring-white/25'}`}
-            >
-              ❤️ {tr(T.favs, locale)}
+        <motion.div
+          initial={reduced ? false : { y: 60 }}
+          animate={{ y: 0 }}
+          exit={reduced ? undefined : { y: 60 }}
+          className="flex max-h-[88svh] w-full max-w-2xl flex-col rounded-t-[2rem] bg-[#16134a] p-4 text-white shadow-2xl ring-1 ring-white/15 sm:rounded-[2rem] sm:p-6"
+        >
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="font-display text-2xl font-bold">🌙 {tr(T.night, locale).replace('{d}', String(night.n))}</h3>
+            <button type="button" onClick={onClose} aria-label={tr(T.close, locale)} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-white/15 text-xl">
+              ✕
             </button>
-          )}
-          {PRANK_CATEGORIES.map((c) => (
-            <button
-              key={c.id}
-              type="button"
-              aria-pressed={cat === c.id}
-              onClick={() => setCat(c.id)}
-              className={`min-h-11 shrink-0 rounded-full px-4 text-sm font-bold ${cat === c.id ? 'bg-white text-[#1b2150]' : 'bg-white/15 ring-1 ring-white/25'}`}
-            >
-              {c.emoji} {tr(c.label, locale)}
-            </button>
-          ))}
-        </div>
-        <ul className="mt-3 grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-y-auto overscroll-contain pb-2 sm:grid-cols-2">
-          {list.map((p) => (
-            <li key={p.id}>
+          </div>
+          <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:px-0 [&::-webkit-scrollbar]:hidden">
+            {favs.length > 0 && (
               <button
                 type="button"
-                onClick={() => onPick(p.id)}
-                aria-pressed={current === p.id}
-                className={`flex min-h-14 w-full items-center gap-3 rounded-2xl px-3 py-2 text-start font-bold ${current === p.id ? 'bg-amber-300 text-[#3b1f00]' : 'bg-white/10 ring-1 ring-white/15'}`}
+                aria-pressed={cat === 'favs'}
+                onClick={() => setCat('favs')}
+                className={`min-h-11 shrink-0 rounded-full px-4 text-sm font-bold ${cat === 'favs' ? 'bg-white text-[#1b2150]' : 'bg-white/15 ring-1 ring-white/25'}`}
               >
-                <span className="text-2xl" aria-hidden="true">
-                  {p.emoji}
-                </span>
-                <span className="leading-tight">{tr(p.title, locale)}</span>
-                {favs.includes(p.id) && (
-                  <span className="ms-auto text-sm" aria-hidden="true">
-                    ❤️
-                  </span>
-                )}
+                ❤️ {tr(T.favs, locale)}
               </button>
-            </li>
-          ))}
-        </ul>
-        <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3">
-          <button type="button" onClick={() => onPick(list[Math.floor(Math.random() * list.length)]?.id ?? null)} className="min-h-12 rounded-full bg-[#2fb344] px-5 font-bold">
-            🎲 {tr(T.random, locale)}
-          </button>
-          {current && (
-            <button type="button" onClick={() => onPick(null)} className="min-h-12 rounded-full bg-white/10 px-5 font-bold ring-1 ring-white/25">
-              🗑️ {tr(T.remove, locale)}
+            )}
+            {PRANK_CATEGORIES.map((c) => (
+              <button
+                key={c.id}
+                type="button"
+                aria-pressed={cat === c.id}
+                onClick={() => setCat(c.id)}
+                className={`min-h-11 shrink-0 rounded-full px-4 text-sm font-bold ${cat === c.id ? 'bg-white text-[#1b2150]' : 'bg-white/15 ring-1 ring-white/25'}`}
+              >
+                {c.emoji} {tr(c.label, locale)}
+              </button>
+            ))}
+          </div>
+          <ul className="mt-3 grid min-h-0 flex-1 grid-cols-1 gap-2 overflow-y-auto overscroll-contain pb-2 sm:grid-cols-2">
+            {list.map((p) => (
+              <li key={p.id}>
+                <button
+                  type="button"
+                  onClick={() => onPick(p.id)}
+                  aria-pressed={current === p.id}
+                  className={`flex min-h-14 w-full items-center gap-3 rounded-2xl px-3 py-2 text-start font-bold ${current === p.id ? 'bg-amber-300 text-[#3b1f00]' : 'bg-white/10 ring-1 ring-white/15'}`}
+                >
+                  <span className="text-2xl" aria-hidden="true">
+                    {p.emoji}
+                  </span>
+                  <span className="leading-tight">{tr(p.title, locale)}</span>
+                  {favs.includes(p.id) && (
+                    <span className="ms-auto text-sm" aria-hidden="true">
+                      ❤️
+                    </span>
+                  )}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <div className="mt-3 flex flex-wrap gap-2 border-t border-white/10 pt-3">
+            <button type="button" onClick={() => onPick(list[Math.floor(Math.random() * list.length)]?.id ?? null)} className="min-h-12 rounded-full bg-[#2fb344] px-5 font-bold">
+              🎲 {tr(T.random, locale)}
             </button>
-          )}
-        </div>
+            {current && (
+              <button type="button" onClick={() => onPick(null)} className="min-h-12 rounded-full bg-white/10 px-5 font-bold ring-1 ring-white/25">
+                🗑️ {tr(T.remove, locale)}
+              </button>
+            )}
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </BodyPortal>
   );
 }
