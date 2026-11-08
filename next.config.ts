@@ -61,6 +61,14 @@ const nextConfig: NextConfig = {
       { source: '/:locale/lutins/:path*', headers: [SANTA_PERMISSIONS] },
       // The service worker must always be re-checked, so updates reach everyone.
       { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }] },
+      // The WebAssembly platformer is embedded by /monde/ziggy-plateforme in a same-origin iframe.
+      {
+        source: '/jeux/ziggy-plateforme/:path*',
+        headers: [
+          { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
+        ],
+      },
       {
         source: '/(mascot|media)/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],

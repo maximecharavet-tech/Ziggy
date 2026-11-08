@@ -369,3 +369,23 @@ export function resumable(pos: DodoPosition | undefined, segmentCount: number): 
   if (pos.seg >= segmentCount) return false;
   return pos.seg > 0 || pos.t > 1.5;
 }
+
+/* ── Version musicale (one sung track for the whole story) ── */
+
+/** How the story is told: Ziggy reading it (words light up) or the sung version (see song.ts). */
+export type NarrationMode = 'voice' | 'music';
+
+/**
+ * Which segment (title, scenes, outro) to show while the sung track plays:
+ * the track is split in equal parts, simply by time. 0 before the duration is known.
+ */
+export function musicSegment(time: number, duration: number, count: number): number {
+  if (count <= 1 || !Number.isFinite(duration) || duration <= 0 || !Number.isFinite(time) || time <= 0) return 0;
+  return Math.max(0, Math.min(count - 1, Math.floor((time / duration) * count)));
+}
+
+/** "m:ss" for the music progress bar. */
+export function clock(seconds: number): string {
+  const s = Number.isFinite(seconds) && seconds > 0 ? Math.floor(seconds) : 0;
+  return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+}
