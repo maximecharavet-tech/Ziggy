@@ -14,7 +14,11 @@ describe('elves’ letters', () => {
       expect(n.fr).not.toBe(n.en);
     }
     // No orphan note (a renamed prank would silently lose its note).
-    for (const id of Object.keys(MORNING_NOTES)) expect(PRANKS.some((p) => p.id === id), id).toBe(true);
+    for (const id of Object.keys(MORNING_NOTES))
+      expect(
+        PRANKS.some((p) => p.id === id),
+        id
+      ).toBe(true);
   });
 
   it('falls back to the generic note for own ideas and unknown ids', () => {
@@ -38,9 +42,9 @@ describe('elves’ letters', () => {
   });
 
   it('personalises with the first name, and works without one', () => {
-    expect(greeting('Léa', 'fr')).toBe('Coucou Léa !');
+    expect(greeting('Léa', 'fr')).toBe('Coucou Léa\u00a0!');
     expect(greeting('Tom', 'en')).toBe('Hello Tom!');
-    expect(greeting(null, 'fr')).toBe('Coucou !');
+    expect(greeting(null, 'fr')).toBe('Coucou\u00a0!');
     expect(greeting('  ', 'en')).toBe('Hello!');
     const a = buildLetter('arrival', 'fr', { name: 'Léa' });
     expect(a.title).toMatch(/Pôle Nord/);
@@ -53,6 +57,7 @@ describe('elves’ letters', () => {
     const m = buildLetter('morning', 'en', { prankId: 'cinema', elves: ['noisette', 'pepin'] });
     expect(m.elves).toEqual(['pepin', 'noisette']);
     expect(m.paragraphs[0]).toBe(MORNING_NOTES.cinema.en);
+    expect(buildLetter('morning', 'fr', { prankId: 'cinema' }).paragraphs[0]).toBe(MORNING_NOTES.cinema.fr.replace(' !', '\u00a0!'));
     expect(buildLetter('morning', 'fr', { prankId: null, elves: [] }).elves).toHaveLength(3);
   });
 });

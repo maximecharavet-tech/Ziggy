@@ -157,6 +157,42 @@ describe('lutins-core WebAssembly (Node build)', () => {
     }
   });
 
+  it('renders deterministic security-camera frames', () => {
+    const base = tableScene();
+    const style = { out_w: 144, out_h: 180 };
+    const a = engine.renderCctvFrame(base, 1.25, 7, style);
+    expect([a.width, a.height]).toEqual([144, 180]);
+    expect(engine.renderCctvFrame(base, 1.25, 7, style).data).toEqual(a.data);
+    expect(engine.renderCctvFrame(base, 2.5, 7, style).data).not.toEqual(a.data);
+    // Night vision: green phosphor everywhere, opaque.
+    for (let i = 0; i < a.data.length; i += 4) {
+      expect(a.data[i + 1]).toBeGreaterThanOrEqual(Math.max(a.data[i], a.data[i + 2]));
+      expect(a.data[i + 3]).toBe(255);
+    }
+    const r = engine.createCctvRenderer(base, 7, style);
+    try {
+      expect([r.width, r.height]).toEqual([144, 180]);
+      expect(r.focus.x).toBeGreaterThanOrEqual(0);
+      expect(r.focus.x).toBeLessThanOrEqual(1);
+      expect(r.render(1.25)).toEqual(a.data);
+      expect(Array.from(r.renderView(1.25).subarray(0, 400))).toEqual(Array.from(a.data.subarray(0, 400)));
+    } finally {
+      r.free();
+    }
+    const grey = engine.renderCctvFrame(base, 1, 7, { ...style, look: 'grey' });
+    expect(grey.data).not.toEqual(a.data);
+    expect(() => engine.renderCctvFrame(base, 0, 1, { look: 'thermal' } as never)).toThrow(/style_json/);
+  });
+
+  it('finds the elves for the security-camera zoom', () => {
+    // A grey room with a moss-green tunic and a red hat at the bottom right (as cctv.rs).
+    const img = image(300, 200, (x, y) => (inRect(x, y, 220, 130, 260, 180) ? [47, 138, 67] : inRect(x, y, 228, 110, 252, 130) ? [201, 42, 42] : [150, 146, 140]));
+    const r = engine.cctvFocus(img)!;
+    expect(r.x).toBeLessThanOrEqual(0.8);
+    expect(r.x + r.w).toBeGreaterThanOrEqual(0.8);
+    expect(engine.cctvFocus(image(64, 64, () => [150, 146, 140]))).toBeNull();
+  });
+
   it('prepares photos', () => {
     const out = engine.preparePhoto(tableScene(), 240, true);
     expect([out.width, out.height]).toEqual([240, 160]);

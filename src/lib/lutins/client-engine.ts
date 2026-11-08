@@ -4,7 +4,7 @@
  * the engine has no image decoders.
  */
 import { loadEngine } from './engine';
-import type { CardStyle, ElfId, Rect, RgbaLike, SceneAnalysis, Verification } from './types';
+import type { CardStyle, CctvStyle, ElfId, Rect, RgbaLike, SceneAnalysis, Verification } from './types';
 
 export type Scene = SceneAnalysis;
 
@@ -72,4 +72,25 @@ export async function renderCard(
     ctx.putImageData(new ImageData(view as Uint8ClampedArray<ArrayBuffer>, r.width, r.height), 0, 0);
   };
   return Object.assign(draw, { free: () => r.free() });
+}
+
+/**
+ * Prepares the security-camera look of `base` drawn into `out` (its size is
+ * the clip's size) and returns `draw(t)`, which paints the frame at `t`
+ * seconds (no text: draw the camera name / REC / timestamp on top). Also
+ * carries `free()` and the zoom target `focus` (normalised).
+ */
+export async function renderCctv(
+  base: HTMLCanvasElement,
+  out: HTMLCanvasElement,
+  opts: { seed?: number; style?: CctvStyle } = {},
+): Promise<((t: number) => void) & { free: () => void; focus: { x: number; y: number } }> {
+  const engine = await loadEngine();
+  const r = engine.createCctvRenderer(pixels(base), opts.seed ?? 1, { ...opts.style, out_w: out.width, out_h: out.height });
+  const ctx = out.getContext('2d')!;
+  const draw = (t: number) => {
+    const view = r.renderView(t);
+    ctx.putImageData(new ImageData(view as Uint8ClampedArray<ArrayBuffer>, r.width, r.height), 0, 0);
+  };
+  return Object.assign(draw, { free: () => r.free(), focus: r.focus });
 }

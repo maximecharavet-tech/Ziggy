@@ -165,7 +165,7 @@ export function LetterSheet({ letter, date, compact = false, className = '' }: {
           <Holly className="absolute -right-3 -top-4 h-14 w-20 rotate-12 scale-x-[-1] drop-shadow" />
         </>
       )}
-      <header className="relative text-center">
+      <div className="relative text-center">
         <p className="text-xs font-bold uppercase tracking-[0.25em] text-[#a07a4a]">
           ❄ {tr(T.from, locale)}
           {date ? ` · ${date}` : ''} ❄
@@ -176,7 +176,7 @@ export function LetterSheet({ letter, date, compact = false, className = '' }: {
           <span className="text-sm">✦</span>
           <span className="h-px w-12 bg-current" />
         </div>
-      </header>
+      </div>
       <div className={`relative ${compact ? 'mt-3 space-y-2 text-lg' : 'mt-5 space-y-3 text-lg sm:text-xl'} leading-relaxed`}>
         <p className="font-display text-2xl font-bold text-[#2b8a3e]">{letter.greeting}</p>
         {letter.paragraphs.map((p, i) => (
@@ -185,14 +185,14 @@ export function LetterSheet({ letter, date, compact = false, className = '' }: {
           </p>
         ))}
       </div>
-      <footer className={`relative ${compact ? 'mt-3' : 'mt-6'}`}>
+      <div className={`relative ${compact ? 'mt-3' : 'mt-6'}`}>
         <p className="italic text-[#7a5a36]">{letter.signoff}</p>
         <div className={`mt-1 flex flex-wrap items-end gap-x-3 gap-y-1 ${compact ? 'pr-16' : 'pr-24'}`}>
           {letter.elves.map((id) => (
             <ElfSignature key={id} id={id} locale={locale} small={compact} />
           ))}
         </div>
-      </footer>
+      </div>
       <WaxSeal className={`absolute drop-shadow-[0_6px_6px_rgba(0,0,0,0.3)] ${compact ? '-bottom-4 right-3 h-[4.5rem] w-[4.5rem] rotate-12' : '-bottom-6 right-6 h-24 w-24 rotate-12 sm:right-10'}`} />
     </article>
   );
@@ -269,7 +269,12 @@ export function ElfLetterDialog({
           ✕ {tr(T.close, locale)}
         </button>
       </div>
-      <motion.div initial={reduced ? false : { opacity: 0, y: 30, rotate: -2, scale: 0.96 }} animate={{ opacity: 1, y: 0, rotate: 0, scale: 1 }} transition={{ type: 'spring', stiffness: 160, damping: 18 }} className="lutins-print-root mt-6 pb-8">
+      <motion.div
+        initial={reduced ? false : { opacity: 0, y: 30, rotate: -2, scale: 0.96 }}
+        animate={{ opacity: 1, y: 0, rotate: 0, scale: 1 }}
+        transition={{ type: 'spring', stiffness: 160, damping: 18 }}
+        className="lutins-print-root mt-6 pb-8"
+      >
         <LetterSheet letter={letter} date={date} />
       </motion.div>
       <style>{`
@@ -309,10 +314,18 @@ export function LetterEnvelope({ kind, onOpen }: { kind: 'arrival' | 'departure'
         className="relative mt-8 block aspect-[3/2] w-72 max-w-full rounded-2xl shadow-[0_24px_50px_-12px_rgba(0,0,0,0.7)] sm:w-80"
         style={{ background: 'linear-gradient(180deg,#fff7e6,#f3dfb6)' }}
       >
-        <span aria-hidden="true" className="absolute inset-0 rounded-2xl" style={{ background: 'linear-gradient(155deg, transparent 49.5%, rgba(160,120,60,0.25) 50%, transparent 51%), linear-gradient(25deg, transparent 49.5%, rgba(160,120,60,0.25) 50%, transparent 51%)' }} />
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 rounded-2xl"
+          style={{ background: 'linear-gradient(155deg, transparent 49.5%, rgba(160,120,60,0.25) 50%, transparent 51%), linear-gradient(25deg, transparent 49.5%, rgba(160,120,60,0.25) 50%, transparent 51%)' }}
+        />
         <span aria-hidden="true" className="absolute inset-x-0 top-0 h-[58%] rounded-t-2xl" style={{ background: 'linear-gradient(180deg,#f8e8c6,#ecd3a0)', clipPath: 'polygon(0 0, 100% 0, 50% 100%)' }} />
-        <span aria-hidden="true" className="absolute left-4 top-3 text-xs font-bold uppercase tracking-[0.2em] text-[#a07a4a]">❄ {tr(T.from, locale)}</span>
-        <span aria-hidden="true" className="absolute bottom-3 right-4 text-2xl">🎄</span>
+        <span aria-hidden="true" className="absolute left-4 top-3 text-xs font-bold uppercase tracking-[0.2em] text-[#a07a4a]">
+          ❄ {tr(T.from, locale)}
+        </span>
+        <span aria-hidden="true" className="absolute bottom-3 right-4 text-2xl">
+          🎄
+        </span>
         <WaxSeal className="absolute left-1/2 top-[58%] h-20 w-20 -translate-x-1/2 -translate-y-1/2 drop-shadow-[0_6px_8px_rgba(0,0,0,0.35)]" />
       </motion.button>
       <p className="mt-6 text-lg font-semibold text-white/85">{tr(T.tapEnvelope, locale)}</p>

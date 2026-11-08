@@ -507,7 +507,12 @@ impl CctvRenderer {
                     let l = (top * (256 - wy) + bot * wy) >> 16; // 0–255
                     let l = (((l * v as u32) >> 8) * gain) >> 8;
                     let nz = (nrow[(x + k + ox) & (TILE - 1)] as i32 * amp) >> 8;
-                    px.copy_from_slice(&lut[(l as i32 + nz).clamp(0, 255) as usize]);
+                    // Byte stores: a 4-byte `copy_from_slice` costs ~30 % more in wasm.
+                    let c = lut[(l as i32 + nz).clamp(0, 255) as usize];
+                    px[0] = c[0];
+                    px[1] = c[1];
+                    px[2] = c[2];
+                    px[3] = 255;
                 }
                 start = end;
                 x += n;
@@ -760,18 +765,5 @@ mod tests {
             r.render(k as f32 / 24.0);
         }
         println!("cctv 720×900: {:.2} ms/frame", t0.elapsed().as_secs_f64() * 1000.0 / 60.0);
-        let t0 = std::time::Instant::now();
-        for k in 0..60u32 {
-            for (i, px) in r.frame.chunks_exact_mut(4).enumerate() {
-                px.copy_from_slice(&r.lut[(i as u32 + k) as usize & 255]);
-            }
-        }
-        println!("baseline fill: {:.2} ms/frame {}", t0.elapsed().as_secs_f64() * 1000.0 / 60.0, r.frame[7]);
-        let mut c = crate::card::CardRenderer::new(img.view(), 1, crate::card::CardStyle { out_w: Some(720), out_h: Some(900), ..Default::default() });
-        let t0 = std::time::Instant::now();
-        for k in 0..60 {
-            c.render(k as f32 / 24.0);
-        }
-        println!("card: {:.2} ms/frame", t0.elapsed().as_secs_f64() * 1000.0 / 60.0);
     }
 }

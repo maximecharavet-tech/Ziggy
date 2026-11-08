@@ -9,19 +9,49 @@ import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { SantaGate, gateGraceValid } from '@/components/santa/parents/SantaGate';
 import bible from '@/data/lutins/bible.json';
 import { ElfAvatar } from '@/components/lutins/ElfAvatar';
-import { PRANK_CATEGORIES, PRANKS, MAX_PARENT_TEXT, type PrankCategory } from '@/data/lutins/pranks';
+import { PRANK_CATEGORIES, PRANKS, MAX_PARENT_TEXT, prankById, type PrankCategory } from '@/data/lutins/pranks';
 import { findPeople, warmPeopleDetector } from '@/lib/lutins/people';
-import { deviceId, journal, nextMorning } from '@/lib/lutins/journal';
+import { deviceId, journal, nextMorning, useJournal } from '@/lib/lutins/journal';
+import { favouritesFirst, lutinsStore, tonightNight, useLutinsSettings, type ElfSpot, type Night } from '@/lib/lutins/family';
+import { PrankWheel } from '@/components/lutins/PrankWheel';
+import { NightPlanner } from '@/components/lutins/NightPlanner';
+import { LutinsFamilySettings } from '@/components/lutins/LutinsFamilySettings';
 import { analyzePhoto, verifyResult, type Scene } from '@/lib/lutins/client-engine';
 import { shareOrSave } from '@/components/santa/booth/share';
 
 type ElfId = 'pepin' | 'grelotte' | 'noisette';
 type Step = 'elves' | 'photo' | 'prank' | 'magic' | 'result';
+type Tab = 'tonight' | 'calendar' | 'letters';
+type Cat = PrankCategory | 'favs';
 
 const T = {
   title: { fr: 'L’atelier des lutins', en: 'The elves’ workshop' },
-  lead: { fr: 'Ce soir, préparez la farce que votre enfant découvrira au réveil.', en: 'Tonight, prepare the prank your child will discover in the morning.' },
+  lead: { fr: 'Ce soir, préparez la farce que votre enfant découvrira au réveil. Quelques minutes, zéro désordre.', en: 'Tonight, prepare the prank your child will find in the morning. A few minutes, zero mess.' },
+  tabTonight: { fr: 'Ce soir', en: 'Tonight' },
+  tabCalendar: { fr: 'Calendrier', en: 'Calendar' },
+  tabLetters: { fr: 'Lettres', en: 'Letters' },
+  stepElves: { fr: 'Lutins', en: 'Elves' },
+  stepPhoto: { fr: 'Photo', en: 'Photo' },
+  stepPrank: { fr: 'Farce', en: 'Prank' },
+  stepMagic: { fr: 'Magie', en: 'Magic' },
   who: { fr: 'Qui fait la farce ce soir ?', en: 'Who is pulling the prank tonight?' },
+  whoHelp: { fr: 'Touchez un lutin pour l’ajouter ou le retirer. Les trois ensemble, c’est encore plus drôle.', en: 'Tap an elf to add or remove it. All three together is even funnier.' },
+  plannedTonight: { fr: 'Prévu ce soir dans votre calendrier', en: 'Planned for tonight in your calendar' },
+  nightN: { fr: 'Soir {n} sur 24', en: 'Evening {n} of 24' },
+  wheel: { fr: 'Roue des farces', en: 'Prank wheel' },
+  favs: { fr: 'Favoris', en: 'Favourites' },
+  favAdd: { fr: 'Ajouter aux favoris', en: 'Add to favourites' },
+  favRemove: { fr: 'Retirer des favoris', en: 'Remove from favourites' },
+  noFavs: { fr: 'Touchez le cœur d’une farce pour la retrouver ici.', en: 'Tap a prank’s heart to keep it here.' },
+  magicKeep: { fr: 'Ça prend un petit moment : gardez cette page ouverte.', en: 'This takes a little while: keep this page open.' },
+  slide: { fr: 'Glissez sur la photo pour comparer avant / après.', en: 'Slide across the picture to compare before / after.' },
+  markTitle: { fr: 'Le jeu « Trouve les lutins » (facultatif)', en: 'The “Find the elves” game (optional)' },
+  markHelp: { fr: 'Touchez chaque lutin sur la photo : demain matin, votre enfant devra les retrouver. Sans ça, le jeu lui demandera simplement qui a fait la farce.', en: 'Tap each elf in the picture: tomorrow morning, your child will have to find them. Without it, the game simply asks who pulled the prank.' },
+  markStart: { fr: 'Marquer les lutins', en: 'Mark the elves' },
+  markTap: { fr: 'Touchez {elf} sur la photo', en: 'Tap {elf} in the picture' },
+  markDone: { fr: 'Le jeu est prêt !', en: 'The game is ready!' },
+  markRedo: { fr: 'Recommencer', en: 'Start over' },
+  markSkip: { fr: 'Passer', en: 'Skip' },
   next: { fr: 'Continuer', en: 'Continue' },
   back: { fr: 'Retour', en: 'Back' },
   photoTitle: { fr: 'La photo de la pièce', en: 'The photo of the room' },
@@ -39,7 +69,7 @@ const T = {
   checkFailed: { fr: 'Impossible de vérifier la photo sur cet appareil. Réessayez, ou essayez avec un autre navigateur.', en: 'This device could not check the photo. Try again, or try another browser.' },
   stage: { fr: 'Les lutins iront ici', en: 'The elves will go here' },
   retake: { fr: 'Changer de photo', en: 'Change photo' },
-  prankTitle: { fr: 'Quelle farce ?', en: 'Which prank?' },
+  prankTitle: { fr: 'Quelle farce ce soir ?', en: 'Which prank tonight?' },
   own: { fr: 'Ma propre idée', en: 'My own idea' },
   ownHelp: { fr: 'Décrivez la farce en une phrase (ex. : « ils font du ski sur la rampe d’escalier avec des cuillères »).', en: 'Describe the prank in one sentence (e.g. “they ski down the banister on spoons”).' },
   go: { fr: 'Faire apparaître les lutins', en: 'Make the elves appear' },
@@ -49,6 +79,7 @@ const T = {
   magic4: { fr: 'Les lutins sèment des paillettes…', en: 'The elves are sprinkling glitter…' },
   retry: { fr: 'Les lutins refont la photo, ils n’étaient pas bien placés…', en: 'The elves are retaking the photo, they weren’t quite right…' },
   resultTitle: { fr: 'Les lutins sont passés !', en: 'The elves were here!' },
+  journalHelp: { fr: 'Rangez-la dans le journal : votre enfant la découvrira au réveil, avec le mot des lutins.', en: 'Put it in the journal: your child will find it on waking, with the elves’ note.' },
   before: { fr: 'Avant', en: 'Before' },
   after: { fr: 'Après', en: 'After' },
   addMorning: { fr: 'Pour demain matin', en: 'For tomorrow morning' },
@@ -102,6 +133,7 @@ export function LutinsStudio() {
   const L2 = locale === 'fr' ? 'fr' : 'en';
   const reduced = useReducedMotion();
   const [open, setOpen] = useState(false);
+  const [tab, setTab] = useState<Tab>('tonight');
   const [step, setStep] = useState<Step>('elves');
   const [elves, setElves] = useState<ElfId[]>(['pepin', 'grelotte', 'noisette']);
   const [photo, setPhoto] = useState<HTMLCanvasElement | null>(null);
@@ -109,7 +141,7 @@ export function LutinsStudio() {
   const [scene, setScene] = useState<Scene | null>(null);
   const [checking, setChecking] = useState(false);
   const [photoError, setPhotoError] = useState<L | null>(null);
-  const [cat, setCat] = useState<PrankCategory>('partout');
+  const [cat, setCat] = useState<Cat>('partout');
   const [prankId, setPrankId] = useState<string | null>(null);
   const [own, setOwn] = useState('');
   const [ownMode, setOwnMode] = useState(false);
@@ -120,6 +152,14 @@ export function LutinsStudio() {
   const [left, setLeft] = useState<number | null>(null);
   const [split, setSplit] = useState(55);
   const [added, setAdded] = useState(false);
+  const [entryId, setEntryId] = useState<string | null>(null);
+  const [wheel, setWheel] = useState(false);
+  const [marking, setMarking] = useState(false);
+  const [spots, setSpots] = useState<ElfSpot[]>([]);
+  const [tonight, setTonight] = useState<Night | null>(null);
+  const settings = useLutinsSettings();
+  const { entries } = useJournal();
+  const planned = tonight ? prankById(settings.plan[tonight.key]) : null;
   const cameraInput = useRef<HTMLInputElement>(null);
   const galleryInput = useRef<HTMLInputElement>(null);
 
@@ -129,6 +169,16 @@ export function LutinsStudio() {
   useEffect(() => {
     if (open) warmPeopleDetector();
   }, [open]);
+  useEffect(() => setTonight(tonightNight(new Date())), []);
+  // Tonight's planned prank is preselected (once, unless the parent already picked one).
+  const preselected = useRef(false);
+  useEffect(() => {
+    if (preselected.current || !planned) return;
+    preselected.current = true;
+    setPrankId((cur) => cur ?? planned.id);
+    setCat(planned.cat);
+    setOwnMode(false);
+  }, [planned]);
   useEffect(() => {
     if (step !== 'magic') return;
     const t = setInterval(() => setMagicIdx((i) => (i + 1) % MAGIC.length), 3200);
@@ -207,6 +257,9 @@ export function LutinsStudio() {
         }
         setResult({ blob, url: URL.createObjectURL(blob), caption, source, sig });
         setAdded(false);
+        setEntryId(null);
+        setSpots([]);
+        setMarking(false);
         setSplit(55);
         setStep('result');
       } catch {
@@ -219,8 +272,9 @@ export function LutinsStudio() {
 
   const addToJournal = async (when: 'morning' | 'now') => {
     if (!result) return;
+    const id = Math.random().toString(36).slice(2, 12);
     await journal.put({
-      id: Math.random().toString(36).slice(2, 12),
+      id,
       createdAt: new Date().toISOString(),
       revealAt: (when === 'now' ? new Date() : nextMorning()).toISOString(),
       caption: result.caption,
@@ -229,8 +283,23 @@ export function LutinsStudio() {
       image: result.blob,
       sourceUrl: result.source || null,
       sourceSig: result.sig || null,
+      spots: spots.length ? spots : undefined,
     });
+    setEntryId(id);
     setAdded(true);
+  };
+
+  const markAt = (e: React.PointerEvent<HTMLDivElement>) => {
+    const next = elves.find((id) => !spots.some((s) => s.id === id));
+    if (!next) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const spot: ElfSpot = { id: next, x: (e.clientX - r.left) / r.width, y: (e.clientY - r.top) / r.height, r: 0.09 };
+    const all = [...spots, spot];
+    setSpots(all);
+    if (all.length === elves.length) {
+      setMarking(false);
+      if (entryId) void journal.patch(entryId, { spots: all });
+    }
   };
 
   if (!open) {
@@ -243,6 +312,9 @@ export function LutinsStudio() {
   }
 
   const canGo = ownMode ? own.trim().length >= 3 : !!prankId;
+  const inCat = (c: Cat) => (c === 'favs' ? PRANKS.filter((p) => settings.favs.includes(p.id)) : PRANKS.filter((p) => c === 'partout' || p.cat === c));
+  const shownPranks = favouritesFirst(inCat(cat), settings.favs);
+  const wheelPool = !ownMode && inCat(cat).length >= 3 ? inCat(cat) : PRANKS;
   const stageRect = scene?.stages?.[0];
 
   return (
@@ -257,10 +329,50 @@ export function LutinsStudio() {
         )}
       </header>
 
+      <div role="tablist" aria-label={tr(T.title, locale)} className="mx-auto mt-6 grid max-w-md grid-cols-3 gap-1 rounded-full bg-white/10 p-1 ring-1 ring-white/15">
+        {(
+          [
+            ['tonight', '🌙', T.tabTonight],
+            ['calendar', '🗓️', T.tabCalendar],
+            ['letters', '✉️', T.tabLetters],
+          ] as const
+        ).map(([id, emoji, label]) => (
+          <button key={id} type="button" role="tab" aria-selected={tab === id} onClick={() => setTab(id)} className={`min-h-12 rounded-full px-2 text-sm font-bold transition-colors sm:text-base ${tab === id ? 'bg-white text-[#1b2150] shadow' : 'text-white/85'}`}>
+            <span aria-hidden="true">{emoji}</span> {tr(label, locale)}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'calendar' && <NightPlanner entries={entries} onPrepareTonight={() => (setTab('tonight'), setStep('elves'), planned && (setPrankId(planned.id), setCat(planned.cat), setOwnMode(false)))} />}
+      {tab === 'letters' && <LutinsFamilySettings />}
+
+      {tab === 'tonight' && step !== 'magic' && step !== 'result' && (
+        <ol className="mx-auto mt-6 flex max-w-md items-center justify-between gap-1" aria-label={tr(T.title, locale)}>
+          {([T.stepElves, T.stepPhoto, T.stepPrank, T.stepMagic] as const).map((label, i) => {
+            const cur = ['elves', 'photo', 'prank', 'magic'].indexOf(step);
+            const state = i < cur ? 'done' : i === cur ? 'now' : 'next';
+            return (
+              <li key={i} className="flex flex-1 flex-col items-center gap-1" aria-current={state === 'now' ? 'step' : undefined}>
+                <span className={`grid h-9 w-9 place-items-center rounded-full font-display text-base font-bold ${state === 'now' ? 'bg-amber-300 text-[#3b1f00] ring-4 ring-amber-300/30' : state === 'done' ? 'bg-[#2fb344] text-white' : 'bg-white/10 text-white/60 ring-1 ring-white/20'}`}>{state === 'done' ? '✓' : i + 1}</span>
+                <span className={`text-xs font-bold ${state === 'next' ? 'text-white/55' : 'text-white'}`}>{tr(label, locale)}</span>
+              </li>
+            );
+          })}
+        </ol>
+      )}
+
+      {tab === 'tonight' && planned && tonight && (step === 'elves' || step === 'photo') && (
+        <p className="mx-auto mt-5 flex max-w-xl items-center justify-center gap-2 rounded-full bg-amber-300/15 px-4 py-2 text-center text-sm font-bold text-amber-100 ring-1 ring-amber-300/40">
+          🗓️ {tr(T.nightN, locale).replace('{n}', String(tonight.n))} · {planned.emoji} {tr(planned.title, locale)}
+        </p>
+      )}
+
+      {tab === 'tonight' && (
       <AnimatePresence mode="wait">
         {step === 'elves' && (
           <motion.section key="elves" initial={reduced ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-10">
             <h2 className="text-center font-display text-2xl font-bold">{tr(T.who, locale)}</h2>
+            <p className="mt-1 text-center text-white/75">{tr(T.whoHelp, locale)}</p>
             <ul className="mx-auto mt-6 grid max-w-3xl grid-cols-3 gap-3 sm:gap-5">
               {ELVES.map((e) => {
                 const on = elves.includes(e.id);
@@ -338,7 +450,21 @@ export function LutinsStudio() {
           <motion.section key="prank" initial={reduced ? false : { opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="mt-10">
             <h2 className="text-center font-display text-2xl font-bold">🎭 {tr(T.prankTitle, locale)}</h2>
             {error && <p className="mx-auto mt-4 max-w-2xl rounded-2xl bg-amber-300 px-4 py-3 text-center font-semibold text-[#3b1f00]">{tr(error, locale)}</p>}
-            <div className="-mx-4 mt-6 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0 [&::-webkit-scrollbar]:hidden">
+            {planned && !ownMode && (
+              <p className="mx-auto mt-4 max-w-2xl rounded-2xl bg-amber-300/15 px-4 py-2 text-center text-sm font-bold text-amber-100 ring-1 ring-amber-300/40">
+                🗓️ {tr(T.plannedTonight, locale)} : {planned.emoji} {tr(planned.title, locale)}
+              </p>
+            )}
+            <div className="mt-5 flex justify-center">
+              <button type="button" onClick={() => setWheel(true)} className="inline-flex min-h-14 items-center gap-2 rounded-full bg-gradient-to-r from-[#f59f00] to-[#fcc419] px-6 font-display text-lg font-bold text-[#3b1f00] shadow-[0_6px_0_#b07d00] transition-transform active:translate-y-1 active:shadow-[0_2px_0_#b07d00]">
+                🎡 {tr(T.wheel, locale)}
+              </button>
+            </div>
+            <div className="-mx-4 mt-5 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:justify-center sm:px-0 [&::-webkit-scrollbar]:hidden">
+              <button type="button" aria-pressed={!ownMode && cat === 'favs'} onClick={() => (setOwnMode(false), setCat('favs'))} className={`min-h-12 shrink-0 rounded-full px-4 font-bold ${!ownMode && cat === 'favs' ? 'bg-white text-[#1b2150]' : 'bg-white/15 ring-1 ring-white/25'}`}>
+                ❤️ {tr(T.favs, locale)}
+                {settings.favs.length > 0 && <span className="ms-1.5 rounded-full bg-[#e03131] px-1.5 text-xs text-white">{settings.favs.length}</span>}
+              </button>
               {PRANK_CATEGORIES.map((c) => (
                 <button key={c.id} type="button" aria-pressed={!ownMode && cat === c.id} onClick={() => (setOwnMode(false), setCat(c.id))} className={`min-h-12 shrink-0 rounded-full px-4 font-bold ${!ownMode && cat === c.id ? 'bg-white text-[#1b2150]' : 'bg-white/15 ring-1 ring-white/25'}`}>
                   {c.emoji} {tr(c.label, locale)}
@@ -362,23 +488,39 @@ export function LutinsStudio() {
                   {own.length}/{MAX_PARENT_TEXT}
                 </p>
               </div>
+            ) : cat === 'favs' && !settings.favs.length ? (
+              <p className="mx-auto mt-6 max-w-md rounded-2xl bg-white/10 p-5 text-center font-semibold text-white/85 ring-1 ring-white/15">🤍 {tr(T.noFavs, locale)}</p>
             ) : (
               <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-                {PRANKS.filter((p) => cat === 'partout' || p.cat === cat).map((p) => (
-                  <li key={p.id}>
-                    <button
-                      type="button"
-                      aria-pressed={prankId === p.id}
-                      onClick={() => setPrankId(p.id)}
-                      className={`flex h-full min-h-24 w-full items-center gap-3 rounded-2xl p-3 text-start font-bold transition-transform active:scale-95 ${prankId === p.id ? 'bg-amber-300 text-[#3b1f00] shadow-lg' : 'bg-white/10 ring-1 ring-white/20'}`}
-                    >
-                      <span className="text-3xl" aria-hidden="true">
-                        {p.emoji}
-                      </span>
-                      <span className="leading-tight">{tr(p.title, locale)}</span>
-                    </button>
-                  </li>
-                ))}
+                {shownPranks.map((p) => {
+                  const fav = settings.favs.includes(p.id);
+                  return (
+                    <li key={p.id} className="relative">
+                      <button
+                        type="button"
+                        aria-pressed={prankId === p.id}
+                        onClick={() => setPrankId(p.id)}
+                        className={`flex h-full min-h-24 w-full flex-col items-start justify-center gap-1 rounded-2xl p-3 text-start font-bold transition-transform active:scale-95 sm:flex-row sm:items-center sm:gap-3 sm:pe-11 ${prankId === p.id ? 'bg-amber-300 text-[#3b1f00] shadow-lg' : 'bg-white/10 ring-1 ring-white/20'}`}
+                      >
+                        <span className="text-3xl" aria-hidden="true">
+                          {p.emoji}
+                        </span>
+                        <span className="leading-tight [overflow-wrap:anywhere]">{tr(p.title, locale)}</span>
+                      </button>
+                      <button
+                        type="button"
+                        aria-pressed={fav}
+                        aria-label={`${tr(fav ? T.favRemove : T.favAdd, locale)} : ${tr(p.title, locale)}`}
+                        onClick={() => lutinsStore.toggleFav(p.id)}
+                        className="absolute right-0.5 top-0.5 grid h-11 w-11 place-items-center rounded-full text-lg transition-transform active:scale-90"
+                      >
+                        <motion.span key={String(fav)} initial={reduced ? false : { scale: 0.4 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 500, damping: 12 }} aria-hidden="true">
+                          {fav ? '❤️' : '🤍'}
+                        </motion.span>
+                      </button>
+                    </li>
+                  );
+                })}
               </ul>
             )}
             <div className="mt-8 flex justify-between">
@@ -405,12 +547,26 @@ export function LutinsStudio() {
             <div className="mt-6 h-2 w-64 overflow-hidden rounded-full bg-white/15">
               <motion.div className="h-full rounded-full bg-gradient-to-r from-amber-300 to-pink-400" initial={{ width: '5%' }} animate={{ width: '92%' }} transition={{ duration: 35, ease: 'easeOut' }} />
             </div>
+            <p className="mt-4 text-sm text-white/65">{tr(T.magicKeep, locale)}</p>
           </motion.section>
         )}
 
         {step === 'result' && result && photoUrl && (
           <motion.section key="result" initial={reduced ? false : { opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} className="mx-auto mt-8 max-w-3xl">
             <h2 className="text-center font-display text-3xl font-bold">🎉 {tr(T.resultTitle, locale)}</h2>
+            {marking || spots.length ? (
+              <div className={`relative mt-5 select-none overflow-hidden rounded-[1.5rem] shadow-2xl ring-4 ${marking ? 'cursor-crosshair ring-amber-300' : 'ring-[#2fb344]'}`} onPointerDown={marking ? markAt : undefined} style={{ touchAction: marking ? 'none' : undefined }}>
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={result.url} alt={result.caption} draggable={false} className="pointer-events-none block w-full" />
+                {spots.map((sp) => (
+                  <span key={sp.id} className="pointer-events-none absolute grid -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border-4 border-white bg-white/10 shadow-[0_0_0_3px_rgba(47,179,68,0.9)]" style={{ left: `${sp.x * 100}%`, top: `${sp.y * 100}%`, width: `${sp.r * 200}%`, aspectRatio: '1' }}>
+                    <span className="h-10 w-10 overflow-hidden rounded-full ring-2 ring-white" style={{ background: ELVES.find((e) => e.id === sp.id)?.color }}>
+                      <ElfAvatar id={sp.id} className="h-full w-full object-cover" />
+                    </span>
+                  </span>
+                ))}
+              </div>
+            ) : (
             <div className="relative mt-5 select-none overflow-hidden rounded-[1.5rem] shadow-2xl ring-1 ring-white/20">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={result.url} alt={result.caption} className="block w-full" />
@@ -423,7 +579,45 @@ export function LutinsStudio() {
               <span className="absolute right-3 top-3 rounded-full bg-black/50 px-3 py-1 text-xs font-bold">{tr(T.after, locale)}</span>
               <input type="range" min={0} max={100} value={split} onChange={(e) => setSplit(Number(e.target.value))} aria-label={`${tr(T.before, locale)} / ${tr(T.after, locale)}`} className="absolute inset-0 h-full w-full cursor-ew-resize opacity-0" />
             </div>
+            )}
+            {!marking && !spots.length && <p className="mt-2 text-center text-xs text-white/60">↔ {tr(T.slide, locale)}</p>}
             {result.caption && <p className="mt-4 text-center font-display text-xl font-bold">« {result.caption} »</p>}
+
+            <div className="mx-auto mt-5 max-w-2xl rounded-[1.5rem] bg-white/10 p-4 ring-1 ring-white/15">
+              <p className="font-display text-lg font-bold">🔎 {tr(T.markTitle, locale)}</p>
+              {spots.length === elves.length ? (
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  <span className="rounded-full bg-[#2fb344] px-4 py-1.5 font-bold">✓ {tr(T.markDone, locale)}</span>
+                  <button type="button" onClick={() => (setSpots([]), setMarking(true))} className="min-h-11 rounded-full px-4 font-bold text-white/80 underline underline-offset-4">
+                    {tr(T.markRedo, locale)}
+                  </button>
+                </div>
+              ) : marking ? (
+                <div className="mt-2 flex flex-wrap items-center gap-3">
+                  {(() => {
+                    const next = ELVES.find((e) => e.id === elves.find((id) => !spots.some((sp) => sp.id === id)));
+                    return next ? (
+                      <span className="flex items-center gap-2 rounded-full bg-amber-300 py-1 pe-4 ps-1 font-bold text-[#3b1f00]">
+                        <span className="h-9 w-9 overflow-hidden rounded-full" style={{ background: next.color }}>
+                          <ElfAvatar id={next.id} className="h-full w-full object-cover" />
+                        </span>
+                        {tr(T.markTap, locale).replace('{elf}', tr(next.name, locale))}
+                      </span>
+                    ) : null;
+                  })()}
+                  <button type="button" onClick={() => (setSpots([]), setMarking(false))} className="min-h-11 rounded-full px-4 font-bold text-white/80 underline underline-offset-4">
+                    {tr(T.markSkip, locale)}
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <p className="mt-1 text-sm text-white/75">{tr(T.markHelp, locale)}</p>
+                  <button type="button" onClick={() => (setSpots([]), setMarking(true))} className="mt-3 min-h-12 rounded-full bg-white px-5 font-bold text-[#1b2150]">
+                    🎯 {tr(T.markStart, locale)}
+                  </button>
+                </>
+              )}
+            </div>
             {added ? (
               <div className="mt-6 flex flex-col items-center gap-3">
                 <p className="rounded-full bg-[#2fb344] px-5 py-2 font-bold">✓ {tr(T.added, locale)}</p>
@@ -432,7 +626,9 @@ export function LutinsStudio() {
                 </Link>
               </div>
             ) : (
-              <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+              <>
+              <p className="mt-6 text-center text-white/80">{tr(T.journalHelp, locale)}</p>
+              <div className="mt-3 flex flex-col justify-center gap-3 sm:flex-row">
                 <button type="button" onClick={() => addToJournal('morning')} className="min-h-16 rounded-full bg-gradient-to-r from-[#c92a2a] to-[#f03e3e] px-6 font-display text-lg font-bold shadow-lg">
                   🌅 {tr(T.addMorning, locale)}
                 </button>
@@ -440,6 +636,7 @@ export function LutinsStudio() {
                   👀 {tr(T.addNow, locale)}
                 </button>
               </div>
+              </>
             )}
             <div className="mt-4 flex flex-wrap justify-center gap-3">
               <button type="button" onClick={() => shareOrSave(new File([result.blob], 'lutins-farceurs.jpg', { type: result.blob.type }), 'lutins-farceurs.jpg', tr(T.resultTitle, locale))} className="min-h-12 rounded-full bg-white/10 px-5 font-bold ring-1 ring-white/25">
@@ -453,6 +650,24 @@ export function LutinsStudio() {
               </button>
             </div>
           </motion.section>
+        )}
+      </AnimatePresence>
+      )}
+
+      <AnimatePresence>
+        {wheel && (
+          <PrankWheel
+            pranks={wheelPool}
+            favs={settings.favs}
+            onPick={(id) => {
+              setPrankId(id);
+              setOwnMode(false);
+              const p = prankById(id);
+              if (p && cat !== 'favs' && cat !== 'partout' && p.cat !== cat) setCat(p.cat);
+              setWheel(false);
+            }}
+            onClose={() => setWheel(false)}
+          />
         )}
       </AnimatePresence>
     </div>

@@ -6,6 +6,7 @@ import { buildHero, type HeroSet } from './hero';
 import { ELF_IDS, type ElfId, type ElfPose, type LutinsSceneHandle, type LutinsSceneOptions, type SheetLayout, type StageCamera } from './types';
 
 export { makeElf, buildElf, ElfRig, ELF_COLORS, type ElfActor, type ElfModel, type ElfOptions } from './elf';
+export { mountLutinsAR, AR_ACTIONS, CAMERA_HEIGHT, type ARAction, type ARElf, type ARSpot, type DeviceAngles, type LutinsARHandle, type LutinsAROptions } from './ar';
 export { ELF_IDS, ELF_POSES, type ElfId, type ElfPose, type LutinsSceneHandle, type LutinsSceneOptions, type SheetLayout, type StageCamera } from './types';
 
 /** Very light neutral backdrop of the turnarounds; the line-ups are pure white. */

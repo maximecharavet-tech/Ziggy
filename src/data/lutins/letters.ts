@@ -233,7 +233,9 @@ const TEXT = {
   departureSign: { fr: 'Gros bisous givrés,', en: 'Big frosty hugs,' },
 } satisfies Record<string, L | L[]>;
 
-const t = (l: L, locale: string) => (locale === 'fr' ? l.fr : l.en);
+/** French typography: a non-breaking space before ! ? : ; » and after « (no lonely "!" on a new line). */
+const frSpaces = (x: string) => x.replace(/ ([!?:;»])/g, '\u00a0$1').replace(/« /g, '«\u00a0');
+const t = (l: L, locale: string) => (locale === 'fr' ? frSpaces(l.fr) : l.en);
 
 export function greeting(name: string | null | undefined, locale: string): string {
   const n = name?.trim();

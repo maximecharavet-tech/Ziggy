@@ -87,8 +87,8 @@ function useObjectUrl(blob: Blob | null | undefined) {
   return url;
 }
 
-/** The elves' camera clip, if the entry has one (field added by the camera feature; read safely). */
-const cctvOf = (e: JournalEntry): Blob | null => (e as JournalEntry & { cctv?: Blob | null }).cctv ?? null;
+/** The elves' security-camera clip, if the entry has one. */
+const cctvOf = (e: JournalEntry): Blob | null => e.cctv ?? null;
 
 type Phase = 'alert' | 'opening' | 'reveal' | 'game' | 'party';
 
@@ -125,14 +125,17 @@ export function RevealCeremony({ entry, childName, onOpen, onDone }: { entry: Jo
     <div ref={top} className="scroll-mt-24">
       <AnimatePresence mode="wait">
         {(phase === 'alert' || phase === 'opening') &&
-          (hasClip ? (
-            <CameraAlert key="alert" elves={elves} opening={phase === 'opening'} onOpen={open} />
-          ) : (
-            <Present key="gift" opening={phase === 'opening'} onOpen={open} />
-          ))}
+          (hasClip ? <CameraAlert key="alert" elves={elves} opening={phase === 'opening'} onOpen={open} /> : <Present key="gift" opening={phase === 'opening'} onOpen={open} />)}
 
         {phase === 'reveal' && (
-          <motion.section key="reveal" initial={reduced ? false : { opacity: 0, scale: 0.94 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ type: 'spring', stiffness: 140, damping: 18 }} className="relative mx-auto mt-8 max-w-3xl">
+          <motion.section
+            key="reveal"
+            initial={reduced ? false : { opacity: 0, scale: 0.94 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ type: 'spring', stiffness: 140, damping: 18 }}
+            className="relative mx-auto mt-8 max-w-3xl"
+          >
             <CloseButton onClose={onDone} />
             <Media entry={entry} cctv={cctv} />
             <LetterSheet letter={letter} compact className="-mt-6 w-[94%] -rotate-1" />
@@ -144,7 +147,7 @@ export function RevealCeremony({ entry, childName, onOpen, onDone }: { entry: Jo
                   onClick={() => (unlockAudio(), setPhase('game'))}
                   animate={reduced ? {} : { scale: [1, 1.05, 1] }}
                   transition={{ repeat: Infinity, duration: 1.8 }}
-                  className="min-h-16 rounded-full bg-gradient-to-r from-[#2fb344] to-[#40c057] px-8 font-display text-2xl font-bold text-white shadow-[0_8px_0_#1e7a2e]"
+                  className="min-h-16 whitespace-nowrap rounded-full bg-gradient-to-r from-[#2fb344] to-[#40c057] px-6 font-display text-xl font-bold text-white shadow-[0_8px_0_#1e7a2e] sm:px-8 sm:text-2xl"
                 >
                   🔎 {tr(T.find, locale)}
                 </motion.button>
@@ -173,9 +176,11 @@ export function RevealCeremony({ entry, childName, onOpen, onDone }: { entry: Jo
 function CloseButton({ onClose }: { onClose: () => void }) {
   const locale = useLocale();
   return (
-    <button type="button" onClick={onClose} aria-label={tr(T.close, locale)} className="absolute -top-3 right-0 z-10 grid h-12 w-12 place-items-center rounded-full bg-white/15 text-xl font-bold text-white ring-1 ring-white/30 backdrop-blur sm:-right-3">
-      ✕
-    </button>
+    <div className="mb-3 flex justify-end">
+      <button type="button" onClick={onClose} aria-label={tr(T.close, locale)} className="grid h-12 w-12 place-items-center rounded-full bg-white/15 text-xl font-bold text-white ring-1 ring-white/30 backdrop-blur">
+        ✕
+      </button>
+    </div>
   );
 }
 
@@ -187,7 +192,13 @@ function CameraAlert({ elves, opening, onOpen }: { elves: string[]; opening: boo
   const [clock, setClock] = useState('');
   useEffect(() => setClock(new Date().toLocaleTimeString(locale === 'fr' ? 'fr-FR' : 'en-GB', { hour: '2-digit', minute: '2-digit' })), [locale]);
   return (
-    <motion.section initial={{ opacity: 0 }} animate={opening ? { opacity: 0, scale: 1.06 } : { opacity: 1, scale: 1 }} exit={{ opacity: 0 }} transition={{ duration: opening ? 0.5 : 0.3 }} className="mt-8 flex flex-col items-center text-center">
+    <motion.section
+      initial={{ opacity: 0 }}
+      animate={opening ? { opacity: 0, scale: 1.06 } : { opacity: 1, scale: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: opening ? 0.5 : 0.3 }}
+      className="mt-8 flex flex-col items-center text-center"
+    >
       <div className="relative w-full max-w-sm overflow-hidden rounded-[2.75rem] bg-[linear-gradient(170deg,#24205e,#0f0d33)] p-4 pb-8 shadow-[0_30px_60px_-20px_rgba(0,0,0,0.8)] ring-[6px] ring-[#2c2a52]">
         <div aria-hidden="true" className="mx-auto h-6 w-28 rounded-full bg-black/70" />
         <p className="mt-6 font-display text-6xl font-bold tabular-nums text-white/95" suppressHydrationWarning>
@@ -264,7 +275,9 @@ function Present({ opening, onOpen }: { opening: boolean; onOpen: () => void }) 
             <span className="absolute right-0 top-1 h-9 w-11 rotate-12 rounded-[50%_50%_60%_40%] border-[6px] border-[#ffd43b] bg-[#f59f00]/40" />
             <span className="absolute left-1/2 top-4 h-6 w-6 -translate-x-1/2 rounded-full bg-[#fcc419] shadow" />
           </span>
-          <span aria-hidden="true" className="absolute -right-4 top-14 text-3xl">✨</span>
+          <span aria-hidden="true" className="absolute -right-4 top-14 text-3xl">
+            ✨
+          </span>
         </motion.button>
         {opening && !reduced && <Burst />}
       </div>
@@ -385,10 +398,17 @@ function TapGame({ entry, spots, onWin }: { entry: JournalEntry; spots: ElfSpot[
           const ok = found.includes(s.id);
           return (
             <li key={s.id} className="flex flex-col items-center">
-              <motion.span animate={ok && !reduced ? { scale: [1, 1.25, 1] } : {}} className={`relative block h-14 w-14 overflow-hidden rounded-full ring-4 ${ok ? 'ring-[#40c057]' : 'opacity-60 ring-white/30 grayscale'}`} style={{ background: elfOf(s.id).color }}>
+              <motion.span
+                animate={ok && !reduced ? { scale: [1, 1.25, 1] } : {}}
+                className={`relative block h-14 w-14 overflow-hidden rounded-full ring-4 ${ok ? 'ring-[#40c057]' : 'opacity-60 ring-white/30 grayscale'}`}
+                style={{ background: elfOf(s.id).color }}
+              >
                 <ElfAvatar id={s.id} className="h-full w-full object-cover" />
               </motion.span>
-              <span className="mt-1 text-sm font-bold">{ok ? '✓ ' : ''}{tr(elfOf(s.id).name, locale)}</span>
+              <span className="mt-1 text-sm font-bold">
+                {ok ? '✓ ' : ''}
+                {tr(elfOf(s.id).name, locale)}
+              </span>
             </li>
           );
         })}
@@ -397,7 +417,15 @@ function TapGame({ entry, spots, onWin }: { entry: JournalEntry; spots: ElfSpot[
         {/* eslint-disable-next-line @next/next/no-img-element */}
         {img && <img src={img} alt={entry.caption} draggable={false} className="pointer-events-none block w-full" />}
         {ripples.map((q) => (
-          <motion.span key={q.k} aria-hidden="true" initial={{ scale: 0.2, opacity: 0.9 }} animate={{ scale: 1.4, opacity: 0 }} transition={{ duration: 0.6 }} className="pointer-events-none absolute h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white" style={{ left: `${q.x * 100}%`, top: `${q.y * 100}%` }} />
+          <motion.span
+            key={q.k}
+            aria-hidden="true"
+            initial={{ scale: 0.2, opacity: 0.9 }}
+            animate={{ scale: 1.4, opacity: 0 }}
+            transition={{ duration: 0.6 }}
+            className="pointer-events-none absolute h-16 w-16 -translate-x-1/2 -translate-y-1/2 rounded-full border-4 border-white"
+            style={{ left: `${q.x * 100}%`, top: `${q.y * 100}%` }}
+          />
         ))}
         {misses >= 3 && next && (
           <motion.span
@@ -413,7 +441,13 @@ function TapGame({ entry, spots, onWin }: { entry: JournalEntry; spots: ElfSpot[
           .map((s) => (
             <span key={s.id} className="pointer-events-none absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${s.x * 100}%`, top: `${s.y * 100}%` }}>
               {!reduced && <Burst n={10} />}
-              <motion.span initial={reduced ? false : { scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 300, damping: 12 }} className="relative block h-14 w-14 overflow-hidden rounded-full ring-4 ring-[#40c057] shadow-lg" style={{ background: elfOf(s.id).color }}>
+              <motion.span
+                initial={reduced ? false : { scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: 'spring', stiffness: 300, damping: 12 }}
+                className="relative block h-14 w-14 overflow-hidden rounded-full ring-4 ring-[#40c057] shadow-lg"
+                style={{ background: elfOf(s.id).color }}
+              >
                 <ElfAvatar id={s.id} className="h-full w-full object-cover" />
               </motion.span>
             </span>
@@ -500,7 +534,13 @@ function WhoDidIt({ elves, onWin }: { elves: string[]; onWin: () => void }) {
 
 /* ── 4. The celebration ── */
 
-const CONFETTI = Array.from({ length: 28 }, (_, i) => ({ left: (i * 37) % 100, delay: (i % 7) * 0.12, rot: (i * 47) % 360, color: ['#ffd43b', '#ff6b6b', '#51cf66', '#748ffc', '#f783ac'][i % 5], dur: 2.2 + (i % 5) * 0.3 }));
+const CONFETTI = Array.from({ length: 28 }, (_, i) => ({
+  left: (i * 37) % 100,
+  delay: (i % 7) * 0.12,
+  rot: (i * 47) % 360,
+  color: ['#ffd43b', '#ff6b6b', '#51cf66', '#748ffc', '#f783ac'][i % 5],
+  dur: 2.2 + (i % 5) * 0.3,
+}));
 
 function Party({ elves, childName, onReplay, onDone }: { elves: string[]; childName: string | null; onReplay: () => void; onDone: () => void }) {
   const locale = useLocale();
@@ -513,18 +553,35 @@ function Party({ elves, childName, onReplay, onDone }: { elves: string[]; childN
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
-    <motion.section initial={reduced ? false : { opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0 }} className="relative mx-auto mt-8 max-w-3xl overflow-hidden rounded-[2rem] bg-[radial-gradient(120%_90%_at_50%_0%,#3b2b8f_0%,#1b1660_60%,#120f45_100%)] px-4 pb-10 pt-10 text-center shadow-2xl ring-1 ring-white/15">
+    <motion.section
+      initial={reduced ? false : { opacity: 0, scale: 0.9 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0 }}
+      className="relative mx-auto mt-8 max-w-3xl overflow-hidden rounded-[2rem] bg-[radial-gradient(120%_90%_at_50%_0%,#3b2b8f_0%,#1b1660_60%,#120f45_100%)] px-4 pb-10 pt-10 text-center shadow-2xl ring-1 ring-white/15"
+    >
       {!reduced && (
         <div aria-hidden="true" className="pointer-events-none absolute inset-0">
           {CONFETTI.map((c, i) => (
-            <motion.span key={i} className="absolute top-0 block h-3 w-2 rounded-sm" style={{ left: `${c.left}%`, background: c.color }} initial={{ y: -20, rotate: 0, opacity: 1 }} animate={{ y: 520, rotate: c.rot + 360, opacity: [1, 1, 0] }} transition={{ duration: c.dur, delay: c.delay, repeat: Infinity, ease: 'linear' }} />
+            <motion.span
+              key={i}
+              className="absolute top-0 block h-3 w-2 rounded-sm"
+              style={{ left: `${c.left}%`, background: c.color }}
+              initial={{ y: -20, rotate: 0, opacity: 1 }}
+              animate={{ y: 520, rotate: c.rot + 360, opacity: [1, 1, 0] }}
+              transition={{ duration: c.dur, delay: c.delay, repeat: Infinity, ease: 'linear' }}
+            />
           ))}
         </div>
       )}
       <div className="relative flex items-end justify-center gap-2 sm:gap-6">
         {elves.map((id, i) => (
           <div key={id} className="flex flex-col items-center">
-            <motion.span initial={reduced ? false : { opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 + i * 0.2 }} className="mb-2 rounded-2xl bg-white px-3 py-1 font-display text-base font-bold text-[#1b2150] shadow sm:text-lg">
+            <motion.span
+              initial={reduced ? false : { opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 + i * 0.2 }}
+              className="relative z-10 mb-5 rounded-2xl bg-white px-3 py-1 font-display text-base font-bold text-[#1b2150] shadow sm:text-lg"
+            >
               {tr(CHEERS[i % CHEERS.length], locale)}
             </motion.span>
             <motion.span

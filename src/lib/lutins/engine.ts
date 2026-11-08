@@ -19,9 +19,11 @@
  */
 import type {
   CardStyle,
+  CctvStyle,
   ElfId,
   PromptInput,
   PromptOut,
+  Rect,
   RgbaImage,
   RgbaLike,
   SceneAnalysis,
@@ -34,6 +36,7 @@ export type * from './types';
 type Glue = typeof import('./wasm/lutins_core_full.js');
 type ImageOut = Glue['ImageOut']['prototype'];
 type RawRenderer = Glue['CardRenderer']['prototype'];
+type RawCctv = Glue['CctvRenderer']['prototype'];
 
 /** A magic-card renderer holding the photo in WebAssembly memory. Call `free()` when done. */
 export type CardRendererHandle = {
@@ -48,6 +51,12 @@ export type CardRendererHandle = {
    */
   renderView(t: number): Uint8ClampedArray;
   free(): void;
+};
+
+/** A security-camera renderer (same contract as `CardRendererHandle`). */
+export type CctvRendererHandle = CardRendererHandle & {
+  /** The zoom target, normalised to the picture. */
+  readonly focus: { x: number; y: number };
 };
 
 export type LutinsEngine = {
@@ -65,6 +74,11 @@ export type LutinsEngine = {
   /** One magic-card frame (one-shot; for an animation prefer `createCardRenderer`). */
   renderCardFrame(base: RgbaLike, t: number, seed: number, style?: CardStyle): RgbaImage;
   createCardRenderer(base: RgbaLike, seed: number, style?: CardStyle): CardRendererHandle;
+  /** One security-camera frame (one-shot; for a clip prefer `createCctvRenderer`). */
+  renderCctvFrame(base: RgbaLike, t: number, seed: number, style?: CctvStyle): RgbaImage;
+  createCctvRenderer(base: RgbaLike, seed: number, style?: CctvStyle): CctvRendererHandle;
+  /** Where the elves probably are (from their signature colours), or null. */
+  cctvFocus(img: RgbaLike): Rect | null;
   /** High-quality downscale to fit `maxSide` (never enlarges) + optional mild auto white balance / levels. */
   preparePhoto(img: RgbaLike, maxSide: number, autoFix?: boolean): RgbaImage;
   /** Node build only: decode a PNG / JPEG / WebP file. */
@@ -123,6 +137,27 @@ function wrap(glue: Glue, memory: WebAssembly.Memory, canDecode: boolean): Lutin
         free: () => r.free(),
       };
     },
+    renderCctvFrame: (base, t, seed, style = {}) => {
+      const data = glue.render_cctv_frame(u8(base.data), base.width, base.height, t, seed >>> 0, JSON.stringify(style));
+      const width = Math.min(2048, Math.max(16, style.out_w ?? base.width));
+      return { data: clamped(data), width, height: data.length / 4 / width };
+    },
+    createCctvRenderer: (base, seed, style = {}) => {
+      const r: RawCctv = new glue.CctvRenderer(u8(base.data), base.width, base.height, seed >>> 0, JSON.stringify(style));
+      const f = r.focus();
+      return {
+        width: r.width,
+        height: r.height,
+        focus: { x: f[0], y: f[1] },
+        render: (t) => clamped(r.render(t)),
+        renderView: (t) => {
+          r.render_in_place(t);
+          return new Uint8ClampedArray(memory.buffer, r.frame_ptr(), r.frame_len());
+        },
+        free: () => r.free(),
+      };
+    },
+    cctvFocus: (img) => JSON.parse(glue.cctv_focus(u8(img.data), img.width, img.height)) as Rect | null,
     preparePhoto: (img, maxSide, autoFix = false) =>
       take(glue.prepare_photo(u8(img.data), img.width, img.height, maxSide, autoFix)),
     decodeImage: (bytes) => {
@@ -181,6 +216,11 @@ export const renderCardFrame = (base: RgbaLike, t: number, seed: number, style?:
   engine().renderCardFrame(base, t, seed, style);
 export const createCardRenderer = (base: RgbaLike, seed: number, style?: CardStyle) =>
   engine().createCardRenderer(base, seed, style);
+export const renderCctvFrame = (base: RgbaLike, t: number, seed: number, style?: CctvStyle) =>
+  engine().renderCctvFrame(base, t, seed, style);
+export const createCctvRenderer = (base: RgbaLike, seed: number, style?: CctvStyle) =>
+  engine().createCctvRenderer(base, seed, style);
+export const cctvFocus = (img: RgbaLike) => engine().cctvFocus(img);
 export const preparePhoto = (img: RgbaLike, maxSide: number, autoFix?: boolean) =>
   engine().preparePhoto(img, maxSide, autoFix);
 export const decodeImage = (bytes: Uint8Array) => engine().decodeImage(bytes);

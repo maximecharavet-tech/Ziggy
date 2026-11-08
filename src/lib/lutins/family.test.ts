@@ -155,6 +155,10 @@ describe('auto-planner', () => {
     for (let i = 1; i < ids.length; i++) if (cat(ids[i]) === cat(ids[i - 1])) same++;
     expect(same).toBeLessThanOrEqual(2);
     expect(autoPlan({}, PRANKS, [], 2026, 7)).toEqual(autoPlan({}, PRANKS, [], 2026, 7)); // deterministic
+    const late = autoPlan({}, PRANKS, [], 2026, 3, 12); // planning on Dec 12: past evenings stay empty
+    expect(late['2026-12-11']).toBeUndefined();
+    expect(late['2026-12-12']).toBeTruthy();
+    expect(Object.keys(late)).toHaveLength(13);
   });
 });
 

@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { animate, motion, useMotionValue, useTransform } from 'framer-motion';
+import { animate, motion, useMotionValue } from 'framer-motion';
 import { useLocale } from 'next-intl';
 import { tr, type L } from '@/lib/i18n-text';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import type { Prank } from '@/data/lutins/pranks';
-import { favouritesFirst } from '@/lib/lutins/family';
+import { favouritesFirst, rng } from '@/lib/lutins/family';
 import { sfx } from '@/components/lutins/sfx';
 
 /**
@@ -40,14 +40,17 @@ export function PrankWheel({ pranks, favs, onPick, onClose }: { pranks: Prank[];
   const locale = useLocale();
   const reduced = useReducedMotion();
   // The slices: favourites first, then a random handful (made once, when the wheel opens).
-  const [seed] = useState(() => Math.random());
+  const [seed] = useState(() => Math.floor(Math.random() * 1e9));
   const items = useMemo(() => {
-    const shuffled = [...pranks].map((p, i) => ({ p, k: (Math.sin((i + 1) * 9301 * (seed + 0.1)) + 1) % 1 })).sort((a, b) => a.k - b.k).map((x) => x.p);
+    const r = rng(seed);
+    const shuffled = [...pranks]
+      .map((p) => ({ p, k: r() }))
+      .sort((a, b) => a.k - b.k)
+      .map((x) => x.p);
     return favouritesFirst(shuffled, favs).slice(0, MAX);
   }, [pranks, favs, seed]);
   const seg = 360 / Math.max(1, items.length);
   const rot = useMotionValue(0);
-  const transform = useTransform(rot, (r) => `rotate(${r}deg)`);
   const [spinning, setSpinning] = useState(false);
   const [result, setResult] = useState<Prank | null>(null);
   const [flick, setFlick] = useState(0);
@@ -103,7 +106,15 @@ export function PrankWheel({ pranks, favs, onPick, onClose }: { pranks: Prank[];
   };
 
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-[75] overflow-y-auto overscroll-contain bg-[#0b0a26]/92 px-4 pb-10 pt-6 backdrop-blur-sm" role="dialog" aria-modal="true" aria-label={tr(T.title, locale)}>
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[75] overflow-y-auto overscroll-contain bg-[#0b0a26]/92 px-4 pb-10 pt-6 backdrop-blur-sm"
+      role="dialog"
+      aria-modal="true"
+      aria-label={tr(T.title, locale)}
+    >
       <div className="mx-auto flex max-w-md flex-col items-center text-center text-white">
         <div className="flex w-full justify-end">
           <button type="button" onClick={onClose} className="min-h-12 rounded-full bg-white/15 px-5 font-bold ring-1 ring-white/30">
@@ -116,35 +127,30 @@ export function PrankWheel({ pranks, favs, onPick, onClose }: { pranks: Prank[];
         <div className="relative mt-6 aspect-square w-[min(84vw,340px)]">
           {/* Glow */}
           <div aria-hidden="true" className="absolute inset-[-8%] rounded-full bg-[radial-gradient(circle,rgba(255,212,59,0.35),transparent_65%)]" />
-          <motion.svg viewBox="0 0 200 200" className="relative h-full w-full drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)]" style={{ transform }} aria-hidden="true">
-            <circle cx="100" cy="100" r="99" fill="#7a4a1d" />
-            <circle cx="100" cy="100" r="96" fill="#f5c542" />
-            {items.map((p, i) => (
-              <g key={p.id}>
-                <path d={slice(i * seg, (i + 1) * seg)} fill={COLORS[i % COLORS.length]} stroke="#fffaf0" strokeWidth="1.2" />
-                <text
-                  x="100"
-                  y="34"
-                  textAnchor="middle"
-                  dominantBaseline="middle"
-                  fontSize={items.length > 8 ? 17 : 20}
-                  transform={`rotate(${(i + 0.5) * seg} 100 100)`}
-                >
-                  {p.emoji}
-                </text>
-              </g>
-            ))}
-            {/* Bulbs on the rim */}
-            {Array.from({ length: 20 }, (_, i) => {
-              const a = ((i * 18 - 90) * Math.PI) / 180;
-              return <circle key={i} cx={100 + Math.cos(a) * 94} cy={100 + Math.sin(a) * 94} r="2.2" fill={i % 2 ? '#fff9db' : '#ffd43b'} />;
-            })}
-            <circle cx="100" cy="100" r="20" fill="#f5c542" stroke="#7a4a1d" strokeWidth="3" />
-            <circle cx="100" cy="100" r="13" fill="#c92a2a" />
-            <text x="100" y="101" textAnchor="middle" dominantBaseline="middle" fontSize="13">
-              ⭐
-            </text>
-          </motion.svg>
+          <motion.div className="relative h-full w-full" style={{ rotate: rot }}>
+            <svg viewBox="0 0 200 200" className="h-full w-full drop-shadow-[0_18px_30px_rgba(0,0,0,0.55)]" aria-hidden="true">
+              <circle cx="100" cy="100" r="99" fill="#7a4a1d" />
+              <circle cx="100" cy="100" r="96" fill="#f5c542" />
+              {items.map((p, i) => (
+                <g key={p.id}>
+                  <path d={slice(i * seg, (i + 1) * seg)} fill={COLORS[i % COLORS.length]} stroke="#fffaf0" strokeWidth="1.2" />
+                  <text x="100" y="34" textAnchor="middle" dominantBaseline="middle" fontSize={items.length > 8 ? 17 : 20} transform={`rotate(${(i + 0.5) * seg} 100 100)`}>
+                    {p.emoji}
+                  </text>
+                </g>
+              ))}
+              {/* Bulbs on the rim */}
+              {Array.from({ length: 20 }, (_, i) => {
+                const a = ((i * 18 - 90) * Math.PI) / 180;
+                return <circle key={i} cx={100 + Math.cos(a) * 94} cy={100 + Math.sin(a) * 94} r="2.2" fill={i % 2 ? '#fff9db' : '#ffd43b'} />;
+              })}
+              <circle cx="100" cy="100" r="20" fill="#f5c542" stroke="#7a4a1d" strokeWidth="3" />
+              <circle cx="100" cy="100" r="13" fill="#c92a2a" />
+              <text x="100" y="101" textAnchor="middle" dominantBaseline="middle" fontSize="13">
+                ⭐
+              </text>
+            </svg>
+          </motion.div>
           {/* Pointer */}
           <motion.div
             key={flick}
@@ -181,7 +187,12 @@ export function PrankWheel({ pranks, favs, onPick, onClose }: { pranks: Prank[];
               </div>
             </motion.div>
           ) : (
-            <button type="button" onClick={spin} disabled={spinning} className="min-h-16 w-full max-w-xs rounded-full bg-gradient-to-r from-[#c92a2a] to-[#f03e3e] px-8 font-display text-2xl font-bold text-white shadow-[0_8px_0_#8a1c1c] transition-transform active:translate-y-1 active:shadow-[0_3px_0_#8a1c1c] disabled:opacity-70">
+            <button
+              type="button"
+              onClick={spin}
+              disabled={spinning}
+              className="min-h-16 w-full max-w-xs rounded-full bg-gradient-to-r from-[#c92a2a] to-[#f03e3e] px-8 font-display text-2xl font-bold text-white shadow-[0_8px_0_#8a1c1c] transition-transform active:translate-y-1 active:shadow-[0_3px_0_#8a1c1c] disabled:opacity-70"
+            >
               {spinning ? '🎡 …' : `🎡 ${tr(T.spin, locale)}`}
             </button>
           )}

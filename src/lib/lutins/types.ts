@@ -224,3 +224,34 @@ export type CardStyle = {
   /** Glow colour ['#ffd27a']. */
   glow_color?: string;
 };
+
+/** Security-camera ("caught on camera") style; every field optional (defaults in brackets). */
+export type CctvStyle = {
+  /** Output size [the picture's], 16–2048. */
+  out_w?: number;
+  out_h?: number;
+  /** Green night vision or grey CCTV ['night']. */
+  look?: 'night' | 'grey';
+  /** Seconds for the slow digital zoom to reach its maximum [7], 0.5–120. */
+  duration?: number;
+  /** Extra zoom at the end [0.18], 0–0.6. */
+  zoom?: number;
+  /** Where to zoom (normalised rectangle of the picture) [found by the engine from the elves' colours, else the centre]. */
+  focus?: Rect | null;
+  /** Look for the elves when `focus` is not given [true]. */
+  auto_focus?: boolean;
+  /** Barrel (fish-eye) distortion [0.12], 0–0.4. */
+  barrel?: number;
+  /** Scanline darkness [0.22], 0–1. */
+  scanlines?: number;
+  /** Sensor grain [0.35], 0–1. */
+  noise?: number;
+  /** Vignette [0.55], 0–1. */
+  vignette?: number;
+  /** How often an interference line tears the picture [0.5], 0–1. */
+  interference?: number;
+  /** Extra gain after the auto-gain [1], 0.3–3. */
+  gain?: number;
+  /** Grain frames per second [15], 1–60 (grain is deterministic per grain frame). */
+  grain_fps?: number;
+};

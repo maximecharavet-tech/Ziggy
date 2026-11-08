@@ -256,14 +256,17 @@ export function rng(seed: number) {
  * Fills the empty nights of `year` (keeps what the parent chose): favourites
  * first, no prank twice in the month while there are unused ones, never the
  * same room two nights in a row when another room is possible, the letter to
- * Santa on the 24th if it is free.
+ * Santa on the 24th if it is free. Evenings before `fromNight` (already gone) stay as they are.
  */
-export function autoPlan(plan: LutinsPlan, pranks: { id: string; cat: string }[], favs: string[], year: number, seed = 1): LutinsPlan {
+export function autoPlan(plan: LutinsPlan, pranks: { id: string; cat: string }[], favs: string[], year: number, seed = 1, fromNight = 1): LutinsPlan {
   const out: LutinsPlan = { ...plan };
   const nights = decemberNights(year);
   const used = new Set(Object.values(out));
   const r = rng(seed);
-  const shuffled = [...pranks].map((p) => ({ p, k: r() })).sort((a, b) => a.k - b.k).map((x) => x.p);
+  const shuffled = [...pranks]
+    .map((p) => ({ p, k: r() }))
+    .sort((a, b) => a.k - b.k)
+    .map((x) => x.p);
   const pool = favouritesFirst(shuffled, favs);
   const last = nights[23].key;
   if (!out[last] && pranks.some((p) => p.id === 'lettre-pere-noel') && !used.has('lettre-pere-noel')) {
@@ -272,7 +275,7 @@ export function autoPlan(plan: LutinsPlan, pranks: { id: string; cat: string }[]
   }
   const catOf = (id: string | undefined) => pranks.find((p) => p.id === id)?.cat;
   for (const night of nights) {
-    if (out[night.key]) continue;
+    if (out[night.key] || night.n < fromNight) continue;
     const prev = catOf(out[decemberNights(year)[night.n - 2]?.key]);
     const next = catOf(out[decemberNights(year)[night.n]?.key]);
     let fresh = pool.filter((p) => !used.has(p.id));
