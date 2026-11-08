@@ -33,7 +33,7 @@ import {
   type Reindeer,
 } from './props';
 import type { SantaPose } from './santa';
-import { gradientTexture, nightWindowTexture, planksTexture, scrollTexture, wallpaperTexture } from './textures';
+import { nightWindowTexture, planksTexture, scrollTexture, wallpaperTexture } from './textures';
 
 /**
  * The three kinds of Santa scenes. A stage owns its props, lights and
@@ -860,10 +860,4 @@ export function buildBooth(ctx: StageContext, id: BoothSceneId): Stage {
     default:
       return buildCheminee(ctx);
   }
-}
-
-/** Soft vignette card behind everything (keeps empty corners warm, not black). */
-export function backdropCard(top: string, bottom: string): THREE.Mesh {
-  const m = new THREE.Mesh(new THREE.PlaneGeometry(1, 1), new THREE.MeshBasicMaterial({ map: gradientTexture([[0, top], [1, bottom]]), depthWrite: false, fog: false }));
-  return m;
 }
