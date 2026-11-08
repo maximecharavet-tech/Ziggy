@@ -1,0 +1,38 @@
+[package]
+name = "lutins-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+description = "Les Lutins Farceurs (Ziggy): photo analysis, stage finder, prompt builder, verifier and magic-card renderer, compiled to WebAssembly."
+license = "MIT"
+publish = false
+
+# Standalone crate (not part of another workspace).
+[workspace]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[features]
+default = ["decode"]
+# PNG / JPEG / WebP decoding (the Node API routes have no image decoder: sharp's libvips is LGPL).
+decode = ["dep:png", "dep:jpeg-decoder", "dep:image-webp"]
+
+[dependencies]
+wasm-bindgen = "=0.2.129"
+serde = { version = "1.0.229", default-features = false, features = ["std", "derive"] }
+serde_json = { version = "1.0.154", default-features = false, features = ["std"] }
+png = { version = "0.18.1", optional = true, default-features = false }
+jpeg-decoder = { version = "0.3.2", optional = true, default-features = false }
+image-webp = { version = "0.2.4", optional = true, default-features = false }
+
+[profile.release]
+opt-level = "s"
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+# Tests run on synthetic images: keep them fast.
+[profile.test]
+opt-level = 2
