@@ -66,6 +66,15 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         ],
       },
       {
+        id: 'lutins',
+        title: '3 quater. Les Lutins Farceurs',
+        body: [
+          'Le parent photographie une pièce de la maison (jamais une personne) pour y faire apparaître les lutins. Avant tout envoi, le téléphone vérifie lui-même qu’aucune personne n’est visible sur la photo : si quelqu’un apparaît, la photo est refusée et ne part pas. Aucune image d’enfant n’est donc envoyée.',
+          'La photo est recalculée sur l’appareil (les données du téléphone comme le lieu et la date sont retirées), envoyée à notre serveur puis à notre fournisseur d’images Agnes AI uniquement pour produire l’image de la farce, avec la description de la farce choisie ou écrite par le parent (vérifiée par notre filtre ChildShield). Nous ne conservons ni la photo, ni la description, ni l’image produite.',
+          'Le journal des lutins (images, vidéos, légendes) reste sur l’appareil. Pour l’usage gratuit équitable, un identifiant aléatoire de l’appareil et l’adresse IP sont comptés en mémoire pendant la journée, puis oubliés.',
+        ],
+      },
+      {
         title: '4. Où sont les données',
         body: [
           [
@@ -148,6 +157,15 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
           'The live call (Magic Pack, only if the parent switches it on on the device): the child’s voice is turned into text on the device and is never sent. Only the text of each sentence is sent to our server and then to Anthropic (USA), the AI model provider, to produce Santa’s answer (NVIDIA, USA, as a fallback if Anthropic does not answer). Santa’s answer, and only that, is then voiced by Google (Gemini API). Anthropic processes this text under its commercial terms, which exclude using API data to train its models; the transfer is covered by the European Commission’s standard contractual clauses. We keep neither the sentences nor the answers, and every answer goes through our ChildShield filter. Only a minute counter is kept, under a pseudonymous key (a cryptographic hash) that cannot identify you.',
           'Payment: it is processed by Stripe, which receives the parent’s email address and payment details for the payment, the receipt and fraud prevention, and keeps them under its own legal obligations. We never see bank details. Proof of purchase is kept in a secure cookie in your browser (“santa_pass”: the payment session number and the pack, signed, until 31 January 2027).',
           'No tracking: no advertising pixel (TikTok or other) and no purchase tracking; we measure a campaign only by its link and the number of sales in Stripe.',
+        ],
+      },
+      {
+        id: 'lutins',
+        title: '3c. The Prankster Elves',
+        body: [
+          'The parent photographs a room of the house (never a person) to make the elves appear in it. Before anything is sent, the phone itself checks that no person is visible in the photo: if someone appears, the photo is refused and is not sent. So no child’s picture is ever sent.',
+          'The photo is redrawn on the device (the phone’s data such as location and date is removed), sent to our server and then to our image provider Agnes AI only to make the prank picture, with the description of the prank chosen or written by the parent (checked by our ChildShield filter). We keep neither the photo, the description nor the picture made.',
+          'The elves’ journal (pictures, videos, captions) stays on the device. For free fair use, a random device identifier and the IP address are counted in memory during the day, then forgotten.',
         ],
       },
       {

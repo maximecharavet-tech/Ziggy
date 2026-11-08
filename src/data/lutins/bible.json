@@ -1,0 +1,31 @@
+{
+  "version": 1,
+  "style": "A photo of a real room, kept exactly as it is (same furniture, walls, light, perspective, colours), with small hand-made felt plush elf dolls (about 25 cm tall) added into the scene as if they were really there: soft wool-felt texture with visible fibres and tiny stitches, stitched seams, glossy black bead eyes with a white highlight, rosy felt cheeks, sitting or standing on real surfaces with correct contact shadows, lit by the room's own light, photographed with the same camera. Playful, cosy, funny and gentle mischief for young children: nothing broken, dangerous, dirty, scary or messy beyond a giggle.",
+  "negative": "No people, no faces of real people, no hands, no text, no letters, no logos, no brand names, no watermark, no extra elves beyond those described, no humans in costume, no realistic human skin on the elves, no cartoon flat drawing style, no changes to the room's layout.",
+  "elves": [
+    {
+      "id": "pepin",
+      "name": { "fr": "Pépin", "en": "Pip" },
+      "color": "#3a9d4f",
+      "accent": "#e03131",
+      "look": "Pépin: a round chubby felt elf with a moss-green felt tunic with two golden round buttons and a brown leather-look belt, a very long red-and-white striped knitted hat that flops to the side with a small golden jingle bell at its tip, big pointy pink-beige felt ears, a wide cheeky grin, three embroidered orange freckles on each cheek, short curly copper-orange yarn hair peeking out, green felt boots with curled toes.",
+      "trait": { "fr": "le chef des farces, toujours le premier à rire", "en": "the prank leader, always the first to laugh" }
+    },
+    {
+      "id": "grelotte",
+      "name": { "fr": "Grelotte", "en": "Jingle" },
+      "color": "#7950f2",
+      "accent": "#fcc419",
+      "look": "Grelotte: a slender felt elf with a lavender-purple felt dress-tunic with a white felt snowflake appliqué on the chest, a chunky mustard-yellow knitted scarf, a short folded mustard-yellow pompom hat, two long dark-brown yarn braids tied with small red bows, round golden wire glasses, pointy pink-beige felt ears, rosy cheeks, purple felt boots.",
+      "trait": { "fr": "l'inventrice, elle a toujours un plan", "en": "the inventor, she always has a plan" }
+    },
+    {
+      "id": "noisette",
+      "name": { "fr": "Noisette", "en": "Hazel" },
+      "color": "#a0612b",
+      "accent": "#40c057",
+      "look": "Noisette: the smallest felt elf, half the height of the others, wearing a hazelnut-brown hooded felt cape with an acorn-cap shaped hat (textured brown cup with a tiny stem) on top of the hood, a cream felt tunic underneath, a small green felt leaf pinned on the cape, very big round bead eyes, tiny pointy ears, a shy happy smile, brown felt boots.",
+      "trait": { "fr": "la plus petite, la plus gourmande", "en": "the tiniest, with the sweetest tooth" }
+    }
+  ]
+}

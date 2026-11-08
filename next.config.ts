@@ -29,6 +29,7 @@ const nextConfig: NextConfig = {
   outputFileTracingIncludes: {
     '/[locale]/opengraph-image': ['./public/mascot/og-ziggy.png'],
     '/[locale]/pere-noel/opengraph-image': ['./public/mascot/og-ziggy.png'],
+    '/api/lutins/generate': ['./public/lutins/refs/sheet.png'],
     '/[locale]/dodo/[story]/opengraph-image': ['./public/mascot/og-ziggy.png', './public/dodo/**/*-og.jpg'],
   },
   images: {
@@ -54,6 +55,9 @@ const nextConfig: NextConfig = {
       // (both stay on the device), and the photo booth uses the camera. Same origin only.
       { source: '/pere-noel/:path*', headers: [SANTA_PERMISSIONS] },
       { source: '/:locale/pere-noel/:path*', headers: [SANTA_PERMISSIONS] },
+      // Les Lutins Farceurs: the parent photographs a room (camera only).
+      { source: '/lutins/:path*', headers: [SANTA_PERMISSIONS] },
+      { source: '/:locale/lutins/:path*', headers: [SANTA_PERMISSIONS] },
       // The service worker must always be re-checked, so updates reach everyone.
       { source: '/sw.js', headers: [{ key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate' }] },
       {
