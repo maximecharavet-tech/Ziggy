@@ -22,6 +22,7 @@ const T = {
     en: 'Every night, Pip, Jingle and Hazel pull a prank at your place. A photo of the room, a prank idea, and magic makes them appear.',
   },
   parent: { fr: 'Préparer la farce de ce soir', en: 'Prepare tonight’s prank' },
+  camera: { fr: 'Caméra magique', en: 'Magic camera' },
   child: { fr: 'Le journal des lutins', en: 'The elves’ journal' },
   meet: { fr: 'Les trois lutins', en: 'The three elves' },
   how: { fr: 'Le rituel de chaque soir', en: 'The nightly ritual' },
@@ -167,6 +168,9 @@ export function LutinsHome() {
             </Link>
             <Link href="/lutins/journal" className="inline-flex min-h-16 items-center justify-center gap-2 rounded-full bg-[#2fb344] px-8 font-display text-xl font-bold shadow-[0_8px_0_#1e7a2e]">
               📖 {tr(T.child, locale)}
+            </Link>
+            <Link href="/lutins/camera" className="inline-flex min-h-16 items-center justify-center gap-2 rounded-full bg-white/15 px-8 font-display text-xl font-bold ring-1 ring-white/30">
+              🪄 {tr(T.camera, locale)}
             </Link>
           </div>
         </div>

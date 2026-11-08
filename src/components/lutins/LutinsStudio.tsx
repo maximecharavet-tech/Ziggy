@@ -86,6 +86,11 @@ const T = {
   addNow: { fr: 'À montrer tout de suite', en: 'Show right now' },
   added: { fr: 'C’est dans le journal des lutins !', en: 'It’s in the elves’ journal!' },
   openJournal: { fr: 'Ouvrir le journal', en: 'Open the journal' },
+  cctv: { fr: 'Version caméra de surveillance', en: 'Security-camera version' },
+  cctvMaking: { fr: 'La caméra des lutins enregistre…', en: 'The elves’ camera is recording…' },
+  cctvDone: { fr: 'Vidéo de surveillance ajoutée : votre enfant la découvrira au réveil !', en: 'Security-camera clip added: your child will discover it in the morning!' },
+  cctvFailed: { fr: 'Cet appareil ne peut pas enregistrer de vidéo.', en: 'This device can’t record video.' },
+  magicCam: { fr: 'Caméra magique (sans Internet)', en: 'Magic camera (offline)' },
   save: { fr: 'Enregistrer', en: 'Save' },
   again: { fr: 'Une autre version', en: 'Another version' },
   newPrank: { fr: 'Nouvelle farce', en: 'New prank' },
@@ -152,6 +157,7 @@ export function LutinsStudio() {
   const [left, setLeft] = useState<number | null>(null);
   const [split, setSplit] = useState(55);
   const [added, setAdded] = useState(false);
+  const [cctv, setCctv] = useState<'idle' | 'making' | 'done' | 'failed'>('idle');
   const [entryId, setEntryId] = useState<string | null>(null);
   const [wheel, setWheel] = useState(false);
   const [marking, setMarking] = useState(false);
@@ -287,6 +293,23 @@ export function LutinsStudio() {
     });
     setEntryId(id);
     setAdded(true);
+  };
+
+  /** The same prank as a night-vision "caught on camera" clip, made on the device (Rust engine). */
+  const makeCctv = async () => {
+    if (!entryId) return;
+    setCctv('making');
+    try {
+      const [{ makeCctvClip }, list] = await Promise.all([import('@/lib/lutins/cctv'), journal.list()]);
+      const entry = list.find((x) => x.id === entryId);
+      if (!entry) throw new Error('entry');
+      const cat = PRANK_CATEGORIES.find((c) => c.id === (PRANKS.find((p) => p.id === entry.prankId)?.cat ?? 'salon'));
+      const room = (cat && cat.id !== 'partout' ? tr(cat.label, locale) : tr({ fr: 'Salon', en: 'Living room' }, locale)).toUpperCase();
+      await makeCctvClip(entry, { room, locale: L2 });
+      setCctv('done');
+    } catch {
+      setCctv('failed');
+    }
   };
 
   const markAt = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -435,6 +458,11 @@ export function LutinsStudio() {
               </button>
             </div>
             <p className="mt-4 text-center text-xs text-white/60">🔒 {tr(T.privacy, locale)}</p>
+            <p className="mt-2 text-center text-sm">
+              <Link href="/lutins/camera" className="font-bold text-amber-200 underline underline-offset-4">
+                🪄 {tr(T.magicCam, locale)}
+              </Link>
+            </p>
             <div className="mt-8 flex justify-between">
               <button type="button" onClick={() => setStep('elves')} className="min-h-12 rounded-full px-5 font-bold text-white/80">
                 ← {tr(T.back, locale)}
@@ -624,6 +652,16 @@ export function LutinsStudio() {
                 <Link href="/lutins/journal" className="min-h-14 rounded-full bg-white px-6 py-4 font-display text-lg font-bold text-[#1b2150]">
                   📖 {tr(T.openJournal, locale)}
                 </Link>
+                {cctv === 'idle' && (
+                  <button type="button" onClick={makeCctv} className="min-h-14 rounded-full bg-[#0f2b1a] px-6 font-display text-lg font-bold text-[#7dff9a] ring-2 ring-[#2fb344]/60">
+                    🎥 {tr(T.cctv, locale)}
+                  </button>
+                )}
+                {cctv !== 'idle' && (
+                  <p className="rounded-2xl bg-white/10 px-4 py-2 text-center font-semibold" aria-live="polite">
+                    {cctv === 'making' ? `⏺ ${tr(T.cctvMaking, locale)}` : cctv === 'done' ? `✓ ${tr(T.cctvDone, locale)}` : tr(T.cctvFailed, locale)}
+                  </p>
+                )}
               </div>
             ) : (
               <>
