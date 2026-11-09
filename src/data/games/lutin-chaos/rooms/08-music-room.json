@@ -1,0 +1,767 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.music-room",
+  "number": 8,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La salle de musique",
+    "en": "The music room"
+  },
+  "season": "winter",
+  "layout": "music-room-a",
+  "assets": [
+    "chaos.room.music-room",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "patterns",
+    "vocabulary",
+    "counting",
+    "spatial"
+  ],
+  "skills": [
+    "music",
+    "memory",
+    "sequencing",
+    "vocabulary"
+  ],
+  "intro": {
+    "fr": "Ding, boum, tûût ! Les instruments ont fait une drôle de musique !",
+    "en": "Ding, boom, toot! The instruments played some funny music!"
+  },
+  "slots": [
+    {
+      "id": "xylophone-1",
+      "label": {
+        "fr": "la case 1 du xylophone",
+        "en": "xylophone slot 1"
+      },
+      "in": {
+        "fr": "en case 1 du xylophone",
+        "en": "in xylophone slot 1"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "xylophone-2",
+      "label": {
+        "fr": "la case 2 du xylophone",
+        "en": "xylophone slot 2"
+      },
+      "in": {
+        "fr": "en case 2 du xylophone",
+        "en": "in xylophone slot 2"
+      },
+      "at": [
+        2.19,
+        0,
+        1.41
+      ]
+    },
+    {
+      "id": "xylophone-3",
+      "label": {
+        "fr": "la case 3 du xylophone",
+        "en": "xylophone slot 3"
+      },
+      "in": {
+        "fr": "en case 3 du xylophone",
+        "en": "in xylophone slot 3"
+      },
+      "at": [
+        1.08,
+        0,
+        2.37
+      ]
+    },
+    {
+      "id": "xylophone-4",
+      "label": {
+        "fr": "la case 4 du xylophone",
+        "en": "xylophone slot 4"
+      },
+      "in": {
+        "fr": "en case 4 du xylophone",
+        "en": "in xylophone slot 4"
+      },
+      "at": [
+        -0.37,
+        1,
+        2.57
+      ]
+    },
+    {
+      "id": "piano-top",
+      "label": {
+        "fr": "le piano",
+        "en": "the piano"
+      },
+      "in": {
+        "fr": "sur le piano",
+        "en": "on the piano"
+      },
+      "at": [
+        -1.7,
+        0,
+        1.96
+      ]
+    },
+    {
+      "id": "piano-inside",
+      "label": {
+        "fr": "l’intérieur du piano",
+        "en": "inside the piano"
+      },
+      "in": {
+        "fr": "dans le piano",
+        "en": "inside the piano"
+      },
+      "at": [
+        -2.49,
+        0,
+        0.73
+      ]
+    },
+    {
+      "id": "drum-stand",
+      "label": {
+        "fr": "le support du tambour",
+        "en": "the drum stand"
+      },
+      "in": {
+        "fr": "sur le support du tambour",
+        "en": "on the drum stand"
+      },
+      "at": [
+        -2.49,
+        1,
+        -0.73
+      ]
+    },
+    {
+      "id": "shelf",
+      "label": {
+        "fr": "l’étagère",
+        "en": "the shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère",
+        "en": "on the shelf"
+      },
+      "at": [
+        -1.7,
+        0,
+        -1.96
+      ]
+    },
+    {
+      "id": "music-stand",
+      "label": {
+        "fr": "le pupitre",
+        "en": "the music stand"
+      },
+      "in": {
+        "fr": "sur le pupitre",
+        "en": "on the music stand"
+      },
+      "at": [
+        -0.37,
+        0,
+        -2.57
+      ]
+    },
+    {
+      "id": "chair",
+      "label": {
+        "fr": "la chaise",
+        "en": "the chair"
+      },
+      "in": {
+        "fr": "sur la chaise",
+        "en": "on the chair"
+      },
+      "at": [
+        1.08,
+        1,
+        -2.37
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        2.19,
+        0,
+        -1.41
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "bar-1",
+      "kind": "xylophone-bar",
+      "slot": "xylophone-1",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bar-2",
+      "kind": "xylophone-bar",
+      "slot": "xylophone-2",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bar-3",
+      "kind": "xylophone-bar",
+      "slot": "xylophone-3",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bar-4",
+      "kind": "xylophone-bar",
+      "slot": "xylophone-4",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "drum-1",
+      "kind": "drum",
+      "slot": "drum-stand",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-5",
+      "kind": "bell",
+      "slot": "music-stand",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-6",
+      "kind": "bell",
+      "slot": "music-stand",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-7",
+      "kind": "bell",
+      "slot": "music-stand",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "maraca-1",
+      "kind": "maraca",
+      "slot": "shelf",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "trumpet-1",
+      "kind": "trumpet",
+      "slot": "chair",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "guitar-1",
+      "kind": "guitar",
+      "slot": "chair",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-8",
+      "kind": "bell",
+      "slot": "shelf",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-9",
+      "kind": "bell",
+      "slot": "shelf",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-10",
+      "kind": "bell",
+      "slot": "shelf",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "drum-2",
+      "kind": "drum",
+      "slot": "floor",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "trumpet-2",
+      "kind": "trumpet",
+      "slot": "piano-top",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bar-5",
+      "kind": "xylophone-bar",
+      "slot": "piano-top",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "piano-lid",
+      "label": {
+        "fr": "sous le couvercle du piano",
+        "en": "under the piano lid"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "big-drum",
+      "label": {
+        "fr": "dans le gros tambour",
+        "en": "inside the big drum"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "music-sheets",
+      "label": {
+        "fr": "derrière les partitions",
+        "en": "behind the sheet music"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "cello-case",
+      "label": {
+        "fr": "dans l’étui de violoncelle",
+        "en": "in the cello case"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "curtain",
+      "label": {
+        "fr": "derrière le rideau",
+        "en": "behind the curtain"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "xylophone-swapped",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "bar-1",
+            "bar-2"
+          ],
+          [
+            "bar-3",
+            "bar-4"
+          ]
+        ]
+      },
+      "culprit": "pepin",
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "size",
+          "item": "xylophone-bar"
+        }
+      },
+      "spot": {
+        "fr": "Les lames du xylophone sont mélangées !",
+        "en": "The xylophone bars are muddled!"
+      },
+      "fixed": {
+        "fr": "Do, ré, mi ! Les lames sont dans l’ordre !",
+        "en": "Do, re, mi! The bars are in order!"
+      }
+    },
+    {
+      "id": "drum-in-piano",
+      "type": "hide",
+      "params": {
+        "props": [
+          "drum-1"
+        ],
+        "in": "piano-inside"
+      },
+      "culprit": "random",
+      "themes": [
+        "reveil"
+      ],
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "drum",
+          "words": [
+            "drum",
+            "trumpet",
+            "guitar",
+            "bell"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "Le tambour s’est caché dans le piano !",
+        "en": "The drum is hiding inside the piano!"
+      },
+      "fixed": {
+        "fr": "Le tambour est revenu ! Boum !",
+        "en": "The drum is back! Boom!"
+      }
+    },
+    {
+      "id": "bells-recoloured",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "bell-5",
+          "bell-6",
+          "bell-7"
+        ],
+        "colors": [
+          "blue",
+          "yellow",
+          "blue"
+        ]
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "pattern",
+        "params": {
+          "theme": "notes"
+        }
+      },
+      "spot": {
+        "fr": "Les clochettes jouent la mauvaise mélodie !",
+        "en": "The bells are playing the wrong tune!"
+      },
+      "fixed": {
+        "fr": "La mélodie est revenue : aigu, grave, aigu…",
+        "en": "The tune is back: high, low, high…"
+      }
+    },
+    {
+      "id": "maracas-multiplied",
+      "type": "multiply",
+      "params": {
+        "prop": "maraca-1",
+        "count": 4
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "maraca",
+          "mode": "extra"
+        }
+      },
+      "spot": {
+        "fr": "Tchic-tchic ! Les maracas se sont multipliées !",
+        "en": "Shake-shake! The maracas multiplied!"
+      },
+      "fixed": {
+        "fr": "Juste une maracas, comme avant !",
+        "en": "Just one maraca, like before!"
+      }
+    },
+    {
+      "id": "trumpet-flipped",
+      "type": "flip",
+      "params": {
+        "props": [
+          "trumpet-1"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "trumpet"
+        }
+      },
+      "spot": {
+        "fr": "La trompette est à l’envers ! Tûût ?",
+        "en": "The trumpet is upside down! Toot?"
+      },
+      "fixed": {
+        "fr": "La trompette est à l’endroit !",
+        "en": "The trumpet is the right way up!"
+      }
+    },
+    {
+      "id": "guitar-on-piano",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "guitar-1"
+        ],
+        "to": "piano-top"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "place",
+        "params": {
+          "item": "guitar",
+          "anchor": "drum"
+        }
+      },
+      "spot": {
+        "fr": "La guitare fait la sieste sur le piano !",
+        "en": "The guitar is napping on the piano!"
+      },
+      "fixed": {
+        "fr": "La guitare est bien placée !",
+        "en": "The guitar is back in place!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "La boîte à musique en cascade",
+      "en": "The music-box cascade"
+    },
+    "steps": [
+      {
+        "id": "bell-8-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-8"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Ding ! La clochette rouge",
+          "en": "Ding! The red bell"
+        }
+      },
+      {
+        "id": "bell-9-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-9"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Dong ! La clochette verte",
+          "en": "Dong! The green bell"
+        }
+      },
+      {
+        "id": "bell-10-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-10"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Dang ! La clochette bleue",
+          "en": "Dang! The blue bell"
+        }
+      },
+      {
+        "id": "drum-booms",
+        "type": "flip",
+        "params": {
+          "props": [
+            "drum-2"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Boum ! Le tambour",
+          "en": "Boom! The drum"
+        }
+      },
+      {
+        "id": "trumpet-toots",
+        "type": "flip",
+        "params": {
+          "props": [
+            "trumpet-2"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Tûût ! La trompette",
+          "en": "Toot! The trumpet"
+        }
+      },
+      {
+        "id": "bar-plinks",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bar-5"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Plink ! Le xylophone",
+          "en": "Plink! The xylophone"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "xylophone-swapped",
+        "drum-in-piano",
+        "bells-recoloured",
+        "maracas-multiplied"
+      ],
+      "hidingSpots": [
+        "piano-lid",
+        "big-drum",
+        "music-sheets"
+      ],
+      "finale": [
+        "bell-8-rings",
+        "drum-booms"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "xylophone-swapped",
+        "drum-in-piano",
+        "bells-recoloured",
+        "maracas-multiplied",
+        "trumpet-flipped",
+        "guitar-on-piano"
+      ],
+      "hidingSpots": [
+        "piano-lid",
+        "big-drum",
+        "music-sheets",
+        "cello-case"
+      ],
+      "finale": [
+        "bell-8-rings",
+        "bell-9-rings",
+        "drum-booms",
+        "trumpet-toots"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "xylophone-swapped",
+        "drum-in-piano",
+        "bells-recoloured",
+        "maracas-multiplied",
+        "trumpet-flipped",
+        "guitar-on-piano"
+      ],
+      "hidingSpots": [
+        "piano-lid",
+        "big-drum",
+        "music-sheets",
+        "cello-case",
+        "curtain"
+      ],
+      "finale": [
+        "bell-8-rings",
+        "bell-9-rings",
+        "bell-10-rings",
+        "drum-booms",
+        "trumpet-toots",
+        "bar-plinks"
+      ]
+    }
+  }
+}

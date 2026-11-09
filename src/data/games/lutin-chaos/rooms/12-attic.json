@@ -1,0 +1,814 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.attic",
+  "number": 12,
+  "version": "1.0.0",
+  "title": {
+    "fr": "Le grenier",
+    "en": "The attic"
+  },
+  "season": "winter",
+  "layout": "attic-a",
+  "assets": [
+    "chaos.room.attic",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "spatial",
+    "vocabulary",
+    "sorting"
+  ],
+  "skills": [
+    "shapes",
+    "memory",
+    "logic",
+    "vocabulary"
+  ],
+  "intro": {
+    "fr": "Au grenier, les ombres jouent des tours ! Ouvre bien les yeux.",
+    "en": "In the attic, the shadows are playing tricks! Keep your eyes open."
+  },
+  "slots": [
+    {
+      "id": "shadow-a",
+      "label": {
+        "fr": "l’ombre A",
+        "en": "shadow A"
+      },
+      "in": {
+        "fr": "devant l’ombre A",
+        "en": "in front of shadow A"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "shadow-b",
+      "label": {
+        "fr": "l’ombre B",
+        "en": "shadow B"
+      },
+      "in": {
+        "fr": "devant l’ombre B",
+        "en": "in front of shadow B"
+      },
+      "at": [
+        2.3,
+        0,
+        1.21
+      ]
+    },
+    {
+      "id": "stack-1",
+      "label": {
+        "fr": "la pile 1",
+        "en": "stack 1"
+      },
+      "in": {
+        "fr": "sur la pile 1",
+        "en": "on stack 1"
+      },
+      "at": [
+        1.48,
+        0,
+        2.14
+      ]
+    },
+    {
+      "id": "stack-2",
+      "label": {
+        "fr": "la pile 2",
+        "en": "stack 2"
+      },
+      "in": {
+        "fr": "sur la pile 2",
+        "en": "on stack 2"
+      },
+      "at": [
+        0.31,
+        1,
+        2.58
+      ]
+    },
+    {
+      "id": "stack-3",
+      "label": {
+        "fr": "la pile 3",
+        "en": "stack 3"
+      },
+      "in": {
+        "fr": "sur la pile 3",
+        "en": "on stack 3"
+      },
+      "at": [
+        -0.92,
+        0,
+        2.43
+      ]
+    },
+    {
+      "id": "stack-4",
+      "label": {
+        "fr": "la pile 4",
+        "en": "stack 4"
+      },
+      "in": {
+        "fr": "sur la pile 4",
+        "en": "on stack 4"
+      },
+      "at": [
+        -1.95,
+        0,
+        1.72
+      ]
+    },
+    {
+      "id": "horse-spot",
+      "label": {
+        "fr": "le coin du cheval",
+        "en": "the horse corner"
+      },
+      "in": {
+        "fr": "dans le coin du cheval",
+        "en": "in the horse corner"
+      },
+      "at": [
+        -2.52,
+        1,
+        0.62
+      ]
+    },
+    {
+      "id": "trunk",
+      "label": {
+        "fr": "la malle",
+        "en": "the trunk"
+      },
+      "in": {
+        "fr": "dans la malle",
+        "en": "in the trunk"
+      },
+      "at": [
+        -2.52,
+        0,
+        -0.62
+      ]
+    },
+    {
+      "id": "lamp-corner",
+      "label": {
+        "fr": "le coin lecture",
+        "en": "the reading corner"
+      },
+      "in": {
+        "fr": "dans le coin lecture",
+        "en": "in the reading corner"
+      },
+      "at": [
+        -1.95,
+        0,
+        -1.72
+      ]
+    },
+    {
+      "id": "chest",
+      "label": {
+        "fr": "le coffre",
+        "en": "the chest"
+      },
+      "in": {
+        "fr": "dans le coffre",
+        "en": "in the chest"
+      },
+      "at": [
+        -0.92,
+        1,
+        -2.43
+      ]
+    },
+    {
+      "id": "old-shelf",
+      "label": {
+        "fr": "la vieille étagère",
+        "en": "the old shelf"
+      },
+      "in": {
+        "fr": "sur la vieille étagère",
+        "en": "on the old shelf"
+      },
+      "at": [
+        0.31,
+        0,
+        -2.58
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le plancher",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "sur le plancher",
+        "en": "on the floor"
+      },
+      "at": [
+        1.48,
+        0,
+        -2.14
+      ]
+    },
+    {
+      "id": "rafter",
+      "label": {
+        "fr": "la poutre",
+        "en": "the rafter"
+      },
+      "in": {
+        "fr": "sur la poutre",
+        "en": "on the rafter"
+      },
+      "at": [
+        2.3,
+        1,
+        -1.21
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "frame-2",
+      "kind": "frame",
+      "slot": "shadow-a",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "frame-3",
+      "kind": "frame",
+      "slot": "shadow-b",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-4",
+      "kind": "box",
+      "slot": "stack-1",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-5",
+      "kind": "box",
+      "slot": "stack-2",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-6",
+      "kind": "box",
+      "slot": "stack-3",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-7",
+      "kind": "box",
+      "slot": "stack-4",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "rocking-horse-1",
+      "kind": "rocking-horse",
+      "slot": "horse-spot",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "lamp-3",
+      "kind": "lamp",
+      "slot": "lamp-corner",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "robot-2",
+      "kind": "robot",
+      "slot": "old-shelf",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-7",
+      "kind": "teddy",
+      "slot": "old-shelf",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "ball-6",
+      "kind": "ball",
+      "slot": "old-shelf",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "frame-4",
+      "kind": "frame",
+      "slot": "rafter",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "frame-5",
+      "kind": "frame",
+      "slot": "rafter",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-8",
+      "kind": "box",
+      "slot": "old-shelf",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-9",
+      "kind": "box",
+      "slot": "old-shelf",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-10",
+      "kind": "box",
+      "slot": "old-shelf",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-8",
+      "kind": "teddy",
+      "slot": "rafter",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "ball-7",
+      "kind": "ball",
+      "slot": "rafter",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-14",
+      "kind": "bell",
+      "slot": "rafter",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "old-trunk",
+      "label": {
+        "fr": "dans la vieille malle",
+        "en": "in the old trunk"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "dress-form",
+      "label": {
+        "fr": "derrière le mannequin de couture",
+        "en": "behind the dress form"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "sheet",
+      "label": {
+        "fr": "sous le drap",
+        "en": "under the dust sheet"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "hat-box",
+      "label": {
+        "fr": "dans la boîte à chapeau",
+        "en": "in the hat box"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "rafters",
+      "label": {
+        "fr": "sur une poutre",
+        "en": "up on a rafter"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "shadows-mismatch",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "frame-2",
+            "frame-3"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "frame",
+          "mode": "shadow"
+        }
+      },
+      "spot": {
+        "fr": "Les ombres ne correspondent pas aux objets !",
+        "en": "The shadows don’t match the objects!"
+      },
+      "fixed": {
+        "fr": "Chaque objet retrouve son ombre !",
+        "en": "Every object found its shadow!"
+      }
+    },
+    {
+      "id": "boxes-stacked-oddly",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "box-4",
+            "box-5"
+          ],
+          [
+            "box-6",
+            "box-7"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "size",
+          "item": "box"
+        }
+      },
+      "spot": {
+        "fr": "Les cartons sont empilés tout de travers !",
+        "en": "The boxes are stacked all wonky!"
+      },
+      "fixed": {
+        "fr": "Les cartons sont rangés du plus petit au plus grand !",
+        "en": "The boxes are lined up smallest to biggest!"
+      }
+    },
+    {
+      "id": "horse-turned",
+      "type": "flip",
+      "params": {
+        "props": [
+          "rocking-horse-1"
+        ],
+        "turns": 1
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "rocking-horse"
+        }
+      },
+      "spot": {
+        "fr": "Le cheval à bascule regarde de travers !",
+        "en": "The rocking horse is facing the wrong way!"
+      },
+      "fixed": {
+        "fr": "Le cheval à bascule est remis droit !",
+        "en": "The rocking horse is the right way round!"
+      }
+    },
+    {
+      "id": "lamp-in-trunk",
+      "type": "hide",
+      "params": {
+        "props": [
+          "lamp-3"
+        ],
+        "in": "trunk"
+      },
+      "culprit": "noisette",
+      "fix": {
+        "mechanic": "place",
+        "params": {
+          "item": "lamp",
+          "anchor": "box"
+        }
+      },
+      "spot": {
+        "fr": "La lampe s’est cachée dans la malle !",
+        "en": "The lamp hid in the trunk!"
+      },
+      "fixed": {
+        "fr": "La lampe éclaire de nouveau !",
+        "en": "The lamp is shining again!"
+      }
+    },
+    {
+      "id": "toys-in-chest",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "robot-2",
+          "teddy-7",
+          "ball-6"
+        ],
+        "to": "chest"
+      },
+      "culprit": "random",
+      "themes": [
+        "peluches"
+      ],
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "robot",
+          "words": [
+            "robot",
+            "teddy",
+            "ball",
+            "rocking-horse"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "Les jouets ont plongé dans le coffre !",
+        "en": "The toys dived into the chest!"
+      },
+      "fixed": {
+        "fr": "Les jouets sont de retour sur l’étagère !",
+        "en": "The toys are back on the shelf!"
+      }
+    },
+    {
+      "id": "frames-recoloured",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "frame-5"
+        ],
+        "color": "purple"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "color"
+        }
+      },
+      "spot": {
+        "fr": "Un cadre a changé de couleur… tu l’as vu ?",
+        "en": "One frame changed colour… did you spot it?"
+      },
+      "fixed": {
+        "fr": "Les cadres sont triés !",
+        "en": "The frames are sorted!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "La tour de cartons qui fait pouf",
+      "en": "The box tower that goes poof"
+    },
+    "steps": [
+      {
+        "id": "box-8-wobbles",
+        "type": "flip",
+        "params": {
+          "props": [
+            "box-8"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Un carton vacille",
+          "en": "A box wobbles"
+        }
+      },
+      {
+        "id": "box-9-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "box-9"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Un autre penche",
+          "en": "Another one leans"
+        }
+      },
+      {
+        "id": "box-10-slides",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "box-10"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Un carton glisse tout doux",
+          "en": "A box slides down softly"
+        }
+      },
+      {
+        "id": "teddy-drops",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "teddy-8"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Le doudou atterrit en douceur",
+          "en": "The teddy lands softly"
+        }
+      },
+      {
+        "id": "ball-bounces",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "ball-7"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Le ballon rebondit",
+          "en": "The ball bounces"
+        }
+      },
+      {
+        "id": "bell-jingles",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-14"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La clochette tinte",
+          "en": "The bell jingles"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "shadows-mismatch",
+        "boxes-stacked-oddly",
+        "horse-turned",
+        "lamp-in-trunk"
+      ],
+      "hidingSpots": [
+        "old-trunk",
+        "dress-form",
+        "sheet"
+      ],
+      "finale": [
+        "box-8-wobbles",
+        "teddy-drops"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "shadows-mismatch",
+        "boxes-stacked-oddly",
+        "horse-turned",
+        "lamp-in-trunk",
+        "toys-in-chest"
+      ],
+      "hidingSpots": [
+        "old-trunk",
+        "dress-form",
+        "sheet",
+        "hat-box"
+      ],
+      "finale": [
+        "box-8-wobbles",
+        "box-10-slides",
+        "teddy-drops"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "shadows-mismatch",
+        "boxes-stacked-oddly",
+        "horse-turned",
+        "lamp-in-trunk",
+        "toys-in-chest",
+        "frames-recoloured"
+      ],
+      "hidingSpots": [
+        "old-trunk",
+        "dress-form",
+        "sheet",
+        "hat-box",
+        "rafters"
+      ],
+      "finale": [
+        "box-8-wobbles",
+        "box-9-tips",
+        "box-10-slides",
+        "teddy-drops",
+        "ball-bounces",
+        "bell-jingles"
+      ]
+    }
+  }
+}

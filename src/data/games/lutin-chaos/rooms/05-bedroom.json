@@ -1,0 +1,798 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.bedroom",
+  "number": 5,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La chambre",
+    "en": "The bedroom"
+  },
+  "season": "winter",
+  "layout": "bedroom-a",
+  "assets": [
+    "chaos.room.bedroom",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "spatial",
+    "vocabulary"
+  ],
+  "skills": [
+    "vocabulary",
+    "shapes",
+    "logic",
+    "colors"
+  ],
+  "intro": {
+    "fr": "Chut… la chambre est toute sens dessus dessous !",
+    "en": "Shh… the bedroom is all topsy-turvy!"
+  },
+  "slots": [
+    {
+      "id": "sock-drawer",
+      "label": {
+        "fr": "le tiroir à chaussettes",
+        "en": "the sock drawer"
+      },
+      "in": {
+        "fr": "dans le tiroir à chaussettes",
+        "en": "in the sock drawer"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "wardrobe",
+      "label": {
+        "fr": "l’armoire",
+        "en": "the wardrobe"
+      },
+      "in": {
+        "fr": "dans l’armoire",
+        "en": "in the wardrobe"
+      },
+      "at": [
+        2.3,
+        0,
+        1.21
+      ]
+    },
+    {
+      "id": "toy-shelf",
+      "label": {
+        "fr": "l’étagère à jouets",
+        "en": "the toy shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère à jouets",
+        "en": "on the toy shelf"
+      },
+      "at": [
+        1.48,
+        0,
+        2.14
+      ]
+    },
+    {
+      "id": "bed",
+      "label": {
+        "fr": "le lit",
+        "en": "the bed"
+      },
+      "in": {
+        "fr": "sur le lit",
+        "en": "on the bed"
+      },
+      "at": [
+        0.31,
+        1,
+        2.58
+      ]
+    },
+    {
+      "id": "lamp-top",
+      "label": {
+        "fr": "la lampe",
+        "en": "the lamp"
+      },
+      "in": {
+        "fr": "sur la lampe",
+        "en": "on the lamp"
+      },
+      "at": [
+        -0.92,
+        0,
+        2.43
+      ]
+    },
+    {
+      "id": "chair",
+      "label": {
+        "fr": "la chaise",
+        "en": "the chair"
+      },
+      "in": {
+        "fr": "sur la chaise",
+        "en": "on the chair"
+      },
+      "at": [
+        -1.95,
+        0,
+        1.72
+      ]
+    },
+    {
+      "id": "slipper-left",
+      "label": {
+        "fr": "la place de gauche",
+        "en": "the left spot"
+      },
+      "in": {
+        "fr": "à gauche du lit",
+        "en": "on the left of the bed"
+      },
+      "at": [
+        -2.52,
+        1,
+        0.62
+      ]
+    },
+    {
+      "id": "slipper-right",
+      "label": {
+        "fr": "la place de droite",
+        "en": "the right spot"
+      },
+      "in": {
+        "fr": "à droite du lit",
+        "en": "on the right of the bed"
+      },
+      "at": [
+        -2.52,
+        0,
+        -0.62
+      ]
+    },
+    {
+      "id": "bookshelf",
+      "label": {
+        "fr": "la bibliothèque",
+        "en": "the bookcase"
+      },
+      "in": {
+        "fr": "dans la bibliothèque",
+        "en": "in the bookcase"
+      },
+      "at": [
+        -1.95,
+        0,
+        -1.72
+      ]
+    },
+    {
+      "id": "under-bed",
+      "label": {
+        "fr": "le dessous du lit",
+        "en": "under the bed"
+      },
+      "in": {
+        "fr": "sous le lit",
+        "en": "under the bed"
+      },
+      "at": [
+        -0.92,
+        1,
+        -2.43
+      ]
+    },
+    {
+      "id": "desk",
+      "label": {
+        "fr": "le bureau",
+        "en": "the desk"
+      },
+      "in": {
+        "fr": "sur le bureau",
+        "en": "on the desk"
+      },
+      "at": [
+        0.31,
+        0,
+        -2.58
+      ]
+    },
+    {
+      "id": "rug",
+      "label": {
+        "fr": "le tapis",
+        "en": "the rug"
+      },
+      "in": {
+        "fr": "sur le tapis",
+        "en": "on the rug"
+      },
+      "at": [
+        1.48,
+        0,
+        -2.14
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        2.3,
+        1,
+        -1.21
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "sock-9",
+      "kind": "sock",
+      "slot": "sock-drawer",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-10",
+      "kind": "sock",
+      "slot": "sock-drawer",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-1",
+      "kind": "teddy",
+      "slot": "toy-shelf",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-2",
+      "kind": "teddy",
+      "slot": "toy-shelf",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-3",
+      "kind": "teddy",
+      "slot": "toy-shelf",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "pyjamas-1",
+      "kind": "pyjamas",
+      "slot": "chair",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "slipper-4",
+      "kind": "slipper",
+      "slot": "slipper-left",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "slipper-5",
+      "kind": "slipper",
+      "slot": "slipper-right",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-1",
+      "kind": "book",
+      "slot": "bookshelf",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-2",
+      "kind": "book",
+      "slot": "bookshelf",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "lamp-1",
+      "kind": "lamp",
+      "slot": "desk",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "pillow-2",
+      "kind": "pillow",
+      "slot": "bed",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-4",
+      "kind": "teddy",
+      "slot": "toy-shelf",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-5",
+      "kind": "teddy",
+      "slot": "toy-shelf",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "ball-3",
+      "kind": "ball",
+      "slot": "rug",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "kite-1",
+      "kind": "kite",
+      "slot": "desk",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "robot-1",
+      "kind": "robot",
+      "slot": "desk",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "duvet",
+      "label": {
+        "fr": "sous la couette",
+        "en": "under the duvet"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "wardrobe-door",
+      "label": {
+        "fr": "derrière la porte de l’armoire",
+        "en": "behind the wardrobe door"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "slipper-big",
+      "label": {
+        "fr": "dans un chausson",
+        "en": "inside a slipper"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "curtain",
+      "label": {
+        "fr": "derrière le rideau",
+        "en": "behind the curtain"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "toy-chest",
+      "label": {
+        "fr": "dans le coffre à jouets",
+        "en": "in the toy chest"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "socks-mixed",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "sock-10"
+        ],
+        "color": "green"
+      },
+      "culprit": "random",
+      "themes": [
+        "chaussettes"
+      ],
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "sock"
+        }
+      },
+      "spot": {
+        "fr": "Les chaussettes sont toutes dépareillées !",
+        "en": "The socks are all odd!"
+      },
+      "fixed": {
+        "fr": "Les chaussettes ont retrouvé leur jumelle !",
+        "en": "The socks found their twins!"
+      }
+    },
+    {
+      "id": "plushies-in-wardrobe",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "teddy-1",
+          "teddy-2",
+          "teddy-3"
+        ],
+        "to": "wardrobe"
+      },
+      "culprit": "random",
+      "themes": [
+        "peluches",
+        "cache-cache"
+      ],
+      "fix": {
+        "mechanic": "place",
+        "params": {
+          "item": "teddy",
+          "anchor": "pillow"
+        }
+      },
+      "spot": {
+        "fr": "Les doudous jouent à cache-cache dans l’armoire !",
+        "en": "The teddies are playing hide-and-seek in the wardrobe!"
+      },
+      "fixed": {
+        "fr": "Les doudous sont bien installés !",
+        "en": "The teddies are all cosy again!"
+      }
+    },
+    {
+      "id": "pyjamas-on-lamp",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "pyjamas-1"
+        ],
+        "to": "lamp-top"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "pyjamas",
+          "words": [
+            "pyjamas",
+            "sock",
+            "slipper",
+            "pillow"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "La lampe met son pyjama !",
+        "en": "The lamp is wearing pyjamas!"
+      },
+      "fixed": {
+        "fr": "Le pyjama est rangé !",
+        "en": "The pyjama top is put away!"
+      }
+    },
+    {
+      "id": "slippers-swapped",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "slipper-4",
+            "slipper-5"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "chaussures"
+      ],
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "slipper",
+          "mode": "left-right"
+        }
+      },
+      "spot": {
+        "fr": "Les chaussons sont inversés !",
+        "en": "The slippers are swapped!"
+      },
+      "fixed": {
+        "fr": "Chaussons gauche et droit, bien rangés !",
+        "en": "Left and right slippers, all tidy!"
+      }
+    },
+    {
+      "id": "books-under-bed",
+      "type": "hide",
+      "params": {
+        "props": [
+          "book-1",
+          "book-2"
+        ],
+        "in": "under-bed"
+      },
+      "culprit": "random",
+      "clueKinds": [
+        "footprint"
+      ],
+      "fix": {
+        "mechanic": "path",
+        "params": {}
+      },
+      "spot": {
+        "fr": "Les livres ont filé sous le lit ! Suis les empreintes !",
+        "en": "The books slipped under the bed! Follow the footprints!"
+      },
+      "fixed": {
+        "fr": "Les livres sont revenus dans la bibliothèque !",
+        "en": "The books are back in the bookcase!"
+      }
+    },
+    {
+      "id": "lamp-tilted",
+      "type": "flip",
+      "params": {
+        "props": [
+          "lamp-1"
+        ],
+        "turns": 1
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "lamp"
+        }
+      },
+      "spot": {
+        "fr": "La lampe est toute penchée !",
+        "en": "The lamp is all tilted!"
+      },
+      "fixed": {
+        "fr": "La lampe est bien droite !",
+        "en": "The lamp stands straight!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "La catapulte d’oreiller",
+      "en": "The pillow catapult"
+    },
+    "steps": [
+      {
+        "id": "pillow-launch",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "pillow-2"
+          ],
+          "to": "rug"
+        },
+        "label": {
+          "fr": "L’oreiller décolle",
+          "en": "The pillow takes off"
+        }
+      },
+      {
+        "id": "teddy-4-flies",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "teddy-4"
+          ],
+          "to": "bed"
+        },
+        "label": {
+          "fr": "Un doudou s’envole",
+          "en": "A teddy flies"
+        }
+      },
+      {
+        "id": "teddy-5-flies",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "teddy-5"
+          ],
+          "to": "bed"
+        },
+        "label": {
+          "fr": "Un autre doudou atterrit",
+          "en": "Another teddy lands"
+        }
+      },
+      {
+        "id": "ball-bounces",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "ball-3"
+          ],
+          "to": "bed"
+        },
+        "label": {
+          "fr": "Le ballon rebondit",
+          "en": "The ball bounces"
+        }
+      },
+      {
+        "id": "kite-glides",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "kite-1"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Le cerf-volant plane",
+          "en": "The kite glides"
+        }
+      },
+      {
+        "id": "robot-lands",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "robot-1"
+          ],
+          "to": "bed"
+        },
+        "label": {
+          "fr": "Le robot atterrit sur le lit",
+          "en": "The robot lands on the bed"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "socks-mixed",
+        "plushies-in-wardrobe",
+        "pyjamas-on-lamp",
+        "slippers-swapped"
+      ],
+      "hidingSpots": [
+        "duvet",
+        "wardrobe-door",
+        "slipper-big"
+      ],
+      "finale": [
+        "pillow-launch",
+        "teddy-4-flies"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "socks-mixed",
+        "plushies-in-wardrobe",
+        "pyjamas-on-lamp",
+        "slippers-swapped",
+        "books-under-bed"
+      ],
+      "hidingSpots": [
+        "duvet",
+        "wardrobe-door",
+        "slipper-big",
+        "curtain"
+      ],
+      "finale": [
+        "pillow-launch",
+        "teddy-4-flies",
+        "ball-bounces",
+        "robot-lands"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "socks-mixed",
+        "plushies-in-wardrobe",
+        "pyjamas-on-lamp",
+        "slippers-swapped",
+        "books-under-bed",
+        "lamp-tilted"
+      ],
+      "hidingSpots": [
+        "duvet",
+        "wardrobe-door",
+        "slipper-big",
+        "curtain",
+        "toy-chest"
+      ],
+      "finale": [
+        "pillow-launch",
+        "teddy-4-flies",
+        "teddy-5-flies",
+        "ball-bounces",
+        "kite-glides",
+        "robot-lands"
+      ]
+    }
+  }
+}

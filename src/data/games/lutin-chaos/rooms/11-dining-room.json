@@ -1,0 +1,751 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.dining-room",
+  "number": 11,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La salle à manger",
+    "en": "The dining room"
+  },
+  "season": "winter",
+  "layout": "dining-room-a",
+  "assets": [
+    "chaos.room.dining-room",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "counting",
+    "fractions",
+    "sorting",
+    "spatial"
+  ],
+  "skills": [
+    "counting",
+    "multiplication",
+    "logic",
+    "colors"
+  ],
+  "intro": {
+    "fr": "La table est mise… n’importe comment ! On répare pour le repas de fête ?",
+    "en": "The table is set… all wrong! Shall we fix it for the party meal?"
+  },
+  "slots": [
+    {
+      "id": "table-centre",
+      "label": {
+        "fr": "le milieu de la table",
+        "en": "the middle of the table"
+      },
+      "in": {
+        "fr": "au milieu de la table",
+        "en": "in the middle of the table"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "place-settings",
+      "label": {
+        "fr": "les places",
+        "en": "the place settings"
+      },
+      "in": {
+        "fr": "à côté des assiettes",
+        "en": "next to the plates"
+      },
+      "at": [
+        2.1,
+        0,
+        1.53
+      ]
+    },
+    {
+      "id": "in-glasses",
+      "label": {
+        "fr": "les verres",
+        "en": "the glasses"
+      },
+      "in": {
+        "fr": "dans les verres",
+        "en": "in the glasses"
+      },
+      "at": [
+        0.8,
+        0,
+        2.47
+      ]
+    },
+    {
+      "id": "sideboard",
+      "label": {
+        "fr": "le buffet",
+        "en": "the sideboard"
+      },
+      "in": {
+        "fr": "sur le buffet",
+        "en": "on the sideboard"
+      },
+      "at": [
+        -0.8,
+        1,
+        2.47
+      ]
+    },
+    {
+      "id": "cake-stand",
+      "label": {
+        "fr": "le plat à gâteau",
+        "en": "the cake stand"
+      },
+      "in": {
+        "fr": "sur le plat à gâteau",
+        "en": "on the cake stand"
+      },
+      "at": [
+        -2.1,
+        0,
+        1.53
+      ]
+    },
+    {
+      "id": "napkin-basket",
+      "label": {
+        "fr": "le panier à serviettes",
+        "en": "the napkin basket"
+      },
+      "in": {
+        "fr": "dans le panier à serviettes",
+        "en": "in the napkin basket"
+      },
+      "at": [
+        -2.6,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "candle-holder",
+      "label": {
+        "fr": "le bougeoir",
+        "en": "the candle holder"
+      },
+      "in": {
+        "fr": "sur le bougeoir",
+        "en": "on the candle holder"
+      },
+      "at": [
+        -2.1,
+        1,
+        -1.53
+      ]
+    },
+    {
+      "id": "glass-cabinet",
+      "label": {
+        "fr": "la vitrine",
+        "en": "the glass cabinet"
+      },
+      "in": {
+        "fr": "dans la vitrine",
+        "en": "in the glass cabinet"
+      },
+      "at": [
+        -0.8,
+        0,
+        -2.47
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        0.8,
+        0,
+        -2.47
+      ]
+    },
+    {
+      "id": "chair",
+      "label": {
+        "fr": "la chaise",
+        "en": "the chair"
+      },
+      "in": {
+        "fr": "sur la chaise",
+        "en": "on the chair"
+      },
+      "at": [
+        2.1,
+        1,
+        -1.53
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "fork-2",
+      "kind": "fork",
+      "slot": "place-settings",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "fork-3",
+      "kind": "fork",
+      "slot": "place-settings",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "fork-4",
+      "kind": "fork",
+      "slot": "place-settings",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "plate-2",
+      "kind": "plate",
+      "slot": "table-centre",
+      "color": "white",
+      "rot": 0,
+      "count": 3,
+      "hidden": false
+    },
+    {
+      "id": "cake-1",
+      "kind": "cake",
+      "slot": "cake-stand",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "napkin-2",
+      "kind": "napkin",
+      "slot": "napkin-basket",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "napkin-3",
+      "kind": "napkin",
+      "slot": "napkin-basket",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "napkin-4",
+      "kind": "napkin",
+      "slot": "napkin-basket",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "candle-1",
+      "kind": "candle",
+      "slot": "candle-holder",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "candle-2",
+      "kind": "candle",
+      "slot": "candle-holder",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "glass-1",
+      "kind": "glass",
+      "slot": "table-centre",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "glass-2",
+      "kind": "glass",
+      "slot": "table-centre",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "napkin-5",
+      "kind": "napkin",
+      "slot": "chair",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "spoon-4",
+      "kind": "spoon",
+      "slot": "sideboard",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "plate-3",
+      "kind": "plate",
+      "slot": "sideboard",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "glass-3",
+      "kind": "glass",
+      "slot": "sideboard",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "candle-3",
+      "kind": "candle",
+      "slot": "sideboard",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-13",
+      "kind": "bell",
+      "slot": "sideboard",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "tablecloth",
+      "label": {
+        "fr": "sous la nappe",
+        "en": "under the tablecloth"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "soup-tureen",
+      "label": {
+        "fr": "dans la soupière",
+        "en": "in the soup tureen"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "chair-back",
+      "label": {
+        "fr": "derrière une chaise",
+        "en": "behind a chair"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "sideboard-door",
+      "label": {
+        "fr": "dans le buffet",
+        "en": "in the sideboard"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "flower-vase",
+      "label": {
+        "fr": "derrière le bouquet",
+        "en": "behind the bouquet"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "forks-in-glasses",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "fork-2",
+          "fork-3",
+          "fork-4"
+        ],
+        "to": "in-glasses"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "fork"
+        }
+      },
+      "spot": {
+        "fr": "Des fourchettes dans les verres !",
+        "en": "Forks in the glasses!"
+      },
+      "fixed": {
+        "fr": "Une fourchette pour chaque assiette !",
+        "en": "One fork for every plate!"
+      }
+    },
+    {
+      "id": "plates-for-guests",
+      "type": "multiply",
+      "params": {
+        "prop": "plate-2",
+        "count": 5
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "plate",
+          "mode": "extra"
+        }
+      },
+      "spot": {
+        "fr": "Cinq assiettes pour trois invités ?!",
+        "en": "Five plates for three guests?!"
+      },
+      "fixed": {
+        "fr": "Une assiette par invité, parfait !",
+        "en": "One plate per guest, perfect!"
+      }
+    },
+    {
+      "id": "cake-to-share",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "cake-1"
+        ],
+        "to": "sideboard"
+      },
+      "culprit": "random",
+      "themes": [
+        "biscuits"
+      ],
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "cookie",
+          "mode": "share"
+        }
+      },
+      "spot": {
+        "fr": "Le gâteau s’est sauvé sur le buffet ! On partage les biscuits ?",
+        "en": "The cake ran off to the sideboard! Shall we share the cookies?"
+      },
+      "fixed": {
+        "fr": "Chacun a sa part, pareil pour tous !",
+        "en": "Everyone has a fair share!"
+      }
+    },
+    {
+      "id": "napkins-recoloured",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "napkin-2",
+          "napkin-3",
+          "napkin-4"
+        ],
+        "colors": [
+          "blue",
+          "yellow",
+          "blue"
+        ]
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "color"
+        }
+      },
+      "spot": {
+        "fr": "Les serviettes ont changé de couleur !",
+        "en": "The napkins changed colour!"
+      },
+      "fixed": {
+        "fr": "Les serviettes sont triées par couleur !",
+        "en": "The napkins are sorted by colour!"
+      }
+    },
+    {
+      "id": "candles-hidden",
+      "type": "hide",
+      "params": {
+        "props": [
+          "candle-1",
+          "candle-2"
+        ],
+        "in": "napkin-basket"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "place",
+        "params": {
+          "item": "candle",
+          "anchor": "cake"
+        }
+      },
+      "spot": {
+        "fr": "Les bougies à pile se sont cachées !",
+        "en": "The battery candles are hiding!"
+      },
+      "fixed": {
+        "fr": "Les bougies brillent à leur place !",
+        "en": "The candles glow in their place!"
+      }
+    },
+    {
+      "id": "glasses-upside-down",
+      "type": "flip",
+      "params": {
+        "props": [
+          "glass-1",
+          "glass-2"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "glass"
+        }
+      },
+      "spot": {
+        "fr": "Les verres sont la tête en bas !",
+        "en": "The glasses are upside down!"
+      },
+      "fixed": {
+        "fr": "Les verres sont à l’endroit !",
+        "en": "The glasses are the right way up!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "L’éventail de serviette et la bougie magique",
+      "en": "The napkin fan and the magic candle"
+    },
+    "steps": [
+      {
+        "id": "napkin-flutters",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "napkin-5"
+          ],
+          "to": "table-centre"
+        },
+        "label": {
+          "fr": "La serviette s’envole comme un éventail",
+          "en": "The napkin flutters like a fan"
+        }
+      },
+      {
+        "id": "spoon-spins",
+        "type": "flip",
+        "params": {
+          "props": [
+            "spoon-4"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La cuillère tourne",
+          "en": "The spoon spins"
+        }
+      },
+      {
+        "id": "plate-slides",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "plate-3"
+          ],
+          "to": "table-centre"
+        },
+        "label": {
+          "fr": "L’assiette glisse",
+          "en": "The plate slides"
+        }
+      },
+      {
+        "id": "glass-tilts",
+        "type": "flip",
+        "params": {
+          "props": [
+            "glass-3"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le verre penche",
+          "en": "The glass tilts"
+        }
+      },
+      {
+        "id": "bell-tinkles",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-13"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La clochette tinte",
+          "en": "The little bell tinkles"
+        }
+      },
+      {
+        "id": "candle-glows",
+        "type": "recolour",
+        "params": {
+          "props": [
+            "candle-3"
+          ],
+          "color": "yellow"
+        },
+        "label": {
+          "fr": "La bougie à pile s’allume",
+          "en": "The battery candle lights up"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "forks-in-glasses",
+        "plates-for-guests",
+        "cake-to-share",
+        "napkins-recoloured"
+      ],
+      "hidingSpots": [
+        "tablecloth",
+        "soup-tureen",
+        "chair-back"
+      ],
+      "finale": [
+        "napkin-flutters",
+        "candle-glows"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "forks-in-glasses",
+        "plates-for-guests",
+        "cake-to-share",
+        "napkins-recoloured",
+        "candles-hidden"
+      ],
+      "hidingSpots": [
+        "tablecloth",
+        "soup-tureen",
+        "chair-back",
+        "sideboard-door"
+      ],
+      "finale": [
+        "napkin-flutters",
+        "spoon-spins",
+        "plate-slides",
+        "candle-glows"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "forks-in-glasses",
+        "plates-for-guests",
+        "cake-to-share",
+        "napkins-recoloured",
+        "candles-hidden",
+        "glasses-upside-down"
+      ],
+      "hidingSpots": [
+        "tablecloth",
+        "soup-tureen",
+        "chair-back",
+        "sideboard-door",
+        "flower-vase"
+      ],
+      "finale": [
+        "napkin-flutters",
+        "spoon-spins",
+        "plate-slides",
+        "glass-tilts",
+        "bell-tinkles",
+        "candle-glows"
+      ]
+    }
+  }
+}

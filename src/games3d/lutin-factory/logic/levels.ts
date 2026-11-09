@@ -175,7 +175,7 @@ export const referenceLayout = (b: BandLevel): Layout => applyPlacements(b, b.re
 /** Run a layout for a band and check it against the letter. */
 export function runAndCheck(b: BandLevel, layout: Layout) {
   const { deliveries, sim } = simulate(layout);
-  return { result: check(b.orders, deliveries), sim, deliveries };
+  return { result: check(b.orders, deliveries, { ran: true }), sim, deliveries };
 }
 
 /* ---------- single level validation ---------- */

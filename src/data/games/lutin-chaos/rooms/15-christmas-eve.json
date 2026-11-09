@@ -1,0 +1,1045 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.christmas-eve",
+  "number": 15,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La fête du réveillon",
+    "en": "The Christmas Eve party"
+  },
+  "season": "winter",
+  "layout": "christmas-eve-a",
+  "assets": [
+    "chaos.room.christmas-eve",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "counting",
+    "patterns",
+    "spatial",
+    "sorting",
+    "vocabulary",
+    "time",
+    "fractions"
+  ],
+  "skills": [
+    "logic",
+    "counting",
+    "sequencing",
+    "vocabulary"
+  ],
+  "intro": {
+    "fr": "C’est le réveillon ! Les trois lutins font des farces partout en même temps !",
+    "en": "It’s Christmas Eve! All three elves are pranking everywhere at once!"
+  },
+  "slots": [
+    {
+      "id": "tree",
+      "label": {
+        "fr": "le sapin",
+        "en": "the tree"
+      },
+      "in": {
+        "fr": "sur le sapin",
+        "en": "on the tree"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "laundry-basket",
+      "label": {
+        "fr": "le panier à linge",
+        "en": "the laundry basket"
+      },
+      "in": {
+        "fr": "dans le panier à linge",
+        "en": "in the laundry basket"
+      },
+      "at": [
+        2.38,
+        0,
+        1.06
+      ]
+    },
+    {
+      "id": "table",
+      "label": {
+        "fr": "la table de fête",
+        "en": "the party table"
+      },
+      "in": {
+        "fr": "sur la table de fête",
+        "en": "on the party table"
+      },
+      "at": [
+        1.74,
+        0,
+        1.93
+      ]
+    },
+    {
+      "id": "sofa",
+      "label": {
+        "fr": "le canapé",
+        "en": "the sofa"
+      },
+      "in": {
+        "fr": "sur le canapé",
+        "en": "on the sofa"
+      },
+      "at": [
+        0.8,
+        1,
+        2.47
+      ]
+    },
+    {
+      "id": "mantel",
+      "label": {
+        "fr": "la cheminée",
+        "en": "the mantelpiece"
+      },
+      "in": {
+        "fr": "sur la cheminée",
+        "en": "on the mantelpiece"
+      },
+      "at": [
+        -0.27,
+        0,
+        2.59
+      ]
+    },
+    {
+      "id": "gift-pile",
+      "label": {
+        "fr": "le pied du sapin",
+        "en": "the foot of the tree"
+      },
+      "in": {
+        "fr": "au pied du sapin",
+        "en": "under the tree"
+      },
+      "at": [
+        -1.3,
+        0,
+        2.25
+      ]
+    },
+    {
+      "id": "bookshelf",
+      "label": {
+        "fr": "la bibliothèque",
+        "en": "the bookcase"
+      },
+      "in": {
+        "fr": "dans la bibliothèque",
+        "en": "in the bookcase"
+      },
+      "at": [
+        -2.1,
+        1,
+        1.53
+      ]
+    },
+    {
+      "id": "clock-wall",
+      "label": {
+        "fr": "le mur de l’horloge",
+        "en": "the clock wall"
+      },
+      "in": {
+        "fr": "au mur",
+        "en": "on the wall"
+      },
+      "at": [
+        -2.54,
+        0,
+        0.54
+      ]
+    },
+    {
+      "id": "bell-hooks",
+      "label": {
+        "fr": "les crochets à clochettes",
+        "en": "the bell hooks"
+      },
+      "in": {
+        "fr": "sur les crochets à clochettes",
+        "en": "on the bell hooks"
+      },
+      "at": [
+        -2.54,
+        0,
+        -0.54
+      ]
+    },
+    {
+      "id": "window",
+      "label": {
+        "fr": "la fenêtre",
+        "en": "the window"
+      },
+      "in": {
+        "fr": "devant la fenêtre",
+        "en": "by the window"
+      },
+      "at": [
+        -2.1,
+        1,
+        -1.53
+      ]
+    },
+    {
+      "id": "rug",
+      "label": {
+        "fr": "le tapis",
+        "en": "the rug"
+      },
+      "in": {
+        "fr": "sur le tapis",
+        "en": "on the rug"
+      },
+      "at": [
+        -1.3,
+        0,
+        -2.25
+      ]
+    },
+    {
+      "id": "toy-box",
+      "label": {
+        "fr": "le coffre à jouets",
+        "en": "the toy box"
+      },
+      "in": {
+        "fr": "dans le coffre à jouets",
+        "en": "in the toy box"
+      },
+      "at": [
+        -0.27,
+        0,
+        -2.59
+      ]
+    },
+    {
+      "id": "cake-stand",
+      "label": {
+        "fr": "le plat à gâteau",
+        "en": "the cake stand"
+      },
+      "in": {
+        "fr": "sur le plat à gâteau",
+        "en": "on the cake stand"
+      },
+      "at": [
+        0.8,
+        1,
+        -2.47
+      ]
+    },
+    {
+      "id": "door",
+      "label": {
+        "fr": "la porte",
+        "en": "the door"
+      },
+      "in": {
+        "fr": "près de la porte",
+        "en": "by the door"
+      },
+      "at": [
+        1.74,
+        0,
+        -1.93
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        2.38,
+        0,
+        -1.06
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "sock-11",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-12",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-13",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-14",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-10",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-11",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-12",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "gift-8",
+      "kind": "gift",
+      "slot": "gift-pile",
+      "color": "blue",
+      "rot": 0,
+      "count": 3,
+      "hidden": false
+    },
+    {
+      "id": "cake-2",
+      "kind": "cake",
+      "slot": "cake-stand",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-18",
+      "kind": "book",
+      "slot": "bookshelf",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-19",
+      "kind": "book",
+      "slot": "bookshelf",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "clock-2",
+      "kind": "clock",
+      "slot": "clock-wall",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-22",
+      "kind": "bell",
+      "slot": "bell-hooks",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-23",
+      "kind": "bell",
+      "slot": "window",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-9",
+      "kind": "teddy",
+      "slot": "sofa",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "car-5",
+      "kind": "car",
+      "slot": "toy-box",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "car-6",
+      "kind": "car",
+      "slot": "toy-box",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "train-4",
+      "kind": "train",
+      "slot": "rug",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-9",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-20",
+      "kind": "book",
+      "slot": "mantel",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "ball-9",
+      "kind": "ball",
+      "slot": "sofa",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-21",
+      "kind": "bell",
+      "slot": "mantel",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "gift-7",
+      "kind": "gift",
+      "slot": "table",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "drum-3",
+      "kind": "drum",
+      "slot": "rug",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "tree-back",
+      "label": {
+        "fr": "derrière le sapin",
+        "en": "behind the tree"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "gift-box",
+      "label": {
+        "fr": "dans une boîte cadeau",
+        "en": "in a gift box"
+      },
+      "at": [
+        1.6,
+        0.5,
+        2.77
+      ]
+    },
+    {
+      "id": "stocking",
+      "label": {
+        "fr": "dans la chaussette de Noël",
+        "en": "in the Christmas stocking"
+      },
+      "at": [
+        -1.6,
+        0,
+        2.77
+      ]
+    },
+    {
+      "id": "tablecloth",
+      "label": {
+        "fr": "sous la nappe",
+        "en": "under the tablecloth"
+      },
+      "at": [
+        -3.2,
+        0.5,
+        0
+      ]
+    },
+    {
+      "id": "curtain",
+      "label": {
+        "fr": "derrière le rideau",
+        "en": "behind the curtain"
+      },
+      "at": [
+        -1.6,
+        0,
+        -2.77
+      ]
+    },
+    {
+      "id": "cushions",
+      "label": {
+        "fr": "sous les coussins",
+        "en": "under the cushions"
+      },
+      "at": [
+        1.6,
+        0.5,
+        -2.77
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "party-sock-garland",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "sock-11",
+          "sock-12",
+          "sock-13",
+          "sock-14"
+        ],
+        "to": "tree"
+      },
+      "culprit": "random",
+      "themes": [
+        "chaussettes",
+        "papier-toilette"
+      ],
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "sock"
+        }
+      },
+      "spot": {
+        "fr": "Encore une guirlande de chaussettes !",
+        "en": "Another sock garland!"
+      },
+      "fixed": {
+        "fr": "Les chaussettes sont en paires pour la fête !",
+        "en": "The socks are paired up for the party!"
+      }
+    },
+    {
+      "id": "party-baubles",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "bauble-10",
+          "bauble-11",
+          "bauble-12"
+        ],
+        "colors": [
+          "green",
+          "red",
+          "green"
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "boules-jonglage",
+        "sapin-decoration"
+      ],
+      "fix": {
+        "mechanic": "pattern",
+        "params": {
+          "theme": "colors"
+        }
+      },
+      "spot": {
+        "fr": "Les boules du sapin sont toutes mélangées !",
+        "en": "The baubles are all jumbled up!"
+      },
+      "fixed": {
+        "fr": "Le sapin brille dans le bon ordre !",
+        "en": "The tree sparkles in the right order!"
+      }
+    },
+    {
+      "id": "party-gifts",
+      "type": "multiply",
+      "params": {
+        "prop": "gift-8",
+        "count": 6
+      },
+      "culprit": "random",
+      "themes": [
+        "cadeaux-tour"
+      ],
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "gift",
+          "mode": "extra"
+        }
+      },
+      "spot": {
+        "fr": "Les cadeaux se sont multipliés !",
+        "en": "The presents multiplied!"
+      },
+      "fixed": {
+        "fr": "Juste le bon nombre de cadeaux !",
+        "en": "Just the right number of presents!"
+      }
+    },
+    {
+      "id": "party-cake",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "cake-2"
+        ],
+        "to": "mantel"
+      },
+      "culprit": "random",
+      "themes": [
+        "biscuits"
+      ],
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "cookie",
+          "mode": "share"
+        }
+      },
+      "spot": {
+        "fr": "Le gâteau est monté sur la cheminée ! On partage les biscuits ?",
+        "en": "The cake climbed onto the mantelpiece! Shall we share the cookies?"
+      },
+      "fixed": {
+        "fr": "Tout le monde a sa part !",
+        "en": "Everyone has a share!"
+      }
+    },
+    {
+      "id": "party-books",
+      "type": "flip",
+      "params": {
+        "props": [
+          "book-18",
+          "book-19"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "themes": [
+        "livres"
+      ],
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "book"
+        }
+      },
+      "spot": {
+        "fr": "Les livres de Noël sont la tête en bas !",
+        "en": "The Christmas books are upside down!"
+      },
+      "fixed": {
+        "fr": "Les livres sont à l’endroit !",
+        "en": "The books are the right way up!"
+      }
+    },
+    {
+      "id": "party-clock",
+      "type": "flip",
+      "params": {
+        "props": [
+          "clock-2"
+        ],
+        "turns": 1
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "clock",
+        "params": {}
+      },
+      "spot": {
+        "fr": "L’horloge du réveillon n’est pas à l’heure !",
+        "en": "The party clock shows the wrong time!"
+      },
+      "fixed": {
+        "fr": "L’horloge est à l’heure !",
+        "en": "The clock is on time!"
+      }
+    },
+    {
+      "id": "party-bells",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "bell-22",
+            "bell-23"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "number",
+          "item": "bell"
+        }
+      },
+      "spot": {
+        "fr": "Les clochettes sont dans le désordre !",
+        "en": "The bells are out of order!"
+      },
+      "fixed": {
+        "fr": "Les clochettes sont dans l’ordre !",
+        "en": "The bells are in order!"
+      }
+    },
+    {
+      "id": "party-teddy",
+      "type": "hide",
+      "params": {
+        "props": [
+          "teddy-9"
+        ],
+        "in": "toy-box"
+      },
+      "culprit": "random",
+      "themes": [
+        "peluches",
+        "cache-cache"
+      ],
+      "clueKinds": [
+        "footprint"
+      ],
+      "fix": {
+        "mechanic": "path",
+        "params": {}
+      },
+      "spot": {
+        "fr": "Le doudou de la fête a disparu ! Suis les empreintes !",
+        "en": "The party teddy has vanished! Follow the footprints!"
+      },
+      "fixed": {
+        "fr": "Le doudou est revenu faire la fête !",
+        "en": "The teddy is back for the party!"
+      }
+    },
+    {
+      "id": "party-drum",
+      "type": "hide",
+      "params": {
+        "props": [
+          "drum-3"
+        ],
+        "in": "sofa"
+      },
+      "culprit": "random",
+      "themes": [
+        "reveil"
+      ],
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "drum",
+          "words": [
+            "drum",
+            "trumpet",
+            "bell",
+            "guitar"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "Le tambour de la fête s’est caché !",
+        "en": "The party drum is hiding!"
+      },
+      "fixed": {
+        "fr": "Boum boum ! Le tambour est revenu !",
+        "en": "Boom boom! The drum is back!"
+      }
+    },
+    {
+      "id": "party-cars",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "car-5",
+          "car-6"
+        ],
+        "colors": [
+          "blue",
+          "red"
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "course-voitures"
+      ],
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "color"
+        }
+      },
+      "spot": {
+        "fr": "Les petites voitures ont changé de couleur !",
+        "en": "The toy cars changed colour!"
+      },
+      "fixed": {
+        "fr": "Les voitures sont triées !",
+        "en": "The cars are sorted!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "La grande cascade de toute la maison",
+      "en": "The grand cascade through the whole house"
+    },
+    "steps": [
+      {
+        "id": "train-starts",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "train-4"
+          ],
+          "to": "door"
+        },
+        "label": {
+          "fr": "Le petit train démarre",
+          "en": "The toy train sets off"
+        }
+      },
+      {
+        "id": "bauble-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "bauble-9"
+          ],
+          "to": "rug"
+        },
+        "label": {
+          "fr": "Une boule roule",
+          "en": "A bauble rolls"
+        }
+      },
+      {
+        "id": "book-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "book-20"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Un livre bascule",
+          "en": "A book tips"
+        }
+      },
+      {
+        "id": "ball-bounces",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "ball-9"
+          ],
+          "to": "rug"
+        },
+        "label": {
+          "fr": "Le ballon rebondit",
+          "en": "The ball bounces"
+        }
+      },
+      {
+        "id": "bell-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-21"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La clochette sonne",
+          "en": "The bell rings"
+        }
+      },
+      {
+        "id": "gift-opens",
+        "type": "flip",
+        "params": {
+          "props": [
+            "gift-7"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le cadeau s’ouvre : le Père Noël arrive !",
+          "en": "The present pops open: Santa is here!"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "party-sock-garland",
+        "party-baubles",
+        "party-cake",
+        "party-teddy",
+        "party-cars"
+      ],
+      "hidingSpots": [
+        "tree-back",
+        "gift-box",
+        "stocking"
+      ],
+      "finale": [
+        "train-starts",
+        "gift-opens"
+      ]
+    },
+    "middle": {
+      "pickCount": 5,
+      "pool": [
+        "party-sock-garland",
+        "party-baubles",
+        "party-gifts",
+        "party-cake",
+        "party-books",
+        "party-bells",
+        "party-teddy",
+        "party-drum",
+        "party-cars"
+      ],
+      "hidingSpots": [
+        "tree-back",
+        "gift-box",
+        "stocking",
+        "tablecloth"
+      ],
+      "finale": [
+        "train-starts",
+        "bauble-rolls",
+        "bell-rings",
+        "gift-opens"
+      ]
+    },
+    "big": {
+      "pickCount": 6,
+      "pool": [
+        "party-sock-garland",
+        "party-baubles",
+        "party-gifts",
+        "party-cake",
+        "party-books",
+        "party-clock",
+        "party-bells",
+        "party-teddy",
+        "party-drum",
+        "party-cars"
+      ],
+      "hidingSpots": [
+        "tree-back",
+        "gift-box",
+        "stocking",
+        "tablecloth",
+        "curtain",
+        "cushions"
+      ],
+      "finale": [
+        "train-starts",
+        "bauble-rolls",
+        "book-tips",
+        "ball-bounces",
+        "bell-rings",
+        "gift-opens"
+      ]
+    }
+  }
+}

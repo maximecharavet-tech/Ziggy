@@ -1,0 +1,804 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.cellar",
+  "number": 13,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La cave aux cartons",
+    "en": "The cellar of boxes"
+  },
+  "season": "winter",
+  "layout": "cellar-a",
+  "assets": [
+    "chaos.room.cellar",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "spatial",
+    "sorting",
+    "counting",
+    "vocabulary"
+  ],
+  "skills": [
+    "logic",
+    "reading",
+    "shapes",
+    "counting"
+  ],
+  "intro": {
+    "fr": "Les lutins ont caché une carte secrète dans la cave ! On mène l’enquête ?",
+    "en": "The elves hid a secret map in the cellar! Shall we investigate?"
+  },
+  "slots": [
+    {
+      "id": "crate-a1",
+      "label": {
+        "fr": "la caisse A1",
+        "en": "crate A1"
+      },
+      "in": {
+        "fr": "dans la caisse A1",
+        "en": "in crate A1"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "crate-a2",
+      "label": {
+        "fr": "la caisse A2",
+        "en": "crate A2"
+      },
+      "in": {
+        "fr": "dans la caisse A2",
+        "en": "in crate A2"
+      },
+      "at": [
+        2.3,
+        0,
+        1.21
+      ]
+    },
+    {
+      "id": "crate-b1",
+      "label": {
+        "fr": "la caisse B1",
+        "en": "crate B1"
+      },
+      "in": {
+        "fr": "dans la caisse B1",
+        "en": "in crate B1"
+      },
+      "at": [
+        1.48,
+        0,
+        2.14
+      ]
+    },
+    {
+      "id": "crate-b2",
+      "label": {
+        "fr": "la caisse B2",
+        "en": "crate B2"
+      },
+      "in": {
+        "fr": "dans la caisse B2",
+        "en": "in crate B2"
+      },
+      "at": [
+        0.31,
+        1,
+        2.58
+      ]
+    },
+    {
+      "id": "map-shelf",
+      "label": {
+        "fr": "l’étagère des cartes",
+        "en": "the map shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère des cartes",
+        "en": "on the map shelf"
+      },
+      "at": [
+        -0.92,
+        0,
+        2.43
+      ]
+    },
+    {
+      "id": "crate-row-b",
+      "label": {
+        "fr": "la rangée B",
+        "en": "row B"
+      },
+      "in": {
+        "fr": "dans la rangée B",
+        "en": "in row B"
+      },
+      "at": [
+        -1.95,
+        0,
+        1.72
+      ]
+    },
+    {
+      "id": "jar-shelf",
+      "label": {
+        "fr": "l’étagère à bocaux",
+        "en": "the jar shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère à bocaux",
+        "en": "on the jar shelf"
+      },
+      "at": [
+        -2.52,
+        1,
+        0.62
+      ]
+    },
+    {
+      "id": "apple-crate",
+      "label": {
+        "fr": "le cageot de pommes",
+        "en": "the apple crate"
+      },
+      "in": {
+        "fr": "dans le cageot de pommes",
+        "en": "in the apple crate"
+      },
+      "at": [
+        -2.52,
+        0,
+        -0.62
+      ]
+    },
+    {
+      "id": "key-hook",
+      "label": {
+        "fr": "le crochet à clés",
+        "en": "the key hook"
+      },
+      "in": {
+        "fr": "sur le crochet à clés",
+        "en": "on the key hook"
+      },
+      "at": [
+        -1.95,
+        0,
+        -1.72
+      ]
+    },
+    {
+      "id": "corner",
+      "label": {
+        "fr": "le coin sombre",
+        "en": "the corner"
+      },
+      "in": {
+        "fr": "dans le coin",
+        "en": "in the corner"
+      },
+      "at": [
+        -0.92,
+        1,
+        -2.43
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        0.31,
+        0,
+        -2.58
+      ]
+    },
+    {
+      "id": "pulley-hook",
+      "label": {
+        "fr": "le crochet de la poulie",
+        "en": "the pulley hook"
+      },
+      "in": {
+        "fr": "sur le crochet de la poulie",
+        "en": "on the pulley hook"
+      },
+      "at": [
+        1.48,
+        0,
+        -2.14
+      ]
+    },
+    {
+      "id": "stairs",
+      "label": {
+        "fr": "les marches",
+        "en": "the steps"
+      },
+      "in": {
+        "fr": "sur les marches",
+        "en": "on the steps"
+      },
+      "at": [
+        2.3,
+        1,
+        -1.21
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "box-11",
+      "kind": "box",
+      "slot": "crate-a1",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-12",
+      "kind": "box",
+      "slot": "crate-a2",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-13",
+      "kind": "box",
+      "slot": "crate-b1",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-14",
+      "kind": "box",
+      "slot": "crate-b2",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "map-2",
+      "kind": "map",
+      "slot": "map-shelf",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "jar-3",
+      "kind": "jar",
+      "slot": "jar-shelf",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "jar-4",
+      "kind": "jar",
+      "slot": "jar-shelf",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "apple-2",
+      "kind": "apple",
+      "slot": "apple-crate",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "apple-3",
+      "kind": "apple",
+      "slot": "apple-crate",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "apple-4",
+      "kind": "apple",
+      "slot": "apple-crate",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "key-2",
+      "kind": "key",
+      "slot": "key-hook",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-15",
+      "kind": "box",
+      "slot": "corner",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "basket-3",
+      "kind": "basket",
+      "slot": "floor",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-16",
+      "kind": "box",
+      "slot": "stairs",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "jar-6",
+      "kind": "jar",
+      "slot": "stairs",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "apple-5",
+      "kind": "apple",
+      "slot": "stairs",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "ball-8",
+      "kind": "ball",
+      "slot": "stairs",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-15",
+      "kind": "bell",
+      "slot": "pulley-hook",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "barrel",
+      "label": {
+        "fr": "derrière le tonneau",
+        "en": "behind the barrel"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "crate-stack",
+      "label": {
+        "fr": "entre les caisses",
+        "en": "between the crates"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "potato-sack",
+      "label": {
+        "fr": "dans le sac de pommes de terre",
+        "en": "in the potato sack"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "under-stairs",
+      "label": {
+        "fr": "sous les marches",
+        "en": "under the steps"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "old-boot",
+      "label": {
+        "fr": "dans la vieille botte",
+        "en": "inside the old boot"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "labels-swapped",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "box-11",
+            "box-12"
+          ],
+          [
+            "box-13",
+            "box-14"
+          ]
+        ]
+      },
+      "culprit": "grelotte",
+      "themes": [
+        "post-it"
+      ],
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "category"
+        }
+      },
+      "spot": {
+        "fr": "Les étiquettes des cartons sont échangées !",
+        "en": "The box labels are swapped!"
+      },
+      "fixed": {
+        "fr": "Chaque chose est dans le bon carton !",
+        "en": "Everything is in the right box!"
+      }
+    },
+    {
+      "id": "secret-map",
+      "type": "hide",
+      "params": {
+        "props": [
+          "map-2"
+        ],
+        "in": "crate-row-b"
+      },
+      "culprit": "random",
+      "clueKinds": [
+        "footprint"
+      ],
+      "fix": {
+        "mechanic": "path",
+        "params": {}
+      },
+      "spot": {
+        "fr": "La carte secrète des lutins a disparu !",
+        "en": "The elves’ secret map has disappeared!"
+      },
+      "fixed": {
+        "fr": "La carte secrète est retrouvée !",
+        "en": "The secret map is found!"
+      }
+    },
+    {
+      "id": "jars-recoloured",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "jar-4"
+        ],
+        "color": "yellow"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "jar"
+        }
+      },
+      "spot": {
+        "fr": "Un bocal a changé de couleur !",
+        "en": "One jar changed colour!"
+      },
+      "fixed": {
+        "fr": "Les bocaux vont par paires !",
+        "en": "The jars are in pairs!"
+      }
+    },
+    {
+      "id": "apples-on-jar-shelf",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "apple-2",
+          "apple-3",
+          "apple-4"
+        ],
+        "to": "jar-shelf"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "apple",
+          "target": "apple-crate"
+        }
+      },
+      "spot": {
+        "fr": "Les pommes se sont installées avec les bocaux !",
+        "en": "The apples moved in with the jars!"
+      },
+      "fixed": {
+        "fr": "Les pommes sont dans le cageot !",
+        "en": "The apples are back in the crate!"
+      }
+    },
+    {
+      "id": "key-hidden",
+      "type": "hide",
+      "params": {
+        "props": [
+          "key-2"
+        ],
+        "in": "corner"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "key",
+          "words": [
+            "key",
+            "map",
+            "jar",
+            "box"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "La clé du coffre a filé !",
+        "en": "The chest key has slipped away!"
+      },
+      "fixed": {
+        "fr": "La clé est sur son crochet !",
+        "en": "The key is back on its hook!"
+      }
+    },
+    {
+      "id": "crate-upside-down",
+      "type": "flip",
+      "params": {
+        "props": [
+          "box-15"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "box"
+        }
+      },
+      "spot": {
+        "fr": "Un carton est la tête en bas !",
+        "en": "A box is upside down!"
+      },
+      "fixed": {
+        "fr": "Le carton est à l’endroit !",
+        "en": "The box is the right way up!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "La poulie des lutins",
+      "en": "The elves’ pulley"
+    },
+    "steps": [
+      {
+        "id": "basket-lifts",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "basket-3"
+          ],
+          "to": "pulley-hook"
+        },
+        "label": {
+          "fr": "Le panier monte",
+          "en": "The basket goes up"
+        }
+      },
+      {
+        "id": "box-slides",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "box-16"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Le carton glisse",
+          "en": "The box slides"
+        }
+      },
+      {
+        "id": "jar-tilts",
+        "type": "flip",
+        "params": {
+          "props": [
+            "jar-6"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le bocal penche",
+          "en": "The jar tilts"
+        }
+      },
+      {
+        "id": "apple-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "apple-5"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "La pomme roule",
+          "en": "The apple rolls"
+        }
+      },
+      {
+        "id": "ball-bounces",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "ball-8"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Le ballon rebondit",
+          "en": "The ball bounces"
+        }
+      },
+      {
+        "id": "bell-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-15"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La cloche sonne",
+          "en": "The bell rings"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "labels-swapped",
+        "secret-map",
+        "apples-on-jar-shelf",
+        "key-hidden"
+      ],
+      "hidingSpots": [
+        "barrel",
+        "crate-stack",
+        "potato-sack"
+      ],
+      "finale": [
+        "basket-lifts",
+        "bell-rings"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "labels-swapped",
+        "secret-map",
+        "jars-recoloured",
+        "apples-on-jar-shelf",
+        "key-hidden"
+      ],
+      "hidingSpots": [
+        "barrel",
+        "crate-stack",
+        "potato-sack",
+        "under-stairs"
+      ],
+      "finale": [
+        "basket-lifts",
+        "box-slides",
+        "apple-rolls",
+        "bell-rings"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "labels-swapped",
+        "secret-map",
+        "jars-recoloured",
+        "apples-on-jar-shelf",
+        "key-hidden",
+        "crate-upside-down"
+      ],
+      "hidingSpots": [
+        "barrel",
+        "crate-stack",
+        "potato-sack",
+        "under-stairs",
+        "old-boot"
+      ],
+      "finale": [
+        "basket-lifts",
+        "box-slides",
+        "jar-tilts",
+        "apple-rolls",
+        "ball-bounces",
+        "bell-rings"
+      ]
+    }
+  }
+}

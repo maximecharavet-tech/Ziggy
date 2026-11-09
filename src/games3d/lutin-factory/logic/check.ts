@@ -92,7 +92,12 @@ const nextSpec = (o: Order, made: number): OrderSpec => {
   return s[made % s.length];
 };
 
-export function check(orders: readonly Order[], deliveries: readonly Delivery[]): CheckResult {
+export interface CheckOptions {
+  /** The line has run (GO was pressed): an empty sack then reads "nothing arrived yet", not "press GO". */
+  ran?: boolean;
+}
+
+export function check(orders: readonly Order[], deliveries: readonly Delivery[], opts: CheckOptions = {}): CheckResult {
   const made = orders.map(() => 0);
   const extra = orders.map(() => 0);
   const matched: Match[] = [];
@@ -139,7 +144,8 @@ export function check(orders: readonly Order[], deliveries: readonly Delivery[])
   const complete = progress.every((p, i) => p.done && !(orders[i].exact && p.extra > 0));
 
   const base = { complete, matched, shelf, progress };
-  if (deliveries.length === 0) return { ...base, status: 'not-started', reason: CHECK_TEXT.notStarted };
+  if (deliveries.length === 0)
+    return opts.ran ? { ...base, status: 'in-progress', reason: CHECK_TEXT.nothingYet } : { ...base, status: 'not-started', reason: CHECK_TEXT.notStarted };
 
   if (complete) {
     const n = shelf.length;

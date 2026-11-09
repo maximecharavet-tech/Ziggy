@@ -93,20 +93,20 @@ export const SURPRISE_ADJECTIVES: { fr: { m: string; f: string }; en: string }[]
 
 /* ---------- machines ---------- */
 
-export const MACHINE_TEXT: Record<string, { name: L; does: L }> = {
-  belt: { name: { fr: 'Tapis roulant', en: 'Conveyor belt' }, does: { fr: 'Il avance les objets, une case à la fois.', en: 'It carries things along, one tile at a time.' } },
-  chute: { name: { fr: 'Toboggan à matériaux', en: 'Material chute' }, does: { fr: 'Pépin y fait glisser le bois, la feutrine, le fer-blanc ou la laine. Le cadran dit combien.', en: 'Pip slides wood, felt, tin or yarn down it. The dial says how many.' } },
-  shaper: { name: { fr: 'Façonneuse', en: 'Shaper' }, does: { fr: 'Grelotte donne une forme : cube, boule, cylindre, cône, étoile ou roue.', en: 'Jingle gives it a shape: cube, ball, cylinder, cone, star or wheel.' } },
-  painter: { name: { fr: 'Machine à peindre', en: 'Painter' }, does: { fr: 'Pépin peint avec une des six couleurs.', en: 'Pip paints it with one of the six colours.' } },
-  mixer: { name: { fr: 'Mélangeur de couleurs', en: 'Colour mixer' }, does: { fr: 'Deux pots de peinture, une nouvelle couleur : rouge et jaune font orange !', en: 'Two paint pots, one new colour: red and yellow make orange!' } },
-  assembler: { name: { fr: 'Assembleuse', en: 'Assembler' }, does: { fr: 'Grelotte rassemble les pièces et construit le jouet.', en: 'Jingle gathers the parts and builds the toy.' } },
-  counter: { name: { fr: 'Porte-compteur', en: 'Counter gate' }, does: { fr: 'Noisette compte les objets et envoie certains à droite.', en: 'Hazel counts things and sends some of them to the right.' } },
-  sorter: { name: { fr: 'Trieuse', en: 'Sorter' }, does: { fr: 'SI l’objet ressemble au modèle, il va à gauche, SINON à droite.', en: 'IF the thing matches the picture it goes left, ELSE it goes right.' } },
-  loop: { name: { fr: 'Boucle à répéter', en: 'Repeat loop' }, does: { fr: 'L’objet fait des tours de boucle : un objet entre, plusieurs pareils sortent.', en: 'The thing rides round the loop: one goes in, several the same come out.' } },
-  stamper: { name: { fr: 'Tampon à gommettes', en: 'Sticker stamper' }, does: { fr: 'Noisette colle une gommette : étoile, cœur, lune ou flocon.', en: 'Hazel presses on a sticker: star, heart, moon or snowflake.' } },
-  wrapper: { name: { fr: 'Emballeuse', en: 'Wrapper' }, does: { fr: 'Noisette emballe le jouet dans un joli papier.', en: 'Hazel wraps the toy in pretty paper.' } },
-  arm: { name: { fr: 'Bras robot', en: 'Robot arm' }, does: { fr: 'Il suit les cartes une par une, puis recommence.', en: 'It follows the cards one by one, then starts again.' } },
-  sack: { name: { fr: 'Hotte du traîneau', en: 'Sleigh sack' }, does: { fr: 'Ziggy regarde chaque jouet et le compare à la lettre.', en: 'Ziggy looks at every toy and compares it with the letter.' } },
+export const MACHINE_TEXT: Record<string, { name: L; does: L; def: L; indef: L }> = {
+  belt: { name: { fr: 'Tapis roulant', en: 'Conveyor belt' }, does: { fr: 'Il avance les objets, une case à la fois.', en: 'It carries things along, one tile at a time.' }, def: { fr: 'le tapis roulant', en: 'the conveyor belt' }, indef: { fr: 'un tapis roulant', en: 'a conveyor belt' } },
+  chute: { name: { fr: 'Toboggan à matériaux', en: 'Material chute' }, does: { fr: 'Pépin y fait glisser le bois, la feutrine, le fer-blanc ou la laine. Le cadran dit combien.', en: 'Pip slides wood, felt, tin or yarn down it. The dial says how many.' }, def: { fr: 'le toboggan', en: 'the chute' }, indef: { fr: 'un toboggan', en: 'a chute' } },
+  shaper: { name: { fr: 'Façonneuse', en: 'Shaper' }, does: { fr: 'Grelotte donne une forme : cube, boule, cylindre, cône, étoile ou roue.', en: 'Jingle gives it a shape: cube, ball, cylinder, cone, star or wheel.' }, def: { fr: 'la façonneuse', en: 'the shaper' }, indef: { fr: 'une façonneuse', en: 'a shaper' } },
+  painter: { name: { fr: 'Machine à peindre', en: 'Painter' }, does: { fr: 'Pépin peint avec une des six couleurs.', en: 'Pip paints it with one of the six colours.' }, def: { fr: 'la machine à peindre', en: 'the painter' }, indef: { fr: 'une machine à peindre', en: 'a painter' } },
+  mixer: { name: { fr: 'Mélangeur de couleurs', en: 'Colour mixer' }, does: { fr: 'Deux pots de peinture, une nouvelle couleur : rouge et jaune font orange !', en: 'Two paint pots, one new colour: red and yellow make orange!' }, def: { fr: 'le mélangeur', en: 'the mixer' }, indef: { fr: 'un mélangeur', en: 'a mixer' } },
+  assembler: { name: { fr: 'Assembleuse', en: 'Assembler' }, does: { fr: 'Grelotte rassemble les pièces et construit le jouet.', en: 'Jingle gathers the parts and builds the toy.' }, def: { fr: 'l’assembleuse', en: 'the assembler' }, indef: { fr: 'une assembleuse', en: 'an assembler' } },
+  counter: { name: { fr: 'Porte-compteur', en: 'Counter gate' }, does: { fr: 'Noisette compte les objets et envoie certains à droite.', en: 'Hazel counts things and sends some of them to the right.' }, def: { fr: 'le porte-compteur', en: 'the counter gate' }, indef: { fr: 'un porte-compteur', en: 'a counter gate' } },
+  sorter: { name: { fr: 'Trieuse', en: 'Sorter' }, does: { fr: 'SI l’objet ressemble au modèle, il va à gauche, SINON à droite.', en: 'IF the thing matches the picture it goes left, ELSE it goes right.' }, def: { fr: 'la trieuse', en: 'the sorter' }, indef: { fr: 'une trieuse', en: 'a sorter' } },
+  loop: { name: { fr: 'Boucle à répéter', en: 'Repeat loop' }, does: { fr: 'L’objet fait des tours de boucle : un objet entre, plusieurs pareils sortent.', en: 'The thing rides round the loop: one goes in, several the same come out.' }, def: { fr: 'la boucle', en: 'the loop' }, indef: { fr: 'une boucle', en: 'a loop' } },
+  stamper: { name: { fr: 'Tampon à gommettes', en: 'Sticker stamper' }, does: { fr: 'Noisette colle une gommette : étoile, cœur, lune ou flocon.', en: 'Hazel presses on a sticker: star, heart, moon or snowflake.' }, def: { fr: 'le tampon à gommettes', en: 'the sticker stamper' }, indef: { fr: 'un tampon à gommettes', en: 'a sticker stamper' } },
+  wrapper: { name: { fr: 'Emballeuse', en: 'Wrapper' }, does: { fr: 'Noisette emballe le jouet dans un joli papier.', en: 'Hazel wraps the toy in pretty paper.' }, def: { fr: 'l’emballeuse', en: 'the wrapper' }, indef: { fr: 'une emballeuse', en: 'a wrapper' } },
+  arm: { name: { fr: 'Bras robot', en: 'Robot arm' }, does: { fr: 'Il suit les cartes une par une, puis recommence.', en: 'It follows the cards one by one, then starts again.' }, def: { fr: 'le bras robot', en: 'the robot arm' }, indef: { fr: 'un bras robot', en: 'a robot arm' } },
+  sack: { name: { fr: 'Hotte du traîneau', en: 'Sleigh sack' }, does: { fr: 'Ziggy regarde chaque jouet et le compare à la lettre.', en: 'Ziggy looks at every toy and compares it with the letter.' }, def: { fr: 'la hotte', en: 'the sack' }, indef: { fr: 'une hotte', en: 'a sack' } },
 };
 
 /** Robot arm cards. */
@@ -172,6 +172,7 @@ export const CHECK_TEXT = {
   doneShelfOne: { fr: 'Et en prime, un jouet surprise sur l’étagère !', en: 'And a bonus surprise toy on the shelf!' },
   doneShelfMany: { fr: 'Et en prime, {n} jouets surprise sur l’étagère !', en: 'And {n} bonus surprise toys on the shelf!' },
   notStarted: { fr: 'Appuie sur « C’est parti ! » pour lancer l’atelier.', en: 'Press GO to start the workshop.' },
+  nothingYet: { fr: 'Rien n’est encore arrivé dans la hotte : suivons le chemin des objets !', en: 'Nothing has reached the sack yet: let’s follow the path of the things!' },
   surprise: { fr: 'Oh, {made} ! Direction l’étagère surprise !', en: 'Ooh, {made}! Off to the surprise shelf!' },
   wanted: { fr: 'La lettre demande {wanted}.', en: 'The letter asks for {wanted}.' },
   stillNeedOne: { fr: 'La lettre attend encore {toy}.', en: 'The letter is still waiting for {toy}.' },
@@ -212,12 +213,12 @@ export const ELF_BLAME: Record<string, L> = {
 export const HINT_TEXT = {
   done: { fr: 'Tout est prêt ! Appuie sur « C’est parti ! » et regarde.', en: 'All set! Press GO and watch.' },
   slot: { fr: 'Regarde la case qui brille : quelle machine va là ?', en: 'Look at the glowing tile: which machine goes there?' },
-  place: { fr: 'Et si on mettait {machine} en {cell} ?', en: 'What if we put the {machine} on {cell}?' },
-  dial: { fr: 'Le cadran de {machine} en {cell} : essaie {value}.', en: 'The {machine} dial on {cell}: try {value}.' },
-  turn: { fr: '{machine} en {cell} regarde ailleurs : tourne-la vers {dir}.', en: 'The {machine} on {cell} is looking the other way: turn it {dir}.' },
-  remove: { fr: '{machine} en {cell} n’est pas utile ici : tu peux l’enlever.', en: 'The {machine} on {cell} isn’t needed here: you can take it away.' },
+  place: { fr: 'Et si on mettait {machine} en {cell} ?', en: 'What if we put {machine} on {cell}?' },
+  dial: { fr: '{Machine} en {cell} : essaie {value}.', en: '{Machine} on {cell}: try {value}.' },
+  turn: { fr: '{Machine} en {cell} : un petit tour avec ↻, pour regarder vers {dir}.', en: '{Machine} on {cell}: give it a turn with ↻ so it faces {dir}.' },
+  remove: { fr: '{Machine} en {cell} peut faire la sieste : tu peux l’enlever.', en: '{Machine} on {cell} can take a nap: you can take it away.' },
   stuck: { fr: 'Un objet attend en {cell} : le chemin s’arrête là. Un tapis vers {dir} ?', en: 'Something is waiting on {cell}: the path stops there. A belt going {dir}?' },
-  basket: { fr: 'L’assembleuse en {cell} attend encore des pièces : {parts}.', en: 'The assembler on {cell} is still waiting for parts: {parts}.' },
+  basket: { fr: 'L’assembleuse en {cell} attend encore : {parts}.', en: 'The assembler on {cell} is still waiting for {parts}.' },
   run: { fr: 'Appuie sur « C’est parti ! » pour voir ce que fabrique l’atelier.', en: 'Press GO to see what the workshop makes.' },
 } satisfies Record<string, L>;
 

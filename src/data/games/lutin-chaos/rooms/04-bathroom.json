@@ -1,0 +1,770 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.bathroom",
+  "number": 4,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La salle de bain",
+    "en": "The bathroom"
+  },
+  "season": "winter",
+  "layout": "bathroom-a",
+  "assets": [
+    "chaos.room.bathroom",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "counting",
+    "sorting",
+    "spatial",
+    "vocabulary"
+  ],
+  "skills": [
+    "colors",
+    "counting",
+    "shapes",
+    "vocabulary"
+  ],
+  "intro": {
+    "fr": "Des bulles partout ! Qui a fait la fête dans la salle de bain ?",
+    "en": "Bubbles everywhere! Who had a party in the bathroom?"
+  },
+  "slots": [
+    {
+      "id": "cup-left",
+      "label": {
+        "fr": "le verre de gauche",
+        "en": "the left cup"
+      },
+      "in": {
+        "fr": "dans le verre de gauche",
+        "en": "in the left cup"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "cup-right",
+      "label": {
+        "fr": "le verre de droite",
+        "en": "the right cup"
+      },
+      "in": {
+        "fr": "dans le verre de droite",
+        "en": "in the right cup"
+      },
+      "at": [
+        2.19,
+        0,
+        1.41
+      ]
+    },
+    {
+      "id": "bath",
+      "label": {
+        "fr": "la baignoire",
+        "en": "the bath"
+      },
+      "in": {
+        "fr": "dans la baignoire",
+        "en": "in the bath"
+      },
+      "at": [
+        1.08,
+        0,
+        2.37
+      ]
+    },
+    {
+      "id": "sink",
+      "label": {
+        "fr": "le lavabo",
+        "en": "the sink"
+      },
+      "in": {
+        "fr": "dans le lavabo",
+        "en": "in the sink"
+      },
+      "at": [
+        -0.37,
+        1,
+        2.57
+      ]
+    },
+    {
+      "id": "tub-edge",
+      "label": {
+        "fr": "le bord de la baignoire",
+        "en": "the edge of the bath"
+      },
+      "in": {
+        "fr": "sur le bord de la baignoire",
+        "en": "on the edge of the bath"
+      },
+      "at": [
+        -1.7,
+        0,
+        1.96
+      ]
+    },
+    {
+      "id": "shelf",
+      "label": {
+        "fr": "l’étagère",
+        "en": "the shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère",
+        "en": "on the shelf"
+      },
+      "at": [
+        -2.49,
+        0,
+        0.73
+      ]
+    },
+    {
+      "id": "towel-rail",
+      "label": {
+        "fr": "le porte-serviettes",
+        "en": "the towel rail"
+      },
+      "in": {
+        "fr": "sur le porte-serviettes",
+        "en": "on the towel rail"
+      },
+      "at": [
+        -2.49,
+        1,
+        -0.73
+      ]
+    },
+    {
+      "id": "basket",
+      "label": {
+        "fr": "le panier",
+        "en": "the basket"
+      },
+      "in": {
+        "fr": "dans le panier",
+        "en": "in the basket"
+      },
+      "at": [
+        -1.7,
+        0,
+        -1.96
+      ]
+    },
+    {
+      "id": "mat",
+      "label": {
+        "fr": "le tapis de bain",
+        "en": "the bath mat"
+      },
+      "in": {
+        "fr": "sur le tapis de bain",
+        "en": "on the bath mat"
+      },
+      "at": [
+        -0.37,
+        0,
+        -2.57
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        1.08,
+        1,
+        -2.37
+      ]
+    },
+    {
+      "id": "window-sill",
+      "label": {
+        "fr": "le rebord de fenêtre",
+        "en": "the window sill"
+      },
+      "in": {
+        "fr": "sur le rebord de la fenêtre",
+        "en": "on the window sill"
+      },
+      "at": [
+        2.19,
+        0,
+        -1.41
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "tb-1",
+      "kind": "toothbrush",
+      "slot": "cup-left",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "tb-2",
+      "kind": "toothbrush",
+      "slot": "cup-right",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "duck-1",
+      "kind": "duck",
+      "slot": "tub-edge",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "duck-2",
+      "kind": "duck",
+      "slot": "tub-edge",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "duck-3",
+      "kind": "duck",
+      "slot": "tub-edge",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sponge-1",
+      "kind": "sponge",
+      "slot": "shelf",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "towel-1",
+      "kind": "towel",
+      "slot": "towel-rail",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "towel-2",
+      "kind": "towel",
+      "slot": "towel-rail",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "comb-1",
+      "kind": "comb",
+      "slot": "shelf",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "slipper-2",
+      "kind": "slipper",
+      "slot": "mat",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "slipper-3",
+      "kind": "slipper",
+      "slot": "mat",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "soap-1",
+      "kind": "soap",
+      "slot": "sink",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sponge-2",
+      "kind": "sponge",
+      "slot": "tub-edge",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "duck-4",
+      "kind": "duck",
+      "slot": "shelf",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "duck-5",
+      "kind": "duck",
+      "slot": "shelf",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "duck-6",
+      "kind": "duck",
+      "slot": "shelf",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "towel-3",
+      "kind": "towel",
+      "slot": "towel-rail",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "shower-curtain",
+      "label": {
+        "fr": "derrière le rideau de douche",
+        "en": "behind the shower curtain"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "laundry",
+      "label": {
+        "fr": "dans le panier à linge",
+        "en": "in the laundry basket"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "towel-pile",
+      "label": {
+        "fr": "sous les serviettes",
+        "en": "under the towels"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "bubble-cloud",
+      "label": {
+        "fr": "dans les bulles",
+        "en": "in the bubbles"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "cabinet",
+      "label": {
+        "fr": "dans le petit meuble",
+        "en": "in the little cabinet"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "toothbrushes-swapped",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "tb-1",
+            "tb-2"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "dentifrice"
+      ],
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "color"
+        }
+      },
+      "spot": {
+        "fr": "Les brosses à dents ont échangé leurs verres !",
+        "en": "The toothbrushes swapped cups!"
+      },
+      "fixed": {
+        "fr": "Chaque brosse à dents dans le verre de sa couleur !",
+        "en": "Each toothbrush in the cup of its colour!"
+      }
+    },
+    {
+      "id": "duck-tower",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "duck-1",
+          "duck-2",
+          "duck-3"
+        ],
+        "to": "sink"
+      },
+      "culprit": "random",
+      "themes": [
+        "canard"
+      ],
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "size",
+          "item": "duck"
+        }
+      },
+      "spot": {
+        "fr": "Une tour de canards dans le lavabo !",
+        "en": "A tower of ducks in the sink!"
+      },
+      "fixed": {
+        "fr": "Les canards font la queue, du plus petit au plus grand !",
+        "en": "The ducks line up, smallest to biggest!"
+      }
+    },
+    {
+      "id": "sponges-everywhere",
+      "type": "multiply",
+      "params": {
+        "prop": "sponge-1",
+        "count": 5
+      },
+      "culprit": "random",
+      "themes": [
+        "mousse",
+        "bulles"
+      ],
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "sponge",
+          "mode": "extra"
+        }
+      },
+      "spot": {
+        "fr": "Les éponges se sont multipliées !",
+        "en": "The sponges have multiplied!"
+      },
+      "fixed": {
+        "fr": "Juste une éponge, comme avant !",
+        "en": "Just one sponge, like before!"
+      }
+    },
+    {
+      "id": "towels-recoloured",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "towel-2"
+        ],
+        "color": "purple"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "towel"
+        }
+      },
+      "spot": {
+        "fr": "Une serviette est devenue violette !",
+        "en": "One towel turned purple!"
+      },
+      "fixed": {
+        "fr": "Les serviettes vont par paires !",
+        "en": "The towels are in pairs again!"
+      }
+    },
+    {
+      "id": "comb-hidden",
+      "type": "hide",
+      "params": {
+        "props": [
+          "comb-1"
+        ],
+        "in": "basket"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "comb",
+          "words": [
+            "comb",
+            "toothbrush",
+            "soap",
+            "sponge"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "Le peigne a disparu !",
+        "en": "The comb has disappeared!"
+      },
+      "fixed": {
+        "fr": "Le peigne est retrouvé !",
+        "en": "The comb is found!"
+      }
+    },
+    {
+      "id": "slippers-in-bath",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "slipper-2",
+          "slipper-3"
+        ],
+        "to": "bath"
+      },
+      "culprit": "random",
+      "themes": [
+        "chaussures"
+      ],
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "slipper",
+          "mode": "left-right"
+        }
+      },
+      "spot": {
+        "fr": "Les chaussons prennent un bain !",
+        "en": "The slippers are having a bath!"
+      },
+      "fixed": {
+        "fr": "Les chaussons sont au sec, gauche et droite !",
+        "en": "The slippers are dry, left and right!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "Le toboggan de savon et la parade des canards",
+      "en": "The soap slide and the duck parade"
+    },
+    "steps": [
+      {
+        "id": "soap-slides",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "soap-1"
+          ],
+          "to": "tub-edge"
+        },
+        "label": {
+          "fr": "Le savon glisse",
+          "en": "The soap slides"
+        }
+      },
+      {
+        "id": "sponge-bounces",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "sponge-2"
+          ],
+          "to": "bath"
+        },
+        "label": {
+          "fr": "L’éponge rebondit",
+          "en": "The sponge bounces"
+        }
+      },
+      {
+        "id": "duck-4-dives",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "duck-4"
+          ],
+          "to": "bath"
+        },
+        "label": {
+          "fr": "Un canard plonge",
+          "en": "A duck dives in"
+        }
+      },
+      {
+        "id": "duck-5-dives",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "duck-5"
+          ],
+          "to": "bath"
+        },
+        "label": {
+          "fr": "Un deuxième canard",
+          "en": "A second duck"
+        }
+      },
+      {
+        "id": "duck-6-dives",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "duck-6"
+          ],
+          "to": "bath"
+        },
+        "label": {
+          "fr": "Et un troisième !",
+          "en": "And a third!"
+        }
+      },
+      {
+        "id": "towel-falls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "towel-3"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "La serviette tombe tout doucement",
+          "en": "The towel floats down"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "toothbrushes-swapped",
+        "duck-tower",
+        "sponges-everywhere",
+        "slippers-in-bath"
+      ],
+      "hidingSpots": [
+        "shower-curtain",
+        "laundry",
+        "towel-pile"
+      ],
+      "finale": [
+        "soap-slides",
+        "duck-4-dives"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "toothbrushes-swapped",
+        "duck-tower",
+        "sponges-everywhere",
+        "towels-recoloured",
+        "comb-hidden",
+        "slippers-in-bath"
+      ],
+      "hidingSpots": [
+        "shower-curtain",
+        "laundry",
+        "towel-pile",
+        "bubble-cloud"
+      ],
+      "finale": [
+        "soap-slides",
+        "sponge-bounces",
+        "duck-4-dives",
+        "towel-falls"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "toothbrushes-swapped",
+        "duck-tower",
+        "sponges-everywhere",
+        "towels-recoloured",
+        "comb-hidden",
+        "slippers-in-bath"
+      ],
+      "hidingSpots": [
+        "shower-curtain",
+        "laundry",
+        "towel-pile",
+        "bubble-cloud",
+        "cabinet"
+      ],
+      "finale": [
+        "soap-slides",
+        "sponge-bounces",
+        "duck-4-dives",
+        "duck-5-dives",
+        "duck-6-dives",
+        "towel-falls"
+      ]
+    }
+  }
+}

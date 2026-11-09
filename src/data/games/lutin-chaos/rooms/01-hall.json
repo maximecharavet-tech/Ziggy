@@ -1,0 +1,852 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.hall",
+  "number": 1,
+  "version": "1.0.0",
+  "title": {
+    "fr": "Le hall d’entrée",
+    "en": "The entrance hall"
+  },
+  "season": "winter",
+  "layout": "hall-a",
+  "assets": [
+    "chaos.room.hall",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "spatial",
+    "counting",
+    "sorting"
+  ],
+  "skills": [
+    "logic",
+    "colors",
+    "counting",
+    "shapes"
+  ],
+  "intro": {
+    "fr": "Bienvenue dans le hall ! Les bottes, les manteaux… tout a bougé !",
+    "en": "Welcome to the hall! Boots, coats… everything has moved!"
+  },
+  "slots": [
+    {
+      "id": "boot-left",
+      "label": {
+        "fr": "la place de gauche",
+        "en": "the left spot"
+      },
+      "in": {
+        "fr": "à gauche sur le tapis",
+        "en": "on the left of the mat"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "boot-right",
+      "label": {
+        "fr": "la place de droite",
+        "en": "the right spot"
+      },
+      "in": {
+        "fr": "à droite sur le tapis",
+        "en": "on the right of the mat"
+      },
+      "at": [
+        2.34,
+        0,
+        1.13
+      ]
+    },
+    {
+      "id": "hook-a",
+      "label": {
+        "fr": "le crochet bleu",
+        "en": "the blue hook"
+      },
+      "in": {
+        "fr": "sur le crochet bleu",
+        "en": "on the blue hook"
+      },
+      "at": [
+        1.62,
+        0,
+        2.03
+      ]
+    },
+    {
+      "id": "hook-b",
+      "label": {
+        "fr": "le crochet jaune",
+        "en": "the yellow hook"
+      },
+      "in": {
+        "fr": "sur le crochet jaune",
+        "en": "on the yellow hook"
+      },
+      "at": [
+        0.58,
+        1,
+        2.53
+      ]
+    },
+    {
+      "id": "hook-c",
+      "label": {
+        "fr": "le crochet vert",
+        "en": "the green hook"
+      },
+      "in": {
+        "fr": "sur le crochet vert",
+        "en": "on the green hook"
+      },
+      "at": [
+        -0.58,
+        0,
+        2.53
+      ]
+    },
+    {
+      "id": "glove-basket",
+      "label": {
+        "fr": "le panier à gants",
+        "en": "the glove basket"
+      },
+      "in": {
+        "fr": "dans le panier à gants",
+        "en": "in the glove basket"
+      },
+      "at": [
+        -1.62,
+        0,
+        2.03
+      ]
+    },
+    {
+      "id": "umbrella-stand",
+      "label": {
+        "fr": "le porte-parapluie",
+        "en": "the umbrella stand"
+      },
+      "in": {
+        "fr": "dans le porte-parapluie",
+        "en": "in the umbrella stand"
+      },
+      "at": [
+        -2.34,
+        1,
+        1.13
+      ]
+    },
+    {
+      "id": "lamp-top",
+      "label": {
+        "fr": "la lampe",
+        "en": "the lamp"
+      },
+      "in": {
+        "fr": "sur la lampe",
+        "en": "on the lamp"
+      },
+      "at": [
+        -2.6,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "shelf",
+      "label": {
+        "fr": "l’étagère",
+        "en": "the shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère",
+        "en": "on the shelf"
+      },
+      "at": [
+        -2.34,
+        0,
+        -1.13
+      ]
+    },
+    {
+      "id": "bench",
+      "label": {
+        "fr": "le banc",
+        "en": "the bench"
+      },
+      "in": {
+        "fr": "sur le banc",
+        "en": "on the bench"
+      },
+      "at": [
+        -1.62,
+        1,
+        -2.03
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        -0.58,
+        0,
+        -2.53
+      ]
+    },
+    {
+      "id": "stairs",
+      "label": {
+        "fr": "l’escalier",
+        "en": "the stairs"
+      },
+      "in": {
+        "fr": "sur l’escalier",
+        "en": "on the stairs"
+      },
+      "at": [
+        0.58,
+        0,
+        -2.53
+      ]
+    },
+    {
+      "id": "key-bowl",
+      "label": {
+        "fr": "le bol à clés",
+        "en": "the key bowl"
+      },
+      "in": {
+        "fr": "dans le bol à clés",
+        "en": "in the key bowl"
+      },
+      "at": [
+        1.62,
+        1,
+        -2.03
+      ]
+    },
+    {
+      "id": "boot-rack",
+      "label": {
+        "fr": "le range-bottes",
+        "en": "the boot rack"
+      },
+      "in": {
+        "fr": "dans le range-bottes",
+        "en": "in the boot rack"
+      },
+      "at": [
+        2.34,
+        0,
+        -1.13
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "boot-l",
+      "kind": "boot",
+      "slot": "boot-left",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "boot-r",
+      "kind": "boot",
+      "slot": "boot-right",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "coat-1",
+      "kind": "coat",
+      "slot": "hook-a",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "coat-2",
+      "kind": "coat",
+      "slot": "hook-b",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "glove-1",
+      "kind": "glove",
+      "slot": "glove-basket",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "glove-2",
+      "kind": "glove",
+      "slot": "glove-basket",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "glove-3",
+      "kind": "glove",
+      "slot": "glove-basket",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "glove-4",
+      "kind": "glove",
+      "slot": "glove-basket",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bonnet-1",
+      "kind": "bonnet",
+      "slot": "shelf",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "umbrella-1",
+      "kind": "umbrella",
+      "slot": "umbrella-stand",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "mitten-1",
+      "kind": "mitten",
+      "slot": "bench",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "mitten-2",
+      "kind": "mitten",
+      "slot": "bench",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "key-1",
+      "kind": "key",
+      "slot": "key-bowl",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "umbrella-2",
+      "kind": "umbrella",
+      "slot": "umbrella-stand",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "ball-1",
+      "kind": "ball",
+      "slot": "bench",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bonnet-2",
+      "kind": "bonnet",
+      "slot": "shelf",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "slipper-1",
+      "kind": "slipper",
+      "slot": "floor",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "basket-1",
+      "kind": "basket",
+      "slot": "stairs",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-1",
+      "kind": "bell",
+      "slot": "shelf",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "coat-rack",
+      "label": {
+        "fr": "derrière les manteaux",
+        "en": "behind the coats"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "boot-big",
+      "label": {
+        "fr": "dans la grosse botte",
+        "en": "inside the big boot"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "umbrella-stand",
+      "label": {
+        "fr": "dans le porte-parapluie",
+        "en": "in the umbrella stand"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "curtain",
+      "label": {
+        "fr": "derrière le rideau",
+        "en": "behind the curtain"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "under-stairs",
+      "label": {
+        "fr": "sous l’escalier",
+        "en": "under the stairs"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "boots-swapped",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "boot-l",
+            "boot-r"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "chaussures"
+      ],
+      "clueKinds": [
+        "footprint"
+      ],
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "boot",
+          "mode": "left-right"
+        }
+      },
+      "spot": {
+        "fr": "Les bottes sont inversées ! La gauche à droite !",
+        "en": "The boots are swapped! Left on the right!"
+      },
+      "fixed": {
+        "fr": "Chaque botte à sa place, gauche et droite !",
+        "en": "Each boot in its place, left and right!"
+      }
+    },
+    {
+      "id": "coats-wrong-hooks",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "coat-1",
+            "coat-2"
+          ]
+        ]
+      },
+      "culprit": "pepin",
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "color"
+        }
+      },
+      "spot": {
+        "fr": "Les manteaux sont sur les mauvais crochets !",
+        "en": "The coats are on the wrong hooks!"
+      },
+      "fixed": {
+        "fr": "Chaque manteau sur le crochet de sa couleur !",
+        "en": "Each coat on the hook of its colour!"
+      }
+    },
+    {
+      "id": "gloves-in-umbrella-stand",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "glove-1",
+          "glove-2",
+          "glove-3",
+          "glove-4"
+        ],
+        "to": "umbrella-stand"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "glove",
+          "target": "glove-basket"
+        }
+      },
+      "spot": {
+        "fr": "Des gants dans le porte-parapluie ?!",
+        "en": "Gloves in the umbrella stand?!"
+      },
+      "fixed": {
+        "fr": "Tous les gants sont rentrés au panier !",
+        "en": "All the gloves are back in the basket!"
+      }
+    },
+    {
+      "id": "bonnet-on-lamp",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "bonnet-1"
+        ],
+        "to": "lamp-top"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "place",
+        "params": {
+          "item": "bonnet",
+          "anchor": "basket"
+        }
+      },
+      "spot": {
+        "fr": "La lampe porte un bonnet ! Elle a froid ?",
+        "en": "The lamp is wearing a woolly hat! Is it cold?"
+      },
+      "fixed": {
+        "fr": "Le bonnet est bien rangé !",
+        "en": "The woolly hat is tidied away!"
+      }
+    },
+    {
+      "id": "umbrella-upside-down",
+      "type": "flip",
+      "params": {
+        "props": [
+          "umbrella-1"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "umbrella"
+        }
+      },
+      "spot": {
+        "fr": "Le parapluie est la tête en bas !",
+        "en": "The umbrella is upside down!"
+      },
+      "fixed": {
+        "fr": "Le parapluie est remis à l’endroit !",
+        "en": "The umbrella is the right way up!"
+      }
+    },
+    {
+      "id": "mittens-recoloured",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "mitten-2"
+        ],
+        "color": "blue"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "mitten"
+        }
+      },
+      "spot": {
+        "fr": "Une moufle a changé de couleur !",
+        "en": "One mitten changed colour!"
+      },
+      "fixed": {
+        "fr": "Les moufles vont de nouveau par paires !",
+        "en": "The mittens are back in pairs!"
+      }
+    },
+    {
+      "id": "key-hidden",
+      "type": "hide",
+      "params": {
+        "props": [
+          "key-1"
+        ],
+        "in": "boot-rack"
+      },
+      "culprit": "random",
+      "clueKinds": [
+        "footprint"
+      ],
+      "fix": {
+        "mechanic": "path",
+        "params": {}
+      },
+      "spot": {
+        "fr": "Où est passée la clé ? Il y a des empreintes !",
+        "en": "Where has the key gone? There are footprints!"
+      },
+      "fixed": {
+        "fr": "La clé est retrouvée !",
+        "en": "The key is found!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "Le parapluie qui fait sonner la porte",
+      "en": "The umbrella that rings the doorbell"
+    },
+    "steps": [
+      {
+        "id": "umbrella-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "umbrella-2"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le parapluie bascule",
+          "en": "The umbrella tips over"
+        }
+      },
+      {
+        "id": "ball-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "ball-1"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Le ballon roule",
+          "en": "The ball rolls"
+        }
+      },
+      {
+        "id": "bonnet-falls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "bonnet-2"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Le bonnet tombe",
+          "en": "The woolly hat falls"
+        }
+      },
+      {
+        "id": "slipper-slides",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "slipper-1"
+          ],
+          "to": "stairs"
+        },
+        "label": {
+          "fr": "Le chausson glisse",
+          "en": "The slipper slides"
+        }
+      },
+      {
+        "id": "basket-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "basket-1"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le panier se renverse",
+          "en": "The basket tips"
+        }
+      },
+      {
+        "id": "doorbell-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-1"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La sonnette fait dring !",
+          "en": "The doorbell goes ding!"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "boots-swapped",
+        "coats-wrong-hooks",
+        "gloves-in-umbrella-stand",
+        "bonnet-on-lamp"
+      ],
+      "hidingSpots": [
+        "coat-rack",
+        "boot-big",
+        "umbrella-stand"
+      ],
+      "finale": [
+        "ball-rolls",
+        "doorbell-rings"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "boots-swapped",
+        "coats-wrong-hooks",
+        "gloves-in-umbrella-stand",
+        "bonnet-on-lamp",
+        "umbrella-upside-down",
+        "mittens-recoloured"
+      ],
+      "hidingSpots": [
+        "coat-rack",
+        "boot-big",
+        "umbrella-stand",
+        "curtain"
+      ],
+      "finale": [
+        "umbrella-tips",
+        "ball-rolls",
+        "doorbell-rings"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "boots-swapped",
+        "coats-wrong-hooks",
+        "gloves-in-umbrella-stand",
+        "bonnet-on-lamp",
+        "umbrella-upside-down",
+        "mittens-recoloured",
+        "key-hidden"
+      ],
+      "hidingSpots": [
+        "coat-rack",
+        "boot-big",
+        "umbrella-stand",
+        "curtain",
+        "under-stairs"
+      ],
+      "finale": [
+        "umbrella-tips",
+        "ball-rolls",
+        "bonnet-falls",
+        "slipper-slides",
+        "basket-tips",
+        "doorbell-rings"
+      ]
+    }
+  }
+}

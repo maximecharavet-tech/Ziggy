@@ -46,7 +46,11 @@ describe('levels', () => {
   it('no level contains a timer, lives, score or fail field (child safety by construction)', () => {
     const keys = (v: unknown, out: string[] = []): string[] => {
       if (Array.isArray(v)) v.forEach((x) => keys(x, out));
-      else if (v && typeof v === 'object') for (const [k, x] of Object.entries(v)) (out.push(k), keys(x, out));
+      else if (v && typeof v === 'object')
+        for (const [k, x] of Object.entries(v)) {
+          out.push(k);
+          keys(x, out);
+        }
       return out;
     };
     for (const lv of LEVELS) for (const k of keys(lv)) expect(BANNED_KEY.test(k), `${lv.id}: ${k}`).toBe(false);

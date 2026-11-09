@@ -293,7 +293,7 @@ per tick, so the simulation is deterministic and easy to follow; GO / pause / st
 | Mixer (7+) | Grelotte | two paint inputs → a mixed colour (red + yellow = orange) | colour mixing |
 | Assembler | Grelotte | combines parts by recipe (engine + N wagons = train) | composition, counting, × |
 | Counter gate (7+) | Noisette | lets N items through, then the rest go on (or every Nth goes right) | counting, modulo (big) |
-| Sorter (7+) | Noisette | if colour/shape = X → left, else → straight | conditionals (if/else) |
+| Sorter (7+) | Noisette | if colour/shape = X → left, else → right | conditionals (if/else) |
 | Loop belt (10+) | — | a circular belt with a "repeat ×N" sign | loops |
 | Robot arm (10+) | Pépin + Grelotte's cards | runs a row of instruction cards: pick, turn, paint, put, repeat | a tiny programming language (LightBot-like) |
 | Wrapper | Noisette | wraps a finished toy in paper (pattern chosen by the child) | completion, creativity |

@@ -1,0 +1,745 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.snowy-garden",
+  "number": 9,
+  "version": "1.0.0",
+  "title": {
+    "fr": "Le jardin enneigé",
+    "en": "The snowy garden"
+  },
+  "season": "winter",
+  "layout": "snowy-garden-a",
+  "assets": [
+    "chaos.room.snowy-garden",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "spatial",
+    "counting"
+  ],
+  "skills": [
+    "shapes",
+    "counting",
+    "logic",
+    "colors"
+  ],
+  "intro": {
+    "fr": "Il a neigé… et les lutins ont joué dehors ! Regarde toutes ces traces !",
+    "en": "It snowed… and the elves played outside! Look at all these tracks!"
+  },
+  "slots": [
+    {
+      "id": "snowman-spot",
+      "label": {
+        "fr": "le bonhomme de neige",
+        "en": "the snowman"
+      },
+      "in": {
+        "fr": "sur le bonhomme de neige",
+        "en": "on the snowman"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "shed",
+      "label": {
+        "fr": "la cabane",
+        "en": "the shed"
+      },
+      "in": {
+        "fr": "dans la cabane",
+        "en": "in the shed"
+      },
+      "at": [
+        2.19,
+        0,
+        1.41
+      ]
+    },
+    {
+      "id": "snow-pile",
+      "label": {
+        "fr": "le tas de neige",
+        "en": "the snow pile"
+      },
+      "in": {
+        "fr": "sur le tas de neige",
+        "en": "on the snow pile"
+      },
+      "at": [
+        1.08,
+        0,
+        2.37
+      ]
+    },
+    {
+      "id": "bench",
+      "label": {
+        "fr": "le banc",
+        "en": "the bench"
+      },
+      "in": {
+        "fr": "sur le banc",
+        "en": "on the bench"
+      },
+      "at": [
+        -0.37,
+        1,
+        2.57
+      ]
+    },
+    {
+      "id": "fence",
+      "label": {
+        "fr": "la barrière",
+        "en": "the fence"
+      },
+      "in": {
+        "fr": "sur la barrière",
+        "en": "on the fence"
+      },
+      "at": [
+        -1.7,
+        0,
+        1.96
+      ]
+    },
+    {
+      "id": "mitten-line",
+      "label": {
+        "fr": "la corde à linge",
+        "en": "the washing line"
+      },
+      "in": {
+        "fr": "sur la corde à linge",
+        "en": "on the washing line"
+      },
+      "at": [
+        -2.49,
+        0,
+        0.73
+      ]
+    },
+    {
+      "id": "bird-table",
+      "label": {
+        "fr": "la mangeoire",
+        "en": "the bird table"
+      },
+      "in": {
+        "fr": "sur la mangeoire",
+        "en": "on the bird table"
+      },
+      "at": [
+        -2.49,
+        1,
+        -0.73
+      ]
+    },
+    {
+      "id": "tree",
+      "label": {
+        "fr": "le sapin",
+        "en": "the fir tree"
+      },
+      "in": {
+        "fr": "sous le sapin",
+        "en": "under the fir tree"
+      },
+      "at": [
+        -1.7,
+        0,
+        -1.96
+      ]
+    },
+    {
+      "id": "sled-hill",
+      "label": {
+        "fr": "la petite colline",
+        "en": "the little hill"
+      },
+      "in": {
+        "fr": "sur la petite colline",
+        "en": "on the little hill"
+      },
+      "at": [
+        -0.37,
+        0,
+        -2.57
+      ]
+    },
+    {
+      "id": "path",
+      "label": {
+        "fr": "le chemin",
+        "en": "the path"
+      },
+      "in": {
+        "fr": "sur le chemin",
+        "en": "on the path"
+      },
+      "at": [
+        1.08,
+        1,
+        -2.37
+      ]
+    },
+    {
+      "id": "gate",
+      "label": {
+        "fr": "le portail",
+        "en": "the gate"
+      },
+      "in": {
+        "fr": "près du portail",
+        "en": "by the gate"
+      },
+      "at": [
+        2.19,
+        0,
+        -1.41
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "snowman-1",
+      "kind": "snowman",
+      "slot": "snowman-spot",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sled-1",
+      "kind": "sled",
+      "slot": "sled-hill",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "snowball-1",
+      "kind": "snowball",
+      "slot": "snow-pile",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "snowball-2",
+      "kind": "snowball",
+      "slot": "snow-pile",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "snowball-3",
+      "kind": "snowball",
+      "slot": "snow-pile",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "snowball-4",
+      "kind": "snowball",
+      "slot": "snow-pile",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "mitten-3",
+      "kind": "mitten",
+      "slot": "mitten-line",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "mitten-4",
+      "kind": "mitten",
+      "slot": "mitten-line",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "carrot-1",
+      "kind": "carrot",
+      "slot": "snowman-spot",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "pinecone-1",
+      "kind": "pinecone",
+      "slot": "tree",
+      "color": "brown",
+      "rot": 0,
+      "count": 2,
+      "hidden": false
+    },
+    {
+      "id": "snowball-6",
+      "kind": "snowball",
+      "slot": "sled-hill",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "snowball-7",
+      "kind": "snowball",
+      "slot": "sled-hill",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sled-2",
+      "kind": "sled",
+      "slot": "sled-hill",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bonnet-3",
+      "kind": "bonnet",
+      "slot": "bench",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "pinecone-4",
+      "kind": "pinecone",
+      "slot": "bird-table",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-11",
+      "kind": "bell",
+      "slot": "gate",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "snow-fort",
+      "label": {
+        "fr": "dans le fort de neige",
+        "en": "in the snow fort"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "shed-door",
+      "label": {
+        "fr": "derrière la porte de la cabane",
+        "en": "behind the shed door"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "big-snowball",
+      "label": {
+        "fr": "derrière la grosse boule de neige",
+        "en": "behind the big snowball"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "fir-tree",
+      "label": {
+        "fr": "sous les branches du sapin",
+        "en": "under the fir branches"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "watering-can",
+      "label": {
+        "fr": "dans l’arrosoir",
+        "en": "in the watering can"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "snowman-upside-down",
+      "type": "flip",
+      "params": {
+        "props": [
+          "snowman-1"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "themes": [
+        "bonhomme"
+      ],
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "snowman"
+        }
+      },
+      "spot": {
+        "fr": "Le bonhomme de neige fait le poirier !",
+        "en": "The snowman is doing a handstand!"
+      },
+      "fixed": {
+        "fr": "Le bonhomme de neige est à l’endroit !",
+        "en": "The snowman is the right way up!"
+      }
+    },
+    {
+      "id": "sled-tracks",
+      "type": "hide",
+      "params": {
+        "props": [
+          "sled-1"
+        ],
+        "in": "shed"
+      },
+      "culprit": "random",
+      "clueKinds": [
+        "footprint"
+      ],
+      "fix": {
+        "mechanic": "path",
+        "params": {}
+      },
+      "spot": {
+        "fr": "La luge a disparu… mais il y a des traces partout !",
+        "en": "The sled has gone… but there are tracks everywhere!"
+      },
+      "fixed": {
+        "fr": "La luge est retrouvée !",
+        "en": "The sled is found!"
+      }
+    },
+    {
+      "id": "snowballs-on-bench",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "snowball-1",
+          "snowball-2",
+          "snowball-3",
+          "snowball-4"
+        ],
+        "to": "bench"
+      },
+      "culprit": "random",
+      "themes": [
+        "coton-neige"
+      ],
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "snowball",
+          "target": "snow-pile"
+        }
+      },
+      "spot": {
+        "fr": "Des boules de neige assises sur le banc !",
+        "en": "Snowballs sitting on the bench!"
+      },
+      "fixed": {
+        "fr": "Les boules de neige sont sur le tas !",
+        "en": "The snowballs are back on the pile!"
+      }
+    },
+    {
+      "id": "mittens-on-fence",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "mitten-3",
+          "mitten-4"
+        ],
+        "to": "fence"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "mitten"
+        }
+      },
+      "spot": {
+        "fr": "Les moufles font de l’équilibre sur la barrière !",
+        "en": "The mittens are balancing on the fence!"
+      },
+      "fixed": {
+        "fr": "Les moufles sont rangées par paires !",
+        "en": "The mittens are back in pairs!"
+      }
+    },
+    {
+      "id": "carrot-moved",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "carrot-1"
+        ],
+        "to": "bird-table"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "place",
+        "params": {
+          "item": "carrot",
+          "anchor": "snowman"
+        }
+      },
+      "spot": {
+        "fr": "Le nez du bonhomme est sur la mangeoire !",
+        "en": "The snowman’s nose is on the bird table!"
+      },
+      "fixed": {
+        "fr": "Le bonhomme a retrouvé son nez !",
+        "en": "The snowman has its nose back!"
+      }
+    },
+    {
+      "id": "pinecones-multiplied",
+      "type": "multiply",
+      "params": {
+        "prop": "pinecone-1",
+        "count": 6
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "pinecone",
+          "mode": "extra"
+        }
+      },
+      "spot": {
+        "fr": "Une montagne de pommes de pin !",
+        "en": "A mountain of pine cones!"
+      },
+      "fixed": {
+        "fr": "Juste le bon nombre de pommes de pin !",
+        "en": "Just the right number of pine cones!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "La grande boule de neige qui roule",
+      "en": "The great rolling snowball"
+    },
+    "steps": [
+      {
+        "id": "snowball-6-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "snowball-6"
+          ],
+          "to": "path"
+        },
+        "label": {
+          "fr": "Une boule de neige roule",
+          "en": "A snowball rolls"
+        }
+      },
+      {
+        "id": "snowball-7-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "snowball-7"
+          ],
+          "to": "path"
+        },
+        "label": {
+          "fr": "Elle en pousse une autre",
+          "en": "It pushes another"
+        }
+      },
+      {
+        "id": "sled-slides",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "sled-2"
+          ],
+          "to": "path"
+        },
+        "label": {
+          "fr": "La luge glisse",
+          "en": "The sled slides"
+        }
+      },
+      {
+        "id": "bonnet-flies",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "bonnet-3"
+          ],
+          "to": "snow-pile"
+        },
+        "label": {
+          "fr": "Le bonnet s’envole",
+          "en": "The woolly hat flies off"
+        }
+      },
+      {
+        "id": "pinecone-drops",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "pinecone-4"
+          ],
+          "to": "path"
+        },
+        "label": {
+          "fr": "Une pomme de pin tombe",
+          "en": "A pine cone drops"
+        }
+      },
+      {
+        "id": "gate-bell",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-11"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La cloche du portail tinte",
+          "en": "The gate bell jingles"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "snowman-upside-down",
+        "sled-tracks",
+        "snowballs-on-bench",
+        "carrot-moved"
+      ],
+      "hidingSpots": [
+        "snow-fort",
+        "shed-door",
+        "big-snowball"
+      ],
+      "finale": [
+        "snowball-6-rolls",
+        "sled-slides"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "snowman-upside-down",
+        "sled-tracks",
+        "snowballs-on-bench",
+        "mittens-on-fence",
+        "carrot-moved",
+        "pinecones-multiplied"
+      ],
+      "hidingSpots": [
+        "snow-fort",
+        "shed-door",
+        "big-snowball",
+        "fir-tree"
+      ],
+      "finale": [
+        "snowball-6-rolls",
+        "sled-slides",
+        "gate-bell"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "snowman-upside-down",
+        "sled-tracks",
+        "snowballs-on-bench",
+        "mittens-on-fence",
+        "carrot-moved",
+        "pinecones-multiplied"
+      ],
+      "hidingSpots": [
+        "snow-fort",
+        "shed-door",
+        "big-snowball",
+        "fir-tree",
+        "watering-can"
+      ],
+      "finale": [
+        "snowball-6-rolls",
+        "snowball-7-rolls",
+        "sled-slides",
+        "bonnet-flies",
+        "pinecone-drops",
+        "gate-bell"
+      ]
+    }
+  }
+}

@@ -1,0 +1,782 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.playroom",
+  "number": 6,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La salle de jeux",
+    "en": "The playroom"
+  },
+  "season": "winter",
+  "layout": "playroom-a",
+  "assets": [
+    "chaos.room.playroom",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "spatial",
+    "sorting",
+    "counting"
+  ],
+  "skills": [
+    "shapes",
+    "logic",
+    "colors",
+    "counting"
+  ],
+  "intro": {
+    "fr": "Les jouets ont fait les fous ! On remet tout en place ?",
+    "en": "The toys went wild! Shall we put it all back?"
+  },
+  "slots": [
+    {
+      "id": "tower-a",
+      "label": {
+        "fr": "la tour de gauche",
+        "en": "the left tower"
+      },
+      "in": {
+        "fr": "sur la tour de gauche",
+        "en": "on the left tower"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "tower-b",
+      "label": {
+        "fr": "la tour de droite",
+        "en": "the right tower"
+      },
+      "in": {
+        "fr": "sur la tour de droite",
+        "en": "on the right tower"
+      },
+      "at": [
+        2.19,
+        0,
+        1.41
+      ]
+    },
+    {
+      "id": "puzzle-board",
+      "label": {
+        "fr": "le plateau de puzzle",
+        "en": "the puzzle board"
+      },
+      "in": {
+        "fr": "sur le plateau de puzzle",
+        "en": "on the puzzle board"
+      },
+      "at": [
+        1.08,
+        0,
+        2.37
+      ]
+    },
+    {
+      "id": "parking",
+      "label": {
+        "fr": "le parking",
+        "en": "the car park"
+      },
+      "in": {
+        "fr": "dans le parking",
+        "en": "in the car park"
+      },
+      "at": [
+        -0.37,
+        1,
+        2.57
+      ]
+    },
+    {
+      "id": "marble-run",
+      "label": {
+        "fr": "le circuit à billes",
+        "en": "the marble run"
+      },
+      "in": {
+        "fr": "dans le circuit à billes",
+        "en": "in the marble run"
+      },
+      "at": [
+        -1.7,
+        0,
+        1.96
+      ]
+    },
+    {
+      "id": "rug",
+      "label": {
+        "fr": "le tapis",
+        "en": "the rug"
+      },
+      "in": {
+        "fr": "sur le tapis",
+        "en": "on the rug"
+      },
+      "at": [
+        -2.49,
+        0,
+        0.73
+      ]
+    },
+    {
+      "id": "toy-box",
+      "label": {
+        "fr": "le coffre à jouets",
+        "en": "the toy box"
+      },
+      "in": {
+        "fr": "dans le coffre à jouets",
+        "en": "in the toy box"
+      },
+      "at": [
+        -2.49,
+        1,
+        -0.73
+      ]
+    },
+    {
+      "id": "shape-sorter",
+      "label": {
+        "fr": "la boîte à formes",
+        "en": "the shape sorter"
+      },
+      "in": {
+        "fr": "dans la boîte à formes",
+        "en": "in the shape sorter"
+      },
+      "at": [
+        -1.7,
+        0,
+        -1.96
+      ]
+    },
+    {
+      "id": "shelf",
+      "label": {
+        "fr": "l’étagère",
+        "en": "the shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère",
+        "en": "on the shelf"
+      },
+      "at": [
+        -0.37,
+        0,
+        -2.57
+      ]
+    },
+    {
+      "id": "table",
+      "label": {
+        "fr": "la table",
+        "en": "the table"
+      },
+      "in": {
+        "fr": "sur la table",
+        "en": "on the table"
+      },
+      "at": [
+        1.08,
+        1,
+        -2.37
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        2.19,
+        0,
+        -1.41
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "block-2",
+      "kind": "block",
+      "slot": "tower-a",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "block-3",
+      "kind": "block",
+      "slot": "tower-b",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "puzzle-1",
+      "kind": "puzzle",
+      "slot": "puzzle-board",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "puzzle-2",
+      "kind": "puzzle",
+      "slot": "puzzle-board",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "car-1",
+      "kind": "car",
+      "slot": "parking",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "car-2",
+      "kind": "car",
+      "slot": "parking",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "car-3",
+      "kind": "car",
+      "slot": "parking",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "marble-1",
+      "kind": "marble",
+      "slot": "marble-run",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "marble-2",
+      "kind": "marble",
+      "slot": "marble-run",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "marble-3",
+      "kind": "marble",
+      "slot": "marble-run",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "block-4",
+      "kind": "block",
+      "slot": "shape-sorter",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "block-5",
+      "kind": "block",
+      "slot": "shape-sorter",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "teddy-6",
+      "kind": "teddy",
+      "slot": "shelf",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "marble-4",
+      "kind": "marble",
+      "slot": "shelf",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "marble-5",
+      "kind": "marble",
+      "slot": "shelf",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "block-6",
+      "kind": "block",
+      "slot": "table",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "car-4",
+      "kind": "car",
+      "slot": "table",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "train-3",
+      "kind": "train",
+      "slot": "table",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-3",
+      "kind": "bell",
+      "slot": "shelf",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "tent",
+      "label": {
+        "fr": "dans la tente",
+        "en": "in the play tent"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "toy-box",
+      "label": {
+        "fr": "dans le coffre à jouets",
+        "en": "in the toy box"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "puppet-theatre",
+      "label": {
+        "fr": "derrière le théâtre de marionnettes",
+        "en": "behind the puppet theatre"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "ball-pit",
+      "label": {
+        "fr": "dans la piscine à balles",
+        "en": "in the ball pit"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "big-box",
+      "label": {
+        "fr": "dans le grand carton",
+        "en": "in the big cardboard box"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "towers-swapped",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "block-2",
+            "block-3"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "size",
+          "item": "block"
+        }
+      },
+      "spot": {
+        "fr": "Les tours de cubes ont échangé leur place !",
+        "en": "The block towers swapped places!"
+      },
+      "fixed": {
+        "fr": "Les cubes sont rangés du plus petit au plus grand !",
+        "en": "The blocks are lined up smallest to biggest!"
+      }
+    },
+    {
+      "id": "puzzle-rotated",
+      "type": "flip",
+      "params": {
+        "props": [
+          "puzzle-1",
+          "puzzle-2"
+        ],
+        "turns": 1
+      },
+      "culprit": "grelotte",
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "puzzle"
+        }
+      },
+      "spot": {
+        "fr": "Les pièces du puzzle sont toutes tournées !",
+        "en": "The puzzle pieces are all turned around!"
+      },
+      "fixed": {
+        "fr": "Le puzzle est remis à l’endroit !",
+        "en": "The puzzle is the right way round!"
+      }
+    },
+    {
+      "id": "cars-wrong-colour",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "car-1",
+          "car-2",
+          "car-3"
+        ],
+        "colors": [
+          "green",
+          "red",
+          "blue"
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "course-voitures"
+      ],
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "color"
+        }
+      },
+      "spot": {
+        "fr": "Les petites voitures sont garées n’importe comment !",
+        "en": "The toy cars are parked all over the place!"
+      },
+      "fixed": {
+        "fr": "Chaque voiture à la place de sa couleur !",
+        "en": "Each car in the spot of its colour!"
+      }
+    },
+    {
+      "id": "marbles-on-rug",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "marble-1",
+          "marble-2",
+          "marble-3"
+        ],
+        "to": "rug"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "marble",
+          "target": "marble-run"
+        }
+      },
+      "spot": {
+        "fr": "Les billes se sont échappées sur le tapis !",
+        "en": "The marbles escaped onto the rug!"
+      },
+      "fixed": {
+        "fr": "Toutes les billes sont dans le circuit !",
+        "en": "All the marbles are back in the run!"
+      }
+    },
+    {
+      "id": "shapes-mixed",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "block-4",
+          "block-5"
+        ],
+        "to": "toy-box"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "shape"
+        }
+      },
+      "spot": {
+        "fr": "Les formes sont sorties de leur boîte !",
+        "en": "The shapes jumped out of their box!"
+      },
+      "fixed": {
+        "fr": "Chaque forme dans son trou !",
+        "en": "Each shape in its hole!"
+      }
+    },
+    {
+      "id": "teddy-hidden",
+      "type": "hide",
+      "params": {
+        "props": [
+          "teddy-6"
+        ],
+        "in": "toy-box"
+      },
+      "culprit": "random",
+      "themes": [
+        "peluches"
+      ],
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "teddy",
+          "mode": "shadow"
+        }
+      },
+      "spot": {
+        "fr": "Le doudou a disparu ! On cherche son ombre ?",
+        "en": "The teddy has vanished! Shall we find its shadow?"
+      },
+      "fixed": {
+        "fr": "Chaque jouet a retrouvé son ombre !",
+        "en": "Every toy found its shadow!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "Le grand circuit à billes",
+      "en": "The great marble run"
+    },
+    "steps": [
+      {
+        "id": "marble-4-drops",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "marble-4"
+          ],
+          "to": "marble-run"
+        },
+        "label": {
+          "fr": "Une bille tombe",
+          "en": "A marble drops"
+        }
+      },
+      {
+        "id": "marble-5-drops",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "marble-5"
+          ],
+          "to": "marble-run"
+        },
+        "label": {
+          "fr": "Une deuxième bille",
+          "en": "A second marble"
+        }
+      },
+      {
+        "id": "block-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "block-6"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le cube bascule",
+          "en": "The block tips"
+        }
+      },
+      {
+        "id": "car-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "car-4"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "La petite voiture roule",
+          "en": "The toy car rolls"
+        }
+      },
+      {
+        "id": "train-goes",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "train-3"
+          ],
+          "to": "rug"
+        },
+        "label": {
+          "fr": "Le petit train part",
+          "en": "The toy train goes"
+        }
+      },
+      {
+        "id": "bell-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-3"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Ding ! La clochette",
+          "en": "Ding! The bell"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "towers-swapped",
+        "cars-wrong-colour",
+        "marbles-on-rug",
+        "shapes-mixed"
+      ],
+      "hidingSpots": [
+        "tent",
+        "toy-box",
+        "puppet-theatre"
+      ],
+      "finale": [
+        "marble-4-drops",
+        "bell-rings"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "towers-swapped",
+        "puzzle-rotated",
+        "cars-wrong-colour",
+        "marbles-on-rug",
+        "shapes-mixed",
+        "teddy-hidden"
+      ],
+      "hidingSpots": [
+        "tent",
+        "toy-box",
+        "puppet-theatre",
+        "ball-pit"
+      ],
+      "finale": [
+        "marble-4-drops",
+        "block-tips",
+        "car-rolls"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "towers-swapped",
+        "puzzle-rotated",
+        "cars-wrong-colour",
+        "marbles-on-rug",
+        "shapes-mixed",
+        "teddy-hidden"
+      ],
+      "hidingSpots": [
+        "tent",
+        "toy-box",
+        "puppet-theatre",
+        "ball-pit",
+        "big-box"
+      ],
+      "finale": [
+        "marble-4-drops",
+        "marble-5-drops",
+        "block-tips",
+        "car-rolls",
+        "train-goes",
+        "bell-rings"
+      ]
+    }
+  }
+}
