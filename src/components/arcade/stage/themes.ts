@@ -3,7 +3,6 @@ import { darken, lighten, mix } from './color';
 
 /** The little things floating in each game's sky: they tell the theme before a word is read. */
 export const GAME_MOTIFS: Record<ArcadeGameId, string[]> = {
-  math_runner: ['➕', '⭐', '🔢', '👟', '✖️', '🏁'],
   alphabet_quest: ['🅰️', '✏️', '📚', '🔤', '⭐', '🖍️'],
   memory_magic: ['🃏', '✨', '🔮', '⭐', '🎩', '💫'],
   color_lab: ['🧪', '🎨', '💧', '🌈', '✨', '🖌️'],
@@ -11,22 +10,16 @@ export const GAME_MOTIFS: Record<ArcadeGameId, string[]> = {
   word_forest: ['🌲', '🍄', '🦉', '🍃', '🌳', '🐿️'],
   number_island: ['🏝️', '🐚', '🌊', '🐠', '⛵', '🦀'],
   space_mission: ['🪐', '⭐', '☄️', '🌙', '🛸', '✨'],
-  dino_dig: ['🦕', '🦴', '🌋', '🌿', '🥚', '🦖'],
-  music_garden: ['🎵', '🌷', '🎶', '🌻', '🐝', '🦋'],
   puzzle_castle: ['🧩', '🏰', '⭐', '🗝️', '🎈', '👑'],
-  robot_factory: ['⚙️', '🤖', '🔩', '💡', '🔧', '🔋'],
   eco_world: ['♻️', '🌍', '🌳', '💧', '🌼', '🐝'],
   animal_rescue: ['🐾', '🐶', '🐱', '🐰', '🦴', '💛'],
   little_chef: ['🧁', '🍓', '🥕', '🍪', '🥄', '🍋'],
   geography_explorer: ['🧭', '🗺️', '🌍', '⛰️', '🎈', '🏝️'],
-  story_builder_game: ['📖', '🪄', '✨', '🐉', '🏰', '🌙'],
-  art_studio: ['🎨', '🖌️', '🖍️', '🌈', '✏️', '⭐'],
-  space_memory: ['🌌', '🪐', '⭐', '🌙', '☄️', '✨'],
   dragon_academy: ['🐉', '🔥', '🏰', '📜', '⭐', '🪄'],
 };
 
 /** Games that happen at night (starry sky, glowing track). */
-export const NIGHT_GAMES: ReadonlySet<ArcadeGameId> = new Set<ArcadeGameId>(['space_mission', 'space_memory']);
+export const NIGHT_GAMES: ReadonlySet<ArcadeGameId> = new Set<ArcadeGameId>(['space_mission']);
 
 export interface ScenePalette {
   skyTop: string;

@@ -21,16 +21,16 @@ describe('/api/ziggy', () => {
   });
 
   it('does not count a quest played with the wrong game', async () => {
-    const res = await gameResult(post('/api/ziggy/game/result', { result: { gameId: 'math_runner', worldId: 'princess', questId: 'princess_q1', correct: 5, mistakes: 0, total: 5, durationMs: 1000 } }));
+    const res = await gameResult(post('/api/ziggy/game/result', { result: { gameId: 'number_island', worldId: 'princess', questId: 'princess_q1', correct: 5, mistakes: 0, total: 5, durationMs: 1000 } }));
     const body = await res.json();
     expect(body.memory.completedQuests.princess_q1).toBeUndefined();
   });
 
   it('rejects invalid bodies', async () => {
     expect((await gameResult(post('/api/ziggy/game/result', { result: { gameId: 'doom', correct: 1, mistakes: 0, total: 1, durationMs: 1 } }))).status).toBe(400);
-    expect((await gameResult(post('/api/ziggy/game/result', { result: { gameId: 'math_runner', correct: 9, mistakes: 0, total: 5, durationMs: 1 } }))).status).toBe(400);
+    expect((await gameResult(post('/api/ziggy/game/result', { result: { gameId: 'number_island', correct: 9, mistakes: 0, total: 5, durationMs: 1 } }))).status).toBe(400);
     expect((await gameResult(post('/api/ziggy/game/result', 'not json'))).status).toBe(400);
-    expect((await gameContent(post('/api/ziggy/game/content', { gameId: 'math_runner', difficulty: 9, seed: 1 }))).status).toBe(400);
+    expect((await gameContent(post('/api/ziggy/game/content', { gameId: 'number_island', difficulty: 9, seed: 1 }))).status).toBe(400);
   });
 
   it('serves local game content to guests', async () => {

@@ -13,7 +13,6 @@ export const MECHANICS = ['choice', 'runner', 'pairs', 'order', 'sort', 'spell',
 export type Mechanic = (typeof MECHANICS)[number];
 
 export const ARCADE_GAME_IDS = [
-  'math_runner',
   'alphabet_quest',
   'memory_magic',
   'color_lab',
@@ -21,17 +20,11 @@ export const ARCADE_GAME_IDS = [
   'word_forest',
   'number_island',
   'space_mission',
-  'dino_dig',
-  'music_garden',
   'puzzle_castle',
-  'robot_factory',
   'eco_world',
   'animal_rescue',
   'little_chef',
   'geography_explorer',
-  'story_builder_game',
-  'art_studio',
-  'space_memory',
   'dragon_academy',
 ] as const;
 export type ArcadeGameId = (typeof ARCADE_GAME_IDS)[number];

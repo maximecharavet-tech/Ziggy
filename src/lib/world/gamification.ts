@@ -56,7 +56,7 @@ export const WORLD_BADGES: WorldBadge[] = [
   { id: 'star_100', emoji: '🌟', name: { fr: '100 étoiles', en: '100 stars' }, test: (m) => totalStars(m) >= 100 },
   { id: 'collector_10', emoji: '💎', name: { fr: 'Collectionneur', en: 'Collector' }, test: (m) => m.collection.length >= 10 },
   { id: 'curious_5_games', emoji: '🎮', name: { fr: 'Curieux de tout', en: 'Curious about everything' }, test: (m) => Object.keys(m.gamesPlayed).length >= 5 },
-  { id: 'all_games', emoji: '🕹️', name: { fr: 'Toute l’arcade', en: 'The whole arcade' }, test: (m) => Object.keys(m.gamesPlayed).length >= 20 },
+  { id: 'all_games', emoji: '🕹️', name: { fr: 'Toute l’arcade', en: 'The whole arcade' }, test: (m) => Object.keys(m.gamesPlayed).length >= 13 },
   { id: 'persistent', emoji: '💪', name: { fr: 'Persévérant', en: 'Keeps trying' }, test: (m) => Object.values(m.completedQuests).some((q) => q.plays >= 3) },
   { id: 'skill_expert', emoji: '🧠', name: { fr: 'Expert', en: 'Expert' }, test: (m) => Object.values(m.skills).some((s) => s && s.attempts >= 3 && s.masteryEstimate >= 0.85) },
 ];
