@@ -7,33 +7,9 @@ import { SayButton } from '@/components/arcade/read-aloud';
 import { DioramaCard } from './fx/DioramaCard';
 import { fx, shade } from './fx/toy';
 import { HubHero } from './HubHero';
-import { AnimatedCover, type CoverFX } from './fx/AnimatedCover';
+import { AvatarScene, ColorScene, CreatureScene, MusicScene, NestScene, SandScene, StoryScene } from './HubScenes';
 
-export type CreateApp = {
-  href: string;
-  title: L;
-  text: L;
-  from: string;
-  to: string;
-  tag: L;
-  /** Atelier cover slug under /public/covers/atelier/ */
-  coverSlug: CoverFX;
-  scene: (label: string) => ReactNode;
-};
-
-function atelierCover(slug: CoverFX, alt: string, from: string, to: string, priority = false) {
-  return (
-    <AnimatedCover
-      src={`/covers/atelier/${slug}.webp`}
-      srcSm={`/covers/atelier/${slug}-sm.webp`}
-      alt={alt}
-      fxKind={slug}
-      from={from}
-      to={to}
-      priority={priority}
-    />
-  );
-}
+export type CreateApp = { href: string; title: L; text: L; from: string; to: string; tag: L; scene: (label: string) => ReactNode };
 
 export const CREATE_APPS: CreateApp[] = [
   {
@@ -43,8 +19,7 @@ export const CREATE_APPS: CreateApp[] = [
     from: '#8a63ff',
     to: '#ff6fb5',
     tag: { fr: '3D · invention', en: '3D · invention' },
-    coverSlug: 'creatures',
-    scene: (label) => atelierCover('creatures', label, '#8a63ff', '#ff6fb5', true),
+    scene: () => <CreatureScene />,
   },
   {
     href: '/coloriage',
@@ -53,8 +28,7 @@ export const CREATE_APPS: CreateApp[] = [
     from: '#ff9a8b',
     to: '#ff5f86',
     tag: { fr: 'Dessin · 3D', en: 'Drawing · 3D' },
-    coverSlug: 'coloriage',
-    scene: (label) => atelierCover('coloriage', label, '#ff9a8b', '#ff5f86', true),
+    scene: () => <ColorScene />,
   },
   {
     href: '/monde/musique',
@@ -63,8 +37,7 @@ export const CREATE_APPS: CreateApp[] = [
     from: '#a18cd1',
     to: '#6f4ef0',
     tag: { fr: 'Musique · rythme', en: 'Music · rhythm' },
-    coverSlug: 'chansons',
-    scene: (label) => atelierCover('chansons', label, '#a18cd1', '#6f4ef0'),
+    scene: () => <MusicScene />,
   },
   {
     href: '/monde/bac-a-sable',
@@ -73,8 +46,7 @@ export const CREATE_APPS: CreateApp[] = [
     from: '#f7c948',
     to: '#fb8b5b',
     tag: { fr: 'Sciences · expériences', en: 'Science · experiments' },
-    coverSlug: 'bac-a-sable',
-    scene: (label) => atelierCover('bac-a-sable', label, '#f7c948', '#fb8b5b'),
+    scene: () => <SandScene />,
   },
   {
     href: '/monde/nid',
@@ -83,8 +55,7 @@ export const CREATE_APPS: CreateApp[] = [
     from: '#6fdc8c',
     to: '#2fa865',
     tag: { fr: '3D · soin', en: '3D · care' },
-    coverSlug: 'jardin',
-    scene: (label) => atelierCover('jardin', label, '#6fdc8c', '#2fa865'),
+    scene: () => <NestScene />,
   },
   {
     href: '/monde/histoires',
@@ -93,8 +64,7 @@ export const CREATE_APPS: CreateApp[] = [
     from: '#6fd6f7',
     to: '#3f8fe0',
     tag: { fr: 'Récit · lecture', en: 'Story · reading' },
-    coverSlug: 'histoires',
-    scene: (label) => atelierCover('histoires', label, '#6fd6f7', '#3f8fe0'),
+    scene: () => <StoryScene />,
   },
   {
     href: '/monde/avatar',
@@ -103,8 +73,7 @@ export const CREATE_APPS: CreateApp[] = [
     from: '#f9a8e0',
     to: '#a35bd6',
     tag: { fr: 'Personnalisation', en: 'Customisation' },
-    coverSlug: 'avatar',
-    scene: (label) => atelierCover('avatar', label, '#f9a8e0', '#a35bd6'),
+    scene: (label) => <AvatarScene label={label} />,
   },
 ];
 
