@@ -10,8 +10,7 @@ import { SKILL_FAMILY, SKILL_NAMES } from '@/lib/learning/skills';
 import { useHydrated, useWorldMemory } from '@/lib/world/store';
 import { tr } from '@/lib/i18n-text';
 import { wt } from './text';
-import { Games3DShowcase } from '@/components/games3d/Games3DShowcase';
-import { PlatformerCard } from '@/components/platformer/PlatformerCard';
+import { GamesCoverSlider } from '@/components/games3d/GamesCoverSlider';
 import { GameScene } from '@/components/arcade/stage/GameScene';
 import { GAME_MOTIFS, NIGHT_GAMES, scenePalette } from '@/components/arcade/stage/themes';
 import { SpeechBubble, Title3D } from '@/components/arcade/stage/Showpieces';
@@ -77,8 +76,7 @@ export function ArcadeHome() {
           </div>
         </header>
 
-        <Games3DShowcase locale={locale} />
-        <PlatformerCard locale={locale} />
+        <GamesCoverSlider locale={locale} />
         {/* One arcade: the 8 original mini-games are reachable from here too. */}
         <Link
           href="/games"
