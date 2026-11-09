@@ -1,12 +1,11 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
 import { SayButton } from '@/components/arcade/read-aloud';
-import { GAMES_3D } from '@/components/games3d/Games3DShowcase';
+import { GamesCoverSlider } from '@/components/games3d/GamesCoverSlider';
 import { CREATE_APPS } from '@/components/create/CreateHub';
 import { DioramaCard } from '@/components/create/fx/DioramaCard';
 import { fx, shade } from '@/components/create/fx/toy';
@@ -21,7 +20,7 @@ const T = {
   create: { fr: 'L’Atelier des créateurs', en: 'The Makers’ Workshop' },
   createHint: { fr: 'Pas de bonne ou de mauvaise réponse : tout ce que tu inventes est réussi.', en: 'No right or wrong answer: everything you make is a success.' },
   allCreate: { fr: 'Les 7 ateliers', en: 'All 7 workshops' },
-  games: { fr: 'Les jeux en 3D', en: '3D games' },
+  games: { fr: 'Les jeux en 3D & 2D', en: '3D & 2D games' },
   gamesHint: { fr: 'Pilote, livre, creuse, enquête… et apprends sans t’en rendre compte.', en: 'Drive, deliver, dig, investigate… and learn without noticing.' },
   allGames: { fr: 'Tous les jeux', en: 'All games' },
   fresh: { fr: 'Nouveau', en: 'New' },
@@ -119,39 +118,7 @@ export function PlayShowcase() {
             {t('allGames')} <span aria-hidden="true" className="rtl:rotate-180">→</span>
           </Link>
         </div>
-        <ul className="-mx-4 mt-6 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto overscroll-x-contain px-4 pb-4 sm:scroll-px-6 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
-          {GAMES_3D.map((g) => {
-            const title = tr(g.title, locale);
-            return (
-              <li key={g.href} className="w-[74%] max-w-[300px] shrink-0 snap-start sm:w-[44%] lg:w-auto lg:max-w-none">
-                <Link
-                  href={g.href}
-                  aria-label={`${title}. ${tr(g.teaser, locale)}`}
-                  className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] text-white shadow-xl ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1.5 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-300/70"
-                  style={{ background: `linear-gradient(150deg, ${g.from}, ${g.to})` }}
-                >
-                  <span className="relative block aspect-[4/5] w-full overflow-hidden">
-                    <Image
-                      src={g.cover}
-                      alt={title}
-                      fill
-                      sizes="(max-width: 1024px) 74vw, 25vw"
-                      className="object-cover transition duration-500 group-hover:scale-105"
-                      loading="lazy"
-                    />
-                    <span className="absolute left-3 top-3 z-10 rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-black text-[#2a1650]">3D</span>
-                  </span>
-                  <span className="relative flex flex-1 flex-col p-4">
-                    <span className="line-clamp-2 text-sm text-white/85">{tr(g.teaser, locale)}</span>
-                    <span className="mt-3 inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-white/95 px-5 font-bold text-[#1b2150] shadow-[0_4px_0_rgba(0,0,0,0.18)] transition-transform group-hover:scale-105">
-                      <span aria-hidden="true">▶</span> {t('play')}
-                    </span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <GamesCoverSlider locale={locale} title={false} />
 
         <div className="mt-12 flex flex-col items-center justify-center gap-3 sm:flex-row">
           <Link
