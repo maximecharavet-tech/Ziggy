@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { Post } from '../kit/post';
 import { createRenderer, studioEnvironment, disposeTree, glow, glowTex, labelSprite, mat, prefersLowPower } from '../kit/look';
 import { makeNightSky, makePine, makeZiggy, PALETTE } from '../kit/models';
@@ -78,7 +79,7 @@ export class LugeGame {
   private dropEnv: () => void = () => {};
   private post!: Post;
   private camera = new THREE.PerspectiveCamera(62, 1, 0.1, 300);
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private sled = new THREE.Group();
   private ziggy = makeZiggy({ accessory: 'santa', lowPower: prefersLowPower() });

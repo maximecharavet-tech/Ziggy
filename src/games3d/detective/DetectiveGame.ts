@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { createRenderer, disposeTree, glow, glowTex, prefersLowPower, studioEnvironment } from '../kit/look';
 import { makeZiggy, type ZiggyActor } from '../kit/models';
 import { Puffs } from '../kit/world';
@@ -130,7 +131,7 @@ export class DetectiveGame {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(42, 1, 0.1, 400);
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private resize: ResizeObserver;
   private lowPower = prefersLowPower();

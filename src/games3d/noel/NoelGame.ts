@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { Post } from '../kit/post';
 import { createRenderer, studioEnvironment, disposeTree, glow, glowTex, labelSprite, prefersLowPower } from '../kit/look';
 import { makeBigTree, makeGift, makeHouse, makeLamp, makeNightSky, makeOrnament, makePine, makeSnowman, makeZiggy, PALETTE } from '../kit/models';
@@ -53,7 +54,7 @@ export class NoelGame {
   private dropEnv: () => void = () => {};
   private post!: Post;
   private camera = new THREE.PerspectiveCamera(52, 1, 0.1, 400);
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private ziggy = makeZiggy({ accessory: 'santa', lowPower: prefersLowPower() });
   private tree = makeBigTree();

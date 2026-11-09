@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { disposeTree, prefersLowPower, studioEnvironment } from '../kit/look';
 import { Post } from '../kit/post';
 import type { BoothSceneId, BoothSlot, SantaSceneHandle, SantaSceneMode } from '@/lib/santa/types';
@@ -48,7 +49,7 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
   const ratio = Math.min(window.devicePixelRatio || 1, low ? 1 : 1.5);
   renderer.setPixelRatio(ratio);
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = low ? THREE.PCFShadowMap : THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
 
@@ -114,7 +115,7 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
   resize();
 
   // --- Loop ---------------------------------------------------------------
-  const clock = new THREE.Clock();
+  const clock = new FrameClock();
   let raf = 0;
   let time = 0;
   let hidden = typeof document !== 'undefined' && document.hidden;

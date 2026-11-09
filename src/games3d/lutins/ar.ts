@@ -118,7 +118,7 @@ export function mountLutinsAR(canvas: HTMLCanvasElement, opts: LutinsAROptions):
   renderer.toneMapping = THREE.NeutralToneMapping;
   renderer.toneMappingExposure = 1;
   renderer.shadowMap.enabled = !low;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
 
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(THREE.MathUtils.clamp(opts.fov ?? 55, 15, 120), 1, 0.05, 120);

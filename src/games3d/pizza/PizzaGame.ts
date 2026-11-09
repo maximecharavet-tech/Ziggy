@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { createRenderer, disposeTree, prefersLowPower, studioEnvironment } from '../kit/look';
 import { makeZiggy, type ZiggyActor } from '../kit/models';
 import { Post } from '../kit/post';
@@ -143,7 +144,7 @@ export class PizzaGame {
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
   private post: Post;
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private resize: ResizeObserver;
   private lowPower = prefersLowPower();

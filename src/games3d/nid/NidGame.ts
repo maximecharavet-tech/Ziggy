@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import type { CompanionId } from '@/data/types';
 import { createRenderer, disposeTree, glowTex, labelSprite, prefersLowPower } from '../kit/look';
 import { Puffs } from '../kit/world';
@@ -112,7 +113,7 @@ export class NidGame {
   private renderer: THREE.WebGLRenderer;
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(45, 1, 0.1, 400);
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private resize: ResizeObserver;
   private lowPower = prefersLowPower();

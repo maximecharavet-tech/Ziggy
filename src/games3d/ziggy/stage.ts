@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { buildZiggy, makeScarf, type ZiggyModel } from './model';
 import { ZiggyRig } from './rig';
@@ -82,7 +83,7 @@ export class ZiggyStage {
   private camera = new THREE.PerspectiveCamera(28, 1, 0.1, 50);
   private model: ZiggyModel;
   private rig: ZiggyRig;
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private running = false;
   private w = 1;
@@ -117,7 +118,7 @@ export class ZiggyStage {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 0.95;
     this.renderer.shadowMap.enabled = !low;
-    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.renderer.shadowMap.type = THREE.PCFShadowMap;
 
     // Soft studio reflections: what makes felt and sheen read as real fabric.
     this.pmrem = new THREE.PMREMGenerator(this.renderer);
