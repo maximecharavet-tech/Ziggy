@@ -134,3 +134,9 @@ copyleft); it comes with wasm-bindgen and is already in the shipped TV navigatio
 (`src/lib/tv/wasm/`). The algorithms (SSIM, GMSD, CIEDE2000, McCamy CCT, shades of grey, Bradford,
 phase correlation, frequency-tuned saliency, Hoiem et al. scale) are implemented from the papers cited in
 the code; no code was copied.
+
+## Les Lutins Farceurs — on-device person detector
+
+| Asset | Source | Licence | Notes |
+|---|---|---|---|
+| `public/lutins/mediapipe/efficientdet_lite0.tflite` (int8) | https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/int8/latest/efficientdet_lite0.tflite (MediaPipe Object Detector model card) | Apache-2.0 | Runs in the browser only (blocks room photos with a person before upload); loaded with `@mediapipe/tasks-vision` (Apache-2.0, listed above). |

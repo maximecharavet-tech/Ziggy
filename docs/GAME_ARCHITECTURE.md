@@ -18,9 +18,12 @@ No Phaser, no Babylon for these two games.**
 Inputs: the GitHub research cell's registry (`research/github/registry.md`, read on 2026-11-09:
 three.js 95/100 *adopt*, AnimationMixer 91 *adopt*, Phaser 4 87 *test*, Babylon.js 82
 *reject*, Rapier 87 *test*, bitECS *reject* (MPL-2.0), miniplex/koota *reject*,
-three-mesh-bvh 89 *test*, ZzFX 83 *test*, inkjs 88 *test*). `research/github/REPORT.md` was
-not yet written when this doc was finished; **assumption:** it will not contradict the
-registry's decisions. If it does, revisit sections 1, 5 and 7 only.
+three-mesh-bvh 89 *test*, ZzFX 83 *test*, inkjs 88 *test*) and its `research/github/REPORT.md`
+(it landed while this doc was finished). The report confirms each choice here: stay on three.js
+and fix the `Clock` / `PCFSoftShadowMap` deprecations now; one Phaser prototype only for a 2D
+genre; bitECS is now MPL-2.0 (licence trap); code-built `AnimationMixer` clips next to
+`ZiggyRig`; Rapier (≈ 1.2 MB gzip wasm) only lazy-loaded when a game truly needs it;
+three-mesh-bvh for picking when needed.
 
 | Criterion | three.js + kit | Babylon.js | Phaser 3/4 |
 |---|---|---|---|
@@ -193,7 +196,7 @@ a low-angle orthographic/isometric view of the grid, 2 zoom levels, no free rota
   hard). Picking = three.js raycaster (add **three-mesh-bvh** (MIT) only if a room's picking
   costs > 1 ms).
 - **Rapier** (Apache-2.0, registry "test") stays the candidate if a later game needs real
-  rigid bodies (a marble-run sandbox); the cost is a ≈ 1–2 MB wasm, loaded only by that game.
+  rigid bodies (a marble-run sandbox); the cost is a ≈ 1.2 MB gzip wasm (REPORT.md), loaded only by that game.
   Not for these two.
 
 ### 3.8 Animation (`animator.ts`)
