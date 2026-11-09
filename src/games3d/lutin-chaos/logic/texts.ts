@@ -148,7 +148,7 @@ export const SIZE_WORDS: L[] = [
 /** Prompt templates of the fix puzzles (filled with `fill`). */
 export const FIX_TEXT = {
   countBack: { fr: 'Combien de {items} faut-il remettre {target} ?', en: 'How many {items} go back {target}?' },
-  countLeft: { fr: 'Il y avait {total} {items}. {done} sont déjà rangés. Combien encore ?', en: 'There were {total} {items}. {done} are put away. How many more?' },
+  countLeft: { fr: 'Il y avait {total} {items}. {done} sont déjà à leur place. Combien encore ?', en: 'There were {total} {items}. {done} are put away. How many more?' },
   countTwoPlaces: { fr: '{a} {items} ici et {b} là-bas : combien en tout ?', en: '{a} {items} here and {b} over there: how many altogether?' },
   countGroups: { fr: '{groups} piles de {size} {items} : combien en tout ?', en: '{groups} piles of {size} {items}: how many altogether?' },
   countExtra: { fr: 'Il y a {total} {items} pour {need} invités. Combien en trop ?', en: 'There are {total} {items} for {need} guests. How many extra?' },
@@ -174,9 +174,9 @@ export const FIX_TEXT = {
   pathArrows: { fr: 'Suis les flèches des empreintes. Où arrives-tu ?', en: 'Follow the footprint arrows. Where do you end up?' },
   pathWords: { fr: 'Suis les empreintes : {steps}. Où arrives-tu ?', en: 'Follow the footprints: {steps}. Where do you end up?' },
   pathCoords: { fr: 'Départ en {start}. Puis {steps}. Quelle case ?', en: 'Start at {start}. Then {steps}. Which square?' },
-  rotateTurn: { fr: 'Tourne {item} pour le remettre à l’endroit !', en: 'Turn {item} the right way up!' },
+  rotateTurn: { fr: 'Fais tourner {item} pour tout remettre à l’endroit !', en: 'Turn {item} the right way up!' },
   rotateMatch: { fr: 'Quelle image est la même forme, juste tournée ?', en: 'Which picture is the same shape, just turned?' },
-  nameFind: { fr: 'Où est {item} ? Touche-le !', en: 'Where is {item}? Tap it!' },
+  nameFind: { fr: 'Où est {item} ? Montre-moi !', en: 'Where is {item}? Show me!' },
   nameWord: { fr: 'Trouve : « {word} »', en: 'Find: "{word}"' },
   clockOclock: { fr: 'Remets l’horloge à {h} heures !', en: 'Set the clock back to {h} o’clock!' },
   clockSet: { fr: 'Remets l’horloge à {time} !', en: 'Set the clock to {time}!' },

@@ -548,8 +548,8 @@
         }
       },
       "spot": {
-        "fr": "Les manteaux sont sur les mauvais crochets !",
-        "en": "The coats are on the wrong hooks!"
+        "fr": "Les manteaux ont échangé leurs crochets !",
+        "en": "The coats swapped hooks!"
       },
       "fixed": {
         "fr": "Chaque manteau sur le crochet de sa couleur !",
