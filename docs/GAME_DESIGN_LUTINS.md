@@ -451,7 +451,13 @@ for long replay, and **the same elves** as the rest of the Lutins universe.
 - **Vertical slice to validate first:** Lutin Chaos room 2 (Kitchen) in 3 bands + Lutin Factory
   levels 1–3 and the sandbox seed. Play-test with 3 children per band before writing the rest.
 
-## D. Open questions for the owner
+## D. Owner decisions (2026-11-09)
+
+Approved: both games as designed; names as proposed; routes under `/lutins/jeux/…`; December 2026 with
+Christmas content, seasons in 2027; the nightly prank type id from the parent planner may be used on the
+device; share-a-layout codes in the Factory sandbox (local copy/paste only).
+
+### Original questions
 
 1. Final names (FR/EN): « Le Grand Chahut des Lutins » / *Elf Chaos*; « L'Atelier des
    Lutins » / *Elf Workshop*?

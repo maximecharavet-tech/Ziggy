@@ -15,7 +15,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const lock = JSON.parse(readFileSync(join(root, 'package-lock.json'), 'utf8'));
 const OK = /^(MIT|MIT-0|Apache-2\.0|BSD-2-Clause|BSD-3-Clause|0BSD|CC0-1\.0|Unlicense|Python-2\.0|BlueOak-1\.0\.0|CC-BY-4\.0)$/;
 // Owner-approved exceptions (CLAUDE.md) and permissive licences outside the default list, each with a reason.
-const APPROVED = { ISC: 'permissive; owner OK required per CLAUDE.md (listed for review)', 'Unicode-3.0': 'owner OK 2026-11-08 (unicode-ident data)', Zlib: 'permissive; owner OK required', 'CC-BY-3.0': 'data/attribution only; owner OK required', 'OFL-1.1': 'standard open font licence (Fredoka); owner OK required' };
+const APPROVED = { ISC: 'owner OK 2026-11-09 for lucide-react / picocolors; ask for any new ISC package', 'Unicode-3.0': 'owner OK 2026-11-08 (unicode-ident data)', Zlib: 'permissive; owner OK required', 'CC-BY-3.0': 'data/attribution only; owner OK required', 'OFL-1.1': 'owner OK 2026-11-09 (Fredoka font)' };
 // Server-only optional binaries (next/image optimiser on Vercel): never sent to browsers.
 const SERVER_ONLY = /^@img\/sharp-/;
 const BAD = /(GPL|AGPL|LGPL|MPL|SSPL|BUSL|EUPL|CC-BY-NC|NonCommercial|Commons-Clause)/i;
@@ -35,7 +35,7 @@ for (const [path, meta] of Object.entries(lock.packages ?? {})) {
   const ids = String(lic ?? 'UNKNOWN').replace(/[()]/g, '').split(/\s+(?:OR|AND)\s+|\s*\/\s*/);
   const anyOk = /\bOR\b/.test(String(lic)) ? ids.some((i) => OK.test(i)) : ids.every((i) => OK.test(i));
   const approved = ids.find((i) => APPROVED[i]);
-  const status = anyOk ? 'ok' : SERVER_ONLY.test(name) ? 'server-only (next/image on Vercel, not shipped to browsers; owner decision)' : BAD.test(String(lic)) ? 'FORBIDDEN' : approved ? `review (${APPROVED[approved]})` : 'UNKNOWN';
+  const status = anyOk ? 'ok' : SERVER_ONLY.test(name) ? 'server-only (next/image on Vercel, never sent to browsers; owner OK 2026-11-09)' : BAD.test(String(lic)) ? 'FORBIDDEN' : approved ? `review (${APPROVED[approved]})` : 'UNKNOWN';
   rows.push({ name, version, lic: lic ?? 'UNKNOWN', status, optional: Boolean(meta.optional) });
 }
 rows.sort((a, b) => a.name.localeCompare(b.name));

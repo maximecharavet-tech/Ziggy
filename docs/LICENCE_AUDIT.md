@@ -30,7 +30,7 @@ model-weights licence are checked separately. Re-run the checks below before any
 
 116 production packages; 99 under the default allowed licences, 17 to review, 0 forbidden/unknown.
 
-Decisions needed from the owner (all pre-existing, not introduced by the R&D work):
+Owner decisions (2026-11-09: all four accepted — ISC for lucide-react/picocolors, OFL-1.1 for Fredoka, sharp's libvips as server-only):
 1. **`lucide-react` (ISC)** — the site's icons, used since the start — and **`picocolors` (ISC)**, a tiny
    dependency of Next/PostCSS. ISC is functionally equivalent to MIT; CLAUDE.md asks for the owner's OK.
 2. **`@fontsource-variable/fredoka` (OFL-1.1)** — the site's rounded font. OFL is the standard open font
