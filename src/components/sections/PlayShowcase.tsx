@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
+import Image from 'next/image';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
@@ -119,36 +120,32 @@ export function PlayShowcase() {
           </Link>
         </div>
         <ul className="-mx-4 mt-6 flex snap-x snap-mandatory scroll-px-4 gap-4 overflow-x-auto overscroll-x-contain px-4 pb-4 sm:scroll-px-6 [scrollbar-width:none] sm:-mx-6 sm:px-6 lg:mx-0 lg:grid lg:grid-cols-4 lg:overflow-visible lg:px-0 lg:pb-0 [&::-webkit-scrollbar]:hidden">
-          {GAMES_3D.map((g, i) => {
+          {GAMES_3D.map((g) => {
             const title = tr(g.title, locale);
             return (
               <li key={g.href} className="w-[74%] max-w-[300px] shrink-0 snap-start sm:w-[44%] lg:w-auto lg:max-w-none">
                 <Link
                   href={g.href}
                   aria-label={`${title}. ${tr(g.teaser, locale)}`}
-                  className="group relative flex h-full min-h-[17rem] flex-col overflow-hidden rounded-[1.75rem] p-5 text-white shadow-xl ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1.5 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-300/70"
+                  className="group relative flex h-full flex-col overflow-hidden rounded-[1.75rem] text-white shadow-xl ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1.5 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-300/70"
                   style={{ background: `linear-gradient(150deg, ${g.from}, ${g.to})` }}
                 >
-                  {Array.from({ length: 10 }, (_, k) => (
-                    <span
-                      key={k}
-                      aria-hidden="true"
-                      className="pointer-events-none absolute h-1 w-1 rounded-full bg-white/70"
-                      style={{ left: `${(k * 37 + i * 11) % 100}%`, top: `${(k * 29 + i * 7) % 100}%` }}
+                  <span className="relative block aspect-[4/5] w-full overflow-hidden">
+                    <Image
+                      src={g.cover}
+                      alt={title}
+                      fill
+                      sizes="(max-width: 1024px) 74vw, 25vw"
+                      className="object-cover transition duration-500 group-hover:scale-105"
+                      loading="lazy"
                     />
-                  ))}
-                  <span
-                    aria-hidden="true"
-                    className={`pointer-events-none absolute -right-3 -top-3 text-[6.5rem] leading-none drop-shadow-[0_10px_12px_rgba(0,0,0,0.3)] transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110 ${fx.bob}`}
-                    style={{ '--delay': `${i * 0.4}s` } as CSSProperties}
-                  >
-                    {g.emoji}
+                    <span className="absolute left-3 top-3 z-10 rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-black text-[#2a1650]">3D</span>
                   </span>
-                  <span className="relative w-fit rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-black text-[#2a1650]">3D</span>
-                  <span className="relative mt-auto pt-16 font-display text-xl font-bold leading-tight [text-shadow:0_2px_0_rgba(0,0,0,0.2)]">{title}</span>
-                  <span className="relative mt-1 line-clamp-3 text-sm text-white/85">{tr(g.teaser, locale)}</span>
-                  <span className="relative mt-4 inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-white/95 px-5 font-bold text-[#1b2150] shadow-[0_4px_0_rgba(0,0,0,0.18)] transition-transform group-hover:scale-105">
-                    <span aria-hidden="true">▶</span> {t('play')}
+                  <span className="relative flex flex-1 flex-col p-4">
+                    <span className="line-clamp-2 text-sm text-white/85">{tr(g.teaser, locale)}</span>
+                    <span className="mt-3 inline-flex min-h-12 w-fit items-center gap-2 rounded-full bg-white/95 px-5 font-bold text-[#1b2150] shadow-[0_4px_0_rgba(0,0,0,0.18)] transition-transform group-hover:scale-105">
+                      <span aria-hidden="true">▶</span> {t('play')}
+                    </span>
                   </span>
                 </Link>
               </li>
