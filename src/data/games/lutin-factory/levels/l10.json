@@ -1,0 +1,122 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l10",
+  "version": "1.0.0",
+  "number": 10,
+  "hall": "logic-room",
+  "title": {"fr":"Une balle sur trois a une étoile","en":"Every 3rd ball gets a star"},
+  "newIdea": {
+    "fr": "Le porte-compteur compte et envoie certains objets à droite.",
+    "en": "The counter gate counts and sends some items to the right."
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["counting","multiplication","logic"],
+  "introduces": ["counter","stamper"],
+  "bands": {
+    "little": {
+      "difficulty": 7,
+      "grid": {"w":6,"h":4},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":3},"locked":true},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"},"locked":true},
+        {"machine":"counter","at":[2,1],"dir":"E","dial":{"n":3,"mode":"every"},"locked":true},
+        {"machine":"belt","at":[3,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[4,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[5,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[3,2],"dir":"E","locked":true},
+        {"machine":"belt","at":[4,2],"dir":"N","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [2,2],
+          "dir": "E",
+          "choices": [
+            {"machine":"stamper","dial":{"sticker":"star"}},
+            {"machine":"stamper","dial":{"sticker":"heart"}},
+            {"machine":"stamper","dial":{"sticker":"moon"}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.owlet",
+          "text": {"fr":"Trois balles : la troisième avec une étoile !","en":"Three balls: the third one with a star!"},
+          "voice": "factory.l10.little.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","props":{"sticker":"none"},"count":2},{"toy":"ball","props":{"sticker":"star"},"count":1}],
+      "reference": [{"machine":"stamper","at":[2,2],"dir":"E","dial":{"sticker":"star"}}]
+    },
+    "middle": {
+      "difficulty": 8,
+      "grid": {"w":7,"h":4},
+      "tray": ["belt","counter","stamper"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":6},"locked":true},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"},"locked":true},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.owlet",
+          "text": {
+            "fr": "Six balles pour mon arbre : une sur trois avec une étoile. Combien d’étoiles en tout ?",
+            "en": "Six balls for my tree: every third one with a star. How many stars in all?"
+          },
+          "voice": "factory.l10.middle.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"ball","props":{"sticker":"none"},"count":4,"exact":true},
+        {"toy":"ball","props":{"sticker":"star"},"count":2,"exact":true}
+      ],
+      "reference": [
+        {"machine":"counter","at":[2,1],"dir":"E","dial":{"n":3,"mode":"every"}},
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"},
+        {"machine":"stamper","at":[2,2],"dir":"E","dial":{"sticker":"star"}},
+        {"machine":"belt","at":[3,2],"dir":"E"},
+        {"machine":"belt","at":[4,2],"dir":"N"}
+      ]
+    },
+    "big": {
+      "difficulty": 9,
+      "grid": {"w":8,"h":4},
+      "tray": ["belt","shaper","painter","counter","stamper"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[7,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.owlet",
+          "text": {
+            "fr": "Chers lutins, douze balles rouges, et une sur quatre avec une étoile. Combien de balles sans étoile ? Grelotte dit que le porte-compteur sait compter « une sur quatre ».",
+            "en": "Dear elves, twelve red balls, and every fourth one with a star. How many balls without a star? Jingle says the counter gate can count “every fourth”."
+          },
+          "voice": "factory.l10.big.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"ball","props":{"color":"red","sticker":"none"},"count":9,"exact":true},
+        {"toy":"ball","props":{"color":"red","sticker":"star"},"count":3,"exact":true}
+      ],
+      "reference": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":12}},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"}},
+        {"machine":"painter","at":[2,1],"dir":"E","dial":{"color":"red"}},
+        {"machine":"counter","at":[3,1],"dir":"E","dial":{"n":4,"mode":"every"}},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"},
+        {"machine":"belt","at":[6,1],"dir":"E"},
+        {"machine":"stamper","at":[3,2],"dir":"E","dial":{"sticker":"star"}},
+        {"machine":"belt","at":[4,2],"dir":"E"},
+        {"machine":"belt","at":[5,2],"dir":"N"}
+      ]
+    }
+  }
+}

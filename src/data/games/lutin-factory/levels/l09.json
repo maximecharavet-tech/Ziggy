@@ -1,0 +1,161 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l09",
+  "version": "1.0.0",
+  "number": 9,
+  "hall": "assembly-line",
+  "title": {"fr":"Deux voitures et un train","en":"Two cars and a train"},
+  "newIdea": {"fr":"Plusieurs jouets différents sur la même chaîne.","en":"Several different toys on one line."},
+  "season": "winter",
+  "assets": [],
+  "skills": ["addition","multiplication","logic"],
+  "introduces": [],
+  "bands": {
+    "little": {
+      "difficulty": 7,
+      "grid": {"w":7,"h":6},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":4},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"wheel"},"locked":true},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,3],"dir":"E","dial":{"shape":"cylinder"},"locked":true},
+        {"machine":"chute","at":[0,5],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"shaper","at":[1,5],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"sack","at":[6,2],"dir":"E","locked":true},
+        {"machine":"belt","at":[2,0],"dir":"S","locked":true},
+        {"machine":"belt","at":[2,2],"dir":"N","locked":true},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"car"},"locked":true},
+        {"machine":"belt","at":[3,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[4,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[5,1],"dir":"S","locked":true},
+        {"machine":"belt","at":[5,2],"dir":"E","locked":true},
+        {"machine":"belt","at":[2,3],"dir":"S","locked":true},
+        {"machine":"belt","at":[2,5],"dir":"N","locked":true},
+        {"machine":"belt","at":[3,4],"dir":"E","locked":true},
+        {"machine":"belt","at":[4,4],"dir":"E","locked":true},
+        {"machine":"belt","at":[5,4],"dir":"N","locked":true},
+        {"machine":"belt","at":[5,3],"dir":"N","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [2,4],
+          "dir": "E",
+          "choices": [
+            {"machine":"assembler","dial":{"toy":"train","n":2}},
+            {"machine":"assembler","dial":{"toy":"car"}},
+            {"machine":"assembler","dial":{"toy":"rocket"}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.squirrel",
+          "text": {
+            "fr": "Une voiture ET un train à deux wagons, s’il te plaît !",
+            "en": "A car AND a train with two wagons, please!"
+          },
+          "voice": "factory.l09.little.letter"
+        }
+      ],
+      "orders": [{"toy":"car","count":1},{"toy":"train","props":{"n":2},"count":1}],
+      "reference": [{"machine":"assembler","at":[2,4],"dir":"E","dial":{"toy":"train","n":2}}]
+    },
+    "middle": {
+      "difficulty": 8,
+      "grid": {"w":7,"h":6},
+      "tray": ["belt","assembler"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":8},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"wheel"},"locked":true},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,3],"dir":"E","dial":{"shape":"cylinder"},"locked":true},
+        {"machine":"chute","at":[0,5],"dir":"E","dial":{"material":"wood","count":3},"locked":true},
+        {"machine":"shaper","at":[1,5],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"sack","at":[6,2],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.squirrel",
+          "text": {
+            "fr": "Pour mes jumeaux : deux voitures. Pour moi : un train à trois wagons. Tout dans la même hotte, merci les lutins !",
+            "en": "For my twins: two cars. For me: a train with three wagons. All in the same sack, thank you elves!"
+          },
+          "voice": "factory.l09.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"car","count":2},{"toy":"train","props":{"n":3},"count":1}],
+      "reference": [
+        {"machine":"belt","at":[2,0],"dir":"S"},
+        {"machine":"belt","at":[2,2],"dir":"N"},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"car"}},
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"S"},
+        {"machine":"belt","at":[5,2],"dir":"E"},
+        {"machine":"belt","at":[2,3],"dir":"S"},
+        {"machine":"belt","at":[2,5],"dir":"N"},
+        {"machine":"assembler","at":[2,4],"dir":"E","dial":{"toy":"train","n":3}},
+        {"machine":"belt","at":[3,4],"dir":"E"},
+        {"machine":"belt","at":[4,4],"dir":"E"},
+        {"machine":"belt","at":[5,4],"dir":"N"},
+        {"machine":"belt","at":[5,3],"dir":"N"}
+      ]
+    },
+    "big": {
+      "difficulty": 8,
+      "grid": {"w":7,"h":6},
+      "tray": ["belt","assembler","painter"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"wheel"},"locked":true},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"shaper","at":[1,3],"dir":"E","dial":{"shape":"cylinder"},"locked":true},
+        {"machine":"chute","at":[0,5],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"shaper","at":[1,5],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"sack","at":[6,2],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.squirrel",
+          "text": {
+            "fr": "Chers lutins, deux voitures rouges et deux trains bleus à trois wagons. Réglez chaque toboggan : combien de roues, de carrosseries, de locomotives et de wagons ?",
+            "en": "Dear elves, two red cars and two blue trains with three wagons each. Set every chute: how many wheels, bodies, engines and wagons?"
+          },
+          "voice": "factory.l09.big.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"car","props":{"color":"red"},"count":2,"exact":true},
+        {"toy":"train","props":{"color":"blue","n":3},"count":2,"exact":true}
+      ],
+      "reference": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":2}},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":8}},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":2}},
+        {"machine":"chute","at":[0,5],"dir":"E","dial":{"material":"wood","count":6}},
+        {"machine":"belt","at":[2,0],"dir":"S"},
+        {"machine":"belt","at":[2,2],"dir":"N"},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"car"}},
+        {"machine":"painter","at":[3,1],"dir":"E","dial":{"color":"red"}},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"S"},
+        {"machine":"belt","at":[5,2],"dir":"E"},
+        {"machine":"belt","at":[2,3],"dir":"S"},
+        {"machine":"belt","at":[2,5],"dir":"N"},
+        {"machine":"assembler","at":[2,4],"dir":"E","dial":{"toy":"train","n":3}},
+        {"machine":"painter","at":[3,4],"dir":"E","dial":{"color":"blue"}},
+        {"machine":"belt","at":[4,4],"dir":"E"},
+        {"machine":"belt","at":[5,4],"dir":"N"},
+        {"machine":"belt","at":[5,3],"dir":"N"}
+      ]
+    }
+  }
+}

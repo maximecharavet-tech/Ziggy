@@ -1,0 +1,121 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l11",
+  "version": "1.0.0",
+  "number": 11,
+  "hall": "logic-room",
+  "title": {"fr":"Dix fusées, s’il vous plaît !","en":"Ten rockets, please!"},
+  "newIdea": {
+    "fr": "La boucle à répéter : un objet entre, plusieurs pareils sortent.",
+    "en": "The repeat loop: one item goes in, several the same come out."
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["multiplication","counting","logic"],
+  "introduces": ["loop"],
+  "bands": {
+    "little": {
+      "difficulty": 8,
+      "grid": {"w":7,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cylinder"},"locked":true},
+        {"machine":"belt","at":[2,0],"dir":"S","locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cone"},"locked":true},
+        {"machine":"belt","at":[2,2],"dir":"N","locked":true},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"rocket"},"locked":true},
+        {"machine":"belt","at":[4,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[5,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [3,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"loop","dial":{"times":3}},
+            {"machine":"loop","dial":{"times":4}},
+            {"machine":"loop","dial":{"times":5}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.fawn",
+          "text": {"fr":"Cinq fusées, comme mes cinq doigts !","en":"Five rockets, like my five fingers!"},
+          "voice": "factory.l11.little.letter"
+        }
+      ],
+      "orders": [{"toy":"rocket","count":5,"exact":true}],
+      "reference": [{"machine":"loop","at":[3,1],"dir":"E","dial":{"times":5}}]
+    },
+    "middle": {
+      "difficulty": 9,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","loop"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cylinder"},"locked":true},
+        {"machine":"belt","at":[2,0],"dir":"S","locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cone"},"locked":true},
+        {"machine":"belt","at":[2,2],"dir":"N","locked":true},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"rocket"},"locked":true},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.fawn",
+          "text": {
+            "fr": "Dix fusées pour le club des étoiles ! Les toboggans n’en font que deux… La boucle peut répéter combien de fois ?",
+            "en": "Ten rockets for the star club! The chutes only make two… How many times should the loop repeat?"
+          },
+          "voice": "factory.l11.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"rocket","count":10,"exact":true}],
+      "reference": [
+        {"machine":"loop","at":[3,1],"dir":"E","dial":{"times":5}},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 10,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","loop","painter"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cylinder"},"locked":true},
+        {"machine":"belt","at":[2,0],"dir":"S","locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cone"},"locked":true},
+        {"machine":"belt","at":[2,2],"dir":"N","locked":true},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"rocket"},"locked":true},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.fawn",
+          "text": {
+            "fr": "Chers lutins, dix fusées : cinq rouges et cinq bleues, pour deux équipes. Deux fusées seulement sortent de l’assembleuse… Une couleur chacune, puis la boucle !",
+            "en": "Dear elves, ten rockets: five red and five blue, for two teams. Only two rockets come out of the assembler… One colour each, then the loop!"
+          },
+          "voice": "factory.l11.big.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"rocket","props":{"color":"red"},"count":5,"exact":true},
+        {"toy":"rocket","props":{"color":"blue"},"count":5,"exact":true}
+      ],
+      "reference": [
+        {"machine":"painter","at":[3,1],"dir":"E","dial":{"colors":["red","blue"]}},
+        {"machine":"loop","at":[4,1],"dir":"E","dial":{"times":5}},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    }
+  }
+}

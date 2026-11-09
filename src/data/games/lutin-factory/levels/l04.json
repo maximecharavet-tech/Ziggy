@@ -1,0 +1,115 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l04",
+  "version": "1.0.0",
+  "number": 4,
+  "hall": "paint-room",
+  "title": {"fr":"Un bateau orange","en":"An orange boat"},
+  "newIdea": {
+    "fr": "Le mélangeur : deux couleurs ensemble en font une nouvelle !",
+    "en": "The mixer: two colours together make a new one!"
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["colors"],
+  "introduces": ["mixer"],
+  "bands": {
+    "little": {
+      "difficulty": 3,
+      "grid": {"w":5,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"belt","at":[2,0],"dir":"S","locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"felt","count":1},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cone"},"locked":true},
+        {"machine":"belt","at":[2,2],"dir":"N","locked":true},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"boat"},"locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [3,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"painter","dial":{"color":"orange"}},
+            {"machine":"painter","dial":{"color":"purple"}},
+            {"machine":"painter","dial":{"color":"green"}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.otter",
+          "text": {"fr":"Un bateau orange pour mon bain !","en":"An orange boat for my bath!"},
+          "voice": "factory.l04.little.letter"
+        }
+      ],
+      "orders": [{"toy":"boat","props":{"color":"orange"},"count":1}],
+      "reference": [{"machine":"painter","at":[3,1],"dir":"E","dial":{"color":"orange"}}]
+    },
+    "middle": {
+      "difficulty": 4,
+      "grid": {"w":6,"h":3},
+      "tray": ["belt","mixer"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"belt","at":[2,0],"dir":"S","locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"felt","count":1},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cone"},"locked":true},
+        {"machine":"belt","at":[2,2],"dir":"N","locked":true},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"boat"},"locked":true},
+        {"machine":"sack","at":[5,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.otter",
+          "text": {
+            "fr": "Je voudrais un bateau orange. Mais chut : il n’y a plus de pot orange ! Grelotte dit que le rouge et le jaune peuvent aider…",
+            "en": "I’d like an orange boat. But shh: there’s no orange paint left! Jingle says red and yellow might help…"
+          },
+          "voice": "factory.l04.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"boat","props":{"color":"orange"},"count":1}],
+      "reference": [
+        {"machine":"mixer","at":[3,1],"dir":"E","dial":{"a":"red","b":"yellow"}},
+        {"machine":"belt","at":[4,1],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 4,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","mixer"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"belt","at":[2,0],"dir":"S","locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"felt","count":2},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cone"},"locked":true},
+        {"machine":"belt","at":[2,2],"dir":"N","locked":true},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"boat"},"locked":true},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.otter",
+          "text": {
+            "fr": "Chers lutins, mes deux cousins veulent un bateau marron, couleur tronc d’arbre. On m’a dit que le marron arrive quand les trois couleurs du début se rencontrent. Deux mélangeurs à la suite, peut-être ?",
+            "en": "Dear elves, my two cousins want a brown boat, the colour of a tree trunk. I heard brown appears when all three first colours meet. Two mixers in a row, maybe?"
+          },
+          "voice": "factory.l04.big.letter"
+        }
+      ],
+      "orders": [{"toy":"boat","props":{"color":"brown"},"count":2}],
+      "reference": [
+        {"machine":"mixer","at":[3,1],"dir":"E","dial":{"a":"red","b":"yellow"}},
+        {"machine":"mixer","at":[4,1],"dir":"E","dial":{"a":"blue"}},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    }
+  }
+}

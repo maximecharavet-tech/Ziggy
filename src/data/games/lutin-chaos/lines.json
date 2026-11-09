@@ -1,0 +1,104 @@
+{
+  "schema": "ziggy.lines/1",
+  "game": "lutin-chaos",
+  "version": "1.0.0",
+  "lines": [
+    { "id": "chaos.welcome.ziggy.1", "who": "ziggy", "moment": "welcome", "cue": "wave", "face": "smile", "text": { "fr": "Les lutins sont passés par ici… Tu m’aides à tout retrouver ?", "en": "The elves have been here… Will you help me sort it all out?" } },
+    { "id": "chaos.welcome.ziggy.2", "who": "ziggy", "moment": "welcome", "cue": "giggle", "face": "laugh", "text": { "fr": "Oh là là, quel chahut ! On cherche les farces ensemble ?", "en": "Oh my, what a hullabaloo! Shall we hunt for the pranks together?" } },
+
+    { "id": "chaos.spot.ziggy.1", "who": "ziggy", "moment": "spot", "cue": "giggle", "face": "laugh", "text": { "fr": "Ha ha ! Tu as vu ça ?!", "en": "Ha ha! Did you see that?!" } },
+    { "id": "chaos.spot.ziggy.2", "who": "ziggy", "moment": "spot", "cue": "cheer", "face": "surprise", "text": { "fr": "Hi hi ! Bien vu, c’est une farce !", "en": "Tee-hee! Well spotted, that’s a prank!" } },
+    { "id": "chaos.spot.ziggy.3", "who": "ziggy", "moment": "spot", "cue": "giggle", "face": "laugh", "text": { "fr": "Mais qui a eu cette idée rigolote ?", "en": "Who came up with that funny idea?" } },
+    { "id": "chaos.spot.ziggy.4", "who": "ziggy", "moment": "spot", "cue": "jump", "face": "surprise", "text": { "fr": "Trop drôle ! Tu as l’œil, toi !", "en": "So funny! You’ve got sharp eyes!" } },
+    { "id": "chaos.spot.pepin.1", "who": "pepin", "moment": "spot", "face": "wink", "text": { "fr": "Pfff… hi hi…", "en": "Pfff… tee-hee…" } },
+    { "id": "chaos.spot.grelotte.1", "who": "grelotte", "moment": "spot", "face": "smile", "text": { "fr": "Hm-hm, tout se passe comme prévu…", "en": "Hm-hm, all going to plan…" } },
+    { "id": "chaos.spot.noisette.1", "who": "noisette", "moment": "spot", "face": "laugh", "text": { "fr": "Couic ! Hi hi !", "en": "Squeak! Tee-hee!" } },
+
+    { "id": "chaos.normal.ziggy.1", "who": "ziggy", "moment": "normal", "cue": "nod", "face": "smile", "text": { "fr": "Ça, c’est à sa place ! Cherchons encore.", "en": "That one’s just right! Let’s keep looking." } },
+    { "id": "chaos.normal.ziggy.2", "who": "ziggy", "moment": "normal", "cue": "think", "face": "listen", "text": { "fr": "Hmm, ça m’a l’air normal. Et ailleurs ?", "en": "Hmm, that looks normal. What about over there?" } },
+    { "id": "chaos.normal.ziggy.3", "who": "ziggy", "moment": "normal", "cue": "giggle", "face": "smile", "text": { "fr": "Celui-là est sage comme une image !", "en": "That one is as good as gold!" } },
+
+    { "id": "chaos.clue.ziggy.1", "who": "ziggy", "moment": "clue", "cue": "think", "face": "listen", "text": { "fr": "Oh, un indice ! Qui a pu faire ça ?", "en": "Ooh, a clue! Who could it be?" } },
+    { "id": "chaos.clue.ziggy.2", "who": "ziggy", "moment": "clue", "cue": "think", "face": "surprise", "text": { "fr": "Regarde bien l’indice, il nous dit qui c’est !", "en": "Look closely at the clue, it tells us who it was!" } },
+
+    { "id": "chaos.accuse-ok.ziggy.1", "who": "ziggy", "moment": "accuse-ok", "cue": "cheer", "face": "laugh", "text": { "fr": "C’est {elf} ! Mais où se cache-t-il ?", "en": "It’s {elf}! But where are they hiding?" } },
+    { "id": "chaos.accuse-ok.ziggy.2", "who": "ziggy", "moment": "accuse-ok", "cue": "jump", "face": "laugh", "text": { "fr": "Bien trouvé, c’est {elf} ! Cherchons sa cachette !", "en": "Well worked out, it’s {elf}! Let’s find the hiding place!" } },
+
+    { "id": "chaos.not-me.pepin.1", "who": "pepin", "moment": "not-me", "face": "laugh", "text": { "fr": "Pas moi ! Tu entends ma clochette ? Ding !", "en": "Not me! Can you hear my bell? Jingle!" } },
+    { "id": "chaos.not-me.pepin.2", "who": "pepin", "moment": "not-me", "face": "wink", "text": { "fr": "Hi hi, cette fois c’est pas moi ! Regarde l’indice !", "en": "Tee-hee, not me this time! Look at the clue!" } },
+    { "id": "chaos.not-me.grelotte.1", "who": "grelotte", "moment": "not-me", "face": "smile", "text": { "fr": "Pas moi ! Je n’ai pas laissé mes lunettes, regarde !", "en": "Not me! My glasses left no mark, look!" } },
+    { "id": "chaos.not-me.grelotte.2", "who": "grelotte", "moment": "not-me", "face": "wink", "text": { "fr": "Hm-hm, bonne idée, mais ce n’est pas moi !", "en": "Hm-hm, good idea, but it wasn’t me!" } },
+    { "id": "chaos.not-me.noisette.1", "who": "noisette", "moment": "not-me", "face": "laugh", "text": { "fr": "Couic ! Pas moi ! Regarde mes toutes petites bottes !", "en": "Squeak! Not me! Look at my teeny boots!" } },
+    { "id": "chaos.not-me.noisette.2", "who": "noisette", "moment": "not-me", "face": "smile", "text": { "fr": "Hi hi, pas moi, cherche encore l’indice !", "en": "Tee-hee, not me, check the clue again!" } },
+
+    { "id": "chaos.miss.ziggy.1", "who": "ziggy", "moment": "miss", "cue": "giggle", "face": "surprise", "gag": "cuckoo", "text": { "fr": "Coucou ! Ah non, c’est le coucou de l’horloge ! Pas là…", "en": "Cuckoo! Oh, it’s just the clock’s cuckoo! Not there…" } },
+    { "id": "chaos.miss.ziggy.2", "who": "ziggy", "moment": "miss", "cue": "giggle", "face": "laugh", "gag": "cat-yawn", "text": { "fr": "Oh ! C’est le chat en peluche qui bâille. Ouaaah !", "en": "Oh! It’s the plush cat having a big yawn. Yaaawn!" } },
+    { "id": "chaos.miss.ziggy.3", "who": "ziggy", "moment": "miss", "cue": "think", "face": "listen", "gag": "sock-puppet", "text": { "fr": "Une marionnette-chaussette nous fait coucou ! Ce n’est pas un lutin…", "en": "A sock puppet waves hello! That’s not an elf…" } },
+    { "id": "chaos.miss.ziggy.4", "who": "ziggy", "moment": "miss", "cue": "think", "face": "surprise", "gag": "lamp-spin", "text": { "fr": "L’abat-jour fait un petit tour ! Hmm, j’entends quelque chose plus loin…", "en": "The lampshade does a twirl! Hmm, I hear something over there…" } },
+
+    { "id": "chaos.peek.pepin.1", "who": "pepin", "moment": "peek", "face": "wink", "text": { "fr": "Coucou ! Ding-ding !", "en": "Peekaboo! Jingle-jingle!" } },
+    { "id": "chaos.peek.grelotte.1", "who": "grelotte", "moment": "peek", "face": "smile", "text": { "fr": "Hm-hm… tu me vois ?", "en": "Hm-hm… can you see me?" } },
+    { "id": "chaos.peek.noisette.1", "who": "noisette", "moment": "peek", "face": "laugh", "text": { "fr": "Couic ! Je suis là !", "en": "Squeak! Over here!" } },
+
+    { "id": "chaos.caught.pepin.1", "who": "pepin", "moment": "caught", "face": "laugh", "anim": "tumble-bow", "text": { "fr": "Ha ha ha ! Tu m’as trouvé ! Encore ! Je fais la révérence !", "en": "Ha ha ha! You found me! Again! Time for a bow!" } },
+    { "id": "chaos.caught.pepin.2", "who": "pepin", "moment": "caught", "face": "laugh", "anim": "hat-flop", "text": { "fr": "Hi hi, ça chatouille ! Mon bonnet m’est tombé sur les yeux !", "en": "Tee-hee, that tickles! My hat flopped over my eyes!" } },
+    { "id": "chaos.caught.pepin.3", "who": "pepin", "moment": "caught", "face": "wink", "anim": "spin-jingle", "text": { "fr": "Ding-ding ! Bien joué, champion des chatouilles !", "en": "Jingle-jingle! Nice one, tickle champion!" } },
+    { "id": "chaos.caught.grelotte.1", "who": "grelotte", "moment": "caught", "face": "laugh", "anim": "glasses-wobble", "text": { "fr": "Ha ha ! Mes lunettes font des zigzags ! Tu es trop fort !", "en": "Ha ha! My glasses are wobbling! You’re so good at this!" } },
+    { "id": "chaos.caught.grelotte.2", "who": "grelotte", "moment": "caught", "face": "laugh", "anim": "giggle-snort", "text": { "fr": "Hi hi hi ! Mon plan était parfait… mais toi, tu es encore plus malin !", "en": "Tee-hee-hee! My plan was perfect… but you’re even cleverer!" } },
+    { "id": "chaos.caught.grelotte.3", "who": "grelotte", "moment": "caught", "face": "smile", "anim": "scarf-twirl", "text": { "fr": "Hm-hm ! Trouvée ! Je rejoins l’équipe des réparateurs !", "en": "Hm-hm! Found me! I’m joining the fix-it team!" } },
+    { "id": "chaos.caught.noisette.1", "who": "noisette", "moment": "caught", "face": "laugh", "anim": "teacup-roll", "text": { "fr": "Couic ! Hi hi ! Je roule, je roule, coucou !", "en": "Squeak! Tee-hee! Rolling, rolling, hello!" } },
+    { "id": "chaos.caught.noisette.2", "who": "noisette", "moment": "caught", "face": "laugh", "anim": "squeak-hop", "text": { "fr": "Tu m’as trouvée alors que je suis toute petite ! Bravo !", "en": "You found me, and I’m so tiny! Well done!" } },
+    { "id": "chaos.caught.noisette.3", "who": "noisette", "moment": "caught", "face": "smile", "anim": "hide-face-giggle", "text": { "fr": "Hi hi hi, ça chatouille ! On répare ensemble ?", "en": "Tee-hee-hee, that tickles! Shall we fix it together?" } },
+
+    { "id": "chaos.high-five.ziggy.1", "who": "ziggy", "moment": "high-five", "cue": "high-five", "face": "laugh", "text": { "fr": "Tope là ! Bienvenue dans l’équipe !", "en": "High five! Welcome to the team!" } },
+    { "id": "chaos.high-five.ziggy.2", "who": "ziggy", "moment": "high-five", "cue": "jump", "face": "laugh", "text": { "fr": "Trouvé ! Allez, on répare tous ensemble !", "en": "Found! Come on, let’s all fix it together!" } },
+
+    { "id": "chaos.fix-start.ziggy.1", "who": "ziggy", "moment": "fix-start", "cue": "nod", "face": "smile", "text": { "fr": "À nous de réparer ! Tu es prêt ?", "en": "Our turn to fix it! Ready?" } },
+    { "id": "chaos.fix-start.ziggy.2", "who": "ziggy", "moment": "fix-start", "cue": "cheer", "face": "smile", "text": { "fr": "On remet tout en ordre, comme des pros !", "en": "Let’s put it all back, like pros!" } },
+
+    { "id": "chaos.fix-oops.pepin.1", "who": "pepin", "moment": "fix-oops", "face": "laugh", "text": { "fr": "Oups, c’est ma faute, j’ai appuyé sur tous les boutons !", "en": "Oops, my fault, I pressed all the buttons!" } },
+    { "id": "chaos.fix-oops.grelotte.1", "who": "grelotte", "moment": "fix-oops", "face": "smile", "text": { "fr": "Hm-hm, mon invention a tout mélangé, pardon !", "en": "Hm-hm, my invention mixed it all up, sorry!" } },
+    { "id": "chaos.fix-oops.noisette.1", "who": "noisette", "moment": "fix-oops", "face": "smile", "text": { "fr": "Couic, c’est moi qui ai tout caché trop bien !", "en": "Squeak, I’m the one who hid it all too well!" } },
+    { "id": "chaos.fix-oops.ziggy.1", "who": "ziggy", "moment": "fix-oops", "cue": "nod", "face": "smile", "text": { "fr": "Presque ! On regarde ensemble ?", "en": "Almost! Shall we look together?" } },
+
+    { "id": "chaos.fix-done.ziggy.1", "who": "ziggy", "moment": "fix-done", "cue": "cheer", "face": "laugh", "text": { "fr": "Réparé ! Tout est revenu à sa place !", "en": "Fixed! Everything’s back in its place!" } },
+    { "id": "chaos.fix-done.ziggy.2", "who": "ziggy", "moment": "fix-done", "cue": "dance", "face": "laugh", "text": { "fr": "Youpi ! Quelle équipe !", "en": "Yippee! What a team!" } },
+    { "id": "chaos.fix-done.ziggy.3", "who": "ziggy", "moment": "fix-done", "cue": "jump", "face": "smile", "text": { "fr": "Et hop, comme neuf !", "en": "And hop, good as new!" } },
+
+    { "id": "chaos.room-fixed.ziggy.1", "who": "ziggy", "moment": "room-fixed", "cue": "dance", "face": "laugh", "text": { "fr": "Toute la pièce est en ordre ! Bravo l’équipe !", "en": "The whole room is tidy! Go team!" } },
+    { "id": "chaos.room-fixed.ziggy.2", "who": "ziggy", "moment": "room-fixed", "cue": "cheer", "face": "laugh", "text": { "fr": "On a tout réparé ! Les lutins sont tous là ?", "en": "We fixed everything! Are all the elves here?" } },
+
+    { "id": "chaos.finale-start.pepin.1", "who": "pepin", "moment": "finale-start", "face": "surprise", "text": { "fr": "Oups ! J’ai juste touché un tout petit bouton…", "en": "Oops! I only pressed one teeny button…" } },
+    { "id": "chaos.finale-start.grelotte.1", "who": "grelotte", "moment": "finale-start", "face": "surprise", "text": { "fr": "Oh oh, ma machine à farces démarre toute seule !", "en": "Uh-oh, my prank machine is starting by itself!" } },
+    { "id": "chaos.finale-start.noisette.1", "who": "noisette", "moment": "finale-start", "face": "surprise", "text": { "fr": "Couic ! J’ai éternué… et tout part !", "en": "Squeak! I sneezed… and off it goes!" } },
+
+    { "id": "chaos.finale-step.ziggy.1", "who": "ziggy", "moment": "finale-step", "cue": "cheer", "face": "smile", "text": { "fr": "On rembobine ! Et hop !", "en": "Rewind! And hop!" } },
+    { "id": "chaos.finale-step.ziggy.2", "who": "ziggy", "moment": "finale-step", "cue": "nod", "face": "smile", "text": { "fr": "Bien ! Et avant ça, qu’est-ce qui s’est passé ?", "en": "Good! And before that, what happened?" } },
+    { "id": "chaos.finale-hint.ziggy.1", "who": "ziggy", "moment": "finale-hint", "cue": "think", "face": "listen", "text": { "fr": "Presque ! On rembobine : qu’est-ce qui a bougé en dernier ?", "en": "Almost! We’re rewinding: what moved last?" } },
+    { "id": "chaos.finale-hint.ziggy.2", "who": "ziggy", "moment": "finale-hint", "cue": "nod", "face": "smile", "text": { "fr": "Regarde celui qui brille, c’est le suivant !", "en": "Look at the glowing one, it’s next!" } },
+    { "id": "chaos.finale-predict.ziggy.1", "who": "ziggy", "moment": "finale-predict", "cue": "think", "face": "listen", "text": { "fr": "Bonne idée ! On regarde ce qui se passe vraiment ?", "en": "Good idea! Shall we watch what really happens?" } },
+    { "id": "chaos.finale-done.ziggy.1", "who": "ziggy", "moment": "finale-done", "cue": "dance", "face": "laugh", "text": { "fr": "Tout est rembobiné ! Quelle aventure !", "en": "All rewound! What an adventure!" } },
+    { "id": "chaos.finale-done.ziggy.2", "who": "ziggy", "moment": "finale-done", "cue": "cheer", "face": "laugh", "text": { "fr": "Champion du rembobinage !", "en": "Rewind champion!" } },
+
+    { "id": "chaos.photo.ziggy.1", "who": "ziggy", "moment": "photo", "cue": "cheer", "face": "laugh", "text": { "fr": "Tout le monde dit « Chahuuut ! »", "en": "Everybody say \"Chaaaos!\"" } },
+    { "id": "chaos.photo.pepin.1", "who": "pepin", "moment": "photo", "face": "wink", "text": { "fr": "Je me mets devant ! Ding !", "en": "I’m going in front! Jingle!" } },
+    { "id": "chaos.photo.grelotte.1", "who": "grelotte", "moment": "photo", "face": "smile", "text": { "fr": "J’ajuste mes lunettes… voilà !", "en": "Let me fix my glasses… there!" } },
+    { "id": "chaos.photo.noisette.1", "who": "noisette", "moment": "photo", "face": "laugh", "text": { "fr": "Attendez-moi, je suis toute petite !", "en": "Wait for me, I’m teeny!" } },
+
+    { "id": "chaos.goodbye.ziggy.1", "who": "ziggy", "moment": "goodbye", "cue": "wave", "face": "smile", "text": { "fr": "À bientôt, mon ami ! Les lutins vont faire une sieste.", "en": "See you soon, friend! The elves are off for a nap." } },
+    { "id": "chaos.goodbye.ziggy.2", "who": "ziggy", "moment": "goodbye", "cue": "wave", "face": "smile", "text": { "fr": "Merci pour ton aide ! On rejoue quand tu veux.", "en": "Thanks for your help! We can play again whenever you like." } },
+    { "id": "chaos.goodbye.noisette.1", "who": "noisette", "moment": "goodbye", "face": "smile", "text": { "fr": "Ouaaah… bonne sieste… couic.", "en": "Yaaawn… happy nap… squeak." } },
+
+    { "id": "chaos.tonight.ziggy.1", "who": "ziggy", "moment": "tonight", "cue": "jump", "face": "surprise", "text": { "fr": "Hé ! C’est la farce qu’ils ont faite chez nous cette nuit !", "en": "Hey! That’s the prank they played in our house last night!" } },
+
+    { "id": "chaos.sandbox-start.ziggy.1", "who": "ziggy", "moment": "sandbox-start", "cue": "giggle", "face": "smile", "text": { "fr": "À toi d’être le chef des farces ! Cache les lutins, je ne regarde pas !", "en": "You’re the prank boss now! Hide the elves, I’m not looking!" } },
+    { "id": "chaos.sandbox-search.ziggy.1", "who": "ziggy", "moment": "sandbox-search", "cue": "think", "face": "listen", "text": { "fr": "Hmm… derrière ça, peut-être ?", "en": "Hmm… behind this, maybe?" } },
+    { "id": "chaos.sandbox-search.ziggy.2", "who": "ziggy", "moment": "sandbox-search", "cue": "think", "face": "surprise", "text": { "fr": "J’entends un petit bruit par ici…", "en": "I hear a little noise over here…" } },
+    { "id": "chaos.sandbox-search.ziggy.3", "who": "ziggy", "moment": "sandbox-search", "cue": "giggle", "face": "smile", "text": { "fr": "Pas là ! Oh, tu es trop fort pour cacher !", "en": "Not here! Oh, you’re so good at hiding things!" } },
+    { "id": "chaos.sandbox-found.ziggy.1", "who": "ziggy", "moment": "sandbox-found", "cue": "jump", "face": "laugh", "text": { "fr": "Trouvé ! Coucou {elf} !", "en": "Found you! Hello {elf}!" } },
+    { "id": "chaos.sandbox-warmer.ziggy.1", "who": "ziggy", "moment": "sandbox-warmer", "cue": "cheer", "face": "smile", "text": { "fr": "Plus chaud ? Je m’approche !", "en": "Warmer? I’m getting close!" } },
+    { "id": "chaos.sandbox-colder.ziggy.1", "who": "ziggy", "moment": "sandbox-colder", "cue": "giggle", "face": "surprise", "text": { "fr": "Plus froid ? Brrr, je vais voir ailleurs !", "en": "Colder? Brrr, I’ll look somewhere else!" } },
+    { "id": "chaos.sandbox-prank.ziggy.1", "who": "ziggy", "moment": "sandbox-prank", "cue": "giggle", "face": "laugh", "text": { "fr": "Ha ha ! Quelle farce rigolote tu as inventée !", "en": "Ha ha! What a funny prank you invented!" } },
+    { "id": "chaos.sandbox-done.ziggy.1", "who": "ziggy", "moment": "sandbox-done", "cue": "dance", "face": "laugh", "text": { "fr": "Je les ai tous trouvés ! On recommence ? Tu caches encore ?", "en": "I found them all! Again? Will you hide them again?" } }
+  ]
+}

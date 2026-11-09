@@ -1,0 +1,121 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l12",
+  "version": "1.0.0",
+  "number": 12,
+  "hall": "logic-room",
+  "title": {"fr":"Bras robot, construis une tour","en":"Robot arm, build a tower"},
+  "newIdea": {
+    "fr": "Le bras robot suit des cartes, une par une : un petit programme !",
+    "en": "The robot arm follows cards one by one: a tiny program!"
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["logic","sequencing","counting"],
+  "introduces": ["arm"],
+  "bands": {
+    "little": {
+      "difficulty": 8,
+      "grid": {"w":5,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":3},"locked":true},
+        {"machine":"belt","at":[1,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[3,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [2,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"arm","dial":{"program":[{"repeat":3,"do":["pick","shape:cube","stack"]},"ship"]}},
+            {"machine":"arm","dial":{"program":[{"repeat":2,"do":["pick","shape:cube","stack"]},"ship"]}},
+            {"machine":"arm","dial":{"program":["pick","shape:cube","ship"]}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.badger",
+          "text": {"fr":"Une tour de trois cubes, bien haute !","en":"A tower of three blocks, nice and tall!"},
+          "voice": "factory.l12.little.letter"
+        }
+      ],
+      "orders": [{"toy":"tower","props":{"n":3},"count":1}],
+      "reference": [
+        {
+          "machine": "arm",
+          "at": [2,1],
+          "dir": "E",
+          "dial": {"program":[{"repeat":3,"do":["pick","shape:cube","stack"]},"ship"]}
+        }
+      ]
+    },
+    "middle": {
+      "difficulty": 9,
+      "grid": {"w":5,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":4},"locked":true},
+        {"machine":"belt","at":[1,1],"dir":"E","locked":true},
+        {"machine":"arm","at":[2,1],"dir":"E","dial":{"program":["pick","ship"]},"locked":true,"dialLocked":false},
+        {"machine":"belt","at":[3,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.badger",
+          "text": {
+            "fr": "Je voudrais une tour rouge de quatre cubes. Le bras robot attend ses cartes : prendre, donner la forme, peindre, empiler… et répéter !",
+            "en": "I’d like a red tower of four blocks. The robot arm is waiting for its cards: pick up, shape, paint, stack… and repeat!"
+          },
+          "voice": "factory.l12.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"tower","props":{"color":"red","n":4},"count":1}],
+      "reference": [
+        {
+          "machine": "arm",
+          "at": [2,1],
+          "dir": "E",
+          "dial": {"program":[{"repeat":4,"do":["pick","shape:cube","paint:red","stack"]},"ship"]}
+        }
+      ]
+    },
+    "big": {
+      "difficulty": 10,
+      "grid": {"w":6,"h":3},
+      "tray": ["belt","arm"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":6},"locked":true},
+        {"machine":"sack","at":[5,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.badger",
+          "text": {
+            "fr": "Chers lutins, une tour de six cubes, rouge, bleu, rouge, bleu… de bas en haut. Avec le moins de cartes possible : la carte « Répéter » est votre amie !",
+            "en": "Dear elves, a tower of six blocks, red, blue, red, blue… from bottom to top. With as few cards as possible: the “Repeat” card is your friend!"
+          },
+          "voice": "factory.l12.big.letter"
+        }
+      ],
+      "orders": [{"toy":"tower","props":{"n":6,"partColors":["red","blue"]},"count":1}],
+      "reference": [
+        {"machine":"belt","at":[1,1],"dir":"E"},
+        {
+          "machine": "arm",
+          "at": [2,1],
+          "dir": "E",
+          "dial": {
+            "program": [{"repeat":3,"do":["pick","shape:cube","paint:red","stack","pick","shape:cube","paint:blue","stack"]},"ship"]
+          }
+        },
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"}
+      ]
+    }
+  }
+}

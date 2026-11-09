@@ -1,0 +1,190 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l15",
+  "version": "1.0.0",
+  "number": 15,
+  "hall": "christmas-eve",
+  "title": {"fr":"La grande nuit","en":"The big night"},
+  "newIdea": {
+    "fr": "Plusieurs lettres, une seule chaîne : tout ce qu’on sait faire !",
+    "en": "Several letters, one line: everything we know!"
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["sequencing","logic","counting","colors"],
+  "introduces": [],
+  "bands": {
+    "little": {
+      "difficulty": 9,
+      "grid": {"w":6,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":3},"locked":true},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shapes":["ball","cone","star"]},"locked":true},
+        {"machine":"belt","at":[2,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[4,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[5,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [3,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"painter","dial":{"color":"red"}},
+            {"machine":"painter","dial":{"color":"blue"}},
+            {"machine":"painter","dial":{"color":"green"}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.bear-cub",
+          "text": {"fr":"Une balle rouge !","en":"A red ball!"},
+          "voice": "factory.l15.little.letter1"
+        },
+        {
+          "from": "village.fox-kit",
+          "text": {"fr":"Une toupie rouge !","en":"A red spinning top!"},
+          "voice": "factory.l15.little.letter2"
+        },
+        {
+          "from": "village.duckling",
+          "text": {"fr":"Une surprise !","en":"A surprise!"},
+          "voice": "factory.l15.little.letter3"
+        }
+      ],
+      "orders": [
+        {"toy":"ball","props":{"color":"red"},"count":1,"letter":0},
+        {"toy":"top","props":{"color":"red"},"count":1,"letter":1},
+        {"toy":"surprise","count":1,"letter":2}
+      ],
+      "reference": [{"machine":"painter","at":[3,1],"dir":"E","dial":{"color":"red"}}]
+    },
+    "middle": {
+      "difficulty": 10,
+      "grid": {"w":8,"h":3},
+      "tray": ["belt","shaper","painter","wrapper"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[7,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.penguin",
+          "text": {
+            "fr": "Deux balles rouges, emballées dans du papier à étoiles.",
+            "en": "Two red balls, wrapped in starry paper."
+          },
+          "voice": "factory.l15.middle.letter1"
+        },
+        {
+          "from": "village.otter",
+          "text": {
+            "fr": "Deux toupies bleues, dans du papier à étoiles aussi.",
+            "en": "Two blue spinning tops, in starry paper too."
+          },
+          "voice": "factory.l15.middle.letter2"
+        },
+        {
+          "from": "village.owlet",
+          "text": {"fr":"Et pour moi… une surprise !","en":"And for me… a surprise!"},
+          "voice": "factory.l15.middle.letter3"
+        }
+      ],
+      "orders": [
+        {"toy":"ball","props":{"color":"red","wrap":"stars"},"count":2,"letter":0},
+        {"toy":"top","props":{"color":"blue","wrap":"stars"},"count":2,"letter":1},
+        {"toy":"surprise","count":1,"letter":2}
+      ],
+      "reference": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":5}},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shapes":["ball","cone"]}},
+        {"machine":"painter","at":[2,1],"dir":"E","dial":{"colors":["red","blue"]}},
+        {"machine":"wrapper","at":[3,1],"dir":"E","dial":{"pattern":"stars"}},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"},
+        {"machine":"belt","at":[6,1],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 10,
+      "grid": {"w":9,"h":7},
+      "tray": ["belt","shaper","painter","assembler","wrapper"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"chute","at":[0,5],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"chute","at":[0,6],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[8,3],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.hedgehog",
+          "text": {
+            "fr": "Chers lutins, deux voitures rouges pour la course de Noël.",
+            "en": "Dear elves, two red cars for the Christmas race."
+          },
+          "voice": "factory.l15.big.letter1"
+        },
+        {
+          "from": "village.squirrel",
+          "text": {"fr":"Un train bleu à trois wagons, s’il vous plaît.","en":"A blue train with three wagons, please."},
+          "voice": "factory.l15.big.letter2"
+        },
+        {
+          "from": "village.fawn",
+          "text": {
+            "fr": "Quatre balles emballées dans du papier à pois, pour mes amis.",
+            "en": "Four balls wrapped in polka-dot paper, for my friends."
+          },
+          "voice": "factory.l15.big.letter3"
+        }
+      ],
+      "orders": [
+        {"toy":"car","props":{"color":"red"},"count":2,"letter":0},
+        {"toy":"train","props":{"color":"blue","n":3},"count":1,"letter":1},
+        {"toy":"ball","props":{"wrap":"dots"},"count":4,"letter":2}
+      ],
+      "reference": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":2}},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":8}},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":1}},
+        {"machine":"chute","at":[0,5],"dir":"E","dial":{"material":"wood","count":3}},
+        {"machine":"chute","at":[0,6],"dir":"E","dial":{"material":"wood","count":4}},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cube"}},
+        {"machine":"belt","at":[2,0],"dir":"S"},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"wheel"}},
+        {"machine":"belt","at":[2,2],"dir":"N"},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"car"}},
+        {"machine":"painter","at":[3,1],"dir":"E","dial":{"color":"red"}},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"},
+        {"machine":"belt","at":[6,1],"dir":"E"},
+        {"machine":"belt","at":[7,1],"dir":"S"},
+        {"machine":"belt","at":[7,2],"dir":"S"},
+        {"machine":"shaper","at":[1,3],"dir":"E","dial":{"shape":"cylinder"}},
+        {"machine":"belt","at":[2,3],"dir":"S"},
+        {"machine":"shaper","at":[1,5],"dir":"E","dial":{"shape":"cube"}},
+        {"machine":"belt","at":[2,5],"dir":"N"},
+        {"machine":"assembler","at":[2,4],"dir":"E","dial":{"toy":"train","n":3}},
+        {"machine":"painter","at":[3,4],"dir":"E","dial":{"color":"blue"}},
+        {"machine":"belt","at":[4,4],"dir":"E"},
+        {"machine":"belt","at":[5,4],"dir":"E"},
+        {"machine":"belt","at":[6,4],"dir":"E"},
+        {"machine":"belt","at":[7,4],"dir":"N"},
+        {"machine":"shaper","at":[1,6],"dir":"E","dial":{"shape":"ball"}},
+        {"machine":"wrapper","at":[2,6],"dir":"E","dial":{"pattern":"dots"}},
+        {"machine":"belt","at":[3,6],"dir":"E"},
+        {"machine":"belt","at":[4,6],"dir":"E"},
+        {"machine":"belt","at":[5,6],"dir":"E"},
+        {"machine":"belt","at":[6,6],"dir":"E"},
+        {"machine":"belt","at":[7,6],"dir":"N"},
+        {"machine":"belt","at":[7,5],"dir":"N"},
+        {"machine":"belt","at":[7,3],"dir":"E"}
+      ],
+      "ideas": [{"kind":"one-go"}]
+    }
+  }
+}

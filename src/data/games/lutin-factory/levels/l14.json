@@ -1,0 +1,148 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l14",
+  "version": "1.0.0",
+  "number": 14,
+  "hall": "dispatch",
+  "title": {"fr":"Emballer : rayures puis pois","en":"Wrap them all in stripes then dots"},
+  "newIdea": {"fr":"L’emballeuse : un joli papier pour chaque cadeau.","en":"The wrapper: pretty paper for every gift."},
+  "season": "winter",
+  "assets": [],
+  "skills": ["sequencing","logic"],
+  "introduces": ["wrapper"],
+  "bands": {
+    "little": {
+      "difficulty": 9,
+      "grid": {"w":6,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":4},"locked":true},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"},"locked":true},
+        {"machine":"belt","at":[2,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[4,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[5,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [3,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"wrapper","dial":{"patterns":["stripes","dots"]}},
+            {"machine":"wrapper","dial":{"pattern":"stripes"}},
+            {"machine":"wrapper","dial":{"pattern":"dots"}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.mouse",
+          "text": {"fr":"Des cadeaux : rayures, pois, rayures, pois !","en":"Presents: stripes, dots, stripes, dots!"},
+          "voice": "factory.l14.little.letter"
+        }
+      ],
+      "orders": [
+        {
+          "sequence": [{"toy":"ball","props":{"wrap":"stripes"}},{"toy":"ball","props":{"wrap":"dots"}}],
+          "count": 4,
+          "exact": true
+        }
+      ],
+      "reference": [{"machine":"wrapper","at":[3,1],"dir":"E","dial":{"patterns":["stripes","dots"]}}]
+    },
+    "middle": {
+      "difficulty": 9,
+      "grid": {"w":7,"h":5},
+      "tray": ["belt","sorter","wrapper"],
+      "prebuilt": [
+        {
+          "machine": "chute",
+          "at": [0,2],
+          "dir": "E",
+          "dial": {"material":"wood","count":6,"items":[{"shape":"ball"},{"shape":"cone"}]},
+          "locked": true
+        },
+        {"machine":"sack","at":[6,2],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.mouse",
+          "text": {
+            "fr": "Les balles dans du papier à rayures, les toupies dans du papier à pois. Trois de chaque !",
+            "en": "Balls in striped paper, spinning tops in polka-dot paper. Three of each!"
+          },
+          "voice": "factory.l14.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","props":{"wrap":"stripes"},"count":3},{"toy":"top","props":{"wrap":"dots"},"count":3}],
+      "reference": [
+        {"machine":"belt","at":[1,2],"dir":"E"},
+        {"machine":"sorter","at":[2,2],"dir":"E","dial":{"shape":"ball"}},
+        {"machine":"wrapper","at":[2,1],"dir":"N","dial":{"pattern":"stripes"}},
+        {"machine":"belt","at":[2,0],"dir":"E"},
+        {"machine":"belt","at":[3,0],"dir":"E"},
+        {"machine":"belt","at":[4,0],"dir":"S"},
+        {"machine":"belt","at":[4,1],"dir":"S"},
+        {"machine":"wrapper","at":[2,3],"dir":"S","dial":{"pattern":"dots"}},
+        {"machine":"belt","at":[2,4],"dir":"E"},
+        {"machine":"belt","at":[3,4],"dir":"E"},
+        {"machine":"belt","at":[4,4],"dir":"N"},
+        {"machine":"belt","at":[4,3],"dir":"N"},
+        {"machine":"belt","at":[4,2],"dir":"E"},
+        {"machine":"belt","at":[5,2],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 10,
+      "grid": {"w":7,"h":5},
+      "tray": ["belt","sorter","wrapper"],
+      "prebuilt": [
+        {
+          "machine": "chute",
+          "at": [0,2],
+          "dir": "E",
+          "dial": {
+            "material": "wood",
+            "count": 8,
+            "items": [
+              {"shape":"ball","color":"red"},
+              {"shape":"ball","color":"blue"},
+              {"shape":"cone","color":"red"},
+              {"shape":"cone","color":"blue"}
+            ]
+          },
+          "locked": true
+        },
+        {"machine":"sack","at":[2,0],"dir":"E","locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[6,4],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.mouse",
+          "text": {
+            "fr": "Chers lutins, toutes les toupies en papier à étoiles. Ensuite, les balles rouges en rayures et les balles bleues en pois. Deux trieuses à la suite ?",
+            "en": "Dear elves, every spinning top in starry paper. Then the red balls in stripes and the blue balls in dots. Two sorters in a row?"
+          },
+          "voice": "factory.l14.big.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"top","props":{"wrap":"stars"},"count":4},
+        {"toy":"ball","props":{"color":"red","wrap":"stripes"},"count":2},
+        {"toy":"ball","props":{"color":"blue","wrap":"dots"},"count":2}
+      ],
+      "reference": [
+        {"machine":"belt","at":[1,2],"dir":"E"},
+        {"machine":"sorter","at":[2,2],"dir":"E","dial":{"toy":"top"}},
+        {"machine":"wrapper","at":[2,1],"dir":"N","dial":{"pattern":"stars"}},
+        {"machine":"belt","at":[2,3],"dir":"E"},
+        {"machine":"belt","at":[3,3],"dir":"E"},
+        {"machine":"sorter","at":[4,3],"dir":"E","dial":{"color":"red"}},
+        {"machine":"wrapper","at":[4,2],"dir":"N","dial":{"pattern":"stripes"}},
+        {"machine":"wrapper","at":[4,4],"dir":"E","dial":{"pattern":"dots"}},
+        {"machine":"belt","at":[5,4],"dir":"E"}
+      ]
+    }
+  }
+}
