@@ -1,0 +1,41 @@
+@keyframes gamesShimmer {
+  0% {
+    transform: translateX(-45%);
+    opacity: 0;
+  }
+  35% {
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(45%);
+    opacity: 0;
+  }
+}
+
+@keyframes gamesSpark {
+  0%,
+  100% {
+    opacity: 0.2;
+    transform: scale(0.65);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+}
+
+.shimmer {
+  animation: gamesShimmer 3.2s ease-in-out infinite;
+}
+
+.spark {
+  animation: gamesSpark 2.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer,
+  .spark {
+    animation: none !important;
+    opacity: 0.35;
+  }
+}
