@@ -40,7 +40,7 @@ describe('Hyper Engine verify: game content', () => {
   });
 
   it('checks the requested shape: count, game, runner options, duplicates', () => {
-    const issues = verifyGameFactory(game([ok[0], ok[0]], { gameType: 'math_runner' }), { ...want, mechanic: 'runner' }).join(' | ');
+    const issues = verifyGameFactory(game([ok[0], ok[0]], { gameType: 'space_mission' }), { ...want, mechanic: 'runner' }).join(' | ');
     expect(issues).toMatch(/gameType must be/);
     expect(issues).toMatch(/exactly 3 questions/);
     expect(issues).toMatch(/same question twice/);

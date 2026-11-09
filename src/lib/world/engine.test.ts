@@ -11,7 +11,7 @@ import { buildStory } from '@/lib/story/engine';
 
 const L = (s: string) => ({ fr: s, en: s });
 
-function quest(world: string, n: number, skill: LearningSkill, gameId: ArcadeGameId = 'math_runner'): QuestDefinition {
+function quest(world: string, n: number, skill: LearningSkill, gameId: ArcadeGameId = 'number_island'): QuestDefinition {
   return {
     id: `${world}_q${n}`,
     title: L(`Q${n}`),
@@ -36,7 +36,7 @@ function world(id: string, unlockStars: number, skills: LearningSkill[] = ['addi
     characters: [{ id: `${id}_o2`, name: L('Friend'), emoji: '🧚', role: L('guide') }],
     companions: ['dragon'],
     learningSkills: skills,
-    availableGames: ['math_runner'],
+    availableGames: ['number_island'],
     quests: [1, 2, 3, 4, 5, 6].map((n) => quest(id, n, skills[n % skills.length])),
     unlockStars,
   };
@@ -99,12 +99,12 @@ describe('quest engine', () => {
   it('opens chapters in order', () => {
     let m = emptyMemory('alpha');
     expect(unlockedChapter(W[0], m)).toBe(1);
-    for (const n of [1, 2]) m = applyRound(m, { gameId: 'math_runner', skill: 'addition', stats: perfect, durationMs: 1000, worldId: 'alpha', questId: `alpha_q${n}` }, W, C, TODAY).memory;
+    for (const n of [1, 2]) m = applyRound(m, { gameId: 'number_island', skill: 'addition', stats: perfect, durationMs: 1000, worldId: 'alpha', questId: `alpha_q${n}` }, W, C, TODAY).memory;
     expect(unlockedChapter(W[0], m)).toBe(2);
   });
 
   it('ignores a quest that is not open yet', () => {
-    const out = applyRound(emptyMemory('alpha'), { gameId: 'math_runner', skill: 'addition', stats: perfect, durationMs: 1000, worldId: 'alpha', questId: 'alpha_q5' }, W, C, TODAY);
+    const out = applyRound(emptyMemory('alpha'), { gameId: 'number_island', skill: 'addition', stats: perfect, durationMs: 1000, worldId: 'alpha', questId: 'alpha_q5' }, W, C, TODAY);
     expect(out.memory.completedQuests.alpha_q5).toBeUndefined();
   });
 
@@ -113,7 +113,7 @@ describe('quest engine', () => {
     m.skills.addition = { ...INITIAL_SKILL, masteryEstimate: 0.9 };
     m.skills.letters = { ...INITIAL_SKILL, masteryEstimate: 0.1 };
     expect(nextAdventure(m, W, TODAY)!.skill).toBe('letters'); // practise the weak one
-    m.recent = [0.2, 0.3, 0.1].map((a) => ({ gameId: 'math_runner', skill: 'letters' as const, accuracy: a, at: TODAY }));
+    m.recent = [0.2, 0.3, 0.1].map((a) => ({ gameId: 'number_island', skill: 'letters' as const, accuracy: a, at: TODAY }));
     const plan = nextAdventure(m, W, TODAY)!;
     expect(plan.skill).toBe('addition');
     expect(plan.reason).toBe('confidence');
@@ -122,7 +122,7 @@ describe('quest engine', () => {
 
 describe('progression and magic moments', () => {
   it('completes a quest with rewards, collection, daily bonus and first-quest moment', () => {
-    const out = applyRound(emptyMemory('alpha'), { gameId: 'math_runner', skill: 'addition', stats: perfect, durationMs: 60_000, worldId: 'alpha', questId: 'alpha_q1' }, W, C, TODAY);
+    const out = applyRound(emptyMemory('alpha'), { gameId: 'number_island', skill: 'addition', stats: perfect, durationMs: 60_000, worldId: 'alpha', questId: 'alpha_q1' }, W, C, TODAY);
     const kinds = out.magic.map((x) => x.kind);
     expect(out.memory.completedQuests.alpha_q1.stars).toBe(3);
     expect(out.memory.collection).toContain('alpha_o1');
@@ -132,7 +132,7 @@ describe('progression and magic moments', () => {
   });
 
   it('celebrates one-time moments only once and never lowers stars', () => {
-    const input = { gameId: 'math_runner' as const, skill: 'addition' as const, durationMs: 1000, worldId: 'alpha', questId: 'alpha_q1' };
+    const input = { gameId: 'number_island' as const, skill: 'addition' as const, durationMs: 1000, worldId: 'alpha', questId: 'alpha_q1' };
     const a = applyRound(emptyMemory('alpha'), { ...input, stats: perfect }, W, C, TODAY);
     const b = applyRound(a.memory, { ...input, stats: { correct: 1, mistakes: 4, total: 5 } }, W, C, TODAY);
     expect(b.magic.map((x) => x.kind)).not.toContain('FIRST_QUEST');
@@ -145,7 +145,7 @@ describe('progression and magic moments', () => {
     let m = emptyMemory('alpha');
     const kinds: string[] = [];
     for (const n of [1, 2]) {
-      const out = applyRound(m, { gameId: 'math_runner', skill: 'addition', stats: perfect, durationMs: 1000, worldId: 'alpha', questId: `alpha_q${n}` }, W, C, TODAY);
+      const out = applyRound(m, { gameId: 'number_island', skill: 'addition', stats: perfect, durationMs: 1000, worldId: 'alpha', questId: `alpha_q${n}` }, W, C, TODAY);
       kinds.push(...out.magic.map((x) => `${x.kind}:${x.ref ?? ''}`));
       m = out.memory;
     }
@@ -204,7 +204,7 @@ describe('companion state machine', () => {
 
 describe('story engine', () => {
   it('derives chapters, scenes and the next scene from memory', () => {
-    const m = applyRound(emptyMemory('alpha'), { gameId: 'math_runner', skill: 'addition', stats: perfect, durationMs: 1000, worldId: 'alpha', questId: 'alpha_q1' }, W, C, TODAY).memory;
+    const m = applyRound(emptyMemory('alpha'), { gameId: 'number_island', skill: 'addition', stats: perfect, durationMs: 1000, worldId: 'alpha', questId: 'alpha_q1' }, W, C, TODAY).memory;
     const story = buildStory(W[0], m, 'fr');
     expect(story.chapters).toHaveLength(3);
     expect(story.chapters[0].scenes[0].status).toBe('done');

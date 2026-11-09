@@ -543,119 +543,6 @@ const SPACE_FACTS: Fact[] = [
   },
 ];
 
-const DINO_FACTS: Fact[] = [
-  {
-    level: 1,
-    visual: '🥚',
-    q: { fr: 'Les bébés dinosaures sortaient…', en: 'Baby dinosaurs came out of…' },
-    a: { fr: 'D’un œuf', en: 'Eggs' },
-    w: [
-      { fr: 'D’une fleur', en: 'Flowers' },
-      { fr: 'D’une boîte', en: 'Boxes' },
-      { fr: 'D’un nuage', en: 'Clouds' },
-    ],
-  },
-  {
-    level: 1,
-    visual: '🦖',
-    q: { fr: 'Les dinosaures vivaient…', en: 'Dinosaurs lived…' },
-    a: { fr: 'Il y a très, très longtemps', en: 'A very, very long time ago' },
-    w: [
-      { fr: 'La semaine dernière', en: 'Last week' },
-      { fr: 'Hier', en: 'Yesterday' },
-      { fr: 'Dans le futur', en: 'In the future' },
-    ],
-  },
-  {
-    level: 1,
-    visual: '🦖',
-    q: { fr: 'Comment marchait le T. rex ?', en: 'How did T. rex walk?' },
-    a: { fr: 'Sur deux pattes', en: 'On two legs' },
-    w: [
-      { fr: 'Sur six pattes', en: 'On six legs' },
-      { fr: 'Sur des roues', en: 'On wheels' },
-      { fr: 'Sur sa tête', en: 'On its head' },
-    ],
-  },
-  {
-    level: 2,
-    visual: '🌿',
-    q: { fr: 'Un dinosaure qui mange des plantes est…', en: 'A dinosaur that eats plants is a…' },
-    a: { fr: 'Herbivore', en: 'Herbivore' },
-    w: [
-      { fr: 'Carnivore', en: 'Carnivore' },
-      { fr: 'Un insecte', en: 'Insect' },
-      { fr: 'Un fossile', en: 'Fossil' },
-    ],
-  },
-  {
-    level: 2,
-    visual: '🦕',
-    q: { fr: 'Quel dinosaure avait un très long cou ?', en: 'Which dinosaur had a very long neck?' },
-    a: { fr: 'Le diplodocus', en: 'Diplodocus' },
-    w: [
-      { fr: 'Le T. rex', en: 'T. rex' },
-      { fr: 'Le tricératops', en: 'Triceratops' },
-      { fr: 'Le vélociraptor', en: 'Velociraptor' },
-    ],
-  },
-  {
-    level: 2,
-    visual: '🦴',
-    q: { fr: 'Qui étudie les os de dinosaures ?', en: 'Who studies dinosaur bones?' },
-    a: { fr: 'Un paléontologue', en: 'A palaeontologist' },
-    w: [
-      { fr: 'Un astronaute', en: 'An astronaut' },
-      { fr: 'Un pilote', en: 'A pilot' },
-      { fr: 'Un pâtissier', en: 'A baker' },
-    ],
-  },
-  {
-    level: 3,
-    visual: '🐦',
-    q: { fr: 'Quels animaux d’aujourd’hui sont cousins des dinosaures ?', en: 'Which animals today are cousins of dinosaurs?' },
-    a: { fr: 'Les oiseaux', en: 'Birds' },
-    w: [
-      { fr: 'Les chats', en: 'Cats' },
-      { fr: 'Les escargots', en: 'Snails' },
-      { fr: 'Les papillons', en: 'Butterflies' },
-    ],
-  },
-  {
-    level: 3,
-    visual: '🪨',
-    q: { fr: 'Un fossile, c’est…', en: 'A fossil is…' },
-    a: { fr: 'Une trace de vie gardée dans la roche', en: 'A trace of life kept in rock' },
-    w: [
-      { fr: 'Un bonbon', en: 'A sweet' },
-      { fr: 'Un nouveau jouet', en: 'A new toy' },
-      { fr: 'Un nuage', en: 'A cloud' },
-    ],
-  },
-  {
-    level: 3,
-    visual: '🦏',
-    q: { fr: 'Combien de cornes avait le tricératops ?', en: 'How many horns did Triceratops have?' },
-    a: { fr: '3', en: '3' },
-    w: [
-      { fr: '1', en: '1' },
-      { fr: '5', en: '5' },
-      { fr: '7', en: '7' },
-    ],
-    e: { fr: 'Tri veut dire trois !', en: 'Tri means three!' },
-  },
-];
-
-const DINO_FINDS: { emoji: string; name: L }[] = [
-  { emoji: '🦖', name: { fr: 'Squelette de T. rex', en: 'T. rex skeleton' } },
-  { emoji: '🦕', name: { fr: 'Squelette de diplodocus', en: 'Diplodocus skeleton' } },
-  { emoji: '🥚', name: { fr: 'Œuf de dinosaure', en: 'Dinosaur egg' } },
-  { emoji: '🐚', name: { fr: 'Ammonite', en: 'Ammonite' } },
-  { emoji: '🦴', name: { fr: 'Os géant', en: 'Giant bone' } },
-  { emoji: '👣', name: { fr: 'Empreinte fossile', en: 'Fossil footprint' } },
-  { emoji: '🪶', name: { fr: 'Plume fossile', en: 'Fossil feather' } },
-];
-
 /* ───────────────────────── Word banks ───────────────────────── */
 
 type Word = { word: string; hint: string };
@@ -964,75 +851,6 @@ interface StepSet {
   steps: L[];
 }
 
-const ROBOT_SETS: StepSet[] = [
-  {
-    prompt: { fr: 'Construis le robot aide-ménager !', en: 'Build the helper robot!' },
-    steps: [
-      { fr: '📦 Ouvrir la boîte de pièces', en: '📦 Open the box of parts' },
-      { fr: '🦿 Fixer les jambes au corps', en: '🦿 Attach the legs to the body' },
-      { fr: '🦾 Ajouter les bras', en: '🦾 Add the arms' },
-      { fr: '🤖 Poser la tête', en: '🤖 Put on the head' },
-      { fr: '🔋 Brancher la batterie', en: '🔋 Plug in the battery' },
-      { fr: '▶️ Appuyer sur « marche »', en: '▶️ Press the start button' },
-    ],
-  },
-  {
-    prompt: { fr: 'Prépare le robot jardinier !', en: 'Get the garden robot ready!' },
-    steps: [
-      { fr: '🛞 Monter les roues', en: '🛞 Fit the wheels' },
-      { fr: '🪣 Fixer le bras arrosoir', en: '🪣 Attach the watering arm' },
-      { fr: '💧 Remplir le réservoir d’eau', en: '💧 Fill the water tank' },
-      { fr: '🔋 Charger la batterie', en: '🔋 Charge the battery' },
-      { fr: '🌱 Rouler jusqu’au jardin', en: '🌱 Drive to the garden' },
-      { fr: '🌸 Arroser les fleurs', en: '🌸 Water the flowers' },
-    ],
-  },
-  {
-    prompt: { fr: 'Assemble le drone volant !', en: 'Assemble the flying drone!' },
-    steps: [
-      { fr: '🧩 Prendre le cadre', en: '🧩 Take the frame' },
-      { fr: '⚙️ Visser les quatre moteurs', en: '⚙️ Screw on the four motors' },
-      { fr: '🌀 Ajouter les hélices', en: '🌀 Add the propellers' },
-      { fr: '🔋 Insérer la batterie', en: '🔋 Insert the battery' },
-      { fr: '📡 Allumer la télécommande', en: '📡 Switch on the remote' },
-      { fr: '🚁 Décoller tout doucement', en: '🚁 Take off gently' },
-    ],
-  },
-  {
-    prompt: { fr: 'Le matin du robot', en: 'The robot’s morning' },
-    steps: [
-      { fr: '😴 Le robot dort sur son chargeur', en: '😴 The robot sleeps on its charger' },
-      { fr: '⏰ Le réveil sonne', en: '⏰ The alarm rings' },
-      { fr: '👀 Il ouvre les yeux', en: '👀 It opens its eyes' },
-      { fr: '🔍 Il vérifie ses capteurs', en: '🔍 It checks its sensors' },
-      { fr: '🚶 Il marche jusqu’à la porte', en: '🚶 It walks to the door' },
-      { fr: '👋 Il dit bonjour à tout le monde', en: '👋 It says hello to everyone' },
-    ],
-  },
-  {
-    prompt: { fr: 'Répare le robot !', en: 'Fix the robot!' },
-    steps: [
-      { fr: '🔍 Trouver la pièce cassée', en: '🔍 Find the broken part' },
-      { fr: '🪛 Dévisser le couvercle', en: '🪛 Unscrew the cover' },
-      { fr: '🔄 Changer le vieux fil', en: '🔄 Replace the old wire' },
-      { fr: '🔩 Revisser le couvercle', en: '🔩 Screw the cover back on' },
-      { fr: '🔋 Recharger le robot', en: '🔋 Recharge the robot' },
-      { fr: '✅ Vérifier qu’il fonctionne', en: '✅ Check that it works' },
-    ],
-  },
-  {
-    prompt: { fr: 'Programme le robot pour traverser la salle !', en: 'Program the robot to cross the room!' },
-    steps: [
-      { fr: '📝 Dessiner le chemin', en: '📝 Draw the path' },
-      { fr: '⬆️ Avancer de deux cases', en: '⬆️ Move forward two squares' },
-      { fr: '↪️ Tourner à droite', en: '↪️ Turn right' },
-      { fr: '⏩ Avancer de trois cases', en: '⏩ Move forward three squares' },
-      { fr: '🏁 Arriver au drapeau', en: '🏁 Reach the flag' },
-      { fr: '🎉 Faire une petite danse', en: '🎉 Do a little dance' },
-    ],
-  },
-];
-
 const RECIPE_SETS: StepSet[] = [
   {
     prompt: { fr: 'Prépare une salade de fruits', en: 'Make a fruit salad' },
@@ -1098,86 +916,6 @@ const RECIPE_SETS: StepSet[] = [
       { fr: '🍄 Ajouter les garnitures', en: '🍄 Add your toppings' },
       { fr: '🔥 Faire cuire au four avec un adulte', en: '🔥 Bake with a grown-up' },
       { fr: '🍕 Couper et partager', en: '🍕 Slice and share' },
-    ],
-  },
-];
-
-const STORY_SETS: StepSet[] = [
-  {
-    prompt: { fr: 'La petite graine', en: 'The little seed' },
-    steps: [
-      { fr: '🌰 Sam plante une toute petite graine.', en: '🌰 Sam plants a tiny seed.' },
-      { fr: '💧 Sam l’arrose chaque jour.', en: '💧 Sam waters it every day.' },
-      { fr: '🌱 Une petite pousse apparaît.', en: '🌱 A little sprout appears.' },
-      { fr: '🌿 La plante grandit, grandit.', en: '🌿 The plant grows taller and taller.' },
-      { fr: '🌻 Un grand tournesol s’ouvre.', en: '🌻 A big sunflower opens.' },
-      { fr: '😊 Sam partage les graines avec ses amis.', en: '😊 Sam shares the seeds with friends.' },
-    ],
-  },
-  {
-    prompt: { fr: 'Le bonhomme de neige', en: 'The snowman' },
-    steps: [
-      { fr: '❄️ La neige tombe toute la nuit.', en: '❄️ Snow falls all night.' },
-      { fr: '🧤 Lou met des gants bien chauds.', en: '🧤 Lou puts on warm gloves.' },
-      { fr: '⚪ Lou roule une grosse boule de neige.', en: '⚪ Lou rolls a big snowball.' },
-      { fr: '⛄ Lou empile trois boules.', en: '⛄ Lou stacks three snowballs.' },
-      { fr: '🥕 Lou ajoute un nez en carotte.', en: '🥕 Lou adds a carrot nose.' },
-      { fr: '📸 Tout le monde pose avec le bonhomme.', en: '📸 Everyone takes a photo with the snowman.' },
-    ],
-  },
-  {
-    prompt: { fr: 'Le chaton perdu', en: 'The lost kitten' },
-    steps: [
-      { fr: '🐱 Un chaton se perd dans le parc.', en: '🐱 A kitten gets lost in the park.' },
-      { fr: '😿 Le chaton miaule tout doucement.', en: '😿 The kitten meows softly.' },
-      { fr: '👂 Noa entend le petit miaou.', en: '👂 Noa hears the little meow.' },
-      { fr: '🔎 Noa regarde sous les buissons.', en: '🔎 Noa looks under the bushes.' },
-      { fr: '🤗 Noa trouve le chaton.', en: '🤗 Noa finds the kitten.' },
-      { fr: '🏠 Le chaton rentre chez lui, tout content.', en: '🏠 The kitten goes home, happy.' },
-    ],
-  },
-  {
-    prompt: { fr: 'Joyeux anniversaire !', en: 'Happy birthday!' },
-    steps: [
-      { fr: '📅 Aujourd’hui, c’est l’anniversaire d’Alex.', en: '📅 Today is Alex’s birthday.' },
-      { fr: '🎈 Les amis gonflent des ballons.', en: '🎈 Friends blow up balloons.' },
-      { fr: '🎂 Le gâteau arrive avec ses bougies.', en: '🎂 The cake arrives with candles.' },
-      { fr: '🎶 Tout le monde chante.', en: '🎶 Everyone sings.' },
-      { fr: '🌬️ Alex souffle les bougies.', en: '🌬️ Alex blows out the candles.' },
-      { fr: '🎁 Alex ouvre les cadeaux.', en: '🎁 Alex opens the presents.' },
-    ],
-  },
-  {
-    prompt: { fr: 'Un jour de pluie', en: 'A rainy day' },
-    steps: [
-      { fr: '☁️ De gros nuages gris arrivent.', en: '☁️ Big grey clouds arrive.' },
-      { fr: '🌧️ Il commence à pleuvoir.', en: '🌧️ It starts to rain.' },
-      { fr: '☂️ Ziggy ouvre son parapluie.', en: '☂️ Ziggy opens an umbrella.' },
-      { fr: '💦 Ziggy saute dans les flaques.', en: '💦 Ziggy jumps in the puddles.' },
-      { fr: '☀️ Le soleil revient.', en: '☀️ The sun comes back.' },
-      { fr: '🌈 Un arc-en-ciel apparaît !', en: '🌈 A rainbow appears!' },
-    ],
-  },
-  {
-    prompt: { fr: 'Voyage vers la Lune', en: 'Trip to the Moon' },
-    steps: [
-      { fr: '🧑‍🚀 Kai enfile sa combinaison spatiale.', en: '🧑‍🚀 Kai puts on a space suit.' },
-      { fr: '🚀 La fusée décolle.', en: '🚀 The rocket takes off.' },
-      { fr: '🌍 La Terre devient toute petite.', en: '🌍 Earth looks tiny and blue.' },
-      { fr: '🌙 La fusée se pose sur la Lune.', en: '🌙 The rocket lands on the Moon.' },
-      { fr: '👣 Kai fait des grands bonds sur la Lune.', en: '👣 Kai takes big bouncy moon steps.' },
-      { fr: '🏠 La fusée rentre à la maison.', en: '🏠 The rocket flies back home.' },
-    ],
-  },
-  {
-    prompt: { fr: 'La vie du papillon', en: 'A butterfly’s life' },
-    steps: [
-      { fr: '🥚 Un petit œuf est posé sur une feuille.', en: '🥚 A tiny egg sits on a leaf.' },
-      { fr: '🐛 Une chenille en sort.', en: '🐛 A caterpillar hatches.' },
-      { fr: '🍃 Elle mange beaucoup de feuilles.', en: '🍃 It eats lots of leaves.' },
-      { fr: '🛌 Elle s’enferme dans un cocon.', en: '🛌 It wraps itself in a chrysalis.' },
-      { fr: '🦋 Un papillon en sort.', en: '🦋 A butterfly comes out.' },
-      { fr: '🌸 Il s’envole vers les fleurs.', en: '🌸 It flies to the flowers.' },
     ],
   },
 ];
@@ -1278,26 +1016,25 @@ const PALETTE: { id: string; name: L; hex: string }[] = [
 
 interface MixTarget {
   name: L;
-  art: L;
   hex: string;
   recipe: string[];
 }
 
 const MIX_TARGETS: MixTarget[] = [
-  { name: { fr: 'Orange', en: 'Orange' }, art: { fr: '🌅 Coucher de soleil', en: '🌅 Sunset' }, hex: '#FB8C00', recipe: ['red', 'yellow'] },
-  { name: { fr: 'Vert', en: 'Green' }, art: { fr: '🌿 Prairie', en: '🌿 Meadow' }, hex: '#43A047', recipe: ['yellow', 'blue'] },
-  { name: { fr: 'Violet', en: 'Purple' }, art: { fr: '🍇 Raisin', en: '🍇 Grape' }, hex: '#8E24AA', recipe: ['red', 'blue'] },
-  { name: { fr: 'Rose', en: 'Pink' }, art: { fr: '🌸 Fleur de cerisier', en: '🌸 Cherry blossom' }, hex: '#F48FB1', recipe: ['red', 'white'] },
-  { name: { fr: 'Bleu ciel', en: 'Sky blue' }, art: { fr: '☁️ Ciel d’été', en: '☁️ Summer sky' }, hex: '#90CAF9', recipe: ['blue', 'white'] },
-  { name: { fr: 'Jaune pâle', en: 'Pale yellow' }, art: { fr: '🍦 Glace vanille', en: '🍦 Vanilla ice cream' }, hex: '#FFF59D', recipe: ['yellow', 'white'] },
-  { name: { fr: 'Gris', en: 'Grey' }, art: { fr: '🐘 Éléphant', en: '🐘 Elephant' }, hex: '#9E9E9E', recipe: ['white', 'black'] },
-  { name: { fr: 'Rouge foncé', en: 'Dark red' }, art: { fr: '🍒 Cerise', en: '🍒 Cherry' }, hex: '#8E1B1B', recipe: ['red', 'black'] },
-  { name: { fr: 'Bleu marine', en: 'Navy blue' }, art: { fr: '🌌 Nuit étoilée', en: '🌌 Starry night' }, hex: '#1A237E', recipe: ['blue', 'black'] },
-  { name: { fr: 'Marron', en: 'Brown' }, art: { fr: '🧸 Ourson', en: '🧸 Teddy bear' }, hex: '#795548', recipe: ['red', 'yellow', 'blue'] },
-  { name: { fr: 'Pêche', en: 'Peach' }, art: { fr: '🍑 Pêche', en: '🍑 Peach' }, hex: '#FFCCBC', recipe: ['red', 'yellow', 'white'] },
-  { name: { fr: 'Lavande', en: 'Lavender' }, art: { fr: '🪻 Lavande', en: '🪻 Lavender' }, hex: '#CE93D8', recipe: ['red', 'blue', 'white'] },
-  { name: { fr: 'Vert menthe', en: 'Mint green' }, art: { fr: '🍃 Menthe', en: '🍃 Mint' }, hex: '#A5D6A7', recipe: ['yellow', 'blue', 'white'] },
-  { name: { fr: 'Vert sapin', en: 'Pine green' }, art: { fr: '🌲 Sapin', en: '🌲 Pine tree' }, hex: '#1B5E20', recipe: ['yellow', 'blue', 'black'] },
+  { name: { fr: 'Orange', en: 'Orange' }, hex: '#FB8C00', recipe: ['red', 'yellow'] },
+  { name: { fr: 'Vert', en: 'Green' }, hex: '#43A047', recipe: ['yellow', 'blue'] },
+  { name: { fr: 'Violet', en: 'Purple' }, hex: '#8E24AA', recipe: ['red', 'blue'] },
+  { name: { fr: 'Rose', en: 'Pink' }, hex: '#F48FB1', recipe: ['red', 'white'] },
+  { name: { fr: 'Bleu ciel', en: 'Sky blue' }, hex: '#90CAF9', recipe: ['blue', 'white'] },
+  { name: { fr: 'Jaune pâle', en: 'Pale yellow' }, hex: '#FFF59D', recipe: ['yellow', 'white'] },
+  { name: { fr: 'Gris', en: 'Grey' }, hex: '#9E9E9E', recipe: ['white', 'black'] },
+  { name: { fr: 'Rouge foncé', en: 'Dark red' }, hex: '#8E1B1B', recipe: ['red', 'black'] },
+  { name: { fr: 'Bleu marine', en: 'Navy blue' }, hex: '#1A237E', recipe: ['blue', 'black'] },
+  { name: { fr: 'Marron', en: 'Brown' }, hex: '#795548', recipe: ['red', 'yellow', 'blue'] },
+  { name: { fr: 'Pêche', en: 'Peach' }, hex: '#FFCCBC', recipe: ['red', 'yellow', 'white'] },
+  { name: { fr: 'Lavande', en: 'Lavender' }, hex: '#CE93D8', recipe: ['red', 'blue', 'white'] },
+  { name: { fr: 'Vert menthe', en: 'Mint green' }, hex: '#A5D6A7', recipe: ['yellow', 'blue', 'white'] },
+  { name: { fr: 'Vert sapin', en: 'Pine green' }, hex: '#1B5E20', recipe: ['yellow', 'blue', 'black'] },
 ];
 
 /** Palette colours available at each difficulty. */
@@ -1314,72 +1051,11 @@ const MIX_THREE_COLOURS = [0, 0, 0, 3, 4];
 /* ───────────────────────── Pairs banks ───────────────────────── */
 
 const MEMORY_EMOJIS = ['🦄', '🐸', '🍓', '🌈', '🐙', '🎈', '🍩', '🌻', '🐢', '🦋', '🍉', '🐝'];
-const SPACE_EMOJIS = ['🪐', '🌙', '⭐', '☀️', '🚀', '🛰️', '☄️', '🌍', '🔭', '🌌'];
-const SPACE_NAMES: { a: string; b: L; constellation?: boolean }[] = [
-  { a: '🔴', b: { fr: 'Mars', en: 'Mars' } },
-  { a: '🪐', b: { fr: 'Saturne', en: 'Saturn' } },
-  { a: '🌍', b: { fr: 'Terre', en: 'Earth' } },
-  { a: '☀️', b: { fr: 'Soleil', en: 'Sun' } },
-  { a: '🌙', b: { fr: 'Lune', en: 'Moon' } },
-  { a: '☄️', b: { fr: 'Comète', en: 'Comet' } },
-  { a: '🔭', b: { fr: 'Télescope', en: 'Telescope' } },
-  { a: '🚀', b: { fr: 'Fusée', en: 'Rocket' } },
-  { a: '🛰️', b: { fr: 'Satellite', en: 'Satellite' } },
-  { a: '🧑‍🚀', b: { fr: 'Astronaute', en: 'Astronaut' } },
-  { a: '✨🐻', b: { fr: 'Grande Ourse', en: 'Great Bear' }, constellation: true },
-  { a: '✨🦁', b: { fr: 'Constellation du Lion', en: 'Leo' }, constellation: true },
-  { a: '✨🦂', b: { fr: 'Scorpion', en: 'Scorpius' }, constellation: true },
-  { a: '✨🦢', b: { fr: 'Cygne', en: 'Cygnus' }, constellation: true },
-  { a: '✨🦀', b: { fr: 'Cancer', en: 'Cancer' }, constellation: true },
-];
-
 const SLIDE_PICTURES = ['🏰', '🐉', '🦄', '🚀', '🌈', '🐠', '🦁', '🌻', '🐼', '🎠'];
 
 /* ───────────────────────── Generators ───────────────────────── */
 
-function genMathRunner(ctx: Ctx): ChoiceItem[] {
-  const { rng, d, n } = ctx;
-  const count = RUNNER_OPTIONS[d - 1];
-  return uniqueItems(n, () => {
-    let a: number;
-    let b: number;
-    let op: '+' | '−' | '×';
-    if (d === 1) {
-      a = rng.int(1, 5);
-      b = rng.int(1, 5);
-      op = '+';
-    } else if (d === 2) {
-      op = rng.float() < 0.5 ? '+' : '−';
-      a = op === '+' ? rng.int(2, 10) : rng.int(3, 10);
-      b = op === '+' ? rng.int(1, 10) : rng.int(1, a);
-    } else if (d === 3) {
-      op = rng.float() < 0.5 ? '+' : '−';
-      a = rng.int(10, 40);
-      b = op === '+' ? rng.int(2, 10 + Math.floor((50 - a) / 2)) : rng.int(2, Math.min(a, 25));
-    } else if (d === 4) {
-      op = rng.float() < 0.6 ? '×' : '+';
-      if (op === '×') {
-        a = rng.pick([2, 3, 4, 5, 10]);
-        b = rng.int(1, 10);
-      } else {
-        a = rng.int(20, 70);
-        b = rng.int(5, 30);
-      }
-    } else {
-      op = rng.pick(['×', '×', '−'] as const);
-      if (op === '×') {
-        a = rng.int(2, 9);
-        b = rng.int(2, 10);
-      } else {
-        a = rng.int(40, 100);
-        b = rng.int(11, a - 5);
-      }
-    }
-    const c = op === '+' ? a + b : op === '−' ? a - b : a * b;
-    const visual = d === 1 ? `${'🍎'.repeat(a)} + ${'🍎'.repeat(b)}` : '🏃';
-    return makeChoice(rng, `${a} ${op} ${b} = ?`, String(c), numberWrongs(rng, c, op === '×' ? 4 : 3), count, visual, `${a} ${op} ${b} = ${c}`);
-  });
-}
+
 
 function genSpaceMission(ctx: Ctx): ChoiceItem[] {
   const { rng, d, n, t } = ctx;
@@ -1709,54 +1385,7 @@ function genGeography(ctx: Ctx): ChoiceItem[] {
   });
 }
 
-function genDinoDig(ctx: Ctx): GameContent {
-  const { rng, d, n, t } = ctx;
-  const count = CHOICE_OPTIONS[d - 1];
-  const facts = factPool(DINO_FACTS, d, rng);
-  let f = 0;
-  const items = uniqueItems(n, (i) => {
-    if (i % 2 === 0 && f < facts.length) return factItem(ctx, facts[f++], count);
-    if (d <= 2) {
-      const k = d === 1 ? rng.int(1, 5) : rng.int(3, 9);
-      const thing = rng.pick(['🦴', '👣', '🥚']);
-      return makeChoice(
-        rng,
-        t({ fr: 'Combien en as-tu trouvé ?', en: 'How many did you find?' }),
-        String(k),
-        numberWrongs(rng, k, 2).filter((x) => x !== '0'),
-        count,
-        thing.repeat(k),
-      );
-    }
-    if (d === 3) {
-      const a = rng.int(1, 6);
-      const b = rng.int(1, 6);
-      return makeChoice(
-        rng,
-        t({ fr: 'Combien d’os en tout ?', en: 'How many bones in all?' }),
-        String(a + b),
-        numberWrongs(rng, a + b, 2),
-        count,
-        `${'🦴'.repeat(a)} + ${'🦴'.repeat(b)}`,
-      );
-    }
-    const groups = rng.int(2, d === 4 ? 5 : 8);
-    const per = d === 4 ? 4 : rng.int(3, 6);
-    return makeChoice(
-      rng,
-      d === 4
-        ? t({ fr: `Un dinosaure a 4 pattes. Combien de pattes pour ${groups} dinosaures ?`, en: `A dinosaur has 4 legs. How many legs do ${groups} dinosaurs have?` })
-        : t({ fr: `${groups} nids avec ${per} œufs chacun : combien d’œufs ?`, en: `${groups} nests with ${per} eggs each: how many eggs?` }),
-      String(groups * per),
-      numberWrongs(rng, groups * per, 4),
-      count,
-      d === 4 ? '🦕' : '🪺',
-      `${groups} × ${per} = ${groups * per}`,
-    );
-  });
-  const find = rng.pick(DINO_FINDS);
-  return { kind: 'dig', items, find: { emoji: find.emoji, name: t(find.name) } };
-}
+
 
 function genMemoryMagic(ctx: Ctx): [string, string][] {
   const { rng, d, n, locale } = ctx;
@@ -1770,15 +1399,7 @@ function genMemoryMagic(ctx: Ctx): [string, string][] {
   return rng.shuffle([...numberPairs, ...wordPairs(n - numberPairs.length)]);
 }
 
-function genSpaceMemory(ctx: Ctx): [string, string][] {
-  const { rng, d, n, t } = ctx;
-  if (d <= 2) return rng.sample(SPACE_EMOJIS, n).map((e) => [e, e]);
-  const objects = rng.shuffle(SPACE_NAMES.filter((s) => !s.constellation));
-  const constellations = rng.shuffle(SPACE_NAMES.filter((s) => s.constellation));
-  const nConst = d === 3 ? 0 : d === 4 ? 2 : 4;
-  const chosen = [...constellations.slice(0, nConst), ...objects.slice(0, n - nConst)];
-  return rng.shuffle(chosen).map((s) => [s.a, t(s.b)]);
-}
+
 
 function genOrder(ctx: Ctx, bank: StepSet[]): { prompt: string; steps: string[] }[] {
   const { rng, d, n, t } = ctx;
@@ -1823,7 +1444,7 @@ function genSpell(ctx: Ctx): Word[] {
   );
 }
 
-function genMix(ctx: Ctx, art: boolean): Extract<GameContent, { kind: 'mix' }> {
+function genMix(ctx: Ctx): Extract<GameContent, { kind: 'mix' }> {
   const { rng, d, n, t } = ctx;
   const paletteIds = MIX_PALETTES[d - 1];
   const allowed = MIX_TARGETS.filter((m) => m.recipe.every((c) => paletteIds.includes(c)));
@@ -1834,26 +1455,12 @@ function genMix(ctx: Ctx, art: boolean): Extract<GameContent, { kind: 'mix' }> {
   const chosen = rng.shuffle([...first, ...rest.slice(0, n - first.length)]);
   return {
     kind: 'mix',
-    targets: chosen.map((m) => ({ name: t(art ? m.art : m.name), hex: m.hex, recipe: rng.shuffle(m.recipe) })),
+    targets: chosen.map((m) => ({ name: t(m.name), hex: m.hex, recipe: rng.shuffle(m.recipe) })),
     palette: PALETTE.filter((p) => paletteIds.includes(p.id)).map((p) => ({ id: p.id, name: t(p.name), hex: p.hex })),
   };
 }
 
-function genMelody(ctx: Ctx): number[][] {
-  const { rng, d, n } = ctx;
-  const length = [3, 4, 5, 6, 7][d - 1];
-  const notes = [3, 4, 5, 5, 5][d - 1];
-  const seen = new Set<string>();
-  const out: number[][] = [];
-  while (out.length < n) {
-    const seq = Array.from({ length }, () => rng.int(0, notes - 1));
-    const key = seq.join(',');
-    if (seen.has(key)) continue;
-    seen.add(key);
-    out.push(seq);
-  }
-  return out;
-}
+
 
 /* ───────────────────────── Entry point ───────────────────────── */
 
@@ -1869,8 +1476,6 @@ export function generateContent(gameId: ArcadeGameId, difficulty: Difficulty, lo
     fr: locale === 'fr',
   };
   switch (gameId) {
-    case 'math_runner':
-      return { kind: 'runner', items: genMathRunner(ctx) };
     case 'space_mission':
       return { kind: 'runner', items: genSpaceMission(ctx) };
     case 'alphabet_quest':
@@ -1885,24 +1490,12 @@ export function generateContent(gameId: ArcadeGameId, difficulty: Difficulty, lo
       return { kind: 'choice', items: genDragon(ctx) };
     case 'memory_magic':
       return { kind: 'pairs', pairs: genMemoryMagic(ctx) };
-    case 'space_memory':
-      return { kind: 'pairs', pairs: genSpaceMemory(ctx) };
     case 'color_lab':
-      return genMix(ctx, false);
-    case 'art_studio':
-      return genMix(ctx, true);
+      return genMix(ctx);
     case 'word_forest':
       return { kind: 'spell', words: genSpell(ctx) };
-    case 'dino_dig':
-      return genDinoDig(ctx);
-    case 'music_garden':
-      return { kind: 'melody', sequences: genMelody(ctx) };
     case 'puzzle_castle':
       return { kind: 'slide', size: d >= 4 ? 4 : 3, picture: ctx.rng.pick(SLIDE_PICTURES) };
-    case 'robot_factory':
-      return { kind: 'order', sets: genOrder(ctx, ROBOT_SETS) };
-    case 'story_builder_game':
-      return { kind: 'order', sets: genOrder(ctx, STORY_SETS) };
     case 'little_chef':
       return { kind: 'order', sets: genOrder(ctx, RECIPE_SETS) };
     case 'eco_world':
