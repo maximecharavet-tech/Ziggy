@@ -33,7 +33,7 @@ const FAMILY_EMOJI: Record<(typeof FAMILIES)[number], string> = { all: '🌈', m
 const ARCADE_COLOR = '#FF8A65';
 const HELLO = { kind: 'wave' as const, id: 0 };
 
-/** Arcade games, free play. Each one adapts its level to the child's skill. */
+/** The 20 arcade games, free play. Each one adapts its level to the child's skill. */
 export function ArcadeHome() {
   const locale = useLocale();
   const hydrated = useHydrated();
@@ -41,8 +41,7 @@ export function ArcadeHome() {
   const [family, setFamily] = useState<(typeof FAMILIES)[number]>('all');
   const games = useMemo(() => Object.values(ARCADE_GAMES).filter((g) => family === 'all' || g.skills.some((s) => SKILL_FAMILY[s] === family)), [family]);
   const palette = useMemo(() => scenePalette(ARCADE_COLOR), []);
-  const total = Object.keys(ARCADE_GAMES).length;
-  const title = locale === 'fr' ? `${total} jeux qui grandissent avec toi` : `${total} games that grow with you`;
+  const title = locale === 'fr' ? '20 jeux qui grandissent avec toi' : '20 games that grow with you';
   const subtitle =
     locale === 'fr'
       ? 'Chaque jeu s’adapte à ton niveau : jamais trop facile, jamais trop dur. Et aucune partie n’est perdue !'
