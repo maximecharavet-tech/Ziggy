@@ -1,0 +1,1114 @@
+{
+  "schemaVersion": 1,
+  "assets": [
+    {
+      "id": "ziggy.model",
+      "type": "code-model",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "The real Ziggy (felt plush robot) built in code; use makeZiggy() from src/games3d/kit/models.ts in game scenes.",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/ziggy/model.ts",
+        "exportName": "buildZiggy"
+      },
+      "dependencies": [
+        "ziggy.material.felt",
+        "ziggy.face.embroidery"
+      ],
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "ziggy",
+        "character",
+        "3d"
+      ]
+    },
+    {
+      "id": "ziggy.rig",
+      "type": "code-model",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Code animation rig of the 3D Ziggy: idle, walk, carry, sit and one-shot cues (wave, cheer, jump, nod, oops, think, love, giggle).",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/ziggy/rig.ts",
+        "exportName": "ZiggyRig"
+      },
+      "dependencies": [
+        "ziggy.model"
+      ],
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "ziggy",
+        "character",
+        "animation"
+      ]
+    },
+    {
+      "id": "ziggy.material.felt",
+      "type": "code-material",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Felt material and fibre textures of the 3D Ziggy, generated on canvases at runtime.",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/ziggy/felt.ts"
+      },
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "ziggy",
+        "material"
+      ]
+    },
+    {
+      "id": "ziggy.face.embroidery",
+      "type": "code-material",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Embroidered face of the 3D Ziggy (eyes, lashes, brows, mouth) painted as thread decals on canvases.",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/ziggy/face.ts"
+      },
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "ziggy",
+        "face",
+        "material"
+      ]
+    },
+    {
+      "id": "mascot.ziggy-face",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 512,
+        "height": 512
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Close-up of the plush Ziggy's face (avatars, small badges). Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/ziggy-face.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.ziggy-heart",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 778,
+        "height": 1128
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Cut-out of the plush Ziggy holding a heart. Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/ziggy-heart.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.ziggy-stand",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 556,
+        "height": 962
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Cut-out of the plush Ziggy standing (MascotCutout). Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/ziggy-stand.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.ziggy-wave",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 717,
+        "height": 964
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Cut-out of the plush Ziggy waving (MascotCutout). Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/ziggy-wave.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.scene-cheer",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 784,
+        "height": 1168
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Scene photo of the plush Ziggy cheering. Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/scene-cheer.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.scene-closeup",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 784,
+        "height": 1168
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Scene photo, close-up of the plush Ziggy. Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/scene-closeup.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.scene-heart",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 784,
+        "height": 1168
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Scene photo of the plush Ziggy with a heart. Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/scene-heart.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.scene-stand",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 784,
+        "height": 1168
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Scene photo of the plush Ziggy standing. Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/scene-stand.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.scene-wave",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 784,
+        "height": 1168
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Scene photo of the plush Ziggy waving. Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/scene-wave.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.film-poster",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 640,
+        "height": 954
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Poster frame of the Ziggy film (shown before the video plays). Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/film-poster.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.loop-poster",
+      "type": "image",
+      "format": "webp",
+      "resolution": {
+        "width": 640,
+        "height": 954
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Poster frame of the Ziggy loop video. Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/loop-poster.webp"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "mascot.og-ziggy",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 417,
+        "height": 560
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Open Graph / social preview picture of the plush Ziggy. Official plush artwork (the real Ziggy).",
+      "location": {
+        "kind": "public",
+        "path": "/mascot/og-ziggy.png"
+      },
+      "source": {
+        "kind": "owner-artwork",
+        "notes": "Official plush Ziggy artwork supplied by the owner (commit a12111b)."
+      },
+      "tags": [
+        "ziggy",
+        "mascot",
+        "2d"
+      ]
+    },
+    {
+      "id": "lutins.bible",
+      "type": "data",
+      "format": "json",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Character bible of the three felt elves (names, colours, looks, style and negatives); source of truth for the 3D models, prompts and UI.",
+      "location": {
+        "kind": "source",
+        "path": "src/data/lutins/bible.json"
+      },
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "lutins",
+        "data"
+      ]
+    },
+    {
+      "id": "lutins.material.craft",
+      "type": "code-material",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Craft materials of the elves built in code: wool felt, knit and yarn textures, acorn cap, stitches, bead eyes, braids, gold.",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/lutins/craft.ts"
+      },
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "lutins",
+        "material"
+      ]
+    },
+    {
+      "id": "lutins.model.pepin",
+      "type": "code-model",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Pépin (green tunic, long red-white striped hat with a bell): felt elf built in code with its ElfRig (poses stand, sit, wave, laugh, peek, tiptoe, point). makeElf('pepin').",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/lutins/elf.ts",
+        "exportName": "makeElf"
+      },
+      "dependencies": [
+        "lutins.bible",
+        "lutins.material.craft"
+      ],
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "lutins",
+        "character",
+        "3d"
+      ]
+    },
+    {
+      "id": "lutins.model.grelotte",
+      "type": "code-model",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Grelotte (lavender tunic, mustard scarf, braids, round glasses): felt elf built in code with its ElfRig (poses stand, sit, wave, laugh, peek, tiptoe, point). makeElf('grelotte').",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/lutins/elf.ts",
+        "exportName": "makeElf"
+      },
+      "dependencies": [
+        "lutins.bible",
+        "lutins.material.craft"
+      ],
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "lutins",
+        "character",
+        "3d"
+      ]
+    },
+    {
+      "id": "lutins.model.noisette",
+      "type": "code-model",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Noisette (tiny, hazelnut hooded cape, acorn-cap hat): felt elf built in code with its ElfRig (poses stand, sit, wave, laugh, peek, tiptoe, point). makeElf('noisette').",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/lutins/elf.ts",
+        "exportName": "makeElf"
+      },
+      "dependencies": [
+        "lutins.bible",
+        "lutins.material.craft"
+      ],
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "lutins",
+        "character",
+        "3d"
+      ]
+    },
+    {
+      "id": "lutins.ref.sheet",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 1536,
+        "height": 1024
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Reference line-up of the three elves, front view, full body, pure white (sent to the image AI with every generation).",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/refs/sheet.png"
+      },
+      "dependencies": [
+        "lutins.model.pepin",
+        "lutins.model.grelotte",
+        "lutins.model.noisette"
+      ],
+      "source": {
+        "kind": "render-script",
+        "script": "scripts/lutins-refs/render.mjs",
+        "tool": "three.js 0.186 + Playwright Chromium (SwiftShader), supersampled",
+        "notes": "layout=lineup, 1536×1024, ss=2"
+      },
+      "tags": [
+        "lutins",
+        "reference"
+      ]
+    },
+    {
+      "id": "lutins.ref.sheet-34",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 1536,
+        "height": 1024
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Reference line-up of the three elves in 3/4 view, pure white.",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/refs/sheet-34.png"
+      },
+      "dependencies": [
+        "lutins.model.pepin",
+        "lutins.model.grelotte",
+        "lutins.model.noisette"
+      ],
+      "source": {
+        "kind": "render-script",
+        "script": "scripts/lutins-refs/render.mjs",
+        "tool": "three.js 0.186 + Playwright Chromium (SwiftShader), supersampled",
+        "notes": "layout=lineup34, 1536×1024, ss=2"
+      },
+      "tags": [
+        "lutins",
+        "reference"
+      ]
+    },
+    {
+      "id": "lutins.ref.pepin",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 1024,
+        "height": 1024
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Turnaround of Pépin: front, 3/4 and back on a light backdrop (image-AI reference).",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/refs/pepin.png"
+      },
+      "dependencies": [
+        "lutins.model.pepin"
+      ],
+      "source": {
+        "kind": "render-script",
+        "script": "scripts/lutins-refs/render.mjs",
+        "tool": "three.js 0.186 + Playwright Chromium (SwiftShader), supersampled",
+        "notes": "layout=turnaround&elf=pepin, 1024×1024, ss=2"
+      },
+      "tags": [
+        "lutins",
+        "reference"
+      ]
+    },
+    {
+      "id": "lutins.avatar.pepin",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 512,
+        "height": 512
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Cheerful bust portrait of Pépin on a transparent background (ElfAvatar, HUD faces).",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/refs/avatars/pepin.png"
+      },
+      "dependencies": [
+        "lutins.model.pepin"
+      ],
+      "source": {
+        "kind": "render-script",
+        "script": "scripts/lutins-refs/render.mjs",
+        "tool": "three.js 0.186 + Playwright Chromium (SwiftShader), supersampled",
+        "notes": "layout=avatar&elf=pepin, 512×512, ss=3, transparent"
+      },
+      "tags": [
+        "lutins",
+        "avatar",
+        "2d"
+      ]
+    },
+    {
+      "id": "lutins.ref.grelotte",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 1024,
+        "height": 1024
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Turnaround of Grelotte: front, 3/4 and back on a light backdrop (image-AI reference).",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/refs/grelotte.png"
+      },
+      "dependencies": [
+        "lutins.model.grelotte"
+      ],
+      "source": {
+        "kind": "render-script",
+        "script": "scripts/lutins-refs/render.mjs",
+        "tool": "three.js 0.186 + Playwright Chromium (SwiftShader), supersampled",
+        "notes": "layout=turnaround&elf=grelotte, 1024×1024, ss=2"
+      },
+      "tags": [
+        "lutins",
+        "reference"
+      ]
+    },
+    {
+      "id": "lutins.avatar.grelotte",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 512,
+        "height": 512
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Cheerful bust portrait of Grelotte on a transparent background (ElfAvatar, HUD faces).",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/refs/avatars/grelotte.png"
+      },
+      "dependencies": [
+        "lutins.model.grelotte"
+      ],
+      "source": {
+        "kind": "render-script",
+        "script": "scripts/lutins-refs/render.mjs",
+        "tool": "three.js 0.186 + Playwright Chromium (SwiftShader), supersampled",
+        "notes": "layout=avatar&elf=grelotte, 512×512, ss=3, transparent"
+      },
+      "tags": [
+        "lutins",
+        "avatar",
+        "2d"
+      ]
+    },
+    {
+      "id": "lutins.ref.noisette",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 1024,
+        "height": 1024
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Turnaround of Noisette: front, 3/4 and back on a light backdrop (image-AI reference).",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/refs/noisette.png"
+      },
+      "dependencies": [
+        "lutins.model.noisette"
+      ],
+      "source": {
+        "kind": "render-script",
+        "script": "scripts/lutins-refs/render.mjs",
+        "tool": "three.js 0.186 + Playwright Chromium (SwiftShader), supersampled",
+        "notes": "layout=turnaround&elf=noisette, 1024×1024, ss=2"
+      },
+      "tags": [
+        "lutins",
+        "reference"
+      ]
+    },
+    {
+      "id": "lutins.avatar.noisette",
+      "type": "image",
+      "format": "png",
+      "resolution": {
+        "width": 512,
+        "height": 512
+      },
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Cheerful bust portrait of Noisette on a transparent background (ElfAvatar, HUD faces).",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/refs/avatars/noisette.png"
+      },
+      "dependencies": [
+        "lutins.model.noisette"
+      ],
+      "source": {
+        "kind": "render-script",
+        "script": "scripts/lutins-refs/render.mjs",
+        "tool": "three.js 0.186 + Playwright Chromium (SwiftShader), supersampled",
+        "notes": "layout=avatar&elf=noisette, 512×512, ss=3, transparent"
+      },
+      "tags": [
+        "lutins",
+        "avatar",
+        "2d"
+      ]
+    },
+    {
+      "id": "lutins.wasm.core",
+      "type": "wasm",
+      "format": "wasm",
+      "version": "0.1.0",
+      "licence": "MIT",
+      "copyright": "© Ziggy",
+      "description": "lutins-core compiled to WebAssembly (browser build): photo analysis, stage finder, palette, prompt builder, verifier.",
+      "location": {
+        "kind": "source",
+        "path": "src/lib/lutins/wasm/lutins_core_bg.wasm"
+      },
+      "dependencies": [
+        "lutins.wasm.core-glue",
+        "lutins.bible"
+      ],
+      "source": {
+        "kind": "build",
+        "script": "scripts/lutins-wasm.mjs",
+        "tool": "Rust crate rust/lutins-core 0.1.0 + wasm-bindgen 0.2.129"
+      },
+      "tags": [
+        "lutins",
+        "wasm"
+      ]
+    },
+    {
+      "id": "lutins.wasm.core-glue",
+      "type": "script",
+      "format": "js",
+      "version": "0.1.0",
+      "licence": "MIT",
+      "copyright": "© Ziggy",
+      "description": "wasm-bindgen JS glue of the lutins-core browser build.",
+      "location": {
+        "kind": "source",
+        "path": "src/lib/lutins/wasm/lutins_core.js"
+      },
+      "source": {
+        "kind": "build",
+        "script": "scripts/lutins-wasm.mjs",
+        "tool": "wasm-bindgen 0.2.129"
+      },
+      "tags": [
+        "lutins",
+        "wasm"
+      ]
+    },
+    {
+      "id": "lutins.wasm.core-full",
+      "type": "wasm",
+      "format": "wasm",
+      "version": "0.1.0",
+      "licence": "MIT",
+      "copyright": "© Ziggy",
+      "description": "lutins-core full build (with image decoders) for the Node API routes and the video-card renderer.",
+      "location": {
+        "kind": "source",
+        "path": "src/lib/lutins/wasm/lutins_core_full_bg.wasm"
+      },
+      "dependencies": [
+        "lutins.wasm.core-full-glue",
+        "lutins.bible"
+      ],
+      "source": {
+        "kind": "build",
+        "script": "scripts/lutins-wasm.mjs",
+        "tool": "Rust crate rust/lutins-core 0.1.0 (feature full) + wasm-bindgen 0.2.129"
+      },
+      "tags": [
+        "lutins",
+        "wasm",
+        "server"
+      ]
+    },
+    {
+      "id": "lutins.wasm.core-full-glue",
+      "type": "script",
+      "format": "js",
+      "version": "0.1.0",
+      "licence": "MIT",
+      "copyright": "© Ziggy",
+      "description": "wasm-bindgen JS glue of the lutins-core full build.",
+      "location": {
+        "kind": "source",
+        "path": "src/lib/lutins/wasm/lutins_core_full.js"
+      },
+      "source": {
+        "kind": "build",
+        "script": "scripts/lutins-wasm.mjs",
+        "tool": "wasm-bindgen 0.2.129"
+      },
+      "tags": [
+        "lutins",
+        "wasm",
+        "server"
+      ]
+    },
+    {
+      "id": "mediapipe.vision.wasm",
+      "type": "wasm",
+      "format": "wasm",
+      "version": "1.2.2",
+      "licence": "Apache-2.0",
+      "copyright": "© Google LLC",
+      "description": "MediaPipe Tasks Vision wasm runtime, self-hosted (Santa booth segmentation and the Lutins people check).",
+      "location": {
+        "kind": "public",
+        "path": "/santa/mediapipe/wasm/vision_wasm_internal.wasm",
+        "provisionedBy": "scripts/santa-mediapipe.mjs"
+      },
+      "dependencies": [
+        "mediapipe.vision.glue"
+      ],
+      "source": {
+        "kind": "npm-copy",
+        "origin": "https://www.npmjs.com/package/@mediapipe/tasks-vision",
+        "tool": "@mediapipe/tasks-vision 1.2.2",
+        "notes": "Copied from node_modules at npm install (gitignored)."
+      },
+      "tags": [
+        "santa",
+        "lutins",
+        "ml",
+        "wasm"
+      ]
+    },
+    {
+      "id": "mediapipe.vision.glue",
+      "type": "script",
+      "format": "js",
+      "version": "1.2.2",
+      "licence": "Apache-2.0",
+      "copyright": "© Google LLC",
+      "description": "JS loader of the MediaPipe Tasks Vision wasm runtime, self-hosted.",
+      "location": {
+        "kind": "public",
+        "path": "/santa/mediapipe/wasm/vision_wasm_internal.js",
+        "provisionedBy": "scripts/santa-mediapipe.mjs"
+      },
+      "source": {
+        "kind": "npm-copy",
+        "origin": "https://www.npmjs.com/package/@mediapipe/tasks-vision",
+        "tool": "@mediapipe/tasks-vision 1.2.2",
+        "notes": "Copied from node_modules at npm install (gitignored)."
+      },
+      "tags": [
+        "santa",
+        "lutins",
+        "ml"
+      ]
+    },
+    {
+      "id": "santa.mediapipe.selfie-segmenter",
+      "type": "ml-model",
+      "format": "tflite",
+      "version": "1.0.0",
+      "licence": "Apache-2.0",
+      "copyright": "© Google LLC",
+      "description": "MediaPipe selfie segmenter (float16): on-device person cut-out for the Santa photo booth; nothing leaves the device.",
+      "location": {
+        "kind": "public",
+        "path": "/santa/mediapipe/selfie_segmenter.tflite"
+      },
+      "dependencies": [
+        "mediapipe.vision.wasm"
+      ],
+      "source": {
+        "kind": "download",
+        "origin": "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_segmenter/float16/latest/selfie_segmenter.tflite",
+        "script": "scripts/santa-mediapipe.mjs",
+        "notes": "Downloaded 2026-11-08; licence per the model card."
+      },
+      "tags": [
+        "santa",
+        "ml"
+      ]
+    },
+    {
+      "id": "santa.mediapipe.selfie-multiclass",
+      "type": "ml-model",
+      "format": "tflite",
+      "version": "1.0.0",
+      "licence": "Apache-2.0",
+      "copyright": "© Google LLC",
+      "description": "MediaPipe selfie multiclass segmenter 256×256 (float32): hair / body / clothes classes for the Santa photo booth, on device.",
+      "location": {
+        "kind": "public",
+        "path": "/santa/mediapipe/selfie_multiclass_256x256.tflite"
+      },
+      "dependencies": [
+        "mediapipe.vision.wasm"
+      ],
+      "source": {
+        "kind": "download",
+        "origin": "https://storage.googleapis.com/mediapipe-models/image_segmenter/selfie_multiclass_256x256/float32/latest/selfie_multiclass_256x256.tflite",
+        "script": "scripts/santa-mediapipe.mjs",
+        "notes": "Downloaded 2026-11-08; licence per the model card."
+      },
+      "tags": [
+        "santa",
+        "ml"
+      ]
+    },
+    {
+      "id": "lutins.mediapipe.efficientdet-lite0",
+      "type": "ml-model",
+      "format": "tflite",
+      "version": "1.0.0",
+      "licence": "Apache-2.0",
+      "copyright": "© Google LLC",
+      "description": "EfficientDet-Lite0 (int8, COCO) object detector: on-device \"no people in the photo\" check before a room photo is sent.",
+      "location": {
+        "kind": "public",
+        "path": "/lutins/mediapipe/efficientdet_lite0.tflite"
+      },
+      "dependencies": [
+        "mediapipe.vision.wasm"
+      ],
+      "source": {
+        "kind": "download",
+        "origin": "https://ai.google.dev/edge/mediapipe/solutions/vision/object_detector",
+        "notes": "MediaPipe model zoo, int8; added 2026-11-08 (not yet listed in THIRD_PARTY_LICENSES.md)."
+      },
+      "tags": [
+        "lutins",
+        "ml"
+      ]
+    },
+    {
+      "id": "santa.material.textures",
+      "type": "code-material",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Canvas textures of the Santa scenes (stripes, logs…) generated at runtime.",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/santa/textures.ts"
+      },
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "santa",
+        "material"
+      ]
+    },
+    {
+      "id": "santa.material.fluff",
+      "type": "code-material",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Soft stuffed shapes of the felt Santa built in code: lumpy puffs (beard, fur trims, pompom), tapered tubes, seam-welded normals.",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/santa/fluff.ts"
+      },
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "santa",
+        "material"
+      ]
+    },
+    {
+      "id": "santa.model",
+      "type": "code-model",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "The 3D Santa built in code with its SantaRig (idle, laugh, wave, listen, write, wink, hug). makeSanta().",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/santa/santa.ts",
+        "exportName": "makeSanta"
+      },
+      "dependencies": [
+        "santa.material.fluff",
+        "santa.material.textures"
+      ],
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "santa",
+        "character",
+        "3d"
+      ]
+    },
+    {
+      "id": "santa.props",
+      "type": "code-model",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "© Ziggy",
+      "description": "Props of the Santa scenes built in code: plush reindeer, sleigh, candy canes, log cabin, pines, aurora, fireplace, toy shelves, Ziggy as a little elf.",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/santa/props.ts"
+      },
+      "dependencies": [
+        "santa.material.textures"
+      ],
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "santa",
+        "3d"
+      ]
+    },
+    {
+      "id": "kit.music.jingle",
+      "type": "code-audio",
+      "format": "ts",
+      "version": "1.0.0",
+      "licence": "LicenseRef-Ziggy",
+      "copyright": "Melody: James Lord Pierpont, 1857 (public domain); arrangement and synth © Ziggy",
+      "description": "Music-box \"Jingle Bells\" and little game sounds synthesised in Web Audio (GameAudio); nothing downloaded.",
+      "location": {
+        "kind": "source",
+        "path": "src/games3d/kit/music.ts",
+        "exportName": "GameAudio"
+      },
+      "source": {
+        "kind": "code"
+      },
+      "tags": [
+        "audio",
+        "kit",
+        "christmas"
+      ]
+    }
+  ]
+}
