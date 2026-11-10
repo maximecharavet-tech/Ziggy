@@ -547,3 +547,21 @@ Livré avec le site : uniquement l’audio produit (MP3 + `timing.json`).
   **espeak-ng 1.52 (GPL-3.0)** via la wheel `espeakng-loader` (MIT), chargé dynamiquement sur la
   machine de fabrication uniquement ; **FFmpeg** + libmp3lame (LGPL/GPL), outil système.
   Aucun de ces codes n’est lié au site ni livré avec lui.
+
+## Santa's voice (L'appli du Père Noël)
+
+```sh
+node voice-engine/dump-santa.mjs /tmp/santa-clips.json
+voice-engine/target/release/ziggy-voice santa --clips /tmp/santa-clips.json
+```
+
+Records every fixed clip (`src/data/santa/voice-clips.ts`: calls, message,
+gifts, proud moments, ages, Advent) into `public/santa/voice/<locale>/` and
+updates `src/data/santa/voice-manifest.json` (key → hash of the words). Runs
+are resumable: only new or changed texts are re-recorded. Voice:
+`recipe::santa` (French: timbre am_santa 0.35 + em_santa 0.15 + ff_siwis 0.5,
+prosody ff_siwis, f0 × 0.56, formant 0.93, speed 0.86; English: am_santa),
+then `santa::fx` (FunDSP: chest bell 150 Hz, low shelf 300 Hz, softer top,
+25 % tanh) and the usual mastering (−18 LUFS, −2 dBTP). Lab overrides:
+`--timbre --prosody --pitch --formant --speed --only --out --manifest --wav`.
+About 7 min for 336 clips on 8 CPU cores.

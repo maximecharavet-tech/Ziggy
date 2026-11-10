@@ -183,3 +183,42 @@ impl Master {
 /// WAV it beats CBR 40/48 and ABR 44/48 in every band (SNR 22.2 dB vs 18.5 dB
 /// for v1's CBR 40) and keeps all 31 stories × 2 languages under ≈ 60 MB.
 pub const MP3_VBR_QUALITY: &str = "5";
+
+/// Santa (L'appli du Père Noël): a deep, warm, smiling grandfather.
+///
+/// Kokoro has no male French voice, so the timbre half of the style mixes
+/// its Santa voices (American, plus a little of the Spanish one for rounder
+/// vowels) with `ff_siwis`, the French voice, which also carries the prosody
+/// (French rhythm and melody). Chosen on word error rate (faster-whisper
+/// small, 14 clips): 9 % here vs 11 % with a full Santa timbre, which gave
+/// an English accent. The pitch is lowered inside
+/// the network (no shifting artefact) and the vocal tract made larger with
+/// the CheapTrick envelope filter; `santa::fx` (FunDSP) then adds chest
+/// warmth and a little harmonic colour.
+pub fn santa(locale: &str) -> Delivery {
+    if locale == "fr" {
+        Delivery {
+            blend: Blend {
+                timbre: mix(&[("am_santa", 0.35), ("em_santa", 0.15), ("ff_siwis", 0.5)]),
+                prosody: mix(&[("ff_siwis", 1.0)]),
+            },
+            speed: 0.86,
+            pitch: PitchCtl { scale: 0.56, gamma: 1.05, reference: 200.0 },
+            formant: 0.93,
+            gain_db: 0.0,
+            range: 1.1,
+        }
+    } else {
+        Delivery {
+            blend: Blend { timbre: mix(&[("am_santa", 1.0)]), prosody: mix(&[("am_santa", 1.0)]) },
+            speed: 0.88,
+            pitch: PitchCtl { scale: 0.92, gamma: 1.05, reference: 120.0 },
+            formant: 0.96,
+            gain_db: 0.0,
+            range: 1.1,
+        }
+    }
+}
+
+/// Santa's recipe id (in public/santa/voice and the site's manifest).
+pub const SANTA_RECIPE_ID: &str = "santa-v1";

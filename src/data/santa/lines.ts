@@ -11,6 +11,7 @@ import type { L } from '@/lib/i18n-text';
 import { giftById } from './gifts';
 import { proudById } from './proud';
 import { NAME_RE } from '@/lib/santa/name';
+import { SANTA_ADVENT } from './advent';
 
 export type SantaLocale = 'fr' | 'en';
 
@@ -94,7 +95,7 @@ const cap = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
 
 /**
  * A clip key → the exact words. Keys:
- *  line:<id> · gift:<giftId> · proud:<proudId> · age:<2–12> · name:<hello|bye|plain>:<first name>
+ *  line:<id> · gift:<giftId> · proud:<proudId> · age:<2–12> · advent:<1–24> · name:<hello|bye|plain>:<first name>
  * Returns null for anything else (the voice route speaks nothing it doesn't know).
  */
 export function santaText(key: string, locale: SantaLocale): string | null {
@@ -112,6 +113,13 @@ export function santaText(key: string, locale: SantaLocale): string | null {
     const n = Number(a);
     if (!Number.isInteger(n) || n < 2 || n > 12) return null;
     return locale === 'fr' ? `Si je me souviens bien, tu as ${n} ans maintenant. Comme tu grandis vite !` : `If I remember well, you’re ${n} now. You’re growing up so fast!`;
+  }
+  if (kind === 'advent' && a) {
+    // What the Advent door's "listen" button reads: title, text, then the riddle's answer.
+    const e = SANTA_ADVENT.find((x) => String(x.day) === a);
+    if (!e) return null;
+    const title = e.title[locale].replace(/[.!?…]?$/, (m) => m || '.');
+    return [title, e.text[locale], e.answer?.[locale]].filter(Boolean).join(' ');
   }
   if (kind === 'name' && a && rest.length) {
     const name = rest.join(':');

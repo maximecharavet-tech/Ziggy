@@ -129,6 +129,46 @@ enum Cmd {
         #[arg(long)]
         check: bool,
     },
+    /// Record Santa's fixed clips (L'appli du Père Noël) into public/santa/voice.
+    Santa {
+        /// Output of `node voice-engine/dump-santa.mjs out.json`.
+        #[arg(long)]
+        clips: String,
+        /// Output folder (default: public/santa/voice).
+        #[arg(long)]
+        out: Option<String>,
+        /// Site manifest (default: src/data/santa/voice-manifest.json; lab runs: elsewhere).
+        #[arg(long)]
+        manifest: Option<String>,
+        #[arg(long, default_value = "fr,en")]
+        locale: String,
+        /// Clip keys, comma-separated (default: all).
+        #[arg(long, default_value = "")]
+        only: String,
+        #[arg(long)]
+        force: bool,
+        #[arg(long, default_value_t = 2)]
+        threads: usize,
+        #[arg(long, default_value_t = 4)]
+        jobs: usize,
+        /// Tuning: timbre mix (e.g. `am_santa:0.5+em_santa:0.5`).
+        #[arg(long)]
+        timbre: Option<String>,
+        /// Tuning: prosody mix.
+        #[arg(long)]
+        prosody: Option<String>,
+        /// Tuning: pitch scale (1 = the prosody voice's own level).
+        #[arg(long)]
+        pitch: Option<f32>,
+        /// Tuning: formant (vocal tract) scale, < 1 = bigger.
+        #[arg(long)]
+        formant: Option<f32>,
+        #[arg(long)]
+        speed: Option<f32>,
+        /// Also write WAVs.
+        #[arg(long)]
+        wav: bool,
+    },
     /// Synthesize a phoneme string to a WAV (voice or blend, e.g. `ff_siwis:0.7+af_heart:0.3`).
     Phonemes {
         ps: String,
@@ -145,6 +185,26 @@ fn main() -> Result<()> {
     let cli = Cli::parse();
     match cli.cmd {
         Cmd::Prepare => prepare::prepare(&Cache::new()),
+        Cmd::Santa { clips, out, manifest, locale, only, force, threads, jobs, timbre, prosody, pitch, formant, speed, wav } => {
+            let root = ziggy_voice::paths::engine_dir().join("..");
+            let split = |s: &str| s.split(',').map(str::trim).filter(|x| !x.is_empty()).map(String::from).collect::<Vec<_>>();
+            ziggy_voice::santa::run(ziggy_voice::santa::Options {
+                clips: clips.into(),
+                out: out.map(Into::into).unwrap_or_else(|| root.join("public/santa/voice")),
+                manifest: manifest.map(Into::into).unwrap_or_else(|| root.join("src/data/santa/voice-manifest.json")),
+                locales: split(&locale),
+                only: split(&only),
+                force,
+                threads,
+                jobs,
+                timbre,
+                prosody,
+                pitch,
+                formant,
+                speed,
+                wav,
+            })
+        }
         Cmd::Generate { locale, story, force, progress, threads, jobs, stories_json, sample, out, check } => {
             let sample_out = if sample.is_some() {
                 Some(std::path::PathBuf::from(out.clone().ok_or_else(|| anyhow::anyhow!("--sample needs --out"))?))

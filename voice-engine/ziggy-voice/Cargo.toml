@@ -2,7 +2,7 @@
 name = "ziggy-voice"
 version = "2.0.0"
 edition = "2021"
-description = "Ziggy Voice Engine v2: offline bedtime narrator for the Ziggy mode dodo"
+description = "Ziggy Voice Engine: offline bedtime narrator (mode dodo) and Santa's voice (L'appli du Père Noël)"
 license = "MIT"
 publish = false
 
@@ -25,4 +25,5 @@ rayon = "1"
 sha2 = "0.10"
 flate2 = "1"
 tar = "0.4"
+fundsp = { version = "0.23", default-features = false, features = ["std"] }
 zip = { version = "2", default-features = false, features = ["deflate"] }
