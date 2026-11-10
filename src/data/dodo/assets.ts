@@ -19,6 +19,9 @@ export const MUSICAL_STORIES: Readonly<Record<string, string>> = {
   d15: 'zebre',
   d16: 'phare',
   d17: 'renard',
+  d18: 'lapin-oreilles',
+  d19: 'volcan',
+  d20: 'astronaute',
 };
 
 /** Use the same two-version contract as Lili; no player-specific branching. */
@@ -99,5 +102,29 @@ export const BUNDLED_DODO_IMAGES: Readonly<Record<string, Readonly<Record<number
     4: '/dodo/renard/4.jpg',
     5: '/dodo/renard/5.jpg',
     6: '/dodo/renard/6.jpg',
+  },
+  d18: {
+    1: '/dodo/lapin-oreilles/1.jpg',
+    2: '/dodo/lapin-oreilles/2.jpg',
+    3: '/dodo/lapin-oreilles/3.jpg',
+    4: '/dodo/lapin-oreilles/4.jpg',
+    5: '/dodo/lapin-oreilles/5.jpg',
+    6: '/dodo/lapin-oreilles/6.jpg',
+  },
+  d19: {
+    1: '/dodo/volcan/1.jpg',
+    2: '/dodo/volcan/2.jpg',
+    3: '/dodo/volcan/3.jpg',
+    4: '/dodo/volcan/4.jpg',
+    5: '/dodo/volcan/5.jpg',
+    6: '/dodo/volcan/6.jpg',
+  },
+  d20: {
+    1: '/dodo/astronaute/1.jpg',
+    2: '/dodo/astronaute/2.jpg',
+    3: '/dodo/astronaute/3.jpg',
+    4: '/dodo/astronaute/4.jpg',
+    5: '/dodo/astronaute/5.jpg',
+    6: '/dodo/astronaute/6.jpg',
   },
 };
