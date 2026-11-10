@@ -15,3 +15,8 @@ Motion (`motion/react`) replaces every former `framer-motion` import; `framer-mo
 
 ## Engines used to write this code (free)
 - Codex CLI (landing, Advent calendar, certificate, pricing flag), Hyper Code via local Ollama `qwen-coder-7b` (first draft of `santa-voice-utils.test.ts`, corrected by hand).
+
+## Visuels du Père Noël (public/santa/art)
+
+- Images : générées avec ChatGPT pour Ziggy (prompts : PLAN.md §7), encodées en AVIF/WebP.
+- Vidéos : générées avec Grok Imagine pour Ziggy (prompts : PLAN.md §8), encodées en MP4 H.264 + WebM VP9 (ffmpeg), sans audio, avec poster WebP.

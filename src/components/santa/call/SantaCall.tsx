@@ -35,6 +35,8 @@ import { useSantaPass } from "@/lib/santa/pass-client";
 import type { SantaChild, SantaSceneHandle } from "@/lib/santa/types";
 import { ChildSetup } from "@/components/santa/ChildSetup";
 import { Snow } from "@/components/santa/Snow";
+import { santaArt } from "@/data/santa/art";
+import { ArtSlot } from "@/components/santa/landing/ArtSlot";
 
 const T = {
   title: { fr: "Appelle le Père Noël", en: "Call Santa" },
@@ -574,8 +576,13 @@ export function SantaCall({
 
   return (
     <div className="relative">
+      {(phase === "pick" || phase === "ended") && (
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-[70vh] overflow-hidden [mask-image:linear-gradient(to_bottom,black_35%,transparent)]">
+          <ArtSlot asset={santaArt("bureau-fond-appel")} className="absolute inset-0 h-full w-full object-cover opacity-45" />
+        </div>
+      )}
       {phase === "pick" && (
-        <section className="mx-auto max-w-5xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
+        <section className="relative mx-auto max-w-5xl px-4 pb-24 pt-24 sm:px-6 sm:pt-28">
           <div className="flex items-center justify-center gap-3 text-center">
             <h1 className="font-display text-4xl font-bold text-white text-balance drop-shadow-[0_3px_0_rgba(0,0,0,0.25)] sm:text-5xl">
               {tr(T.title, locale)}
@@ -699,6 +706,8 @@ export function SantaCall({
               aria-label={tr(T.ringing, locale)}
               onPointerDown={() => void audio.current?.unlock()}
             >
+              <ArtSlot asset={santaArt("appel-entrant-video")} priority sizes="100vw" className="absolute inset-0 h-full w-full object-cover opacity-60" />
+              <div aria-hidden="true" className="absolute inset-0 bg-[linear-gradient(180deg,rgba(18,11,46,.75),rgba(18,11,46,.25)_45%,rgba(7,5,26,.85))]" />
               <Snow count={reduced ? 0 : 50} />
               <div className="relative flex flex-col items-center text-center">
                 <p className="text-sm font-semibold uppercase tracking-[0.2em] text-white/70">

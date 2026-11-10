@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale } from 'next-intl/server';
-import { SantaVillage } from '@/components/santa/SantaVillage';
+import { SantaLanding } from '@/components/santa/landing/SantaLanding';
 import { alternatesFor, breadcrumbLd } from '@/lib/seo';
 import { SITE_URL } from '@/lib/site-url';
 import { JsonLd } from '@/components/seo/JsonLd';
@@ -25,7 +25,7 @@ export default async function PereNoelPage({ params }: { params: Promise<{ local
   return (
     <>
       <JsonLd data={[crumbs]} />
-      <SantaVillage />
+      <SantaLanding />
     </>
   );
 }
