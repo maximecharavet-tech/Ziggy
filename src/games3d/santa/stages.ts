@@ -42,6 +42,8 @@ import { nightWindowTexture, planksTexture, scrollTexture, wallpaperTexture } fr
  */
 
 export interface StageContext {
+  /** A strong device: depth of field and other heavier touches. */
+  rich?: boolean;
   lowPower: boolean;
   /** 1 = full motion, about 0.4 with reduced motion. */
   energy: number;
@@ -65,12 +67,65 @@ export interface Stage {
   update(dt: number, t: number, camera: THREE.PerspectiveCamera): void;
   /** Booth only: the child's place, a rectangle on the plane z = slot.z (world units). */
   slot?: { x0: number; x1: number; y0: number; y1: number; z: number };
-  /** Bloom settings when post-processing runs (capable devices). */
-  bloom: { strength: number; radius: number; threshold: number };
+  /** Bloom settings when post-processing runs (capable devices); `grade` adds the film look, `dof` a soft background. */
+  bloom: { strength: number; radius: number; threshold: number; grade?: boolean; dof?: { aperture: number; maxblur: number } | null };
   ziggies: ZiggyActor[];
+  /** Call only: Ziggy the elf follows the call ('in' pops in, 'out' leaves, cues react; 'auto' peeks now and then). */
+  ziggy?: (cmd: ZiggyCall) => void;
 }
 
+export type ZiggyCall = 'auto' | 'in' | 'out' | 'hide' | 'wave' | 'cheer' | 'giggle' | 'nod';
+
 const V = (x = 0, y = 0, z = 0) => new THREE.Vector3(x, y, z);
+
+/** Slow golden dust motes catching the firelight (additive points, a few dozen). */
+class Motes {
+  points: THREE.Points;
+  private seeds: Float32Array;
+  constructor(n: number) {
+    const pos = new Float32Array(n * 3);
+    this.seeds = new Float32Array(n * 3);
+    for (let i = 0; i < n; i++) {
+      this.seeds[i * 3] = Math.random() * 100;
+      this.seeds[i * 3 + 1] = 0.3 + Math.random() * 0.7;
+      this.seeds[i * 3 + 2] = Math.random();
+      pos[i * 3] = (Math.random() - 0.5) * 3.2;
+      pos[i * 3 + 1] = 0.9 + Math.random() * 1.9;
+      pos[i * 3 + 2] = 0.4 + Math.random() * 1.6;
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+    const c = document.createElement('canvas');
+    c.width = c.height = 32;
+    const x = c.getContext('2d');
+    if (x) {
+      const gr = x.createRadialGradient(16, 16, 0, 16, 16, 16);
+      gr.addColorStop(0, 'rgba(255,230,170,1)');
+      gr.addColorStop(0.4, 'rgba(255,190,110,0.45)');
+      gr.addColorStop(1, 'rgba(255,170,80,0)');
+      x.fillStyle = gr;
+      x.fillRect(0, 0, 32, 32);
+    }
+    const tex = new THREE.CanvasTexture(c);
+    const m = new THREE.PointsMaterial({ map: tex, size: 0.035, transparent: true, opacity: 0.75, depthWrite: false, blending: THREE.AdditiveBlending, color: new THREE.Color('#ffd9a0').multiplyScalar(1.6) });
+    this.points = new THREE.Points(g, m);
+    this.points.renderOrder = 5;
+  }
+  update(dt: number, t: number) {
+    const a = this.points.geometry.attributes.position as THREE.BufferAttribute;
+    const p = a.array as Float32Array;
+    for (let i = 0; i < a.count; i++) {
+      const s = this.seeds[i * 3];
+      const v = this.seeds[i * 3 + 1];
+      p[i * 3] += Math.sin(t * 0.3 * v + s) * 0.04 * dt;
+      p[i * 3 + 1] += (0.035 * v + Math.sin(t * 0.5 + s) * 0.02) * dt;
+      p[i * 3 + 2] += Math.cos(t * 0.25 * v + s) * 0.03 * dt;
+      if (p[i * 3 + 1] > 2.9) p[i * 3 + 1] = 0.9;
+    }
+    a.needsUpdate = true;
+    (this.points.material as THREE.PointsMaterial).opacity = 0.55 + 0.2 * Math.sin(t * 0.7);
+  }
+}
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
 
 function addShadowSun(root: THREE.Group, light: THREE.DirectionalLight, target: THREE.Vector3, half: number, low: boolean) {
@@ -469,13 +524,17 @@ export function buildOffice(ctx: StageContext): Stage {
   root.add(fill);
   frontFill(root, 0.45, V(0, 1.7, 0));
 
+  // Warm golden dust drifting in the firelight, in front of Santa (capable devices).
+  const motes = low ? null : new Motes(70);
+  if (motes) root.add(motes.points);
+
   // Ziggy peeks in from the side now and then.
   const ziggy = makeElfZiggy(low);
   ziggy.scale.setScalar(0.62);
   ziggy.userData.rig.energy = ctx.energy;
   ziggies.push(ziggy);
   root.add(ziggy);
-  const peek = { t: 6, phase: 0, x: 10, waved: false };
+  const peek = { t: 6, phase: 0, x: 10, waved: false, manual: false, want: false, hidden: false };
 
   let camHalfW = 2;
   return {
@@ -485,7 +544,7 @@ export function buildOffice(ctx: StageContext): Stage {
     background: new THREE.Color('#2a1416'),
     fog: null,
     drift: 0.35 * ctx.energy,
-    bloom: { strength: 0.35, radius: 0.45, threshold: 2.0 },
+    bloom: { strength: 0.4, radius: 0.5, threshold: 1.8, grade: true, dof: ctx.rich ? { aperture: 0.0035, maxblur: 0.006 } : null },
     frame(aspect) {
       // Chest-up, centred: the head sits a little above the middle.
       const k = wideness(aspect);
@@ -501,8 +560,26 @@ export function buildOffice(ctx: StageContext): Stage {
       const target = V(0, cy, 0.3);
       return { pos: V(0, cy + 0.08, 0.3 + d), target, fov };
     },
+    ziggy(cmd) {
+      if (cmd === 'auto') {
+        peek.manual = false;
+        peek.hidden = false;
+        return;
+      }
+      peek.manual = true;
+      if (cmd === 'hide') peek.hidden = true;
+      else if (cmd === 'in') {
+        peek.hidden = false;
+        peek.want = true;
+        peek.waved = false;
+      } else if (cmd === 'out') peek.want = false;
+      else if (peek.want) ziggy.userData.rig.cue(cmd);
+    },
     update(dt, t) {
       animateFire(fire, t, ctx.energy);
+      // The candle and the fire light breathe like real flames.
+      candleLight.intensity = 1.6 * (0.85 + 0.1 * Math.sin(t * 13.1) + 0.06 * Math.sin(t * 29.7 + 1.3));
+      motes?.update(dt, t);
       twinkleBulbs(treeLights, t, ctx.energy);
       winSnow.update(dt, t, V(0, 0, 0));
       flameGlow.material.opacity = 0.6 + Math.sin(t * 11) * 0.06 + Math.sin(t * 7) * 0.05;
@@ -510,13 +587,19 @@ export function buildOffice(ctx: StageContext): Stage {
       peek.t -= dt;
       const outX = Math.max(1.6, camHalfW + 0.7);
       const inX = Math.max(0.95, Math.min(1.55, camHalfW - 0.35));
-      if (peek.phase === 0 && peek.t <= 0) {
+      if (!peek.manual && peek.phase === 0 && peek.t <= 0) {
         peek.phase = 1;
         peek.t = 6;
         peek.waved = false;
       }
       let want = outX;
-      if (peek.phase === 1) {
+      if (peek.manual) {
+        want = peek.want && !peek.hidden ? inX : outX;
+        if (peek.want && !peek.waved && Math.abs(peek.x - inX) < 0.08) {
+          peek.waved = true;
+          ziggy.userData.rig.cue('wave');
+        }
+      } else if (peek.phase === 1) {
         want = inX;
         if (!peek.waved && Math.abs(peek.x - inX) < 0.08) {
           peek.waved = true;
@@ -533,7 +616,7 @@ export function buildOffice(ctx: StageContext): Stage {
       ziggy.rotation.y = -0.55;
       ziggy.userData.rig.walk = Math.min(1, Math.abs(want - peek.x) * 2);
       ziggy.userData.rig.lookAt(-0.6, 0.1);
-      ziggy.visible = peek.x < outX - 0.02;
+      ziggy.visible = !peek.hidden && peek.x < outX - 0.02;
       ziggy.userData.rig.update(dt);
     },
   };
@@ -635,7 +718,7 @@ function buildCheminee(ctx: StageContext): Stage {
     ziggies: [],
     background: new THREE.Color('#2a1416'),
     fog: null,
-    bloom: { strength: 0.35, radius: 0.45, threshold: 2.0 },
+    bloom: { strength: 0.4, radius: 0.5, threshold: 1.8, grade: true, dof: ctx.rich ? { aperture: 0.0035, maxblur: 0.006 } : null },
     update(_dt, t) {
       animateFire(fire, t, ctx.energy);
       twinkleBulbs(treeLights, t, ctx.energy);
@@ -830,7 +913,7 @@ function buildAtelier(ctx: StageContext): Stage {
     ziggies: [ziggy],
     background: new THREE.Color('#2a1a10'),
     fog: null,
-    bloom: { strength: 0.35, radius: 0.45, threshold: 2.0 },
+    bloom: { strength: 0.4, radius: 0.5, threshold: 1.8, grade: true, dof: ctx.rich ? { aperture: 0.0035, maxblur: 0.006 } : null },
     update(dt) {
       ziggy.userData.rig.update(dt);
     },

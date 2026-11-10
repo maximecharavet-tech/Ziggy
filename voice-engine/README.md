@@ -589,3 +589,15 @@ saturation, de-esser, −18 LUFS, true-peak limiter) → MP3. The manifest's
 adds `&v=<voice>` to each clip URL so week-long caches pick up the new voice.
 `--ab DIR --qa` writes A/B files and a WER report (faster-whisper, float32).
 About 20 min for 336 clips on 8 CPU cores.
+
+### First names and lip sync (santa-v2)
+
+- `santa_names.py` builds the first-name list (INSEE 2010–2022 top 2,000 French
+  names, US SSA 1998–2008 top 800 English names) as greetings recorded with the
+  same chain (`--out public/santa/names --mp3-q 6`), then the index the site
+  loads (`public/santa/names/index.json`, lazy, ~30 kB). Unknown names: the
+  same-voice `line:name.hello` / `line:name.bye`.
+- `santa_visemes.py` runs Rhubarb Lip Sync (MIT, phonetic recognizer) on every
+  recorded clip and writes `public/santa/visemes/<locale>.json` (cue strings
+  "X0 C6 B13 …", resumable). The call's 3D Santa reads them in sync with the
+  AudioContext clock; first names use the loudness.

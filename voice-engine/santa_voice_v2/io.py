@@ -90,7 +90,7 @@ def is_already_done(
 # ---------------------------------------------------------------------------
 
 
-def write_mp3_ffmpeg(audio: np.ndarray, sr: int, path: str | Path) -> None:
+def write_mp3_ffmpeg(audio: np.ndarray, sr: int, path: str | Path, quality: int = 5) -> None:
     """Write a temporary WAV, encode with ffmpeg/libmp3lame, atomic rename."""
     p = Path(path)
     p.parent.mkdir(parents=True, exist_ok=True)
@@ -114,7 +114,7 @@ def write_mp3_ffmpeg(audio: np.ndarray, sr: int, path: str | Path) -> None:
             "-codec:a",
             "libmp3lame",
             "-q:a",
-            "5",
+            str(quality),
             "-write_xing",
             "1",
             "-map_metadata",

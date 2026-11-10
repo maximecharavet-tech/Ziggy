@@ -194,6 +194,7 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--prosody", default="")
     p.add_argument("--ab", default="", help="A/B output directory")
     p.add_argument("--ab-variant", default="v2", help="Variant subdirectory name for --ab")
+    p.add_argument("--mp3-q", type=int, default=5, help="LAME VBR quality (5 phrases, 6 first names)")
     p.add_argument("--qa", action="store_true")
     p.add_argument("--qa-dir", default="/tmp/santa-voice-qa", help="where report.json goes without --ab")
     p.add_argument("--log-level", default="INFO")
@@ -285,7 +286,7 @@ def main(argv: Optional[List[str]] = None) -> int:
                 else:
                     out_path = io.clip_output_path(args.out, res["locale"], res["key"], res.get("file"))
                 try:
-                    io.write_mp3_ffmpeg(res["audio"], res["sr"], out_path)
+                    io.write_mp3_ffmpeg(res["audio"], res["sr"], out_path, args.mp3_q)
                     if not args.ab:
                         manifest[res["locale"]][res["key"]] = res["hash"]
                         io.save_manifest_atomic(manifest, args.manifest)

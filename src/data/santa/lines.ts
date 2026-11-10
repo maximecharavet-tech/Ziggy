@@ -1,8 +1,8 @@
 /**
  * Everything Santa says in the guided calls and the free voice message.
- * The voice route (/api/santa/voice) only ever speaks these texts (plus a
- * validated first name), so each clip is generated once and then served from
- * the CDN cache: a guided call costs nothing to run.
+ * Every text is recorded offline in Santa's one voice (santa-v2,
+ * public/santa/voice), and the most common first names too (public/santa/names),
+ * so a guided call costs nothing to run and never switches voice.
  *
  * Santa's French avoids gendered adjectives about the child ("formidable",
  * "plein de…"), and he is always cheerful (never sad, no "naughty list").
@@ -19,6 +19,9 @@ export const SANTA_LINES = {
   // Opening
   'open.hohoho': { fr: 'Ho ho ho ! Allô ? Ici le Père Noël, depuis mon bureau au Pôle Nord !', en: 'Ho ho ho! Hello? This is Santa Claus, calling from my office at the North Pole!' },
   'sched.open': { fr: 'Comme promis, je t’appelle à l’heure pile ! Mes rennes m’ont rappelé que c’était le moment.', en: 'Just as I promised, I’m calling right on time! My reindeer reminded me it was the moment.' },
+  // Greeting when the child's first name is not among the recorded ones (the caption still shows the name).
+  'name.hello': { fr: 'Bonjour à toi !', en: 'Hello there, my friend!' },
+  'name.bye': { fr: 'Joyeux Noël à toi !', en: 'Merry Christmas to you!' },
   'open.hear': { fr: 'Est-ce que tu m’entends bien ?', en: 'Can you hear me well?' },
   'open.hear.react': { fr: 'Parfait ! Moi, je t’entends très bien. Mes oreilles magiques entendent tout !', en: 'Perfect! I can hear you very well. My magic ears hear everything!' },
   'open.age.ask': { fr: 'Dis-moi, comment ça va aujourd’hui ?', en: 'Tell me, how are you today?' },
