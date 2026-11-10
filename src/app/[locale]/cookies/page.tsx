@@ -21,7 +21,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
     title: 'Politique de cookies',
     updated: `Dernière mise à jour : ${UPDATED.fr}`,
     intro:
-      'Ziggy n’utilise aucun cookie publicitaire, aucun outil de mesure d’audience et aucun traceur de réseaux sociaux. Ce que le site garde dans votre navigateur sert uniquement à le faire fonctionner et à retenir vos réglages.',
+      'Ziggy n’utilise aucun cookie publicitaire et aucun traceur de réseaux sociaux. La seule mesure d’audience est Vercel Web Analytics et Speed Insights : sans cookie, sans identifiant publicitaire, sans profilage. Le reste de ce que le site garde dans votre navigateur sert uniquement à le faire fonctionner et à retenir vos réglages.',
     sections: [
       {
         title: '1. Cookies et stockage local, de quoi parle-t-on ?',
@@ -80,7 +80,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         body: [
           [
             'Aucune publicité, ni sur le site ni ailleurs à partir de vos données.',
-            'Aucune mesure d’audience (pas de Google Analytics, pas de pixel, pas d’outil équivalent).',
+            'Pas de Google Analytics, pas de pixel publicitaire : seulement Vercel Web Analytics et Speed Insights (sans cookie, anonymes, hébergés avec le site).',
             'Aucun bouton de réseau social ni contenu tiers qui suivrait votre navigation.',
             'Aucun profilage des enfants.',
           ],
@@ -109,7 +109,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
     title: 'Cookie Policy',
     updated: `Last updated: ${UPDATED.en}`,
     intro:
-      'Ziggy uses no advertising cookies, no audience measurement and no social media trackers. What the site keeps in your browser is only there to make it work and to remember your settings.',
+      'Ziggy uses no advertising cookies and no social media trackers. The only audience metrics are Vercel Web Analytics and Speed Insights: cookieless, no ad IDs, no profiling. Everything else the site keeps in your browser is only there to make it work and to remember your settings.',
     sections: [
       {
         title: '1. Cookies and local storage: what are they?',
@@ -166,7 +166,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
         body: [
           [
             'No advertising, on the site or anywhere else based on your data.',
-            'No audience measurement (no Google Analytics, no pixel, nothing similar).',
+            'No Google Analytics, no ad pixel: only Vercel Web Analytics and Speed Insights (cookieless, anonymous, hosted with the site).',
             'No social media buttons or third-party content that follows your browsing.',
             'No profiling of children.',
           ],
