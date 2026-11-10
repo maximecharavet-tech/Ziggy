@@ -565,3 +565,27 @@ then `santa::fx` (FunDSP: chest bell 150 Hz, low shelf 300 Hz, softer top,
 25 % tanh) and the usual mastering (−18 LUFS, −2 dBTP). Lab overrides:
 `--timbre --prosody --pitch --formant --speed --only --out --manifest --wav`.
 About 7 min for 336 clips on 8 CPU cores.
+
+### santa-v2: old-man voice (`santa_voice_v2/`, Python, current)
+
+```sh
+uv venv -p 3.12 /tmp/v312 && uv pip install -p /tmp/v312/bin/python -r voice-engine/requirements-santa.txt
+# Kokoro files: kokoro-v1.0.onnx (= .cache/kokoro-fp32.onnx) and voices-v1.0.bin
+# (npz of .cache/voices/*.bin, each 510×1×256 float32) in ~/.cache/kokoro
+node voice-engine/dump-santa.mjs /tmp/santa-clips.json
+/tmp/v312/bin/python voice-engine/santa_voice_v2.py --clips /tmp/santa-clips.json --models ~/.cache/kokoro --jobs 4 --age 0.7
+/tmp/v312/bin/python -m pytest -q voice-engine/tests
+```
+
+Pipeline per clip: punctuation plan (`plan.py`: one Kokoro call per sentence,
+end contour from . ? ! … , a separate aspirated « Ho ! ×3 » with falling pitch
+and a belly envelope) → Kokoro with a blended voice table (timbre and prosody
+halves, `synth.py`; Kokoro is never run below speed 0.92, the rest of the slow
+delivery is a WORLD time-stretch) → WORLD (`world_fx.py`: target F0 108 Hz fr /
+100 Hz en, melody range, intonation, emphasis, formants, ageing: jitter,
+shimmer, breath, creak, slow-down; `--age 0..1`) → colour (`colour.py`: EQ, soft
+saturation, de-esser, −18 LUFS, true-peak limiter) → MP3. The manifest's
+`voice` becomes `santa-v2` (a voice change regenerates everything) and the site
+adds `&v=<voice>` to each clip URL so week-long caches pick up the new voice.
+`--ab DIR --qa` writes A/B files and a WER report (faster-whisper, float32).
+About 20 min for 336 clips on 8 CPU cores.

@@ -32,7 +32,8 @@ describe("Santa's recorded voice", () => {
   });
 
   it('points at the file with a cache-busting hash, and leaves first names to the live voice', () => {
-    expect(staticClipUrl('line:open.hohoho', 'fr')).toMatch(/^\/santa\/voice\/fr\/line-open\.hohoho\.mp3\?h=[0-9a-f]{10}$/);
+    expect(staticClipUrl('line:open.hohoho', 'fr')).toMatch(/^\/santa\/voice\/fr\/line-open\.hohoho\.mp3\?h=[0-9a-f]{10}&v=santa-v\d+$/);
+    expect(staticClipUrl('line:open.hohoho', 'fr')).toContain(`&v=${SANTA_VOICE.voice}`);
     expect(staticClipUrl('name:hello:Léa', 'fr')).toBeNull();
     expect(santaText('advent:4', 'fr')).toContain('flocon');
   });
