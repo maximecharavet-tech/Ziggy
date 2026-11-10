@@ -31,6 +31,10 @@ describe('schedule', () => {
     const ctx = { now: NOV, tier: 'essentiel' as const, pending: 0 };
     expect(validateSchedule({ kind: 'veille', at: CHRISTMAS_EVE_CALL_AT }, ctx)).toBeNull();
     expect(validateSchedule({ kind: 'veille', at: NOV - 1000 }, ctx)).toBe('past');
+    // A datetime-local value for the current minute (or the next one) is accepted.
+    expect(validateSchedule({ kind: 'veille', at: NOV }, { ...ctx, now: NOV + 42_000 })).toBeNull();
+    expect(validateSchedule({ kind: 'veille', at: NOV + 60_000 }, { ...ctx, now: NOV + 42_000 })).toBeNull();
+    expect(validateSchedule({ kind: 'veille', at: NOV - 60_000 }, { ...ctx, now: NOV + 42_000 })).toBe('past');
     expect(validateSchedule({ kind: 'veille', at: Date.parse('2027-03-01T10:00:00Z') }, ctx)).toBe('too-late');
     expect(validateSchedule({ kind: 'veille', at: CHRISTMAS_EVE_CALL_AT }, { ...ctx, tier: null })).toBe('kind');
     expect(validateSchedule({ kind: 'veille', at: CHRISTMAS_EVE_CALL_AT }, { ...ctx, pending: 6 })).toBe('full');

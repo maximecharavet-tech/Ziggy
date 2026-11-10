@@ -20,6 +20,7 @@ export function ScheduledCallWatcher() {
   const locale = useLocale() === 'fr' ? 'fr' : 'en';
   const notified = useRef(new Set<string>());
   const preparing = useRef(new Set<string>());
+  const opened = useRef<string | null>(null);
 
   // Prepare the clips of calls still to come (once per visit).
   useEffect(() => {
@@ -41,7 +42,11 @@ export function ScheduledCallWatcher() {
           notified.current.add(due.id);
           void notify(due.id, santaStore.get().children.find((c) => c.id === due.childId)?.name ?? '', locale);
         }
-        if (!onCallPage) router.push(ringPath(due.id));
+        // Once per call: a second push (or a reload) after it rang would land on a silent page.
+        if (!onCallPage && opened.current !== due.id) {
+          opened.current = due.id;
+          router.push(ringPath(due.id));
+        }
       }
       const wait = msUntilNext(scheduleStore.get(), Date.now());
       // Re-check every minute at most (timers sleep in background tabs; a visibility change re-checks too).

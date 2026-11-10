@@ -71,8 +71,22 @@ export function useScheduledCalls(): ScheduledCall[] {
   return useSyncExternalStore(scheduleStore.subscribe, scheduleStore.get, scheduleStore.serverSnapshot);
 }
 
-/** Stores the clips of a scheduled call on the device. */
-export async function prepareScheduledCall(c: ScheduledCall, locale: 'fr' | 'en', onProgress?: (p: number) => void): Promise<boolean> {
+const inFlight = new Map<string, Promise<boolean>>();
+
+/**
+ * Stores the clips of a scheduled call on the device. One preparation per call
+ * at a time: the parents' card and the page watcher used to fetch every clip
+ * twice, doubling the load on the voice service.
+ */
+export function prepareScheduledCall(c: ScheduledCall, locale: 'fr' | 'en', onProgress?: (p: number) => void): Promise<boolean> {
+  const running = inFlight.get(c.id);
+  if (running) return running;
+  const job = prepareOnce(c, locale, onProgress).finally(() => inFlight.delete(c.id));
+  inFlight.set(c.id, job);
+  return job;
+}
+
+async function prepareOnce(c: ScheduledCall, locale: 'fr' | 'en', onProgress?: (p: number) => void): Promise<boolean> {
   const child = (await import('@/lib/santa/store')).santaStore.get().children.find((ch) => ch.id === c.childId);
   if (!child) return false;
   const keys = callClips(buildCall(c.kind, child, { scheduled: true, seed: seedFromId(c.id) }));
@@ -221,8 +235,10 @@ export function ScheduleCallCard() {
                   <button
                     type="button"
                     onClick={() => {
+                      // One navigation only: the page watcher (ScheduledCallWatcher) now
+                      // sees the call as due and opens the ringing screen. A second, full
+                      // reload here used to land after the call had rung, so nothing rang.
                       scheduleStore.update(c.id, { at: Date.now() });
-                      window.location.assign(`${locale === 'fr' ? '' : '/en'}${ringPath(c.id)}`);
                     }}
                     className="min-h-10 rounded-full bg-amber-300/40 px-3 text-xs font-bold"
                   >

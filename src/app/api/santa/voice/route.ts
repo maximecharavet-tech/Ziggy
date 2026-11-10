@@ -36,7 +36,8 @@ export async function GET(request: NextRequest) {
   } catch {
     audio = null;
   }
-  if (!audio) return NextResponse.json({ error: 'voice-failed' }, { status: 502 });
+  // Never cached: the device retries once, then uses its own voice for this clip.
+  if (!audio) return NextResponse.json({ error: 'voice-failed' }, { status: 502, headers: { 'cache-control': 'no-store', 'retry-after': '2' } });
 
   return new NextResponse(Buffer.from(audio), {
     headers: {
