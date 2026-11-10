@@ -1,10 +1,14 @@
 'use client';
 
 import { santaText, type SantaLocale } from '@/data/santa/lines';
+import { staticClipUrl } from '@/data/santa/voice-clips';
 import { cachedClip } from './precache';
 
 /**
- * Santa's voice on the device: fetches the cached clips (/api/santa/voice),
+ * Santa's voice on the device: plays Santa's pre-recorded clips
+ * (public/santa/voice, made offline with the Ziggy Voice Engine), then — for
+ * the child's first name or a clip not recorded yet — the voice service
+ * (/api/santa/voice, Gemini) as a fallback,
  * plays them through an analyser so the 3D Santa's mouth follows the voice,
  * and falls back to the device's own voice when a clip can't be fetched.
  * Also code-built sounds (no audio files): the phone ringing, sleigh bells, a
@@ -17,6 +21,12 @@ export const VOICE_VERSION = 1;
 export const RETRY_MS = 1500;
 
 export const clipUrl = (key: string, locale: SantaLocale) => `/api/santa/voice?k=${encodeURIComponent(key)}&l=${locale}&v=${VOICE_VERSION}`;
+
+/** Where a clip can come from, in order: the recorded file, then the voice service. */
+export const clipSources = (key: string, locale: SantaLocale): string[] => {
+  const file = staticClipUrl(key, locale);
+  return file ? [file, clipUrl(key, locale)] : [clipUrl(key, locale)];
+};
 
 type Level = (v: number) => void;
 
@@ -56,22 +66,29 @@ export class SantaAudio {
         onProgress?.(++done / keys.length);
       }
     };
-    // Two at a time: new clips are made one by one by the voice service, which limits bursts.
+    // Two at a time: clips not recorded are made one by one by the voice service, which limits bursts.
     await Promise.all([worker(), worker()]);
     onProgress?.(1);
   }
 
   private async load(key: string): Promise<AudioBuffer | null> {
     if (this.buffers.has(key)) return this.buffers.get(key) ?? null;
-    if (this.voiceDown) {
-      this.buffers.set(key, null);
-      return null;
-    }
     try {
-      const url = clipUrl(key, this.locale);
-      // A scheduled call's clips were stored on the device in advance (precache.ts).
-      let bytes = await cachedClip(url);
-      if (!bytes) {
+      let bytes: ArrayBuffer | null = null;
+      for (const url of clipSources(key, this.locale)) {
+        // A scheduled call's clips were stored on the device in advance (precache.ts).
+        bytes = await cachedClip(url);
+        if (bytes) break;
+        if (!url.startsWith('/api/')) {
+          // The recorded file; if it is missing, the voice service below.
+          const res = await fetch(url).catch(() => null);
+          if (res?.ok) {
+            bytes = await res.arrayBuffer();
+            break;
+          }
+          continue;
+        }
+        if (this.voiceDown) break;
         let res = await fetch(url);
         // 502/429: the voice service is busy for a moment (a burst of new clips):
         // one more try shortly after, before falling back to the device voice.
@@ -84,6 +101,7 @@ export class SantaAudio {
         if (!res.ok) throw new Error(String(res.status));
         bytes = await res.arrayBuffer();
       }
+      if (!bytes) throw new Error('no clip');
       const buf = await this.ctx.decodeAudioData(bytes);
       this.buffers.set(key, buf);
       return buf;

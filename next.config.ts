@@ -77,6 +77,8 @@ const nextConfig: NextConfig = {
           { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
         ],
       },
+      // Santa's recorded voice: the site asks for each file with ?h=<hash of its words>.
+      { source: '/santa/voice/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
       {
         source: '/(mascot|media|covers)/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],

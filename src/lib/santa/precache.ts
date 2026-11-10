@@ -3,10 +3,10 @@
 /**
  * Keeps the clips of a scheduled call on the device in advance (Cache Storage),
  * so the call rings and plays at its time even when the network is slow or the
- * voice service is busy (Christmas Eve). Only Santa's fixed clips are stored,
- * plus the child's first name spoken alone — nothing else about the child.
+ * voice service is busy (Christmas Eve). Only Santa's fixed clips are stored
+ * (recorded files, or the voice service for those not recorded yet), plus the child's first name spoken alone — nothing else about the child.
  */
-import { clipUrl } from './audio';
+import { clipSources } from './audio';
 import type { SantaLocale } from '@/data/santa/lines';
 
 export const CALL_CACHE = 'ziggy-santa-calls-v1';
@@ -25,10 +25,13 @@ export async function precacheClips(keys: string[], locale: SantaLocale, onProgr
   const total = queue.length;
   const worker = async () => {
     for (let k = queue.shift(); k; k = queue.shift()) {
-      const url = clipUrl(k, locale);
       try {
-        if (await cache.match(url)) ok++;
-        else {
+        // The recorded file first, then the voice service (first names, clips not recorded yet).
+        for (const url of clipSources(k, locale)) {
+          if (await cache.match(url)) {
+            ok++;
+            break;
+          }
           let res = await fetch(url);
           // Busy voice service: one more try a little later (there is time before the call).
           if (res.status === 502 || res.status === 429) {
@@ -38,6 +41,7 @@ export async function precacheClips(keys: string[], locale: SantaLocale, onProgr
           if (res.ok) {
             await cache.put(url, res);
             ok++;
+            break;
           }
         }
       } catch {
