@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type CSSProperties } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { ARCADE_GAMES } from '@/lib/arcade/registry';
 import type { GameDefinition } from '@/lib/arcade/types';

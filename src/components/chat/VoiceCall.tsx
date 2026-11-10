@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { PhoneOff, Mic, Hand } from 'lucide-react';
 import { listenOnce, micSupported, speakSequence, stopSpeaking, unlockAudio } from '@/lib/voice';
 import { splitSentences, isNoise } from '@/lib/speech-text';

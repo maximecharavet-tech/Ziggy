@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { computeSkills, strengths, SKILLS } from '@/lib/skills';
 import type { ProgressMap } from '@/lib/progress';
 import { EASE_OUT } from '@/lib/motion';

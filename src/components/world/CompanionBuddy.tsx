@@ -1,6 +1,6 @@
 'use client';
 
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import type { CompanionMood, CompanionProfile } from '@/data/types';
 import { MOOD_STYLE } from '@/lib/world/companion';
 import { tr } from '@/lib/i18n-text';

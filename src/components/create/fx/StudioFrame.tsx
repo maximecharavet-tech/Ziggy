@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties, ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { SplitWords } from '@/components/ui/motion-primitives';
 import { Link } from '@/i18n/navigation';

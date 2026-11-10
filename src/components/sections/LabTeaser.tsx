@@ -2,7 +2,7 @@
 
 import { useMemo } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FlaskConical, ArrowRight } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';

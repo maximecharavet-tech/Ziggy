@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { MessageCircle } from 'lucide-react';
 import { ZiggyChat } from '@/components/ziggy/ZiggyChat';
 import { ExpressTrial } from '@/components/trial/ExpressTrial';

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Star, Gamepad2, LogOut, Pencil, Check, ShieldCheck, Loader2, UserPlus } from 'lucide-react';
 import { Link, useRouter } from '@/i18n/navigation';
 import { Button } from '@/components/ui/Button';

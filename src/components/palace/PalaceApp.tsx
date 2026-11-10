@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Footprints, Sparkles, RotateCcw, ArrowRight } from 'lucide-react';
 import { makeRound, palaceStars, itemsFor, MAX_LEVEL, ROOMS, type Stop } from '@/lib/palace/palace';
 import { recordGameResult } from '@/lib/progress';

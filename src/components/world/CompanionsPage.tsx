@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { COMPANIONS } from '@/data/companions';
 import type { CompanionId, CompanionMood } from '@/data/types';
 import { unlockedCompanions } from '@/lib/world/engine';

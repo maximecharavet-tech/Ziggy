@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
+import { AnimatePresence, motion, useIsPresent } from 'motion/react';
 import { locales } from '@/i18n/config';
 import { tr, type L } from '@/lib/i18n-text';
 import { homeOf, isAppHome, isSiteRoot, stripLocale } from '@/lib/app-shell';

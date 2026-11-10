@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { motion, useMotionTemplate, useMotionValue, useSpring, useTransform } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 
 /** A card that tilts in 3D towards the pointer / finger, with a soft moving shine. */

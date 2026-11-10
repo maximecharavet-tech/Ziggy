@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { AudioLines, ShieldCheck, BrainCircuit, Sparkles, Lock, ArrowRight } from 'lucide-react';
 import { ZiggyVideo } from '@/components/ziggy/ZiggyVideo';
 import { MascotCutout } from '@/components/ziggy/Mascot';

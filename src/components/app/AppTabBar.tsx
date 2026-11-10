@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
 import { haptic } from '@/lib/app-bridge';

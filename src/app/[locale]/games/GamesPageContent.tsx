@@ -2,7 +2,7 @@
 
 import { MissionCard } from '@/components/rewards/MissionCard';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Gamepad2 } from 'lucide-react';
 import { GAMES } from '@/lib/games';
 import { GameCard } from '@/components/games/GameCard';

@@ -16,10 +16,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 const KINDS = ['liste', 'nouvelles', 'veille', 'message'] as const;
 
-export default async function AppelPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ k?: string }> }) {
+export default async function AppelPage({ params, searchParams }: { params: Promise<{ locale: string }>; searchParams: Promise<{ k?: string; ring?: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const { k } = await searchParams;
+  const { k, ring } = await searchParams;
   const kind = (KINDS as readonly string[]).includes(k ?? '') ? (k as CallKind | 'message') : undefined;
-  return <SantaCall initialKind={kind} />;
+  const ringId = typeof ring === 'string' && /^[a-z0-9]{4,16}$/.test(ring) ? ring : undefined;
+  return <SantaCall initialKind={kind} ringId={ringId} />;
 }

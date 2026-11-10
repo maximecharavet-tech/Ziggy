@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { LogIn, Loader2, Eye, EyeOff, CheckCircle2, KeyRound } from 'lucide-react';
 import { useRouter, Link } from '@/i18n/navigation';
 import { ParticleField } from '@/components/ui/ParticleField';

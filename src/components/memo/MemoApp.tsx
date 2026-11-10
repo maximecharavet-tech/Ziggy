@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { ArrowLeft, Eye, Delete, Check, Sparkles, Brain } from 'lucide-react';
 import { buildDeck, sameAnswer, wordLanguage, DECKS, type DeckId, type MemoCard } from '@/lib/memo/decks';
 import { pickSession, grade, againSoon, deckStats, nextDue, loadDeck, saveDeck, Rating, type DeckState, type Grade } from '@/lib/memo/scheduler';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { discoveryById } from '@/games2d/sandbox/content';
 import type { Reaction } from '@/games2d/sandbox/sim';

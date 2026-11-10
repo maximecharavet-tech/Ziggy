@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { recordGameResult } from '@/lib/progress';

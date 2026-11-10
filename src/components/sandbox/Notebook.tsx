@@ -1,7 +1,7 @@
 'use client';
 
 import { forwardRef } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { CHALLENGES, DISCOVERIES, type Discovery } from '@/games2d/sandbox/content';
 import { tr, type L } from '@/lib/i18n-text';

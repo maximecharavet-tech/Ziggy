@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useRef, type CSSProperties, type ReactNode } from 'react';
-import { motion, AnimatePresence, type TargetAndTransition } from 'framer-motion';
+import { motion, AnimatePresence, type TargetAndTransition } from 'motion/react';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { ui } from '../ui-text';

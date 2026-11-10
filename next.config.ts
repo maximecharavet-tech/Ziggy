@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
   // The share image reads the mascot from disk at request time.
   outputFileTracingIncludes: {
     '/[locale]/opengraph-image': ['./public/mascot/og-ziggy.png'],
-    '/[locale]/pere-noel/opengraph-image': ['./public/mascot/og-ziggy.png'],
+    '/[locale]/pere-noel/opengraph-image': ['./public/santa/art/og-fr.jpg', './public/santa/art/og-en.jpg'],
     '/api/lutins/generate': ['./public/lutins/refs/sheet.png', './src/lib/lutins/wasm/lutins_core_full_bg.wasm'],
     '/api/lutins/**': ['./src/lib/lutins/wasm/lutins_core_full_bg.wasm'],
     '/[locale]/dodo/[story]/opengraph-image': ['./public/mascot/og-ziggy.png', './public/dodo/**/*-og.jpg'],

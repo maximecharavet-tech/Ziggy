@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Tilt } from '@/components/ui/motion-primitives';
 import { Link } from '@/i18n/navigation';
 import {

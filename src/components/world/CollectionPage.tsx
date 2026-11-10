@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { WORLDS } from '@/data/worlds';
 import { WORLD_BADGES, levelFor } from '@/lib/world/gamification';

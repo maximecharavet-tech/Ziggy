@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { BRUSHES, SCENE_INFO, TOOLS, type BrushId, type ToolId } from '@/games2d/sandbox/content';
 import { SCENES, type SceneId } from '@/games2d/sandbox/scenes';
 import { tr, type L } from '@/lib/i18n-text';

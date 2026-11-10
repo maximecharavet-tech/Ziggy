@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Lock } from 'lucide-react';
 import { computeRewards, BADGES } from '@/lib/rewards';
 import type { ProgressMap } from '@/lib/progress';

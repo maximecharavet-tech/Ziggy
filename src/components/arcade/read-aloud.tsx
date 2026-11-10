@@ -1,9 +1,10 @@
 'use client';
 
 import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { speakSequence, stopSpeaking, unlockAudio, voiceStore } from '@/lib/voice';
 import { tr } from '@/lib/i18n-text';
+import { useReducedMotion } from '@/lib/use-reduced-motion';
 
 /**
  * Read-aloud for children who cannot read yet: Ziggy says every instruction,
@@ -51,6 +52,7 @@ const LISTEN = { fr: 'Écouter', en: 'Listen' };
 /** 🔊 button: replays the lines. Works with or without read-aloud mode. */
 export function SayButton({ texts, locale, onIndex, size = 'md', className = '' }: { texts: (string | null | undefined | false)[]; locale: string; onIndex?: (i: number | null) => void; size?: 'sm' | 'md' | 'lg'; className?: string }) {
   const [speaking, setSpeaking] = useState(false);
+  const reduced = useReducedMotion();
   const id = useRef(`btn-${Math.random().toString(36).slice(2)}`);
   useEffect(() => {
     const off = voiceStore.subscribe(() => setSpeaking(voiceStore.get().speakingId === id.current));
@@ -62,7 +64,7 @@ export function SayButton({ texts, locale, onIndex, size = 'md', className = '' 
   return (
     <motion.button
       type="button"
-      whileTap={{ scale: 0.9 }}
+      whileTap={reduced ? undefined : { scale: 0.9 }}
       onClick={(e) => {
         e.stopPropagation();
         unlockAudio();
@@ -74,7 +76,7 @@ export function SayButton({ texts, locale, onIndex, size = 'md', className = '' 
       data-tv-secondary=""
       className={`inline-grid shrink-0 place-items-center rounded-full bg-sky/15 text-sky shadow-sm ring-1 ring-sky/30 transition hover:bg-sky/25 ${dim} ${className}`}
     >
-      <motion.span animate={speaking ? { scale: [1, 1.2, 1] } : { scale: 1 }} transition={{ duration: 0.6, repeat: speaking ? Infinity : 0 }} aria-hidden="true">
+      <motion.span animate={reduced ? { opacity: 1 } : speaking ? { scale: [1, 1.2, 1] } : { scale: 1 }} transition={{ duration: 0.6, repeat: speaking ? Infinity : 0 }} aria-hidden="true">
         {speaking ? '🔉' : '🔊'}
       </motion.span>
     </motion.button>

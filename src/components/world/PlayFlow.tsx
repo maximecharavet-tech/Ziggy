@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { WORLDS } from '@/data/worlds';
 import { COMPANIONS } from '@/data/companions';

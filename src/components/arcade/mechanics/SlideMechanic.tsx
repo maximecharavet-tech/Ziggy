@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { Confetti } from '@/components/ui/Confetti';

@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Send, ShieldCheck, Phone } from 'lucide-react';
 import { VoiceCall } from './VoiceCall';
 import { StarBurst } from '@/components/ziggy/StarBurst';

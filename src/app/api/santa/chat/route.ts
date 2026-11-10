@@ -3,13 +3,17 @@ import { rateLimit } from '@/lib/rate-limit';
 import { synthesize } from '@/lib/tts-gemini';
 import { passFromRequest, passSecret } from '@/lib/santa/pass';
 import { spendAiSeconds } from '@/lib/santa/ai-usage';
-import { santaAiReady, santaReply, type SantaTurn } from '@/lib/santa/santa-ai';
+import { santaAiReady, santaReply, santaReplyStream, type SantaTurn } from '@/lib/santa/santa-ai';
 import { cleanName } from '@/lib/santa/name';
 
 /**
  * The live AI call with Santa (Pack magique, switched on by a parent).
  * POST { locale, name, age, wishes[], history[{role, text}], text } →
  *   { text, audio (base64 WAV | null), left } or { line } (a fixed line to play instead).
+ *
+ * With `stream: true` the answer comes back as NDJSON, one line per event, so
+ * Santa starts talking after the first sentence:
+ *   {"t":"s","text","audio"(base64 WAV|null)} … then {"t":"done","left"} — or {"t":"line","line"}.
  *
  * The child's sentence arrives as text (transcribed on the device). Nothing is
  * stored or logged. Each exchange costs 20 s of the pass's live minutes.
@@ -31,7 +35,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ line: 'ai.busy' }, { status: 429 });
   }
 
-  let body: { locale?: unknown; name?: unknown; age?: unknown; wishes?: unknown; history?: unknown; text?: unknown };
+  let body: { locale?: unknown; name?: unknown; age?: unknown; wishes?: unknown; history?: unknown; text?: unknown; stream?: unknown };
   try {
     body = await request.json();
   } catch {
@@ -50,7 +54,10 @@ export async function POST(request: NextRequest) {
   const usage = await spendAiSeconds(pass, secret, 0);
   if (usage.left <= 0) return NextResponse.json({ line: 'ai.timeup', left: 0 });
 
-  const result = await santaReply({ locale, name: cleanName(String(body.name ?? '')), age: Number(body.age) || 6, wishes, history, text });
+  const input = { locale: locale as 'fr' | 'en', name: cleanName(String(body.name ?? '')), age: Number(body.age) || 6, wishes, history, text };
+  if (body.stream === true) return streamReply(request, input, pass, secret);
+
+  const result = await santaReply(input);
   if (!result.ok) return NextResponse.json({ line: result.line, left: usage.left });
 
   const spent = await spendAiSeconds(pass, secret, COST_PER_TURN);
@@ -65,4 +72,51 @@ export async function POST(request: NextRequest) {
     }
   }
   return NextResponse.json({ text: result.text, audio, left: spent.left }, { headers: { 'cache-control': 'no-store' } });
+}
+
+type StreamInput = Parameters<typeof santaReplyStream>[0];
+
+/** Sentence-by-sentence reply: each sentence is voiced as soon as it is ready (voicing runs while the model keeps writing). */
+function streamReply(request: NextRequest, input: StreamInput, pass: NonNullable<ReturnType<typeof passFromRequest>>, secret: string) {
+  const enc = new TextEncoder();
+  const key = process.env.GEMINI_API_KEY;
+  const voice = async (text: string): Promise<string | null> => {
+    if (!key) return null;
+    try {
+      const wav = await synthesize(key, text, 'santa');
+      return wav ? Buffer.from(wav).toString('base64') : null;
+    } catch {
+      return null;
+    }
+  };
+  const body = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      const send = (o: unknown) => controller.enqueue(enc.encode(JSON.stringify(o) + '\n'));
+      let chain: Promise<void> = Promise.resolve();
+      let spent = false;
+      let left: number | undefined;
+      try {
+        for await (const ev of santaReplyStream(input, request.signal)) {
+          if (ev.type === 'line') {
+            await chain;
+            send({ t: 'line', line: ev.line });
+            break;
+          }
+          if (!spent) {
+            spent = true;
+            left = (await spendAiSeconds(pass, secret, COST_PER_TURN)).left;
+          }
+          const audio = voice(ev.text);
+          chain = chain.then(async () => send({ t: 's', text: ev.text, audio: await audio }));
+        }
+        await chain;
+        send({ t: 'done', left });
+      } catch {
+        send({ t: 'line', line: 'ai.busy' });
+      } finally {
+        controller.close();
+      }
+    },
+  });
+  return new NextResponse(body, { headers: { 'content-type': 'application/x-ndjson; charset=utf-8', 'cache-control': 'no-store', 'x-accel-buffering': 'no' } });
 }

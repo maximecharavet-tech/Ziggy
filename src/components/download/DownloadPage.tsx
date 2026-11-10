@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ArrowRight, Ban, Check, ChevronDown, Download, Lock, Monitor, RefreshCw, ShoppingBag, Smartphone, TabletSmartphone, Tv } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { EASE_OUT } from '@/lib/motion';

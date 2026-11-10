@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState, type CSSProperties } from 'react';
-import { AnimatePresence, motion, type MotionValue } from 'framer-motion';
+import { AnimatePresence, motion, type MotionValue } from 'motion/react';
 import type { DodoArt } from '@/data/dodo/types';
 import { NightScene } from './NightScene';
 import css from './dodo.module.css';

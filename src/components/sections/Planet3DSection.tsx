@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
 import type { HotspotScreen, PlanetScene } from '@/games3d/planet/PlanetScene';

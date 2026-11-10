@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, type CSSProperties } from 'react';
-import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform, type MotionValue } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import type { ScenePalette } from './themes';
 import { rgba } from './color';

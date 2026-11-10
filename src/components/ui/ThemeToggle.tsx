@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Sun, Moon } from 'lucide-react';
 
 type DocWithVT = Document & { startViewTransition?: (cb: () => void) => { ready: Promise<void> } };

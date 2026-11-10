@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, type ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { tr, type L } from '@/lib/i18n-text';
 import { SPEEDS, TEXT_SIZES, updateDodo, type DodoSettings } from '@/lib/dodo/client';
 
