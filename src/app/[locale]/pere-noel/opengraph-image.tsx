@@ -13,6 +13,7 @@ export const alt = 'L’appli du Père Noël — Ziggy';
  */
 export default async function SantaOgImage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const file = await readFile(join(process.cwd(), `public/santa/art/og-${locale === 'fr' ? 'fr' : 'en'}.jpg`));
+  // Shipped with the function via outputFileTracingIncludes (next.config.ts).
+  const file = await readFile(join(process.cwd(), 'public/santa/art', locale === 'fr' ? 'og-fr.jpg' : 'og-en.jpg'));
   return new Response(new Uint8Array(file), { headers: { 'Content-Type': contentType, 'Cache-Control': 'public, max-age=86400, immutable' } });
 }
