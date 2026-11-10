@@ -1,5 +1,8 @@
 'use client';
 
+import { ScheduleCallCard } from '@/components/santa/schedule/ScheduleCallCard';
+import { scheduleStore } from '@/lib/santa/schedule';
+import { clearPrecache } from '@/lib/santa/precache';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
@@ -162,6 +165,7 @@ function ParentsContent() {
     <div className="grid gap-6">
       <PassCard tier={pass.tier} loading={pass.loading} aiSecondsLeft={pass.aiSecondsLeft} />
       <ChildrenCard tier={pass.tier} />
+      <ScheduleCallCard />
       {/* No purchase inside the native app (store rules for kids' apps): the pass bought on the website works there. */}
       {!shell.app && pass.tier !== 'magique' && !pass.loading ? <OfferCard tier={pass.tier} /> : null}
       {pass.tier === 'magique' ? <AiConsentCard /> : null}
@@ -632,6 +636,8 @@ function EraseCard() {
               type="button"
               onClick={() => {
                 santaStore.clear();
+                for (const c of scheduleStore.get()) scheduleStore.remove(c.id);
+                void clearPrecache();
                 setConfirm(false);
                 setDone(true);
               }}

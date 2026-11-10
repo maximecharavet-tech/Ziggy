@@ -25,10 +25,12 @@ import {
 import {
   buildCall,
   callClips,
+  seedFromId,
   type CallKind,
   type CallStep,
 } from "@/lib/santa/call-script";
 import { activeChild, santaStore, useSantaFamily } from "@/lib/santa/store";
+import { scheduleStore } from "@/lib/santa/schedule";
 import { useSantaPass } from "@/lib/santa/pass-client";
 import type { SantaChild, SantaSceneHandle } from "@/lib/santa/types";
 import { ChildSetup } from "@/components/santa/ChildSetup";
@@ -56,6 +58,7 @@ const T = {
   talk: { fr: "Parler au Père Noël", en: "Talk to Santa" },
   listening: { fr: "Le Père Noël t’écoute…", en: "Santa is listening…" },
   thinking: { fr: "Le Père Noël réfléchit…", en: "Santa is thinking…" },
+  prep: { fr: "Le Père Noël règle ses oreilles magiques…", en: "Santa is tuning his magic ears…" },
   goodbye: { fr: "Dire au revoir", en: "Say goodbye" },
   hangup: { fr: "Raccrocher", en: "Hang up" },
   captions: { fr: "Sous-titres", en: "Captions" },
@@ -132,12 +135,17 @@ function Overlay({ children }: { children: ReactNode }) {
   useEffect(() => setEl(document.body), []);
   return el ? createPortal(children, el) : null;
 }
-type Mode = "santa" | "listen" | "ai-ready" | "ai-listen" | "ai-think";
+type Mode = "santa" | "listen" | "ai-ready" | "ai-listen" | "ai-think" | "ai-prep";
+
+const b64ToBuf = (b64: string) => Uint8Array.from(atob(b64), (ch) => ch.charCodeAt(0)).buffer;
 
 export function SantaCall({
   initialKind,
+  ringId,
 }: {
   initialKind?: CallKind | "message";
+  /** A scheduled call (src/lib/santa/schedule.ts) to ring right away. */
+  ringId?: string;
 }) {
   const locale = useLocale() === "fr" ? "fr" : "en";
   const reduced = useReducedMotion();
@@ -161,6 +169,7 @@ export function SantaCall({
   const [loaded, setLoaded] = useState(0);
   const [elapsed, setElapsed] = useState(0);
   const [aiKind, setAiKind] = useState<string | null>(null);
+  const [sttProgress, setSttProgress] = useState(0);
 
   const audio = useRef<SantaAudio | null>(null);
   const scene = useRef<SantaSceneHandle | null>(null);
@@ -210,7 +219,11 @@ export function SantaCall({
 
   /** Tap on a call card: the phone rings while the clips load. */
   const ring = useCallback(
-    async (k: CallKind | "message", isPreview: boolean) => {
+    async (
+      k: CallKind | "message",
+      isPreview: boolean,
+      sched?: { seed: number },
+    ) => {
       if (!child) return;
       cleanup();
       setKind(k);
@@ -228,12 +241,29 @@ export function SantaCall({
       steps.current = buildCall(k, child, {
         preview: isPreview,
         ai: aiAllowed && aiKind !== null && k !== "message",
-        seed: Date.now() % 997,
+        seed: sched ? sched.seed : Date.now() % 997,
+        scheduled: Boolean(sched),
       });
       void a.preload(callClips(steps.current), setLoaded);
     },
     [child, cleanup, locale, onLevel, aiAllowed, aiKind],
   );
+
+  // A scheduled call: the phone rings as soon as the page opens (the ring
+  // sound starts at the first touch — browsers need one before any sound).
+  const rangFor = useRef<string | null>(null);
+  useEffect(() => {
+    if (!ringId || rangFor.current === ringId) return;
+    const sc = scheduleStore.find(ringId);
+    if (!sc || sc.doneAt) return;
+    if (child?.id !== sc.childId) {
+      if (santaStore.get().children.some((ch) => ch.id === sc.childId)) santaStore.setActive(sc.childId);
+      return; // re-runs with the right child
+    }
+    rangFor.current = ringId;
+    scheduleStore.update(ringId, { doneAt: Date.now() });
+    void ring(sc.kind, false, { seed: seedFromId(sc.id) });
+  }, [ringId, child, ring]);
 
   /** "Answer": camera + mic (both optional), then the call runs. */
   const answer = useCallback(async () => {
@@ -338,23 +368,34 @@ export function SantaCall({
 
   /** The live AI part: the child taps, speaks, Santa answers — until goodbye or time is up. */
   async function runAi(a: SantaAudio, c: SantaChild, alive: () => boolean) {
-    const t = await createTranscriber(locale);
+    const t = await createTranscriber(locale, { ctx: a.ctx, stream: stream.current });
     if (!t) return;
     stt.current = t;
     try {
-      await t.prepare();
+      // On Safari / iPhone the on-device model is fetched once (then cached): show it.
+      if (t.kind === "sherpa-wasm") {
+        setMode("ai-prep");
+        setSttProgress(0);
+      }
+      await t.prepare(setSttProgress);
     } catch {
       return;
     }
+    if (!alive()) return;
     aiHistory.current = [];
     let keepGoing = true;
+    // After a barge-in the child is already talking: listen straight away.
+    let autoListen = false;
     while (keepGoing && alive()) {
-      setMode("ai-ready");
-      const action = await new Promise<"talk" | "bye">((resolve) => {
-        aiDone.current = () => resolve("bye");
-        aiTalk.current = () => resolve("talk");
-      });
-      if (action === "bye" || !alive()) break;
+      if (!autoListen) {
+        setMode("ai-ready");
+        const action = await new Promise<"talk" | "bye">((resolve) => {
+          aiDone.current = () => resolve("bye");
+          aiTalk.current = () => resolve("talk");
+        });
+        if (action === "bye" || !alive()) break;
+      }
+      autoListen = false;
       setMode("ai-listen");
       scene.current?.setExpression("listen");
       const heard = await t.hear(12000, setLevel);
@@ -365,16 +406,47 @@ export function SantaCall({
       }
       setMode("ai-think");
       scene.current?.setExpression("idle");
-      let res: {
-        text?: string;
-        audio?: string | null;
-        line?: string;
-        left?: number;
-      } = { line: "ai.busy" };
+      const out = await streamSanta(a, c, heard, alive);
+      if (!alive()) return;
+      if (out.interrupted) autoListen = true;
+      if (out.left !== undefined && out.left <= 0) keepGoing = false;
+      if (out.timeUp) keepGoing = false;
+    }
+    aiDone.current = null;
+    pass.refresh();
+  }
+
+  /**
+   * One live answer, streamed: Santa starts speaking with the first sentence
+   * while the next ones are still being written. If the child talks over him
+   * (barge-in), he stops at once and listens.
+   */
+  async function streamSanta(
+    a: SantaAudio,
+    c: SantaChild,
+    heard: string,
+    alive: () => boolean,
+  ): Promise<{ interrupted: boolean; left?: number; timeUp?: boolean }> {
+    const ctrl = new AbortController();
+    const said: string[] = [];
+    let interrupted = false;
+    let stopWatch: (() => void) | null = null;
+    let left: number | undefined;
+    let line: string | null = null;
+    // Sentences waiting to be spoken, in order.
+    const queue: { text: string; wav: ArrayBuffer | null }[] = [];
+    let ended = false;
+    let wake: (() => void) | null = null;
+    const push = () => {
+      wake?.();
+      wake = null;
+    };
+    const reader = (async () => {
       try {
         const r = await fetch("/api/santa/chat", {
           method: "POST",
           headers: { "content-type": "application/json" },
+          signal: ctrl.signal,
           body: JSON.stringify({
             locale,
             name: c.name,
@@ -382,37 +454,87 @@ export function SantaCall({
             wishes: c.wishes,
             history: aiHistory.current,
             text: heard,
+            stream: true,
           }),
         });
-        res = await r.json();
+        const type = r.headers.get("content-type") ?? "";
+        if (!r.body || !type.includes("ndjson")) {
+          // Old answer shape (or an error as JSON).
+          const res = (await r.json().catch(() => ({ line: "ai.busy" }))) as { text?: string; audio?: string | null; line?: string; left?: number };
+          if (res.text) queue.push({ text: res.text, wav: res.audio ? b64ToBuf(res.audio) : null });
+          else line = res.line ?? "ai.busy";
+          left = res.left;
+          return;
+        }
+        const rd = r.body.pipeThrough(new TextDecoderStream()).getReader();
+        let buf = "";
+        for (;;) {
+          const { done, value } = await rd.read();
+          if (done) break;
+          buf += value;
+          let nl: number;
+          while ((nl = buf.indexOf("\n")) >= 0) {
+            const raw = buf.slice(0, nl).trim();
+            buf = buf.slice(nl + 1);
+            if (!raw) continue;
+            try {
+              const ev = JSON.parse(raw) as { t: string; text?: string; audio?: string | null; line?: string; left?: number };
+              if (ev.t === "s" && ev.text) {
+                queue.push({ text: ev.text, wav: ev.audio ? b64ToBuf(ev.audio) : null });
+                push();
+              } else if (ev.t === "line") line = ev.line ?? "ai.busy";
+              else if (ev.t === "done") left = ev.left;
+            } catch {
+              /* partial line */
+            }
+          }
+        }
       } catch {
-        res = { line: "ai.busy" };
+        if (!ctrl.signal.aborted && !queue.length && !said.length) line = "ai.busy";
+      } finally {
+        ended = true;
+        push();
       }
-      if (!alive()) return;
-      setMode("santa");
-      if (res.text) {
-        aiHistory.current.push(
-          { role: "child", text: heard },
-          { role: "santa", text: res.text },
-        );
-        const wav = res.audio
-          ? Uint8Array.from(atob(res.audio), (ch) => ch.charCodeAt(0)).buffer
-          : null;
-        scene.current?.setExpression(
-          /ho ho/i.test(res.text) ? "laugh" : "idle",
-        );
-        await a.sayRaw(res.text, wav, setCaption);
-      } else {
-        await a.say(
-          `line:${res.line === "ai.timeup" ? "ai.timeup" : res.line === "ai.again" ? "ai.again" : "ai.busy"}`,
-          setCaption,
-        );
+    })();
+
+    // Barge-in: the child's voice over Santa's stops him.
+    if (ears.current)
+      stopWatch = ears.current.watch(() => {
+        interrupted = true;
+        ctrl.abort();
+        a.interrupt();
+        push();
+      });
+
+    try {
+      for (;;) {
+        if (!alive() || interrupted) break;
+        const next = queue.shift();
+        if (next) {
+          setMode("santa");
+          scene.current?.setExpression(/ho ho/i.test(next.text) ? "laugh" : "idle");
+          said.push(next.text);
+          await a.sayRaw(next.text, next.wav, setCaption);
+          if (a.takeInterrupted()) interrupted = true;
+          continue;
+        }
+        if (ended) break;
+        await new Promise<void>((r) => (wake = r));
       }
-      if (res.left !== undefined && res.left <= 0) keepGoing = false;
-      if (res.line === "ai.timeup") keepGoing = false;
+    } finally {
+      stopWatch?.();
+      if (interrupted) ctrl.abort();
+      await reader.catch(() => {});
     }
-    aiDone.current = null;
-    pass.refresh();
+    if (said.length) aiHistory.current.push({ role: "child", text: heard }, { role: "santa", text: said.join(" ") });
+    if (!interrupted && !said.length && alive()) {
+      const l = line === "ai.timeup" ? "ai.timeup" : line === "ai.again" ? "ai.again" : "ai.busy";
+      setMode("santa");
+      await a.say(`line:${l}`, setCaption);
+      return { interrupted, left, timeUp: l === "ai.timeup" };
+    }
+    if (interrupted) scene.current?.setExpression("listen");
+    return { interrupted, left };
   }
 
   const onSceneReady = useCallback(
@@ -575,6 +697,7 @@ export function SantaCall({
               className="fixed inset-0 z-[70] flex flex-col items-center justify-between overflow-hidden bg-[radial-gradient(120%_80%_at_50%_0%,#3b1f6b_0%,#120b2e_55%,#07051a_100%)] px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(4rem,env(safe-area-inset-top))] text-white"
               role="dialog"
               aria-label={tr(T.ringing, locale)}
+              onPointerDown={() => void audio.current?.unlock()}
             >
               <Snow count={reduced ? 0 : 50} />
               <div className="relative flex flex-col items-center text-center">
@@ -741,6 +864,14 @@ export function SantaCall({
                   {mode === "listen"
                     ? tr(T.yourTurn, locale)
                     : tr(T.listening, locale)}
+                </div>
+              )}
+              {mode === "ai-prep" && (
+                <div className="w-full max-w-sm rounded-2xl bg-white/15 px-5 py-3 text-center text-sm font-bold backdrop-blur" aria-live="polite">
+                  ✨ {tr(T.prep, locale)} {Math.round(sttProgress * 100)} %
+                  <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/20" aria-hidden="true">
+                    <motion.div className="h-full rounded-full bg-amber-300" animate={{ width: `${Math.round(sttProgress * 100)}%` }} transition={{ type: "spring", stiffness: 120, damping: 20 }} />
+                  </div>
                 </div>
               )}
               {mode === "ai-think" && (

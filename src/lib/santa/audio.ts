@@ -1,6 +1,7 @@
 'use client';
 
 import { santaText, type SantaLocale } from '@/data/santa/lines';
+import { cachedClip } from './precache';
 
 /**
  * Santa's voice on the device: fetches the cached clips (/api/santa/voice),
@@ -26,6 +27,7 @@ export class SantaAudio {
   private raf = 0;
   private stopped = false;
   private voiceDown = false;
+  private cut = false;
 
   constructor(private locale: SantaLocale, private onLevel: Level) {
     const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
@@ -63,10 +65,16 @@ export class SantaAudio {
       return null;
     }
     try {
-      const res = await fetch(clipUrl(key, this.locale));
-      if (res.status === 503) this.voiceDown = true;
-      if (!res.ok) throw new Error(String(res.status));
-      const buf = await this.ctx.decodeAudioData(await res.arrayBuffer());
+      const url = clipUrl(key, this.locale);
+      // A scheduled call's clips were stored on the device in advance (precache.ts).
+      let bytes = await cachedClip(url);
+      if (!bytes) {
+        const res = await fetch(url);
+        if (res.status === 503) this.voiceDown = true;
+        if (!res.ok) throw new Error(String(res.status));
+        bytes = await res.arrayBuffer();
+      }
+      const buf = await this.ctx.decodeAudioData(bytes);
       this.buffers.set(key, buf);
       return buf;
     } catch {
@@ -229,6 +237,29 @@ export class SantaAudio {
     tone(660, 0, 0.18, 'sine', 0.12);
     tone(440, 0.2, 0.25, 'sine', 0.12);
     return 0.5;
+  }
+
+  /** Santa is interrupted (the child speaks over him): the current sound stops, the call goes on. */
+  interrupt() {
+    this.cut = true;
+    try {
+      this.current?.stop();
+    } catch {
+      /* already stopped */
+    }
+    if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
+  }
+
+  /** True once after `interrupt()` (read by the live call to skip the rest of a reply). */
+  takeInterrupted(): boolean {
+    const c = this.cut;
+    this.cut = false;
+    return c;
+  }
+
+  /** Is Santa's voice playing right now? */
+  get speaking(): boolean {
+    return this.current !== null || (typeof speechSynthesis !== 'undefined' && speechSynthesis.speaking);
   }
 
   stop() {

@@ -4,17 +4,21 @@
  * Speech-to-text ON THE DEVICE for the live AI call (the child's voice never
  * leaves the phone; only the text of the sentence is sent).
  *
- * Chrome's on-device recognition (`processLocally`, Chrome 139+ on Android and
- * computers). Never the browser's cloud speech service (it would send the child's
- * voice to a third party), so on other browsers (Safari, Firefox) the live AI call
- * is not offered and the guided call is used instead.
+ * Two engines, best first:
+ * 1. Chrome's on-device recognition (`processLocally`, Chrome 139+ on Android and
+ *    computers). Never the browser's cloud speech service (it would send the
+ *    child's voice to a third party).
+ * 2. Everywhere else (Safari, iPhone, iPad, Firefox): sherpa-onnx WebAssembly
+ *    (Apache-2.0) with Silero VAD (MIT) and Whisper tiny (MIT), running in a Web
+ *    Worker (public/santa/asr/stt-worker.js). The model (≈ 100 MB) is downloaded
+ *    once, after the parent starts the live call, and kept in the browser's cache.
  *
- * (Whisper in the browser was considered: transformers.js pulls `sharp`, whose
- * binaries bundle LGPL code, and a 100 MB+ ONNX Runtime for Node — not shipped.)
+ * (transformers.js was considered: its Node build pulls `sharp`, whose binaries
+ * bundle LGPL code — not shipped.)
  */
 
 export type Transcriber = {
-  kind: 'chrome-local';
+  kind: 'chrome-local' | 'sherpa-wasm';
   /** Downloads the on-device language pack when needed; progress 0–1. */
   prepare(onProgress?: (p: number) => void): Promise<void>;
   /** Listens until the child stops talking (or `maxMs`), returns the words ('' if nothing). */
@@ -50,6 +54,25 @@ function chromeLocal(): SRStatic | null {
   return w.SpeechRecognition && typeof w.SpeechRecognition.available === 'function' ? w.SpeechRecognition : null;
 }
 
+/** Where the Whisper tiny model is downloaded from (public Hugging Face mirror of the sherpa-onnx export, MIT). */
+export const SHERPA_MODEL_BASE = 'https://huggingface.co/csukuangfj/sherpa-onnx-whisper-tiny/resolve/main';
+/** sherpa-onnx WebAssembly + worker, served by this site. */
+export const SHERPA_BASE_PATH = '/santa/asr';
+
+/** Media the sherpa engine listens to (the call's own microphone stream). */
+export type TranscriberMedia = { ctx: AudioContext; stream: MediaStream | null };
+
+function sherpaSupported(): boolean {
+  return (
+    typeof WebAssembly === 'object' &&
+    typeof Worker !== 'undefined' &&
+    typeof navigator !== 'undefined' &&
+    !!navigator.mediaDevices?.getUserMedia &&
+    // 32-bit ARM phones and very old devices: not enough memory for the model.
+    ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4) >= 2
+  );
+}
+
 /** Which engine this device can use, without downloading anything. */
 export async function transcriberKind(locale: 'fr' | 'en'): Promise<Transcriber['kind'] | null> {
   const SR = chromeLocal();
@@ -61,11 +84,138 @@ export async function transcriberKind(locale: 'fr' | 'en'): Promise<Transcriber[
       /* not available */
     }
   }
+  return sherpaSupported() ? 'sherpa-wasm' : null;
+}
+
+export async function createTranscriber(locale: 'fr' | 'en', media?: TranscriberMedia): Promise<Transcriber | null> {
+  const kind = await transcriberKind(locale);
+  if (kind === 'chrome-local') return chromeTranscriber(locale);
+  if (kind === 'sherpa-wasm' && media) return sherpaTranscriber(locale, media);
   return null;
 }
 
-export async function createTranscriber(locale: 'fr' | 'en'): Promise<Transcriber | null> {
-  return (await transcriberKind(locale)) === 'chrome-local' ? chromeTranscriber(locale) : null;
+/** Linear-interpolation resampling to 16 kHz (the models' rate). */
+export function resampleTo16k(input: Float32Array, rate: number): Float32Array {
+  if (rate === 16000) return input;
+  const ratio = rate / 16000;
+  const n = Math.floor(input.length / ratio);
+  const out = new Float32Array(n);
+  for (let i = 0; i < n; i++) {
+    const x = i * ratio;
+    const i0 = Math.floor(x);
+    const i1 = Math.min(i0 + 1, input.length - 1);
+    const f = x - i0;
+    out[i] = input[i0] * (1 - f) + input[i1] * f;
+  }
+  return out;
+}
+
+type WorkerMsg = { type: 'progress'; p: number } | { type: 'ready' } | { type: 'error'; message: string } | { type: 'speech'; on: boolean } | { type: 'text'; text: string } | { type: 'flushed'; text: string };
+
+function sherpaTranscriber(locale: 'fr' | 'en', media: TranscriberMedia): Transcriber {
+  let worker: Worker | null = null;
+  let capture: { src: MediaStreamAudioSourceNode; proc: ScriptProcessorNode; mute: GainNode; stream: MediaStream; own: boolean } | null = null;
+  let finishNow: (() => void) | null = null;
+  const listeners = new Set<(m: WorkerMsg) => void>();
+
+  const startCapture = async () => {
+    if (capture) return capture;
+    let stream = media.stream && media.stream.getAudioTracks().length ? media.stream : null;
+    const own = !stream;
+    if (!stream) stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true } });
+    const src = media.ctx.createMediaStreamSource(stream);
+    const proc = media.ctx.createScriptProcessor(4096, 1, 1);
+    const mute = media.ctx.createGain();
+    mute.gain.value = 0;
+    src.connect(proc);
+    proc.connect(mute).connect(media.ctx.destination);
+    capture = { src, proc, mute, stream, own };
+    return capture;
+  };
+  const stopCapture = () => {
+    if (!capture) return;
+    capture.proc.onaudioprocess = null;
+    capture.src.disconnect();
+    capture.proc.disconnect();
+    capture.mute.disconnect();
+    if (capture.own) capture.stream.getTracks().forEach((t) => t.stop());
+    capture = null;
+  };
+
+  return {
+    kind: 'sherpa-wasm',
+    prepare(onProgress) {
+      if (worker) return Promise.resolve();
+      return new Promise<void>((resolve, reject) => {
+        const w = new Worker(`${SHERPA_BASE_PATH}/stt-worker.js`);
+        worker = w;
+        w.onmessage = (e: MessageEvent<WorkerMsg>) => {
+          const m = e.data;
+          if (m.type === 'progress') onProgress?.(m.p);
+          else if (m.type === 'ready') resolve();
+          else if (m.type === 'error') reject(new Error(m.message));
+          listeners.forEach((l) => l(m));
+        };
+        w.onerror = () => reject(new Error('stt-worker'));
+        w.postMessage({ type: 'init', base: `${location.origin}${SHERPA_BASE_PATH}`, modelBase: SHERPA_MODEL_BASE, lang: locale });
+      });
+    },
+    async hear(maxMs, onLevel) {
+      const w = worker;
+      if (!w) return '';
+      const cap = await startCapture();
+      w.postMessage({ type: 'start' });
+      return new Promise<string>((resolve) => {
+        let settled = false;
+        let heardSpeech = false;
+        const parts: string[] = [];
+        const done = (text: string) => {
+          if (settled) return;
+          settled = true;
+          clearTimeout(limit);
+          listeners.delete(onMsg);
+          cap.proc.onaudioprocess = null;
+          finishNow = null;
+          onLevel?.(0);
+          resolve(text.trim());
+        };
+        const flush = () => {
+          cap.proc.onaudioprocess = null;
+          w.postMessage({ type: 'flush' });
+        };
+        const onMsg = (m: WorkerMsg) => {
+          if (m.type === 'speech' && m.on) heardSpeech = true;
+          // The child stopped talking: one sentence is enough for Santa to answer.
+          if (m.type === 'text') done([...parts, m.text].join(' '));
+          if (m.type === 'flushed') done([...parts, m.text].join(' '));
+          if (m.type === 'error') done(parts.join(' '));
+        };
+        listeners.add(onMsg);
+        finishNow = flush;
+        // While the child is still talking at the limit, give a little more time.
+        const limit = setTimeout(function stopAt() {
+          flush();
+        }, maxMs + (heardSpeech ? 3000 : 0));
+        cap.proc.onaudioprocess = (e) => {
+          const ch = e.inputBuffer.getChannelData(0);
+          let sum = 0;
+          for (let i = 0; i < ch.length; i += 4) sum += ch[i] * ch[i];
+          onLevel?.(Math.min(1, Math.sqrt(sum / (ch.length / 4)) * 6));
+          const samples = resampleTo16k(new Float32Array(ch), media.ctx.sampleRate);
+          w.postMessage({ type: 'audio', samples }, [samples.buffer]);
+        };
+      });
+    },
+    finish() {
+      finishNow?.();
+    },
+    close() {
+      stopCapture();
+      worker?.terminate();
+      worker = null;
+      listeners.clear();
+    },
+  };
 }
 
 function chromeTranscriber(locale: 'fr' | 'en'): Transcriber {
