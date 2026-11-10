@@ -29,7 +29,12 @@ export async function precacheClips(keys: string[], locale: SantaLocale, onProgr
       try {
         if (await cache.match(url)) ok++;
         else {
-          const res = await fetch(url);
+          let res = await fetch(url);
+          // Busy voice service: one more try a little later (there is time before the call).
+          if (res.status === 502 || res.status === 429) {
+            await new Promise((r) => setTimeout(r, 2000 + Math.random() * 1500));
+            res = await fetch(url);
+          }
           if (res.ok) {
             await cache.put(url, res);
             ok++;
@@ -41,7 +46,7 @@ export async function precacheClips(keys: string[], locale: SantaLocale, onProgr
       onProgress?.(++done / total);
     }
   };
-  await Promise.all([worker(), worker(), worker()]);
+  await Promise.all([worker(), worker()]);
   return ok;
 }
 

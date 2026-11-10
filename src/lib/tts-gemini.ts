@@ -59,6 +59,17 @@ export function speakable(text: string, style: TtsStyle = 'ziggy'): string {
     .slice(0, MAX_CHARS[style]);
 }
 
+/** A short, key-free summary of a Gemini error body: status + quota ids. */
+export function errorReason(body: string): string {
+  try {
+    const e = (JSON.parse(body) as { error?: { status?: string; details?: { violations?: { quotaId?: string }[] }[] } }).error;
+    const quotas = (e?.details ?? []).flatMap((d) => d.violations ?? []).map((v) => v.quotaId).filter(Boolean);
+    return [e?.status, ...new Set(quotas)].filter(Boolean).join(' ').slice(0, 200);
+  } catch {
+    return '';
+  }
+}
+
 /** One WAV clip of `text` in Ziggy's voice, or null if Gemini is unavailable. */
 export async function synthesize(key: string, text: string, style: TtsStyle = 'ziggy'): Promise<Uint8Array | null> {
   for (const model of TTS_MODELS) {
@@ -76,7 +87,9 @@ export async function synthesize(key: string, text: string, style: TtsStyle = 'z
     });
     if (res.status === 404) continue;
     if (!res.ok) {
-      console.warn(`[tts] ${model} ${res.status}`);
+      // The reason (e.g. RESOURCE_EXHAUSTED + which quota) tells a per-minute burst from a spent daily quota.
+      const why = await res.text().then(errorReason, () => '');
+      console.warn(`[tts] ${model} ${res.status}${why ? ` ${why}` : ''}`);
       return null;
     }
     const data = (await res.json()) as {

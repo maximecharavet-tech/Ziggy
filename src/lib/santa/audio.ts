@@ -13,6 +13,8 @@ import { cachedClip } from './precache';
 
 /** Bump when the texts of src/data/santa/lines.ts change (busts the CDN cache). */
 export const VOICE_VERSION = 1;
+/** Pause before the one retry of a clip the voice service could not make (502/429). */
+export const RETRY_MS = 1500;
 
 export const clipUrl = (key: string, locale: SantaLocale) => `/api/santa/voice?k=${encodeURIComponent(key)}&l=${locale}&v=${VOICE_VERSION}`;
 
@@ -44,7 +46,7 @@ export class SantaAudio {
     if (this.ctx.state === 'suspended') await this.ctx.resume().catch(() => {});
   }
 
-  /** Fetches and decodes clips, several at a time; reports progress 0–1. */
+  /** Fetches and decodes clips, two at a time; reports progress 0–1. */
   async preload(keys: string[], onProgress?: (p: number) => void) {
     let done = 0;
     const queue = keys.filter((k) => !this.buffers.has(k));
@@ -54,7 +56,8 @@ export class SantaAudio {
         onProgress?.(++done / keys.length);
       }
     };
-    await Promise.all([worker(), worker(), worker(), worker()]);
+    // Two at a time: new clips are made one by one by the voice service, which limits bursts.
+    await Promise.all([worker(), worker()]);
     onProgress?.(1);
   }
 
@@ -69,7 +72,14 @@ export class SantaAudio {
       // A scheduled call's clips were stored on the device in advance (precache.ts).
       let bytes = await cachedClip(url);
       if (!bytes) {
-        const res = await fetch(url);
+        let res = await fetch(url);
+        // 502/429: the voice service is busy for a moment (a burst of new clips):
+        // one more try shortly after, before falling back to the device voice.
+        if (res.status === 502 || res.status === 429) {
+          await new Promise((r) => setTimeout(r, RETRY_MS + Math.random() * 800));
+          if (this.stopped) throw new Error('stopped');
+          res = await fetch(url);
+        }
         if (res.status === 503) this.voiceDown = true;
         if (!res.ok) throw new Error(String(res.status));
         bytes = await res.arrayBuffer();

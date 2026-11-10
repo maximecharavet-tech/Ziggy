@@ -254,6 +254,7 @@ export function SantaCall({
   // A scheduled call: the phone rings as soon as the page opens (the ring
   // sound starts at the first touch — browsers need one before any sound).
   const rangFor = useRef<string | null>(null);
+  const schedRinging = useRef<{ id: string; rang: boolean } | null>(null);
   useEffect(() => {
     if (!ringId || rangFor.current === ringId) return;
     const sc = scheduleStore.find(ringId);
@@ -263,9 +264,28 @@ export function SantaCall({
       return; // re-runs with the right child
     }
     rangFor.current = ringId;
-    scheduleStore.update(ringId, { doneAt: Date.now() });
+    schedRinging.current = { id: ringId, rang: false };
     void ring(sc.kind, false, { seed: seedFromId(sc.id) });
   }, [ringId, child, ring]);
+
+  // The scheduled call counts as done once its ringing ends (answered, "later",
+  // or the page left) — not when it starts, so a reload while it rings rings again.
+  useEffect(() => {
+    const s = schedRinging.current;
+    if (!s) return;
+    if (phase === "ringing") s.rang = true;
+    else if (s.rang) {
+      scheduleStore.update(s.id, { doneAt: Date.now() });
+      schedRinging.current = null;
+    }
+  }, [phase]);
+  useEffect(
+    () => () => {
+      const s = schedRinging.current;
+      if (s?.rang) scheduleStore.update(s.id, { doneAt: Date.now() });
+    },
+    [],
+  );
 
   /** "Answer": camera + mic (both optional), then the call runs. */
   const answer = useCallback(async () => {
@@ -603,7 +623,7 @@ export function SantaCall({
             onClick={() => ring("message", false)}
             initial={reduced ? false : { opacity: 0, y: 14 }}
             animate={{ opacity: 1, y: 0 }}
-            className={`group relative mx-auto mt-8 flex w-full max-w-3xl items-center gap-4 overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#e67700] to-[#fcc419] p-4 text-start text-[#3b1f00] shadow-[0_14px_30px_-12px_rgba(0,0,0,0.6)] transition-transform hover:-translate-y-0.5 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/70 sm:p-5 ${initialKind === "message" ? "ring-4 ring-white/80" : ""}`}
+            className={`group relative mx-auto mt-8 flex w-full max-w-3xl flex-wrap items-center gap-x-4 gap-y-3 overflow-hidden sm:flex-nowrap rounded-[2rem] bg-gradient-to-r from-[#e67700] to-[#fcc419] p-4 text-start text-[#3b1f00] shadow-[0_14px_30px_-12px_rgba(0,0,0,0.6)] transition-transform hover:-translate-y-0.5 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-white/70 sm:p-5 ${initialKind === "message" ? "ring-4 ring-white/80" : ""}`}
           >
             <span
               className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-white/90 text-4xl shadow-inner"
@@ -611,8 +631,8 @@ export function SantaCall({
             >
               🎧
             </span>
-            <span className="flex-1">
-              <span className="block font-display text-2xl font-bold leading-tight">
+            <span className="min-w-0 flex-1">
+              <span className="block font-display text-xl font-bold leading-tight sm:text-2xl">
                 {tr(T.message, locale)}
               </span>
               <span className="block text-sm font-semibold opacity-80">
@@ -622,7 +642,7 @@ export function SantaCall({
             <span className="hidden rounded-full bg-white px-3 py-1 text-xs font-black uppercase tracking-wider sm:inline">
               {tr(T.free, locale)}
             </span>
-            <span className="inline-flex min-h-14 items-center rounded-full bg-[#3b1f00] px-5 font-display text-lg font-bold text-white">
+            <span className="inline-flex min-h-14 w-full items-center justify-center rounded-full bg-[#3b1f00] px-5 font-display text-lg font-bold text-white sm:w-auto">
               ▶ {tr(T.listen, locale)}
             </span>
           </motion.button>

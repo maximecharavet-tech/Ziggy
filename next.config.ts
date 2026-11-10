@@ -1,6 +1,11 @@
 import { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { APK_PATH, APK_RELEASE_URL } from './src/lib/downloads';
+import { defaultLocale, locales } from './src/i18n/config';
+
+// Short links of L'appli du Père Noël: ziggy-ai.fr/appel, /avent, /certificat (and /en/appel…).
+const SANTA_SHORT = '(appel|avent|certificat)';
+const OTHER_LOCALES = locales.filter((l) => l !== defaultLocale).join('|');
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -43,6 +48,9 @@ const nextConfig: NextConfig = {
       // Short links for the Christmas campaign (TikTok bio, videos): ziggy-ai.fr/noel, /santa.
       { source: '/noel', destination: '/pere-noel', permanent: false },
       { source: '/santa', destination: '/en/pere-noel', permanent: false },
+      { source: `/:page${SANTA_SHORT}`, destination: '/pere-noel/:page', permanent: false },
+      { source: `/${defaultLocale}/:page${SANTA_SHORT}`, destination: '/pere-noel/:page', permanent: false },
+      { source: `/:locale(${OTHER_LOCALES})/:page${SANTA_SHORT}`, destination: '/:locale/pere-noel/:page', permanent: false },
       // Search Console 404s: crawlers once read the price period ("/mois", "/Monat") and a stray "$" as links.
       { source: '/mois', destination: '/', permanent: true },
       { source: '/Monat', destination: '/', permanent: true },

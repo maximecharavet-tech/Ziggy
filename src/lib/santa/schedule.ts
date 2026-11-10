@@ -44,7 +44,8 @@ export type ScheduleError = 'past' | 'too-late' | 'kind' | 'full';
 
 export function validateSchedule(input: { kind: CallKind; at: number }, ctx: { now: number; tier: SantaTier | null; pending: number }): ScheduleError | null {
   if (!schedulableKinds(ctx.tier).includes(input.kind)) return 'kind';
-  if (!Number.isFinite(input.at) || input.at < ctx.now + 60_000) return 'past';
+  // The time input has minute precision: the current minute is still fine (it rings at once).
+  if (!Number.isFinite(input.at) || input.at < Math.floor(ctx.now / 60_000) * 60_000) return 'past';
   if (input.at > SANTA_VALID_UNTIL_MS) return 'too-late';
   if (ctx.pending >= MAX_SCHEDULED) return 'full';
   return null;
