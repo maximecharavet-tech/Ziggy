@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import {
   ShieldCheck, LogOut, Users, Star, Gamepad2, Trophy, Save, RotateCcw, Eye, EyeOff,
   RefreshCw, Loader2, Check, ExternalLink,

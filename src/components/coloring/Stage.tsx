@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState, type Ref } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { glitterPoints, paintAll, paintStroke } from '@/coloring/brush-render';
 import { MAGIC, fillAttr, gradientVector } from '@/coloring/palette';
 import { EMOJI_FONT } from '@/coloring/raster';

@@ -47,3 +47,10 @@ Valid until 31 January 2027. Bought by a parent behind the grown-up gate.
   Live AI call: the transcribed text of the child's sentence, for the reply only;
   nothing stored. Stripe: the parent's payment and email (receipt).
 - No tracking pixel (TikTok ads are measured with the campaign link and Stripe sales).
+
+## Seasonal pages and proposed pricing (2026)
+- `/pere-noel` is the bilingual premium landing page; it retains the existing 3D village below the landing sections.
+- `/pere-noel/avent` is a local-only Advent calendar. Doors unlock by the Europe/Paris date; doors 1–3 are free and doors 4–24 require a Santa pass. November exposes a preview of door 1.
+- `/pere-noel/certificat` creates a printable child certificate in the browser. The free image is medium size with a subtle Ziggy watermark; a Santa pass enables HD without the watermark.
+- `SANTA_NEW_PRICING` in `src/lib/santa/offer.ts` is `false`. Proposed prices are display-planning data only. Checkout continues to use the unchanged production offers: 4.99 €, 9.99 €, and 20 live AI minutes.
+- Landing artwork slots are declared in `src/data/santa/art.ts`. Each slot remains unavailable until its public asset exists, so absent files do not generate requests.

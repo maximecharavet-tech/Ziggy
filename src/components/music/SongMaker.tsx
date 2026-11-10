@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { CHALLENGES, DRUMS, MELODY, SOUNDS, SOUND_NAME, TUNES, decode, emptySong, encode, noteCount, resize, surprise, toggle, tuneToSong, type Song } from '@/games2d/music/song';
 import type { Band } from '@/games2d/music/synth';

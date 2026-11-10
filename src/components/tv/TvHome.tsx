@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import Image from 'next/image';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion, useIsPresent } from 'framer-motion';
+import { AnimatePresence, motion, useIsPresent } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { DODO_STORIES } from '@/data/dodo';
 import { VALUE_LABEL, type DodoStory } from '@/data/dodo/types';

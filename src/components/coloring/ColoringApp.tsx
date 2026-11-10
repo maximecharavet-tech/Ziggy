@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Lock, Volume2, VolumeX } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { ReadAloudProvider, useAutoSay } from '@/components/arcade/read-aloud';

@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { AgeBand } from '@/lib/world/memory';
 import { getMemory, setMemory, syncWorld } from '@/lib/world/store';
 import { speakSequence, unlockAudio } from '@/lib/voice';

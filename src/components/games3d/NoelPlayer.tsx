@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import type { NoelGame, NoelState } from '@/games3d/noel/NoelGame';
 import { COLOR_HEX, COLOR_NAME, MISSIONS, missionText, progressOf, type Band, type Ornament } from '@/games3d/noel/missions';

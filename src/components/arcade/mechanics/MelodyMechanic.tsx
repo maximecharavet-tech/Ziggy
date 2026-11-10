@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { cleanSequence } from '../logic';
 import { playPad } from './melody-audio';

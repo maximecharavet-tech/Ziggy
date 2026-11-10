@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, type CSSProperties } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { mixHex, readableOn, sameMultiset } from '../logic';

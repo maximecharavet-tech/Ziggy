@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Volume2, Square, Mic, AudioLines, Loader2 } from 'lucide-react';
 import { voiceStore, speak, stopSpeaking, setAutoRead, micSupported, listen } from '@/lib/voice';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { SplitWords } from '@/components/ui/motion-primitives';
 import { EASE_OUT } from '@/lib/motion';
 

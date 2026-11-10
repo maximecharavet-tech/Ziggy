@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { useProgressMap } from '@/components/account/useProgressMap';
 import { useProfile } from '@/components/account/ProfileProvider';

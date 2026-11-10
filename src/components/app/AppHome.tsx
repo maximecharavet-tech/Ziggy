@@ -3,7 +3,7 @@
 import type { CSSProperties, ReactNode } from 'react';
 import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { tr, type L } from '@/lib/i18n-text';
 import { useHydrated, useWorldMemory } from '@/lib/world/store';
 import { speakSequence, unlockAudio } from '@/lib/voice';

@@ -1,7 +1,7 @@
 'use client';
 
 import type { CSSProperties } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { tr } from '@/lib/i18n-text';
 import { COLORS, MAGIC, luminance } from '@/coloring/palette';
 import { T } from '@/coloring/text';

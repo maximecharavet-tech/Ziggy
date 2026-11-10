@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
 import { Tilt3D } from '@/components/ui/Tilt3D';

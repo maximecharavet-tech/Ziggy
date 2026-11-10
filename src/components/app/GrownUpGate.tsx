@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname, useRouter } from 'next/navigation';
-import { AnimatePresence, motion, useAnimationControls, useIsPresent } from 'framer-motion';
+import { AnimatePresence, motion, useAnimationControls, useIsPresent } from 'motion/react';
 import { locales } from '@/i18n/config';
 import { tr, type L } from '@/lib/i18n-text';
 import { GATE_GRACE_MS, checkGateAnswer, gateReasonFor, isParentsPath, makeGateQuestion, type GateQuestion, type GateReason } from '@/lib/grown-up-gate';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { FlaskConical, Database, ScanEye, Users, ShieldCheck } from 'lucide-react';
 import { AiLab } from '@/components/lab/AiLab';
 import { SplitWords, Spotlight } from '@/components/ui/motion-primitives';

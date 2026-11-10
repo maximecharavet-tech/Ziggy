@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ArrowLeft, Shield, Sparkles, BookOpen } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { getAgent } from '@/lib/agents';

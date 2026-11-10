@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { ZiggyAvatar } from '@/components/ziggy/Mascot';
 import { fx, toy } from '@/components/create/fx/toy';
 import { EASE_OUT } from '@/lib/motion';

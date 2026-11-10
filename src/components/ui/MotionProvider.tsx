@@ -1,9 +1,9 @@
 'use client';
 
-import { MotionConfig } from 'framer-motion';
+import { MotionConfig } from 'motion/react';
 import type { ReactNode } from 'react';
 
-/** Framer Motion follows the visitor's "reduce motion" setting everywhere. */
+/** Motion follows the visitor's "reduce motion" setting throughout the app. */
 export function MotionProvider({ children }: { children: ReactNode }) {
   return <MotionConfig reducedMotion="user">{children}</MotionConfig>;
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useSyncExternalStore, type CSSProperties } from 'react';
-import { motion, useAnimationControls } from 'framer-motion';
+import { motion, useAnimationControls } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Ziggy3D, type ZiggyCue, type ZiggyIdle } from '@/components/ziggy3d/Ziggy3D';
 import type { CutoutPose } from '@/lib/mascot';

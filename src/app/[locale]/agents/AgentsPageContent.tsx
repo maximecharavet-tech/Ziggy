@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Users, Sparkles } from 'lucide-react';
 import { AGENTS } from '@/lib/agents';
 import { AgentCard } from '@/components/agents/AgentCard';
