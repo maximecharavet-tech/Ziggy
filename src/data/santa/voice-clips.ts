@@ -1,7 +1,7 @@
 /**
  * Santa's pre-recorded voice (public/santa/voice/<locale>/<file>.mp3), made
- * offline and for free with the Ziggy Voice Engine (voice-engine/, Kokoro-82M
- * Apache-2.0 + a Santa DSP chain). Every fixed clip is a static file; only the
+ * offline and for free (voice-engine/santa_voice_v2: Kokoro-82M Apache-2.0 +
+ * WORLD BSD for the old-man ageing and intonation). Every fixed clip is a static file; only the
  * child's first name (name:…) still goes to /api/santa/voice, then to the
  * device's own voice if that fails.
  */
@@ -28,8 +28,14 @@ export function staticClipKeys(): string[] {
 /** `line:open.hear` → `line-open.hear` (file name without extension). */
 export const clipFile = (key: string) => key.replace(/:/g, '-');
 
-/** The static file of a clip, or null when it has none (names, or not recorded yet). */
+/**
+ * The static file of a clip, or null when it has none (names, or not recorded yet).
+ * `h` changes with the words, `v` with the voice recipe: the files are cached for
+ * a week, so a new voice (santa-v2…) must change the URL even when the text did not.
+ */
 export function staticClipUrl(key: string, locale: 'fr' | 'en'): string | null {
   const hash = SANTA_VOICE[locale]?.[key];
-  return hash ? `/santa/voice/${locale}/${clipFile(key)}.mp3?h=${hash}` : null;
+  return hash
+    ? `/santa/voice/${locale}/${clipFile(key)}.mp3?h=${hash}&v=${encodeURIComponent(SANTA_VOICE.voice)}`
+    : null;
 }

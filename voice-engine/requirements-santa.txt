@@ -1,0 +1,13 @@
+# santa_voice_v2 (offline generation tool, Python 3.12, CPU only). Versions used
+# for santa-v2 on 2026-11-10. Nothing here ships with the site: only the MP3s do.
+# pyworld 0.3.5 needs setuptools<81 (it imports pkg_resources) to build/import.
+kokoro-onnx==0.6.1        # MIT (pulls phonemizer/espeakng-loader: GPL, local tool only)
+onnxruntime==1.31.1       # MIT
+numpy==2.5.4              # BSD-3-Clause
+scipy==1.18.1             # BSD-3-Clause
+soundfile==0.14.0         # BSD-3-Clause
+pyworld==0.3.5            # MIT (WORLD: modified BSD)
+pyloudnorm==0.2.0         # MIT
+setuptools<81
+# QA only (--qa): faster-whisper 1.2.1, MIT. Use compute_type float32 on CPU.
+pytest                    # MIT, for voice-engine/tests
