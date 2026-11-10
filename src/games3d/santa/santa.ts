@@ -73,6 +73,8 @@ export interface SantaModel {
   bib: THREE.Group;
   hat: THREE.Group;
   moustache: THREE.Group;
+  /** The dark mouth opening behind the moustache (its width follows the visemes). */
+  mouth: THREE.Mesh;
   brows: [THREE.Mesh, THREE.Mesh];
   eyes: [THREE.Group, THREE.Group];
   happyEyes: [THREE.Mesh, THREE.Mesh];
@@ -546,6 +548,7 @@ export function buildSanta(opts: { lowPower?: boolean } = {}): SantaModel {
     bib,
     hat,
     moustache,
+    mouth: cavity,
     brows,
     eyes: eyes as [THREE.Group, THREE.Group],
     happyEyes: happyEyes as [THREE.Mesh, THREE.Mesh],
@@ -598,6 +601,8 @@ export class SantaRig {
   private poseT = 0;
   private talkTarget = 0;
   private talk = 0;
+  private wideTarget = 1;
+  private wide = 1;
   private blinkAt = 2.6;
   private blinkT = -1;
   private cur: Pose;
@@ -622,6 +627,13 @@ export class SantaRig {
 
   setTalk(level: number) {
     this.talkTarget = Math.max(0, Math.min(1, Number.isFinite(level) ? level : 0));
+    this.wideTarget = 1;
+  }
+
+  /** Lip sync: a mouth shape's jaw opening (0–1) and width (1 rest, < 1 rounded "o"/"ou"). */
+  setMouth(open: number, wide: number) {
+    this.talkTarget = Math.max(0, Math.min(1, Number.isFinite(open) ? open : 0));
+    this.wideTarget = Math.max(0.5, Math.min(1.3, Number.isFinite(wide) ? wide : 1));
   }
 
   /** The base pose of an expression (no oscillation). */
@@ -795,8 +807,11 @@ export class SantaRig {
     // beard stays on the belly instead of sinking into it.
     m.jaw.rotation.x = open * 0.1;
     m.jaw.position.set(JAW.x, JAW.y - open * 0.075, JAW.z + open * 0.045);
+    this.wide += (this.wideTarget - this.wide) * damp(22, dt);
     m.moustache.position.y = open * 0.012;
-    m.moustache.scale.set(1 + open * 0.04, 1, 1);
+    m.moustache.scale.set((1 + open * 0.04) * (0.9 + this.wide * 0.1), 1, 1);
+    // The opening: rounder and narrower for "o"/"ou", wider for "è"/"a".
+    m.mouth.scale.set(0.09 * this.wide, 0.08 * (1 + open * 0.35) * (1.6 - this.wide * 0.6), 0.05);
 
     // Brows.
     const browLift = c.brow * 0.018 + open * 0.008;

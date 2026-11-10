@@ -3,8 +3,8 @@
 /**
  * Keeps the clips of a scheduled call on the device in advance (Cache Storage),
  * so the call rings and plays at its time even when the network is slow or the
- * voice service is busy (Christmas Eve). Only Santa's fixed clips are stored
- * (recorded files, or the voice service for those not recorded yet), plus the child's first name spoken alone — nothing else about the child.
+ * CDN is busy (Christmas Eve). Only Santa's recorded clips are stored, plus
+ * the recorded greetings with the child's first name — nothing else about the child.
  */
 import { clipSources } from './audio';
 import type { SantaLocale } from '@/data/santa/lines';
@@ -26,18 +26,12 @@ export async function precacheClips(keys: string[], locale: SantaLocale, onProgr
   const worker = async () => {
     for (let k = queue.shift(); k; k = queue.shift()) {
       try {
-        // The recorded file first, then the voice service (first names, clips not recorded yet).
-        for (const url of clipSources(k, locale)) {
+        for (const url of await clipSources(k, locale)) {
           if (await cache.match(url)) {
             ok++;
             break;
           }
-          let res = await fetch(url);
-          // Busy voice service: one more try a little later (there is time before the call).
-          if (res.status === 502 || res.status === 429) {
-            await new Promise((r) => setTimeout(r, 2000 + Math.random() * 1500));
-            res = await fetch(url);
-          }
+          const res = await fetch(url);
           if (res.ok) {
             await cache.put(url, res);
             ok++;

@@ -25,11 +25,17 @@ Motion (`motion/react`) replaces every former `framer-motion` import; `framer-mo
 - [faster-whisper](https://github.com/SYSTRAN/faster-whisper) — MIT, contrôle qualité (WER) seulement.
 - [eSpeak NG](https://github.com/espeak-ng/espeak-ng) et [phonemizer](https://github.com/bootphon/phonemizer) — GPL-3.0, utilisés seulement comme outils locaux de phonémisation au moment de la génération ; rien d'eSpeak n'est livré sur le site. FFmpeg/LAME : outil système d'encodage MP3, non livré.
 - Recette `santa-v1` (FunDSP — MIT OR Apache-2.0, `voice-engine/ziggy-voice santa`) conservée dans le moteur Rust.
-- Prénoms de l'enfant : toujours dits en direct (`/api/santa/voice`, Gemini) puis par la voix de l'appareil en dernier recours.
+- Prénoms de l'enfant : dans la même voix santa-v2, enregistrés hors ligne (`public/santa/names`, « Bonjour … ! » et « Joyeux Noël, … ! ») pour les 2 000 prénoms français les plus donnés de 2010 à 2022 ([Fichier des prénoms de l'Insee](https://www.insee.fr/fr/statistiques/7633685), Licence Ouverte 2.0) et 800 prénoms anglais (US Social Security Administration, 1998–2008, domaine public, via [hadley/data-baby-names](https://github.com/hadley/data-baby-names)). Un prénom absent de la liste : « Bonjour à toi ! » dans la même voix, et le prénom en sous-titre. Plus de Gemini ni de voix de l'appareil dans l'appel guidé.
+- Synchronisation des lèvres : [Rhubarb Lip Sync](https://github.com/DanielSWolf/rhubarb-lip-sync) (Daniel S. Wolf) — MIT, exécuté hors ligne (reconnaissance phonétique) ; seules les formes de bouche (`public/santa/visemes/*.json`) sont livrées. Formes Preston Blair (A–H, X) traduites en ouverture et largeur de la bouche du Père Noël 3D ; volume de la voix pour les prénoms.
 
 ## Engines used to write this code (free)
 - DeepSeek (chat gratuit) : premier jet de `voice-engine/santa_voice_v2` (santa-v2), relu, corrigé et testé à la main.
 - Codex CLI (landing, Advent calendar, certificate, pricing flag), Hyper Code via local Ollama `qwen-coder-7b` (first draft of `santa-voice-utils.test.ts`, corrected by hand).
+
+## Appel : image et Ziggy lutin
+
+- [three.js](https://threejs.org/) — MIT : post-traitement de ses exemples (`EffectComposer`, `UnrealBloomPass`, `BokehPass` pour la profondeur de champ sur les appareils puissants, `ShaderPass` pour l'étalonnage chaud, le vignettage et le grain), poussières dorées et flammes qui vacillent ; qualité réduite automatiquement si les images ralentissent (protection Android de #25 conservée).
+- Ziggy en lutin (`public/santa/art/ziggy-lutin/`, 4 poses) : images ChatGPT faites pour Ziggy, détourées par `scripts/santa-ziggy-lutin.py` (NumPy, SciPy — BSD-3-Clause ; Pillow — MIT-CMU) ; animations [Motion](https://motion.dev/) — MIT.
 
 ## Visuels du Père Noël (public/santa/art)
 

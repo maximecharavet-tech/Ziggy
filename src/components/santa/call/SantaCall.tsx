@@ -10,6 +10,8 @@ import {
 import { createPortal } from "react-dom";
 import { CALL_PAGE, lastBootCrashed, markBooted } from "@/lib/santa/crash-guard";
 import { SantaCallBoundary } from "./SantaCallBoundary";
+import { ZiggyLutin, type ZiggyCallState } from "./ZiggyLutin";
+import { ZIGGY_LUTIN } from "@/data/santa/ziggy-lutin";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -18,6 +20,7 @@ import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { SayButton } from "@/components/arcade/read-aloud";
 import { SantaScene } from "@/components/santa/SantaScene";
 import { SantaAudio, wait } from "@/lib/santa/audio";
+import { VISEME_POSE, type Viseme } from "@/lib/santa/visemes";
 import { openEars, type Ears } from "@/lib/santa/listen";
 import {
   createTranscriber,
@@ -233,6 +236,27 @@ function SantaCallInner({
 
   // Mouth follows the voice.
   const onLevel = useCallback((v: number) => scene.current?.setTalk(v), []);
+  // Ziggy the elf: the 2D art when it is there, the office's 3D elf otherwise.
+  const [ziggy, setZiggy] = useState<ZiggyCallState>("hidden");
+  const zig = useCallback((s: ZiggyCallState) => {
+    setZiggy(s);
+    const z = scene.current?.ziggy;
+    if (!z) return;
+    if (ZIGGY_LUTIN.available) return z("hide");
+    if (s === "hidden") z("out");
+    else if (s === "waving") {
+      z("in");
+      z("wave");
+    }
+    else if (s === "laughing") z("giggle");
+    else if (s === "talking") z("nod");
+    else z("in");
+  }, []);
+  // Lip sync: each recorded clip's mouth cues (Rhubarb), the loudness otherwise.
+  const onViseme = useCallback((v: Viseme | null) => {
+    const p = VISEME_POSE[v ?? "X"];
+    scene.current?.setMouth?.(p.open, p.wide);
+  }, []);
 
   /** Tap on a call card: the phone rings while the clips load. */
   const ring = useCallback(
@@ -247,7 +271,7 @@ function SantaCallInner({
       setPreview(isPreview);
       setPhase("ringing");
       setLoaded(0);
-      const a = new SantaAudio(locale, onLevel);
+      const a = new SantaAudio(locale, onLevel, onViseme);
       audio.current = a;
       await a.unlock();
       const play = () => a.sfx("ring");
@@ -263,7 +287,7 @@ function SantaCallInner({
       });
       void a.preload(callClips(steps.current), setLoaded);
     },
-    [child, cleanup, locale, onLevel, aiAllowed, aiKind],
+    [child, cleanup, locale, onLevel, onViseme, aiAllowed, aiKind],
   );
 
   // A scheduled call: the phone rings as soon as the page opens (the ring
@@ -364,11 +388,14 @@ function SantaCallInner({
     const id = ++runId.current;
     const alive = () => id === runId.current;
     await wait(0.8);
+    zig("hidden");
+    let said = 0;
     for (const step of steps.current) {
       if (!alive()) return;
       if (step.t === "say") {
         setMode("santa");
         if (step.expr) scene.current?.setExpression(step.expr);
+        if (said > 0) zig(step.expr === "laugh" ? "laughing" : "idle");
         for (const clip of step.clips) {
           if (!alive()) return;
           await a.say(clip, setCaption);
@@ -376,8 +403,14 @@ function SantaCallInner({
         }
         if (step.expr && step.expr !== "listen")
           scene.current?.setExpression("idle");
+        // After Santa's hello, Ziggy pops in beside him and waves.
+        if (++said === 1 && alive()) {
+          zig("waving");
+          setTimeout(() => alive() && setZiggy((z) => (z === "waving" ? "idle" : z)), 2400);
+        }
       } else if (step.t === "listen") {
         setMode("listen");
+        if (said > 0) zig("talking");
         scene.current?.setExpression("listen");
         if (ears.current) await ears.current.listen(step.ms, setLevel);
         else await wait(Math.min(4, step.ms / 1000));
@@ -386,13 +419,15 @@ function SantaCallInner({
       } else if (step.t === "sfx") {
         const d = a.sfx(step.id);
         scene.current?.setExpression("laugh");
+        if (said > 0) zig("laughing");
         await wait(d);
       } else if (step.t === "ai") {
         await runAi(a, child, alive);
       } else if (step.t === "end") {
         setEndReason(step.reason);
+        zig("waving");
         a.sfx("sparkle");
-        await wait(1.2);
+        await wait(1.8);
         if (!alive()) return;
         cleanup();
         setPhase("ended");
@@ -401,7 +436,7 @@ function SantaCallInner({
     }
     // runAi is stable for the duration of a call.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [child, cleanup]);
+  }, [child, cleanup, zig]);
 
   /** The live AI part: the child taps, speaks, Santa answers — until goodbye or time is up. */
   async function runAi(a: SantaAudio, c: SantaChild, alive: () => boolean) {
@@ -826,6 +861,7 @@ function SantaCallInner({
               className="absolute inset-0"
               onReady={onSceneReady}
             />
+            <ZiggyLutin state={ziggy} reduced={reduced} />
 
             {/* Top bar */}
             <div className="absolute inset-x-0 top-0 flex items-center justify-between gap-3 bg-gradient-to-b from-black/55 to-transparent px-4 pb-10 pt-[max(1rem,env(safe-area-inset-top))]">

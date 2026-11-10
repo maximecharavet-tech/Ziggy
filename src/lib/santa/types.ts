@@ -55,6 +55,10 @@ export type BoothSlot = { x: number; y: number; w: number; h: number };
 export type SantaSceneHandle = {
   canvas: HTMLCanvasElement;
   setTalk(level: number): void;
+  /** Lip sync: jaw opening 0–1 and mouth width (1 rest, < 1 rounded), from the clip's mouth cues. */
+  setMouth?(open: number, wide: number): void;
+  /** Call: Ziggy the elf (3D) follows the call — 'in', 'out', 'hide' (2D art shown instead), cues, or 'auto'. */
+  ziggy?(cmd: 'auto' | 'in' | 'out' | 'hide' | 'wave' | 'cheer' | 'giggle' | 'nod'): void;
   setExpression(e: 'idle' | 'laugh' | 'wave' | 'listen' | 'write' | 'wink'): void;
   setScene(id: BoothSceneId): void;
   getSlot(): BoothSlot;
