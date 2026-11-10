@@ -8,6 +8,8 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
+import { CALL_PAGE, lastBootCrashed, markBooted } from "@/lib/santa/crash-guard";
+import { SantaCallBoundary } from "./SantaCallBoundary";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
@@ -141,7 +143,7 @@ type Mode = "santa" | "listen" | "ai-ready" | "ai-listen" | "ai-think" | "ai-pre
 
 const b64ToBuf = (b64: string) => Uint8Array.from(atob(b64), (ch) => ch.charCodeAt(0)).buffer;
 
-export function SantaCall({
+function SantaCallInner({
   initialKind,
   ringId,
 }: {
@@ -157,6 +159,13 @@ export function SantaCall({
   const paid = pass.tier !== null;
   const aiAllowed =
     pass.tier === "magique" && !!family.aiConsentAt && pass.aiSecondsLeft > 0;
+  // The last visit to this page never finished starting (the browser tab
+  // crashed): this time, no optional extras (speech-to-text probe).
+  const [safeMode, setSafeMode] = useState(false);
+  useEffect(() => {
+    setSafeMode(lastBootCrashed(CALL_PAGE));
+    return markBooted(CALL_PAGE);
+  }, []);
 
   const [phase, setPhase] = useState<Phase>("pick");
   const [kind, setKind] = useState<CallKind | "message">(
@@ -190,13 +199,19 @@ export function SantaCall({
     if (initialKind) setKind(initialKind);
   }, [initialKind]);
 
+  // Which speech-to-text engine the live AI call can use — only probed for
+  // families who have the live call (Magic pass + consent), never on a plain
+  // visit, and never right after this page took the tab down (crash-guard.ts).
   useEffect(() => {
+    if (!aiAllowed || safeMode) return;
     let on = true;
-    transcriberKind(locale).then((k) => on && setAiKind(k));
+    transcriberKind(locale)
+      .then((k) => on && setAiKind(k))
+      .catch(() => on && setAiKind(null));
     return () => {
       on = false;
     };
-  }, [locale]);
+  }, [locale, aiAllowed, safeMode]);
 
   const cleanup = useCallback(() => {
     runId.current++;
@@ -1016,5 +1031,15 @@ export function SantaCall({
         </div>
       )}
     </div>
+  );
+}
+
+/** The call page, behind an error boundary: a crash shows a friendly "line
+ *  trouble" card with a retry, never a blank page. */
+export function SantaCall(props: Parameters<typeof SantaCallInner>[0]) {
+  return (
+    <SantaCallBoundary>
+      <SantaCallInner {...props} />
+    </SantaCallBoundary>
   );
 }

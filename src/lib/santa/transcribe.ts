@@ -48,7 +48,15 @@ type SpeechRec = {
 
 const tag = (locale: 'fr' | 'en') => (locale === 'fr' ? 'fr-FR' : 'en-US');
 
+/** Android phones (Chrome, Samsung Internet, webviews). */
+export function isAndroid(ua: string = typeof navigator !== 'undefined' ? navigator.userAgent : ''): boolean {
+  return /Android/i.test(ua);
+}
+
 function chromeLocal(): SRStatic | null {
+  // Not on Android: probing the on-device recognizer there (SpeechRecognition.available)
+  // can take the whole tab down ("Aw, Snap" / "Zut !") on some phones.
+  if (isAndroid()) return null;
   const w = window as unknown as { SpeechRecognition?: SRStatic };
   // Only the standard, un-prefixed API has on-device mode; webkit's goes to the cloud.
   return w.SpeechRecognition && typeof w.SpeechRecognition.available === 'function' ? w.SpeechRecognition : null;
@@ -68,8 +76,9 @@ function sherpaSupported(): boolean {
     typeof Worker !== 'undefined' &&
     typeof navigator !== 'undefined' &&
     !!navigator.mediaDevices?.getUserMedia &&
-    // 32-bit ARM phones and very old devices: not enough memory for the model.
-    ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4) >= 2
+    // 32-bit ARM phones and very old devices: not enough memory for the model
+    // (Android tabs are killed sooner when memory runs out: at least 4 GB there).
+    ((navigator as Navigator & { deviceMemory?: number }).deviceMemory ?? 4) >= (isAndroid() ? 4 : 2)
   );
 }
 
