@@ -2,13 +2,12 @@ import { existsSync, readFileSync, statSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { getDodoStory } from './index';
+import { MUSICAL_STORIES } from './assets';
 import { parseSongTiming, pickVersion, songVersions, wordsReliable } from '@/lib/dodo/song';
 
-const slugs = ['nuage', 'ecureuil', 'lapin-vase', 'luciole', 'graine-noe', 'ours-oiseau', 'vieux-chene', 'herisson', 'tortue', 'pingouins'];
-
-describe('the first ten musical bedtime stories', () => {
-  it.each(slugs.map((slug, i) => [String(i + 1).padStart(2, '0'), slug]))('d%s ships two French songs and a cover (%s)', (n, slug) => {
-    const story = getDodoStory(`d${n}`)!;
+describe('musical bedtime stories (d01–d30 catalogue)', () => {
+  it.each(Object.entries(MUSICAL_STORIES))('%s ships two French songs and a cover (%s)', (id, slug) => {
+    const story = getDodoStory(id)!;
     const versions = songVersions(story, 'fr');
     expect(versions.map((v) => v.id)).toEqual(['v1', 'v2']);
     expect(pickVersion(versions, undefined)?.id).toBe('v1');
@@ -35,9 +34,11 @@ describe('the first ten musical bedtime stories', () => {
     }
   });
 
-  it('leaves the other twenty stories and Lili unchanged', () => {
-    for (let i = 11; i <= 30; i++) {
-      const story = getDodoStory(`d${i}`)!;
+  it('leaves non-musical catalogue stories and Lili unchanged', () => {
+    for (let i = 1; i <= 30; i++) {
+      const id = `d${String(i).padStart(2, '0')}`;
+      if (MUSICAL_STORIES[id]) continue;
+      const story = getDodoStory(id)!;
       expect(story.songs).toBeUndefined();
       expect(story.cover).toBeUndefined();
     }

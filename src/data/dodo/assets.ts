@@ -1,7 +1,7 @@
 import type { DodoStory } from './types';
 
 /** Offline-prepared releases. Adding a story only needs its id and asset folder. */
-const MUSICAL_STORIES: Readonly<Record<string, string>> = {
+export const MUSICAL_STORIES: Readonly<Record<string, string>> = {
   d01: 'nuage',
   d02: 'ecureuil',
   d03: 'lapin-vase',
@@ -12,6 +12,8 @@ const MUSICAL_STORIES: Readonly<Record<string, string>> = {
   d08: 'herisson',
   d09: 'tortue',
   d10: 'pingouins',
+  d11: 'baleine',
+  d12: 'abeilles',
 };
 
 /** Use the same two-version contract as Lili; no player-specific branching. */
@@ -36,5 +38,21 @@ export const BUNDLED_DODO_IMAGES: Readonly<Record<string, Readonly<Record<number
     4: '/dodo/pingouins/4.jpg',
     5: '/dodo/pingouins/5.jpg',
     6: '/dodo/pingouins/6.jpg',
+  },
+  d11: {
+    1: '/dodo/baleine/1.jpg',
+    2: '/dodo/baleine/2.jpg',
+    3: '/dodo/baleine/3.jpg',
+    4: '/dodo/baleine/4.jpg',
+    5: '/dodo/baleine/5.jpg',
+    6: '/dodo/baleine/6.jpg',
+  },
+  d12: {
+    1: '/dodo/abeilles/1.jpg',
+    2: '/dodo/abeilles/2.jpg',
+    3: '/dodo/abeilles/3.jpg',
+    4: '/dodo/abeilles/4.jpg',
+    5: '/dodo/abeilles/5.jpg',
+    6: '/dodo/abeilles/6.jpg',
   },
 };
