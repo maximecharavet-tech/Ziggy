@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 import { createPortal } from "react-dom";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "motion/react";
 import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { tr, type L } from "@/lib/i18n-text";

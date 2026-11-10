@@ -54,3 +54,23 @@ Valid until 31 January 2027. Bought by a parent behind the grown-up gate.
 - `/pere-noel/certificat` creates a printable child certificate in the browser. The free image is medium size with a subtle Ziggy watermark; a Santa pass enables HD without the watermark.
 - `SANTA_NEW_PRICING` in `src/lib/santa/offer.ts` is `false`. Proposed prices are display-planning data only. Checkout continues to use the unchanged production offers: 4.99 €, 9.99 €, and 20 live AI minutes.
 - Landing artwork slots are declared in `src/data/santa/art.ts`. Each slot remains unavailable until its public asset exists, so absent files do not generate requests.
+
+## Phase 1 upgrade (Nov 2026, branch feat/pere-noel-deep-upgrade)
+- **Scheduled calls** (`src/lib/santa/schedule.ts`, parents' area card, `ScheduledCallWatcher` in the Santa layout):
+  a parent picks child, call and time (default 24 Dec 18:30 Paris). The clips are stored on the device in advance
+  (Cache Storage `ziggy-santa-calls-v1`, `src/lib/santa/precache.ts`) so the Christmas Eve call plays even when the
+  network is busy. At the time, the call page rings full screen (`/pere-noel/appel?ring=<id>`); in the background a
+  notification (if allowed) and a calendar reminder (.ics) bring the family back. Free: the voice message only.
+  No server, no push keys: nothing new to configure.
+- **On-device speech for Safari / iPhone / Firefox**: sherpa-onnx WebAssembly + Silero VAD + Whisper tiny in a Web
+  Worker (`public/santa/asr/stt-worker.js`). The model (≈ 100 MB) is fetched once from Hugging Face after the
+  parent starts a live call, then cached. The child's voice still never leaves the device.
+- **Live call, streamed**: `/api/santa/chat` with `stream: true` answers in NDJSON, sentence by sentence (each
+  sentence checked by ChildShield, then voiced), so Santa starts talking after the first sentence. The child can
+  talk over Santa (barge-in): he stops and listens. Providers: DeepSeek → NVIDIA → Mistral (keys already on the
+  server; **Anthropic is no longer used**).
+- **Landing** (Motion), **Advent calendar** (`/pere-noel/avent`), **"Enfant sage" certificate** (`/pere-noel/certificat`).
+- **Proposed prices** (`SANTA_PROPOSED_OFFERS`) are display-only behind `SANTA_NEW_PRICING = false`; the prices sold
+  stay the table above.
+- Privacy note to add to the policy before release: the live call on Safari downloads the speech model from
+  huggingface.co (no audio, no child data sent).
