@@ -9,8 +9,8 @@ import { ZiggyAvatar } from '@/components/ziggy/Mascot';
 const KEY = 'cookie-consent';
 
 /**
- * Ziggy has no analytics and no advertising, so there is nothing to opt into:
- * this is a notice about the storage the site needs to work, dismissed once.
+ * Ziggy has no advertising trackers. Vercel Web Analytics + Speed Insights are
+ * cookieless (no consent required); this banner is just a notice about needed storage.
  */
 export function CookieConsent() {
   const t = useTranslations('cookies_banner');
