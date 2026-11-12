@@ -1262,6 +1262,12 @@ export class ElfRig {
     this.blinkT = 0;
   }
 
+  /** A small jump (a tap on the elf). */
+  hop() {
+    this.hopT = 0;
+  }
+  private hopT = -1;
+
   update(dt: number) {
     const step = Math.max(0, Math.min(0.1, dt));
     this.t += step;
@@ -1281,8 +1287,21 @@ export class ElfRig {
     const bounce = c.bounce * Math.pow(Math.abs(Math.sin(bounceCycle * Math.PI)), 0.8) * (0.4 + 0.6 * E) * live;
     const wave = Math.sin(t * 8.5) * c.wave * (0.5 + 0.5 * E) * live;
 
-    m.hips.position.y = hipHeight(d.hipY, d.seatY, c.sit, c.tiptoe, d.heelLift) + bounce * 0.02;
-    m.torso.rotation.set(c.lean + bounce * 0.03, c.turn + Math.sin(t * 0.41) * 0.04 * E * live, c.roll + Math.sin(t * 0.57) * 0.02 * E * live);
+    // A tap hop: up and down in 0.55 s (a little squash on landing is left to the soft springs).
+    let hopY = 0;
+    if (this.hopT >= 0) {
+      this.hopT += dt;
+      const k = this.hopT / 0.55;
+      if (k >= 1) this.hopT = -1;
+      else hopY = Math.sin(k * Math.PI) * 0.06 * (0.5 + 0.5 * E);
+    }
+    // Giggle shakes the shoulders, dance sways the hips, tickle wiggles the fingers.
+    const shake = Math.sin(t * 27) * 0.035 * c.shake * E * live;
+    const swayRoll = Math.sin(t * 3.4) * 0.13 * c.sway * E * live;
+    const wiggle = Math.sin(t * 21) * 0.28 * c.wiggle * E * live;
+
+    m.hips.position.y = hipHeight(d.hipY, d.seatY, c.sit, c.tiptoe, d.heelLift) + bounce * 0.02 + hopY;
+    m.torso.rotation.set(c.lean + bounce * 0.03, c.turn + Math.sin(t * 0.41) * 0.04 * E * live, c.roll + Math.sin(t * 0.57) * 0.02 * E * live + shake + swayRoll);
     m.breath.scale.set(1 + breath * 0.008, 1 + breath * 0.012, 1 + breath * 0.008);
 
     // Head: pose + idle drift + gaze.
@@ -1295,7 +1314,7 @@ export class ElfRig {
       const sx = i === 0 ? -1 : 1;
       const act = (this.side > 0 ? 1 : 0) === i;
       const sway = Math.sin(t * 1.1 + i * 2) * 0.04 * E * live;
-      m.arms[i].shoulder.rotation.set(-(a.swing + (d.armSwing ?? 0) + sway), 0, sx * Math.max(0.05, Math.min(d.maxRaise ?? 3, a.raise + (d.armRaise ?? 0)) + breath * 0.02 + bounce * 0.15));
+      m.arms[i].shoulder.rotation.set(-(a.swing + (d.armSwing ?? 0) + sway + wiggle * (i === 0 ? 1 : -1)), 0, sx * Math.max(0.05, Math.min(d.maxRaise ?? 3, a.raise + (d.armRaise ?? 0)) + breath * 0.02 + bounce * 0.15));
       m.arms[i].elbow.rotation.set(-a.bend, 0, act ? -sx * wave * 0.45 : 0);
     }
     // Legs and tiptoe.
@@ -1326,7 +1345,9 @@ export class ElfRig {
     for (let i = 0; i < 2; i++) {
       m.eyes[i].visible = !happy;
       m.happyEyes[i].visible = happy;
-      m.eyes[i].scale.y = Math.max(0.08, open);
+      // A wink closes the eye on the gesture side.
+      const winkEye = (this.side > 0 ? 1 : 0) === i ? c.wink : 0;
+      m.eyes[i].scale.y = Math.max(0.08, Math.min(open, 1 - winkEye * 0.92));
       m.eyes[i].position.x = (i === 0 ? -d.eyeX : d.eyeX) + this.gaze.x * 0.006;
     }
 

@@ -6,8 +6,16 @@
 export const ELF_IDS = ['pepin', 'grelotte', 'noisette'] as const;
 export type ElfId = (typeof ELF_IDS)[number];
 
-export const ELF_POSES = ['stand', 'sit', 'wave', 'laugh', 'peek', 'tiptoe', 'point'] as const;
+export const ELF_POSES = ['stand', 'sit', 'wave', 'laugh', 'peek', 'tiptoe', 'point', 'wink', 'giggle', 'cheer', 'tickle', 'bow', 'dance'] as const;
 export type ElfPose = (typeof ELF_POSES)[number];
+
+/**
+ * A short reaction of an elf (a tap on it, a tapped prank): a pose held for
+ * a moment then released, or `hop`, a small jump. Under reduced motion the
+ * elves only wink, giggle softly or bow (no jumps, no wiggles).
+ */
+export const ELF_REACTIONS = ['wink', 'giggle', 'hop', 'cheer', 'tickle', 'bow', 'dance'] as const;
+export type ElfReaction = (typeof ELF_REACTIONS)[number];
 
 export type LutinsSceneMode = 'hero' | 'sheet' | 'stage';
 
@@ -46,6 +54,10 @@ export interface LutinsSceneOptions {
   camera?: StageCamera;
   /** Initial poses. */
   poses?: Partial<Record<ElfId, ElfPose>>;
+  /** Stage: the elves pop in one after the other with soft confetti (skipped under reduced motion). */
+  popIn?: boolean;
+  /** Stage: a tap on an elf makes it react (wink, giggle, hop...); called with who and how (for a sound). */
+  onPoke?: (id: ElfId, reaction: ElfReaction) => void;
   /** Sheet mode: what to render (default lineup). */
   sheet?: SheetLayout;
   /** Override the device pixel ratio (reference renders). */
@@ -55,6 +67,10 @@ export interface LutinsSceneOptions {
 export interface LutinsSceneHandle {
   canvas: HTMLCanvasElement;
   setPose(id: ElfId, pose: ElfPose): void;
+  /** One elf (or all of them) reacts for a moment: wink, giggle, hop... (gentler under reduced motion). */
+  react(id: ElfId | 'all', reaction: ElfReaction): void;
+  /** A soft burst of confetti and sparkles above an elf (or the group); nothing under reduced motion. */
+  sparkle(id?: ElfId): void;
   /** Stage mode: move the orbit camera. */
   setCamera(cam: StageCamera): void;
   resize(): void;

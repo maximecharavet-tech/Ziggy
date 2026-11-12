@@ -231,6 +231,38 @@ export function build_prompt(input_json) {
 }
 
 /**
+ * Cleans and checks a parent's own prank idea → `IdeaCheck` JSON.
+ * @param {string} text
+ * @returns {string}
+ */
+export function check_idea(text) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passStringToWasm0(text, wasm.__wbindgen_export, wasm.__wbindgen_export3);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.check_idea(retptr, ptr0, len0);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        var r3 = getDataViewMemory0().getInt32(retptr + 4 * 3, true);
+        var ptr2 = r0;
+        var len2 = r1;
+        if (r3) {
+            ptr2 = 0; len2 = 0;
+            throw takeObject(r2);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_export2(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
  * The crate version (`0.1.0`).
  * @returns {string}
  */
@@ -249,6 +281,59 @@ export function engine_version() {
         wasm.__wbindgen_add_to_stack_pointer(16);
         wasm.__wbindgen_export2(deferred1_0, deferred1_1, 1);
     }
+}
+
+/**
+ * Whether `id` is a prank of the catalogue.
+ * @param {string} id
+ * @returns {boolean}
+ */
+export function is_prank_id(id) {
+    const ptr0 = passStringToWasm0(id, wasm.__wbindgen_export, wasm.__wbindgen_export3);
+    const len0 = WASM_VECTOR_LEN;
+    const ret = wasm.is_prank_id(ptr0, len0);
+    return ret !== 0;
+}
+
+/**
+ * The prank(s) of the night: `PlanRequest` JSON → `Plan` JSON (deterministic in the seed).
+ * @param {string} request_json
+ * @returns {string}
+ */
+export function plan_pranks(request_json) {
+    let deferred3_0;
+    let deferred3_1;
+    try {
+        const retptr = wasm.__wbindgen_add_to_stack_pointer(-16);
+        const ptr0 = passStringToWasm0(request_json, wasm.__wbindgen_export, wasm.__wbindgen_export3);
+        const len0 = WASM_VECTOR_LEN;
+        wasm.plan_pranks(retptr, ptr0, len0);
+        var r0 = getDataViewMemory0().getInt32(retptr + 4 * 0, true);
+        var r1 = getDataViewMemory0().getInt32(retptr + 4 * 1, true);
+        var r2 = getDataViewMemory0().getInt32(retptr + 4 * 2, true);
+        var r3 = getDataViewMemory0().getInt32(retptr + 4 * 3, true);
+        var ptr2 = r0;
+        var len2 = r1;
+        if (r3) {
+            ptr2 = 0; len2 = 0;
+            throw takeObject(r2);
+        }
+        deferred3_0 = ptr2;
+        deferred3_1 = len2;
+        return getStringFromWasm0(ptr2, len2);
+    } finally {
+        wasm.__wbindgen_add_to_stack_pointer(16);
+        wasm.__wbindgen_export2(deferred3_0, deferred3_1, 1);
+    }
+}
+
+/**
+ * FNV-1a 32 of the embedded `pranks.json` (detects a stale build).
+ * @returns {number}
+ */
+export function pranks_hash() {
+    const ret = wasm.pranks_hash();
+    return ret >>> 0;
 }
 
 /**

@@ -1,5 +1,7 @@
 # Third-party licenses
 
+Claude Code game-dev skills added on branch `claude/ziggy-creatures-lutins-20261112` are listed in `THIRD_PARTY.md` (Apache-2.0 subset of gamedev-skills/awesome-gamedev-agent-skills).
+
 Dependencies added during the Ziggy evolution work. (The full list of existing dependencies and
 their licenses is audited in `docs/evolution/INVENTORY.md`.)
 
@@ -100,6 +102,18 @@ Licence notes:
 - App pictures (icons, TV banner, splash marks, store graphics) are drawn by `apps/ziggy-app/scripts/assets/`
   from the official plush pictures of `public/mascot/`; the wordmark text of the banners is rendered with the
   site's Fredoka font (SIL OFL-1.1, already used by the site); the font file itself is not in the apps.
+
+## L’Usine à Créatures engine (`rust/creatures-core/`, Rust → WebAssembly)
+
+The recipe validation, Surprise lever, cross-breeding, silly names, powers, generated challenges, album
+validation, share codes and reaction poses of `/creer/creatures` are our own Rust code (MIT), compiled to
+`src/lib/creatures/wasm/` (`npm run creatures:wasm`). It has a tested TypeScript twin (`src/lib/creatures/core.ts`)
+used when WebAssembly is not available. Crates compiled into the WebAssembly (`cargo tree --target wasm32-unknown-unknown`),
+all already listed above for the Lutins engine, same licences: wasm-bindgen, wasm-bindgen-shared 0.2.129;
+serde, serde_core 1.0.229; serde_json 1.0.154; itoa 1.0.19; zmij 1.0.23; memchr 2.8.3; once_cell 1.21.4; cfg-if 1.0.5;
+unicode-ident 1.0.27 ((MIT OR Apache-2.0) AND Unicode-3.0, data tables, accepted on 2026-11-08). Build-time only:
+serde_derive, wasm-bindgen-macro(-support), syn, quote, proc-macro2, bumpalo. No new licence family.
+The word lists (`src/data/creatures/parts.json`, `src/data/lutins/pranks.json`, `gentle.json`) are our own text.
 
 ## Les Lutins Farceurs engine (`rust/lutins-core/`, Rust → WebAssembly)
 

@@ -7,7 +7,7 @@
  */
 import 'server-only';
 import { loadEngine } from './engine';
-import type { ElfId, PromptOut, Rect, SceneAnalysis, Verification } from './types';
+import type { ElfId, IdeaCheck, PromptOut, Rect, SceneAnalysis, Verification } from './types';
 
 export type ServerPromptInput = {
   locale: string;
@@ -43,6 +43,12 @@ export async function serverBuildPrompt(input: ServerPromptInput): Promise<Promp
 export async function serverVerify(generated: Uint8Array, photo: Uint8Array, elves: string[], mask?: Rect[]): Promise<Verification> {
   const engine = await loadEngine();
   return engine.verifyEncoded(generated, photo, { elves: elves as ElfId[], mask });
+}
+
+/** The parent's own idea, cleaned and checked by the engine (gentle-words gate; ChildShield still runs after). */
+export async function serverCheckIdea(text: string): Promise<IdeaCheck> {
+  const engine = await loadEngine();
+  return engine.checkIdea(text);
 }
 
 /** Scene analysis of an encoded photo (when the client did not send one). */

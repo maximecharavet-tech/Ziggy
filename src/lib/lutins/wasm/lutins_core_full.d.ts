@@ -56,6 +56,11 @@ export function bible_hash(): number;
 export function build_prompt(input_json: string): string;
 
 /**
+ * Cleans and checks a parent's own prank idea → `IdeaCheck` JSON.
+ */
+export function check_idea(text: string): string;
+
+/**
  * Decodes a PNG / JPEG / WebP file.
  */
 export function decode_image(bytes: Uint8Array): ImageOut;
@@ -64,6 +69,21 @@ export function decode_image(bytes: Uint8Array): ImageOut;
  * The crate version (`0.1.0`).
  */
 export function engine_version(): string;
+
+/**
+ * Whether `id` is a prank of the catalogue.
+ */
+export function is_prank_id(id: string): boolean;
+
+/**
+ * The prank(s) of the night: `PlanRequest` JSON → `Plan` JSON (deterministic in the seed).
+ */
+export function plan_pranks(request_json: string): string;
+
+/**
+ * FNV-1a 32 of the embedded `pranks.json` (detects a stale build).
+ */
+export function pranks_hash(): number;
 
 /**
  * Downscale to fit `max_side` (never enlarges) + optional mild auto white
@@ -105,11 +125,15 @@ export interface InitOutput {
     readonly cardrenderer_render: (a: number, b: number, c: number) => void;
     readonly cardrenderer_render_in_place: (a: number, b: number) => void;
     readonly cardrenderer_width: (a: number) => number;
+    readonly check_idea: (a: number, b: number, c: number) => void;
     readonly decode_image: (a: number, b: number, c: number) => void;
     readonly engine_version: (a: number) => void;
     readonly imageout_height: (a: number) => number;
     readonly imageout_rgba: (a: number, b: number) => void;
     readonly imageout_width: (a: number) => number;
+    readonly is_prank_id: (a: number, b: number) => number;
+    readonly plan_pranks: (a: number, b: number, c: number) => void;
+    readonly pranks_hash: () => number;
     readonly prepare_photo: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
     readonly render_card_frame: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
     readonly verify: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number) => void;

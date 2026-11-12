@@ -5,7 +5,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 const compat = new FlatCompat({ baseDirectory: dirname(fileURLToPath(import.meta.url)) });
 
 const config = [
-  { ignores: ['.next/**', '.next-*/**', 'node_modules/**', 'supabase/functions/**', 'scripts/**', 'voice-engine/**', 'rust/**', 'src/lib/tv/wasm/**', 'src/lib/lutins/wasm/**', 'public/jeux/**', 'public/santa/asr/**', 'apps/**', 'next-env.d.ts'] },
+  { ignores: ['.claude/worktrees/**', '.next/**', '.next-*/**', 'node_modules/**', 'supabase/functions/**', 'scripts/**', 'voice-engine/**', 'rust/**', 'src/lib/tv/wasm/**', 'src/lib/lutins/wasm/**', 'src/lib/creatures/wasm/**', 'public/jeux/**', 'public/santa/asr/**', 'apps/**', 'next-env.d.ts'] },
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
   {
     rules: {

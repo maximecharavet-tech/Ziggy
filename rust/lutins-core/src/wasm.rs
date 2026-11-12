@@ -163,3 +163,27 @@ pub fn engine_version() -> String {
 pub fn bible_hash() -> u32 {
     crate::bible::bible_hash()
 }
+
+/// FNV-1a 32 of the embedded `pranks.json` (detects a stale build).
+#[wasm_bindgen]
+pub fn pranks_hash() -> u32 {
+    crate::pranks::pranks_hash()
+}
+
+/// Cleans and checks a parent's own prank idea → `IdeaCheck` JSON.
+#[wasm_bindgen]
+pub fn check_idea(text: &str) -> Result<String, JsError> {
+    json(&crate::pranks::check_idea(text))
+}
+
+/// Whether `id` is a prank of the catalogue.
+#[wasm_bindgen]
+pub fn is_prank_id(id: &str) -> bool {
+    crate::pranks::is_prank_id(id)
+}
+
+/// The prank(s) of the night: `PlanRequest` JSON → `Plan` JSON (deterministic in the seed).
+#[wasm_bindgen]
+pub fn plan_pranks(request_json: &str) -> Result<String, JsError> {
+    json(&crate::pranks::plan_json(request_json).map_err(js)?)
+}

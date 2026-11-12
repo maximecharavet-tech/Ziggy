@@ -20,6 +20,9 @@
 import type {
   CardStyle,
   ElfId,
+  IdeaCheck,
+  Plan,
+  PlanRequest,
   PromptInput,
   PromptOut,
   RgbaImage,
@@ -55,10 +58,18 @@ export type LutinsEngine = {
   version: string;
   /** FNV-1a 32 of the bible.json embedded in this build. */
   bibleHash: number;
+  /** FNV-1a 32 of the pranks.json embedded in this build. */
+  pranksHash: number;
   /** True for the Node build (has `decodeImage` / `verifyEncoded`). */
   canDecode: boolean;
   analyzeScene(img: RgbaLike): SceneAnalysis;
   buildPrompt(input: PromptInput): PromptOut;
+  /** Cleans and checks a parent's own prank idea (same cleaning as `cleanParentText`, plus the gentle-words gate). */
+  checkIdea(text: string): IdeaCheck;
+  /** Whether `id` is a prank of the catalogue. */
+  isPrankId(id: string): boolean;
+  /** The prank(s) of the night, deterministic in the seed (place filter, no repeat over the last N nights). */
+  planPranks(req: PlanRequest): Plan;
   verify(generated: RgbaLike, original: RgbaLike, elves: ElfId[] | VerifyRequest): Verification;
   /** Node build only: verify from encoded PNG / JPEG / WebP files. */
   verifyEncoded(generated: Uint8Array, original: Uint8Array, elves: ElfId[] | VerifyRequest): Verification;
@@ -96,9 +107,13 @@ function wrap(glue: Glue, memory: WebAssembly.Memory, canDecode: boolean): Lutin
   return {
     version: glue.engine_version(),
     bibleHash: glue.bible_hash(),
+    pranksHash: glue.pranks_hash(),
     canDecode,
     analyzeScene: (img) => JSON.parse(glue.analyze_scene(u8(img.data), img.width, img.height)) as SceneAnalysis,
     buildPrompt: (input) => JSON.parse(glue.build_prompt(JSON.stringify(input))) as PromptOut,
+    checkIdea: (text) => JSON.parse(glue.check_idea(text.normalize('NFC'))) as IdeaCheck,
+    isPrankId: (id) => glue.is_prank_id(id),
+    planPranks: (req) => JSON.parse(glue.plan_pranks(JSON.stringify(req))) as Plan,
     verify: (g, o, elves) =>
       JSON.parse(glue.verify(u8(g.data), g.width, g.height, u8(o.data), o.width, o.height, elvesJson(elves))) as Verification,
     verifyEncoded: (g, o, elves) => {
@@ -173,6 +188,9 @@ function engine(): LutinsEngine {
 // Typed wrappers (synchronous once `loadEngine()` has resolved).
 export const analyzeScene = (img: RgbaLike) => engine().analyzeScene(img);
 export const buildPrompt = (input: PromptInput) => engine().buildPrompt(input);
+export const checkIdea = (text: string) => engine().checkIdea(text);
+export const isPrankId = (id: string) => engine().isPrankId(id);
+export const planPranks = (req: PlanRequest) => engine().planPranks(req);
 export const verify = (generated: RgbaLike, original: RgbaLike, elves: ElfId[] | VerifyRequest) =>
   engine().verify(generated, original, elves);
 export const verifyEncoded = (generated: Uint8Array, original: Uint8Array, elves: ElfId[] | VerifyRequest) =>

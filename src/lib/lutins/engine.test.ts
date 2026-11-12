@@ -62,6 +62,10 @@ describe('lutins-core WebAssembly (Node build)', () => {
     // A stale build (bible changed, `npm run lutins:wasm` not rerun) fails here.
     const bytes = readFileSync(here('../../data/lutins/bible.json'));
     expect(engine.bibleHash).toBe(fnv1a32(bytes));
+    // Same for the prank catalogue and the gentle words.
+    const pranks = readFileSync(here('../../data/lutins/pranks.json'));
+    const gentle = readFileSync(here('../../data/lutins/gentle.json'));
+    expect(engine.pranksHash).toBe(fnv1a32(Buffer.concat([pranks, gentle])));
   });
 
   it('builds the same prompt and seed as the Rust tests', () => {
@@ -174,6 +178,7 @@ describe('lutins-core WebAssembly (browser build)', () => {
     const fromWeb = JSON.parse(web.analyze_scene(new Uint8Array(img.data.buffer), img.width, img.height));
     expect(fromWeb).toEqual(engine.analyzeScene(img));
     expect(web.bible_hash()).toBe(engine.bibleHash);
+    expect(web.pranks_hash()).toBe(engine.pranksHash);
     expect('decode_image' in web).toBe(false);
     expect(JSON.parse(web.build_prompt(JSON.stringify({ locale: 'fr', elves: ['pepin', 'grelotte'] }))).seed).toBe(
       SEED_PEPIN_GRELOTTE_FR,

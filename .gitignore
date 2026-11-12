@@ -17,3 +17,4 @@ next-env.d.ts
 # santa_voice_v2 (Python generation tool)
 __pycache__/
 .pytest_cache/
+.claude/worktrees/

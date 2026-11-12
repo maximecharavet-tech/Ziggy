@@ -12,6 +12,7 @@
     "check": "npm run typecheck && npm run lint && npm test",
     "indexnow": "node scripts/indexnow.mjs",
     "lutins:wasm": "node scripts/lutins-wasm.mjs",
+    "creatures:wasm": "node scripts/creatures-wasm.mjs",
     "postinstall": "node scripts/santa-mediapipe.mjs"
   },
   "dependencies": {

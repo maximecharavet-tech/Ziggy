@@ -174,6 +174,18 @@ export class FactoryAudio {
       case 'hat':
         [1046, 1318, 1568].forEach((f, i) => this.osc('sine', this.vary(f), f, t + i * 0.06, 0.6, 0.12));
         break;
+      case 'nose':
+        // Honk! A clown-nose squeeze.
+        this.osc('square', this.vary(330), 220, t, 0.14, 0.06);
+        this.osc('triangle', this.vary(660), 440, t, 0.16, 0.2);
+        break;
+      case 'aura':
+        [1568, 1976, 2349].forEach((f, i) => this.osc('sine', this.vary(f), f * 1.02, t + i * 0.07, 0.35, 0.09));
+        break;
+      case 'pet':
+        this.osc('sine', this.vary(1200), 1700, t, 0.07, 0.2);
+        this.osc('sine', this.vary(1500), 1900, t + 0.09, 0.07, 0.2);
+        break;
       case 'size':
         this.osc('sine', this.vary(n > 1 ? 180 : 700), n > 1 ? 90 : 1300, t, 0.4, 0.26);
         break;
@@ -255,6 +267,89 @@ export class FactoryAudio {
     this.osc('sine', f, f * 1.45, t + 0.4, 0.35, 0.16, undefined, 'lin');
     this.noise(t + 0.82, 0.35, 0.45, 'bandpass', 3500, 1200, 0.7);
     this.osc('sine', f * 1.5, f * 0.6, t + 0.82, 0.2, 0.2);
+  }
+
+  /** One sound per power: a spring, a chime, a hiccup… all gentle and a little silly. */
+  power(id: string) {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    const t = ctx.currentTime + 0.02;
+    const scale = (notes: number[], step = 0.07, dur = 0.3, vol = 0.14, type: OscillatorType = 'sine') => notes.forEach((f, i) => this.osc(type, this.vary(f), f, t + i * step, dur, vol));
+    switch (id) {
+      case 'bounce':
+        for (let i = 0; i < 3; i++) this.osc('triangle', 220 + i * 40, 520 + i * 60, t + i * 0.2, 0.18, 0.28);
+        break;
+      case 'fly':
+      case 'float':
+        this.osc('sine', 300, 900, t, 0.7, 0.2, undefined, 'lin');
+        this.noise(t, 0.6, 0.1, 'bandpass', 500, 2000, 1);
+        break;
+      case 'swim':
+        for (let i = 0; i < 6; i++) this.osc('sine', this.vary(500 + (i % 3) * 120), 250, t + i * 0.09, 0.08, 0.16);
+        break;
+      case 'sparkle':
+        scale([1318, 1568, 1976, 2349, 2637], 0.06, 0.4, 0.1);
+        break;
+      case 'dance':
+      case 'music':
+        scale([523, 659, 784, 659, 880, 784, 659, 523], 0.12, 0.18, 0.15, 'triangle');
+        break;
+      case 'camo':
+        this.noise(t, 0.5, 0.18, 'lowpass', 1800, 200);
+        this.osc('sine', 700, 120, t, 0.5, 0.1);
+        break;
+      case 'laugh':
+        this.giggle(1.1);
+        this.osc('triangle', 600, 900, t + 0.5, 0.12, 0.14);
+        break;
+      case 'rainbow':
+        scale([523, 587, 659, 698, 784, 880, 988], 0.06, 0.3, 0.12);
+        break;
+      case 'roll':
+        this.noise(t, 0.7, 0.2, 'bandpass', 300, 1200, 2);
+        this.osc('sawtooth', 120, 260, t, 0.7, 0.05, undefined, 'lin');
+        break;
+      case 'zap':
+        for (let i = 0; i < 6; i++) this.osc('square', this.vary(900 + i * 160), 300, t + i * 0.04, 0.05, 0.05);
+        break;
+      case 'hearts':
+        for (let i = 0; i < 4; i++) this.osc('sine', this.vary(880 + i * 110), 1300, t + i * 0.1, 0.09, 0.16);
+        break;
+      default:
+        scale([660, 880], 0.1, 0.2);
+    }
+  }
+
+  /** The little silly surprises (all kind): hiccup, wonky blink, applause, bubbles. */
+  silly(ev: string) {
+    const ctx = this.ensure();
+    if (!ctx) return;
+    const t = ctx.currentTime + 0.02;
+    switch (ev) {
+      case 'hiccup':
+        this.osc('sine', this.vary(380), 900, t, 0.07, 0.3);
+        this.osc('sine', this.vary(400), 950, t + 0.5, 0.07, 0.3);
+        break;
+      case 'wonky':
+        this.osc('triangle', 900, 300, t, 0.25, 0.2, undefined, 'lin');
+        this.osc('triangle', 300, 900, t + 0.25, 0.2, 0.2, undefined, 'lin');
+        break;
+      case 'applause':
+        for (let i = 0; i < 12; i++) this.noise(t + i * 0.07 + Math.random() * 0.03, 0.04, 0.18, 'bandpass', 2200 + Math.random() * 1500, 1800, 1.5);
+        break;
+      case 'surprised':
+        this.osc('sine', 500, 1100, t, 0.18, 0.25, undefined, 'lin');
+        break;
+      case 'bubbles':
+        for (let i = 0; i < 6; i++) this.osc('sine', this.vary(500 + Math.random() * 500), 1400, t + i * 0.08, 0.07, 0.12);
+        break;
+      case 'flash':
+        this.osc('sine', 300, 1800, t, 0.3, 0.2, undefined, 'lin');
+        this.noise(t + 0.25, 0.2, 0.2, 'highpass', 4000, 2000);
+        break;
+      default:
+        this.confetti();
+    }
   }
 
   giggle(high = 1) {

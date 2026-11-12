@@ -1,4 +1,4 @@
-import type { ElfPose } from './types';
+import type { ElfPose, ElfReaction } from './types';
 
 /**
  * The elves' poses as plain numbers (no three.js, unit tested). The rig in
@@ -49,6 +49,14 @@ export interface PoseState {
   bounce: number;
   /** Heels up (0..1). */
   tiptoe: number;
+  /** Winks with the gesture side's eye (0..1). */
+  wink: number;
+  /** Giggle shoulder shake amplitude (0..1). */
+  shake: number;
+  /** Dance side-to-side sway amplitude (0..1). */
+  sway: number;
+  /** Arm wiggle amplitude, for tickling (0..1). */
+  wiggle: number;
 }
 
 const arm = (raise: number, swing: number, bend: number): ArmState => ({ raise, swing, bend });
@@ -78,6 +86,10 @@ export function poseTarget(pose: ElfPose, side: 1 | -1 = 1): PoseState {
     wave: 0,
     bounce: 0,
     tiptoe: 0,
+    wink: 0,
+    shake: 0,
+    sway: 0,
+    wiggle: 0,
   };
   const act = side > 0 ? 1 : 0;
   const other = 1 - act;
@@ -134,11 +146,99 @@ export function poseTarget(pose: ElfPose, side: 1 | -1 = 1): PoseState {
       P.headTilt = side * 0.08;
       P.mouth = 0.45;
       break;
+    case 'wink':
+      // A cheeky wink and a little wave: "I did it, shh".
+      P.arms[act] = arm(1.05, 0.3, 0.9);
+      P.headTilt = side * 0.18;
+      P.headPitch = -0.02;
+      P.roll = side * 0.04;
+      P.mouth = 0.4;
+      P.wink = 1;
+      P.wave = 0.2;
+      break;
+    case 'giggle':
+      // Both hands up by the mouth, eyes squeezed, shoulders shaking.
+      P.arms = [arm(0.5, 1.05, 1.95), arm(0.5, 1.05, 1.95)];
+      P.lean = 0.06;
+      P.headTilt = side * 0.16;
+      P.headPitch = 0.04;
+      P.happy = 1;
+      P.mouth = 0.3;
+      P.shake = 1;
+      P.bounce = 0.25;
+      break;
+    case 'cheer':
+      // Both arms up in a V and a happy jump.
+      P.arms = [arm(2.5, 0.1, 0.25), arm(2.5, 0.1, 0.25)];
+      P.lean = -0.05;
+      P.headPitch = -0.2;
+      P.happy = 1;
+      P.mouth = 1;
+      P.bounce = 1;
+      break;
+    case 'tickle':
+      // Leaning in with wiggling fingers, a wide grin.
+      P.arms = [arm(0.6, 1.2, 0.4), arm(0.6, 1.2, 0.4)];
+      P.lean = 0.18;
+      P.headTilt = side * 0.18;
+      P.headPitch = -0.02;
+      P.mouth = 0.75;
+      P.wiggle = 1;
+      break;
+    case 'bow':
+      // A polite theatre bow, one hand on the chest.
+      P.lean = 0.7;
+      P.headPitch = 0.12;
+      P.arms[act] = arm(0.3, 0.8, 1.5);
+      P.arms[other] = arm(0.5, -0.25, 0.4);
+      P.legs[act] = leg(0.1, 0.05);
+      P.legs[other] = leg(-0.1, 0.05);
+      P.mouth = 0.15;
+      break;
+    case 'dance':
+      // A swaying little dance, one arm up, one out.
+      P.arms[act] = arm(2.0, 0.2, 0.5);
+      P.arms[other] = arm(0.95, 0.2, 0.4);
+      P.headTilt = side * 0.12;
+      P.mouth = 0.5;
+      P.sway = 1;
+      P.bounce = 0.45;
+      break;
     case 'stand':
     default:
       break;
   }
   return P;
+}
+
+/**
+ * What a reaction does: the pose held for a moment (null for a pure hop),
+ * whether the elf hops, and for how many seconds. `calm` (reduced motion):
+ * no jumps, no wiggles, no dancing: the elves only wink, giggle softly or bow.
+ */
+export function reactionPlan(kind: ElfReaction, calm: boolean): { pose: ElfPose | null; hop: boolean; seconds: number } {
+  if (calm) {
+    if (kind === 'giggle') return { pose: 'giggle', hop: false, seconds: 1.6 };
+    if (kind === 'bow') return { pose: 'bow', hop: false, seconds: 1.6 };
+    return { pose: 'wink', hop: false, seconds: 1.4 };
+  }
+  switch (kind) {
+    case 'hop':
+      return { pose: null, hop: true, seconds: 0.55 };
+    case 'giggle':
+      return { pose: 'giggle', hop: false, seconds: 1.8 };
+    case 'cheer':
+      return { pose: 'cheer', hop: false, seconds: 1.8 };
+    case 'tickle':
+      return { pose: 'tickle', hop: false, seconds: 1.8 };
+    case 'bow':
+      return { pose: 'bow', hop: false, seconds: 1.6 };
+    case 'dance':
+      return { pose: 'dance', hop: false, seconds: 2.4 };
+    case 'wink':
+    default:
+      return { pose: 'wink', hop: false, seconds: 1.4 };
+  }
 }
 
 /** A deep copy (poses are mutated in place while blending). */
@@ -150,7 +250,7 @@ export function clonePose(p: PoseState): PoseState {
   };
 }
 
-const SCALARS = ['sit', 'lean', 'roll', 'turn', 'headPitch', 'headYaw', 'headTilt', 'happy', 'mouth', 'wave', 'bounce', 'tiptoe'] as const;
+const SCALARS = ['sit', 'lean', 'roll', 'turn', 'headPitch', 'headYaw', 'headTilt', 'happy', 'mouth', 'wave', 'bounce', 'tiptoe', 'wink', 'shake', 'sway', 'wiggle'] as const;
 
 /** Moves `cur` toward `target` by `k` (0 = unchanged, 1 = arrived), in place. */
 export function blendPose(cur: PoseState, target: PoseState, k: number): PoseState {

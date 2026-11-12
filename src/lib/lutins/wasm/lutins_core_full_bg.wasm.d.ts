@@ -13,11 +13,15 @@ export const cardrenderer_new: (a: number, b: number, c: number, d: number, e: n
 export const cardrenderer_render: (a: number, b: number, c: number) => void;
 export const cardrenderer_render_in_place: (a: number, b: number) => void;
 export const cardrenderer_width: (a: number) => number;
+export const check_idea: (a: number, b: number, c: number) => void;
 export const decode_image: (a: number, b: number, c: number) => void;
 export const engine_version: (a: number) => void;
 export const imageout_height: (a: number) => number;
 export const imageout_rgba: (a: number, b: number) => void;
 export const imageout_width: (a: number) => number;
+export const is_prank_id: (a: number, b: number) => number;
+export const plan_pranks: (a: number, b: number, c: number) => void;
+export const pranks_hash: () => number;
 export const prepare_photo: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
 export const render_card_frame: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
 export const verify: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number) => void;
