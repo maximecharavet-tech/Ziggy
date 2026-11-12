@@ -98,6 +98,12 @@ async function makeAudio(story: DodoStory, scene: number, locale: 'fr' | 'en'): 
   return wav;
 }
 
+/**
+ * Stories whose illustrations were started with another engine (Figma / Gemini): their missing
+ * scenes are left for that engine so a story keeps one style (owner, 2026-11-12: not the penguins).
+ */
+export const IMAGE_SKIP_STORIES = new Set(['d10']);
+
 /** Generate up to `max` missing assets. Returns what was done and how much is left. */
 export async function prepareSome(
   sb: SupabaseClient,
@@ -105,6 +111,7 @@ export async function prepareSome(
 ): Promise<{ done: AssetKey[]; failed: { key: AssetKey; error: string }[]; remaining: number }> {
   let todo = missing(plannedAssets(opts.locales, opts.kinds), await existingAssets(sb));
   if (opts.story) todo = todo.filter((k) => k.story === opts.story);
+  todo = todo.filter((k) => !(k.kind === 'image' && IMAGE_SKIP_STORIES.has(k.story)));
   const batch = todo.slice(0, opts.max);
   const done: AssetKey[] = [];
   const failed: { key: AssetKey; error: string }[] = [];
