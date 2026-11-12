@@ -66,6 +66,16 @@ export function decode_image(bytes: Uint8Array): ImageOut;
 export function engine_version(): string;
 
 /**
+ * The forbidden words found in a prank idea (JSON array of strings; `[]` = gentle).
+ */
+export function gentle_check(text: string): string;
+
+/**
+ * Tonight's suggestion among the catalogue ids, avoiding the recent ones (`ids_json`, `recent_json`: arrays of strings). Empty string if none.
+ */
+export function pick_prank(ids_json: string, recent_json: string, seed: number): string;
+
+/**
  * Downscale to fit `max_side` (never enlarges) + optional mild auto white
  * balance and levels.
  */
@@ -107,9 +117,11 @@ export interface InitOutput {
     readonly cardrenderer_width: (a: number) => number;
     readonly decode_image: (a: number, b: number, c: number) => void;
     readonly engine_version: (a: number) => void;
+    readonly gentle_check: (a: number, b: number, c: number) => void;
     readonly imageout_height: (a: number) => number;
     readonly imageout_rgba: (a: number, b: number) => void;
     readonly imageout_width: (a: number) => number;
+    readonly pick_prank: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
     readonly prepare_photo: (a: number, b: number, c: number, d: number, e: number, f: number, g: number) => void;
     readonly render_card_frame: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number) => void;
     readonly verify: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number, i: number, j: number, k: number) => void;

@@ -12,6 +12,7 @@ import { ElfAvatar } from '@/components/lutins/ElfAvatar';
 import { PRANK_CATEGORIES, PRANKS, MAX_PARENT_TEXT, type PrankCategory } from '@/data/lutins/pranks';
 import { findPeople, warmPeopleDetector } from '@/lib/lutins/people';
 import { deviceId, journal, nextMorning } from '@/lib/lutins/journal';
+import { loadEngine } from '@/lib/lutins/engine';
 import { analyzePhoto, verifyResult, type Scene } from '@/lib/lutins/client-engine';
 import { shareOrSave } from '@/components/santa/booth/share';
 
@@ -41,7 +42,8 @@ const T = {
   retake: { fr: 'Changer de photo', en: 'Change photo' },
   prankTitle: { fr: 'Quelle farce ?', en: 'Which prank?' },
   own: { fr: 'Ma propre idée', en: 'My own idea' },
-  ownHelp: { fr: 'Décrivez la farce en une phrase (ex. : « ils font du ski sur la rampe d’escalier avec des cuillères »).', en: 'Describe the prank in one sentence (e.g. “they ski down the banister on spoons”).' },
+  ownHelp: { fr: 'Décrivez une farce douce en une phrase (ex. : « ils font la course en pantoufles sur le tapis avec des cuillères »). Pas de feu, de couteaux, d’escalade ni de choses cassées : rien qu’un enfant ne devrait imiter.', en: 'Describe a gentle prank in one sentence (e.g. “they race in slippers across the rug using spoons”). No fire, knives, climbing or broken things: nothing a child should copy.' },
+  surprise: { fr: 'Surprends-moi', en: 'Surprise me' },
   go: { fr: 'Faire apparaître les lutins', en: 'Make the elves appear' },
   magic1: { fr: 'Pépin cherche la meilleure place…', en: 'Pip is looking for the best spot…' },
   magic2: { fr: 'Grelotte règle la lumière…', en: 'Jingle is adjusting the light…' },
@@ -242,6 +244,23 @@ export function LutinsStudio() {
     );
   }
 
+  /** The Rust engine suggests a prank that is not one of the last two weeks' (the journal never leaves the device). */
+  const surpriseMe = async () => {
+    const recent = (await journal.list()).slice(0, 14).map((e) => e.prankId).filter((x): x is string => !!x);
+    const ids = PRANKS.filter((p) => cat === 'partout' || p.cat === cat).map((p) => p.id);
+    try {
+      const engine = await loadEngine();
+      const id = engine.pickPrank(ids, recent, Math.floor(Math.random() * 2 ** 31));
+      if (id) {
+        setOwnMode(false);
+        setPrankId(id);
+      }
+    } catch {
+      setPrankId(ids[Math.floor(Math.random() * ids.length)] ?? null);
+      setOwnMode(false);
+    }
+  };
+
   const canGo = ownMode ? own.trim().length >= 3 : !!prankId;
   const stageRect = scene?.stages?.[0];
 
@@ -344,6 +363,9 @@ export function LutinsStudio() {
                   {c.emoji} {tr(c.label, locale)}
                 </button>
               ))}
+              <button type="button" onClick={() => void surpriseMe()} className="min-h-12 shrink-0 rounded-full bg-white/15 px-4 font-bold ring-1 ring-white/25">
+                🎲 {tr(T.surprise, locale)}
+              </button>
               <button type="button" aria-pressed={ownMode} onClick={() => setOwnMode(true)} className={`min-h-12 shrink-0 rounded-full px-4 font-bold ${ownMode ? 'bg-amber-300 text-[#3b1f00]' : 'bg-white/15 ring-1 ring-white/25'}`}>
                 ✍️ {tr(T.own, locale)}
               </button>

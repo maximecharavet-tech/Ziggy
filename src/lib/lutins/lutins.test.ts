@@ -5,6 +5,7 @@ import { cleanParentText } from './text';
 import { signSource, checkSource } from './sign';
 import { countPeople, PERSON_SCORE } from './people';
 import { PRANKS, PRANK_CATEGORIES, prankById } from '@/data/lutins/pranks';
+import { gentleCheck } from './gentle';
 import bible from '@/data/lutins/bible.json';
 
 describe('Agnes video answers', () => {
@@ -69,6 +70,20 @@ describe('prank catalogue and bible', () => {
       expect(`${p.action} ${p.motion}`.toLowerCase()).not.toMatch(/\b(knife|knives|fire|flames?|medicine|pills?|socket|electric|blood|broken|smash|fridge|climb\w*|window ledge|stairs)\b/);
     }
     expect(prankById('nope')).toBeNull();
+  });
+  it('is rich: 70+ pranks, 10 places, every place has at least 5', () => {
+    expect(PRANKS.length).toBeGreaterThanOrEqual(70);
+    expect(PRANK_CATEGORIES.length).toBe(10);
+    for (const c of PRANK_CATEGORIES.filter((x) => x.id !== 'partout')) expect(PRANKS.filter((p) => p.cat === c.id).length, c.id).toBeGreaterThanOrEqual(5);
+  });
+  it('every prank passes the shared gentle check (same word list as the Rust core)', () => {
+    for (const p of PRANKS) expect(gentleCheck(`${p.action} ${p.motion} ${p.title.en} ${p.title.fr}`), p.id).toEqual([]);
+  });
+  it('the gentle check refuses dangerous ideas, FR and EN, and lets gentle ones through', () => {
+    expect(gentleCheck('ils font du ski sur la rampe d’escalier')).toEqual(['rampe', 'escalier']);
+    expect(gentleCheck('Ils ont CASSÉ le vase')).toEqual(['casse']);
+    expect(gentleCheck('they climb the stairs with a knife')).toEqual(['climb', 'stairs', 'knife']);
+    expect(gentleCheck('four elves and a felt pen, fireflies')).toEqual([]);
   });
   it('the bible describes three original elves', () => {
     expect(bible.elves.map((e) => e.id)).toEqual(['pepin', 'grelotte', 'noisette']);

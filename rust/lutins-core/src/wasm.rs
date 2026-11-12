@@ -163,3 +163,17 @@ pub fn engine_version() -> String {
 pub fn bible_hash() -> u32 {
     crate::bible::bible_hash()
 }
+
+/// The forbidden words found in a prank idea (JSON array of strings; `[]` = gentle).
+#[wasm_bindgen]
+pub fn gentle_check(text: &str) -> Result<String, JsError> {
+    json(&crate::pranks::gentle_check(text))
+}
+
+/// Tonight's suggestion among the catalogue ids, avoiding the recent ones (`ids_json`, `recent_json`: arrays of strings). Empty string if none.
+#[wasm_bindgen]
+pub fn pick_prank(ids_json: &str, recent_json: &str, seed: u32) -> Result<String, JsError> {
+    let ids: Vec<String> = serde_json::from_str(ids_json).map_err(|e| JsError::new(&format!("lutins-core: ids: {e}")))?;
+    let recent: Vec<String> = serde_json::from_str(recent_json).map_err(|e| JsError::new(&format!("lutins-core: recent: {e}")))?;
+    Ok(crate::pranks::pick_prank(&ids, &recent, seed).unwrap_or_default())
+}

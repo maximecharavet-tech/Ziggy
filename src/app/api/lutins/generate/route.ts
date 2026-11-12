@@ -6,6 +6,7 @@ import { ProviderError } from '@/lib/hyper-engine/providers/http';
 import { shield } from '@/lib/safety/child-shield';
 import { prankById } from '@/data/lutins/pranks';
 import { cleanParentText } from '@/lib/lutins/text';
+import { gentleCheck } from '@/lib/lutins/gentle';
 import { clientIp, DEVICE_RE, refundUse, takeUse } from '@/lib/lutins/limits';
 import { signSource } from '@/lib/lutins/sign';
 import { serverBuildPrompt } from '@/lib/lutins/server-engine';
@@ -76,6 +77,8 @@ export async function POST(request: NextRequest) {
 
   // The parent's own words: ChildShield before anything else (the picture is for a child).
   if (text) {
+    // Gentle mischief only: nothing a child could imitate and get hurt (fire, knives, stairs, climbing…).
+    if (gentleCheck(text).length) return NextResponse.json({ error: 'text' }, { status: 422 });
     const verdict = await shield(text, 'lutins_text');
     if (!verdict.ok) return NextResponse.json({ error: 'text' }, { status: 422 });
   }

@@ -9,7 +9,7 @@
  */
 import type { L } from '@/lib/i18n-text';
 
-export type PrankCategory = 'cuisine' | 'salon' | 'chambre' | 'salle-de-bain' | 'sapin' | 'partout';
+export type PrankCategory = 'cuisine' | 'salon' | 'chambre' | 'salle-de-bain' | 'sapin' | 'bureau' | 'entree' | 'jouets' | 'table' | 'partout';
 
 export type Prank = { id: string; emoji: string; cat: PrankCategory; title: L; action: string; motion: string };
 
@@ -20,6 +20,10 @@ export const PRANK_CATEGORIES: { id: PrankCategory; emoji: string; label: L }[] 
   { id: 'chambre', emoji: '🛏️', label: { fr: 'Chambre', en: 'Bedroom' } },
   { id: 'salle-de-bain', emoji: '🛁', label: { fr: 'Salle de bain', en: 'Bathroom' } },
   { id: 'sapin', emoji: '🎄', label: { fr: 'Sapin', en: 'Tree' } },
+  { id: 'table', emoji: '🍽️', label: { fr: 'Table', en: 'Dining table' } },
+  { id: 'bureau', emoji: '📎', label: { fr: 'Bureau', en: 'Desk' } },
+  { id: 'entree', emoji: '🧥', label: { fr: 'Entrée', en: 'Hallway' } },
+  { id: 'jouets', emoji: '🧩', label: { fr: 'Coin jeux', en: 'Play corner' } },
 ];
 
 const p = (id: string, emoji: string, cat: PrankCategory, fr: string, en: string, action: string, motion: string): Prank => ({ id, emoji, cat, title: { fr, en }, action, motion });
@@ -68,6 +72,60 @@ export const PRANKS: Prank[] = [
   p('lettre-pere-noel', '✉️', 'sapin', 'Lettre au Père Noël', 'Letter to Santa', 'are writing a giant letter to Santa with a big feather quill, one elf licking the envelope', 'the quill scribbles, an elf seals the envelope with a happy face'),
   p('chocolat-chaud', '☕', 'sapin', 'Pause chocolat chaud', 'Hot-chocolate break', 'are taking a hot-chocolate break next to the tree, sipping from thimbles with whipped cream moustaches', 'the elves sip, wipe their cream moustaches and giggle'),
   p('reveil', '⏰', 'partout', 'Réveil en fanfare', 'Wake-up parade', 'are marching in a little parade with toy instruments, a drum and a tiny trumpet, to wake everybody up', 'the elves march in step, the drum taps and the trumpet toots'),
+  // More anywhere
+  p('chasse-tresor', '🗺️', 'partout', 'Chasse au trésor', 'Treasure hunt', 'are following a hand-drawn treasure map across the room, one elf holding a magnifying glass and another pointing at a small box of chocolate coins', 'the elves tiptoe along the map, the magnifying-glass elf gasps at the treasure box'),
+  p('ombres', '🔦', 'partout', 'Théâtre d’ombres', 'Shadow puppets', 'are putting on a shadow-puppet show on the wall with a tiny torch, making a bunny and a bird with their hands', 'the shadow bunny hops across the wall, the elves bow'),
+  p('ballons', '🎈', 'partout', 'Ballons joyeux', 'Happy balloons', 'are holding the strings of colourful balloons and giggling, one elf floating a few centimetres above the floor', 'the balloons bob gently, the floating elf wiggles its feet'),
+  p('karaoke', '🎤', 'partout', 'Karaoké des lutins', 'Elf karaoke', 'are singing karaoke into a toy microphone made from a pen cap, one elf dancing and another holding up a handwritten lyrics sheet', 'the singing elf sways with the microphone, the others clap along'),
+  // More kitchen
+  p('sandwich', '🥪', 'cuisine', 'Sandwich géant', 'Giant sandwich', 'are building a giant sandwich from tiny slices of bread, cheese and lettuce on a plate, one elf adding a cherry tomato on top', 'the elf places the cherry tomato on top and the elves cheer'),
+  p('soupe', '🥣', 'cuisine', 'Soupe magique', 'Magic soup', 'are stirring a big mixing bowl like a magic cauldron with a wooden spoon, tossing in colourful sprinkles', 'sprinkles swirl in the bowl, an elf tastes and goes wide-eyed'),
+  p('collier-fruits', '🍇', 'cuisine', 'Colliers de fruits', 'Fruit necklaces', 'are threading blueberries and grapes onto string to make fruit necklaces and are wearing them proudly', 'an elf lifts its necklace and spins, the others admire theirs'),
+  // More living room
+  p('puzzle', '🧩', 'salon', 'Grand puzzle', 'Big jigsaw', 'are working together on a huge jigsaw puzzle on the coffee table, one elf carrying a single piece on its head', 'the elf with the piece on its head wobbles over and clicks it into place'),
+  p('yoga', '🧘', 'salon', 'Yoga des lutins', 'Elf yoga', 'are doing yoga poses together on a tiny mat made of a folded dish cloth, one elf wobbling in tree pose', 'the elves breathe in and stretch, the wobbling elf giggles and keeps its balance'),
+  p('theatre', '🎭', 'salon', 'Théâtre de chaussettes', 'Sock-puppet theatre', 'are performing a puppet show behind the sofa armrest with sock puppets and a little curtain made of a scarf', 'the sock puppets bow and wave from behind the curtain'),
+  p('plante', '🪴', 'salon', 'Soins de la plante', 'Plant care', 'are taking care of a houseplant, watering it with a tiny spoon and polishing the leaves with cotton balls', 'an elf pours a spoonful of water, another polishes a leaf until it shines'),
+  // More bedroom
+  p('lecture-doudous', '📖', 'chambre', 'Histoire pour les doudous', 'Story for the cuddly toys', 'are lying on the pillows reading a bedtime story to the cuddly toys, one elf holding a tiny book upside down', 'the elf turns a page, the toys lean in, one yawns'),
+  p('ciel-etoile', '⭐', 'chambre', 'Ciel étoilé en papier', 'Paper starry sky', 'have hung paper stars and a paper moon from threads over the bed to make a little starry night, and are admiring it', 'the paper stars twirl slowly on their threads, the elves gaze up'),
+  p('defile-mode', '👗', 'chambre', 'Défilé de mode', 'Fashion show', 'are having a fashion show on a runway made of a ruler, wearing doll clothes and tiny hats and striking poses', 'an elf struts along the ruler and twirls, the others clap'),
+  p('piscine-oreillers', '🛌', 'chambre', 'Piscine d’oreillers', 'Pillow pool', 'have made a pile of soft pillows on the floor and are rolling around in it laughing', 'the elves tumble softly in the pillows and pop up with messy hats'),
+  // More bathroom
+  p('pantoufles-bateaux', '🥿', 'salle-de-bain', 'Bateaux en pantoufles', 'Slipper boats', 'are sailing across the bathmat in fluffy slippers like little boats, using spoons as oars', 'the elves row with their spoons, the slippers glide forward'),
+  p('grimaces-miroir', '🪞', 'salle-de-bain', 'Grimaces au miroir', 'Mirror faces', 'are pulling funny faces in the bathroom mirror, noses pressed close, their reflections making faces back', 'the elves cross their eyes and stick out their tongues, then burst out laughing'),
+  p('spa', '🧖', 'salle-de-bain', 'Journée spa', 'Spa day', 'are having a spa day with towel turbans and cotton-pad face masks, one elf relaxing with eyes closed', 'the relaxing elf sighs happily, another peeks from under its mask'),
+  // More tree
+  p('flocons-papier', '❄️', 'sapin', 'Flocons de papier', 'Paper snowflakes', 'are hanging paper snowflakes on the tree branches with tiny clothes pegs, standing on a wrapped gift box', 'the paper snowflakes turn gently, an elf steps back to admire them'),
+  p('chorale', '🎶', 'sapin', 'Chorale de Noël', 'Christmas choir', 'are standing in a row like a choir singing Christmas carols from tiny songbooks, bells jingling on their hats', 'the elves sway in time, their hat bells jingle'),
+  p('calendrier-avent', '🗓️', 'sapin', 'Calendrier de l’Avent', 'Advent calendar', 'are opening the little doors of an advent calendar, one elf peeking inside and another holding up a tiny chocolate', 'an elf opens a door and gasps, the other holds up the chocolate'),
+  // Dining table
+  p('serviettes', '🪁', 'table', 'Serviettes en chapeaux', 'Napkin hats', 'have folded the napkins into little hats and boats and set the table elf-style with tiny plates', 'the elves place the last napkin hat and tip theirs to each other'),
+  p('tapis-rouge', '🔴', 'table', 'Tapis rouge', 'Red carpet', 'are marching along the table runner like a red carpet, bowing to the salt and pepper shakers as if they were celebrities', 'the elves strut along the runner and wave to the shakers'),
+  p('course-cuilleres', '🥄', 'table', 'Course de cuillères', 'Spoon race', 'are in a spoon race, each balancing a marshmallow on a spoon, concentrating hard', 'the elves tiptoe forward with their spoons, a marshmallow wobbles but stays'),
+  p('gobelets-tambours', '🥁', 'table', 'Orchestre de gobelets', 'Cup orchestra', 'are drumming on upside-down plastic cups with tiny wooden spoons like a band', 'the elves drum on the cups in rhythm, nodding their heads'),
+  p('tour-sucre', '🍬', 'table', 'Tour de sucre', 'Sugar-cube tower', 'are carefully building a tower of sugar cubes, one elf holding its breath while placing the top cube', 'the elf places the last cube, everyone freezes, then cheers'),
+  p('menu-lutins', '🧾', 'table', 'Restaurant des lutins', 'Elf restaurant', 'have written a funny menu on a card and are playing restaurant, one elf as waiter with a napkin over its arm bringing a tiny tray', 'the waiter elf bows and sets the tiny tray down with a flourish'),
+  // Desk
+  p('trombones', '📎', 'bureau', 'Chaîne de trombones', 'Paper-clip chain', 'have linked paper clips into a long chain and are carrying it like a rope, marching in a line', 'the elves march in step holding the shiny chain'),
+  p('patinoire-gommes', '🧽', 'bureau', 'Patinoire de gommes', 'Eraser rink', 'are sliding on erasers like ice skates across a smooth desk, arms out for balance', 'the elves glide on the erasers and wobble happily'),
+  p('globe', '🌍', 'bureau', 'Tour du monde', 'Around the world', 'are spinning a small globe and pointing at countries, one elf wearing a tiny pilot cap', 'the globe spins, the pilot elf points to where it stops'),
+  p('carte-voeux', '💌', 'bureau', 'Grande carte de vœux', 'Giant greeting card', 'are drawing a huge greeting card for the family with felt-tip pens, decorating the border with hearts', 'the elves colour in hearts, one holds the card up proudly'),
+  p('calculatrice', '🔢', 'bureau', 'Les lutins comptent', 'Elves counting', 'are pressing the buttons of a calculator and cheering at the numbers on its screen, one elf holding a tiny notepad', 'an elf presses a button and all of them gasp and cheer at the screen'),
+  p('orchestre-stylos', '🖊️', 'bureau', 'Orchestre de crayons', 'Pencil band', 'are drumming on a pencil pot and pens like a band, with a sticky note as a tiny banner', 'the elves drum along, heads bobbing in rhythm'),
+  // Hallway
+  p('echarpes', '🧣', 'entree', 'Défilé d’écharpes', 'Scarf parade', 'are trying on scarves and woolly hats from a basket in the hallway, parading up and down like models', 'the elves swirl their scarves and strike a pose'),
+  p('bottes', '🥾', 'entree', 'Lutins dans les bottes', 'Elves in boots', 'are standing in a row inside big rain boots with only their heads and hats sticking out', 'the elves wiggle inside the boots and pop their hats up and down'),
+  p('tapis-volant', '🧹', 'entree', 'Tapis volant', 'Magic doormat', 'are riding the doormat like a magic carpet gliding just above the floor, holding on to its tassels', 'the doormat glides forward, the elves lean into the wind'),
+  p('parapluie', '☂️', 'entree', 'Pluie de papier', 'Paper rain', 'are sheltering together under an open umbrella while paper raindrops hang from threads above them', 'the paper drops sway, the elves hold the umbrella up and giggle'),
+  p('courrier', '📬', 'entree', 'Facteur lutin', 'Elf postman', 'are sorting letters and postcards into little piles and stamping them with a rubber stamp, one elf wearing a postman cap', 'the postman elf stamps a postcard and holds it up'),
+  // Play corner
+  p('briques', '🧱', 'jouets', 'Château de briques', 'Brick castle', 'are building a tiny castle out of toy building bricks, one elf placing the last brick on top of a tower', 'the elf adds the last brick and all of them throw up their arms'),
+  p('train-bois', '🚂', 'jouets', 'Train en bois', 'Wooden train', 'are riding on a wooden toy train round its track, one elf pulling the whistle cord', 'the wooden train rolls on, the whistle elf puffs out its cheeks'),
+  p('dinette', '🫖', 'jouets', 'Goûter de poupées', 'Toy tea party', 'are having a tea party with the toy tea set, little cups raised and little fingers out', 'the elves clink their tiny cups and sip politely'),
+  p('maison-poupee', '🏠', 'jouets', 'Maison de poupée', 'Dolls’ house', 'are living in the dolls’ house, one waving from the tiny doorway, another sweeping the floor with a toy broom', 'the elf in the doorway waves, the other sweeps happily'),
+  p('cirque', '🎪', 'jouets', 'Cirque des peluches', 'Plush circus', 'are running a circus with toy animals, one elf as ringmaster in a tiny top hat and a plush lion sitting politely', 'the ringmaster elf bows and points to the lion, who tilts its head'),
+  p('lavage-voiture', '🚗', 'jouets', 'Lavage de voiture', 'Toy-car wash', 'are washing a toy car with tiny sponges and soap bubbles, one elf polishing the shiny bonnet', 'the elves scrub the toy car and bubbles pop around them'),
 ];
 
 export const prankById = (id: string | null | undefined) => PRANKS.find((x) => x.id === id) ?? null;

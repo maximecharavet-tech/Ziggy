@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "note": "Words that make a prank idea not gentle enough for Les Lutins Farceurs (unaccented, lower case, whole words). Read by rust/lutins-core (gentle_check) and by src/lib/lutins/gentle.ts: one list, two readers.",
+  "words": [
+    "knife", "knives", "couteau", "couteaux", "cutter", "razor", "rasoir",
+    "fire", "fires", "flame", "flames", "burn", "burning", "feu", "flamme", "flammes", "bruler", "allumette", "allumettes", "matchstick", "lighter", "briquet", "candle", "candles", "bougie", "bougies",
+    "oven", "stove", "cuisiniere", "hob", "fourneau",
+    "medicine", "medicines", "medicament", "medicaments", "pill", "pills", "pilule", "pilules", "comprime", "comprimes", "poison", "drug", "drugs", "drogue",
+    "socket", "sockets", "electric", "electricity", "electrique", "electricite", "voltage",
+    "stairs", "staircase", "escalier", "escaliers", "banister", "bannister", "rampe", "balcony", "balcon", "roof", "toit", "ladder", "echelle", "climb", "climbs", "climbing", "climbed", "grimper", "grimpe", "grimpent", "grimpant", "escalader", "escalade",
+    "fridge", "frigo", "refrigerateur", "freezer", "congelateur",
+    "blood", "sang", "gun", "guns", "pistol", "pistolet", "fusil", "weapon", "arme", "armes",
+    "smash", "smashes", "shatter", "shatters", "broken", "casser", "casse", "cassent", "casses", "briser", "brise", "destroy", "destroys", "detruire", "detruisent",
+    "kill", "kills", "killed", "dead", "death", "die", "dies", "mort", "morts", "tuer", "tue", "tuent",
+    "alcohol", "alcool", "wine", "beer", "biere", "cigarette", "cigarettes", "tabac",
+    "bleach", "javel", "chemical", "chemicals", "needle", "needles", "aiguille", "aiguilles",
+    "poop", "caca", "pipi", "pee", "vomit", "vomi", "crotte", "urine",
+    "naked", "nude", "sexy"
+  ]
+}

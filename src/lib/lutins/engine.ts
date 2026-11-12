@@ -69,6 +69,10 @@ export type LutinsEngine = {
   preparePhoto(img: RgbaLike, maxSide: number, autoFix?: boolean): RgbaImage;
   /** Node build only: decode a PNG / JPEG / WebP file. */
   decodeImage(bytes: Uint8Array): RgbaImage;
+  /** The not-gentle words found in a prank idea (empty = fine). */
+  gentleCheck(text: string): string[];
+  /** Tonight's suggestion among the catalogue ids, never one of `recent` unless all were done. */
+  pickPrank(ids: string[], recent: string[], seed: number): string | null;
 };
 
 /** Where the Node build reads the WebAssembly from (relative to `process.cwd()`). */
@@ -129,6 +133,8 @@ function wrap(glue: Glue, memory: WebAssembly.Memory, canDecode: boolean): Lutin
       needDecode();
       return take(glue.decode_image(bytes));
     },
+    gentleCheck: (text) => JSON.parse(glue.gentle_check(text)) as string[],
+    pickPrank: (ids, recent, seed) => glue.pick_prank(JSON.stringify(ids), JSON.stringify(recent), seed >>> 0) || null,
   };
 }
 

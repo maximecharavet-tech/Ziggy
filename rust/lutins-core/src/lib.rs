@@ -10,6 +10,7 @@
 //! | [`prompt`] | image-model prompt from the bible + scene + prank, seed, child's caption |
 //! | [`verify`] | does the generated picture keep the room and show the requested elves? |
 //! | [`card`] | on-device animated "magic card" (Ken Burns, snow, sparkles, glow) |
+//! | [`pranks`] | is a prank idea gentle enough (shared word list), tonight's suggestion without repeats |
 //! | [`prepare`] | photo downscale + mild auto white balance before upload |
 //! | [`decode`] | PNG / JPEG / WebP decoding (server side) |
 //! | [`align`] | FFT phase correlation (alignment before verification) |
@@ -31,6 +32,7 @@ pub mod color;
 pub mod decode;
 pub mod filters;
 pub mod image;
+pub mod pranks;
 pub mod prepare;
 pub mod prompt;
 pub mod resize;

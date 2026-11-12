@@ -180,3 +180,18 @@ describe('lutins-core WebAssembly (browser build)', () => {
     );
   });
 });
+
+describe('lutins-core: gentle pranks', () => {
+  it('the Rust check and the TypeScript check agree', async () => {
+    const { gentleCheck } = await import('./gentle');
+    const eng = await loadEngine();
+    for (const t of ['ils font du ski sur la rampe d’escalier', 'they climb the stairs with a knife', 'Ils ont CASSÉ le vase', 'four elves and a felt pen', 'Le feu de camp', 'des lutins dans les céréales', '']) expect(eng.gentleCheck(t), t).toEqual(gentleCheck(t));
+  });
+  it('tonight’s suggestion skips recent pranks and is the same for the same seed', async () => {
+    const eng = await loadEngine();
+    const ids = ['a', 'b', 'c', 'd', 'e'];
+    for (let s = 0; s < 30; s++) expect(['d', 'e']).toContain(eng.pickPrank(ids, ['a', 'b', 'c'], s));
+    expect(eng.pickPrank(ids, [], 9)).toBe(eng.pickPrank(ids, [], 9));
+    expect(eng.pickPrank([], [], 1)).toBeNull();
+  });
+});
