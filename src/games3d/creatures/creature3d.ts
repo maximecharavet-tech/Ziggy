@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
 import { COLORS, type Creature, type LookKey } from './logic';
+import { buildAura, buildNose, buildPet, extraArm, extraBody, extraHat, extraHead, extraLeg, extraMouth, extraTail, extraTop, extraWing, paintPattern, SINGLE_TOPS, type AuraSprite, type Buddy } from './parts2';
 
 /**
  * A creature of the factory, built in code from its recipe: body, head, legs,
@@ -132,6 +133,7 @@ function patternTex(kind: Creature['pattern'], base: string, accent: string, rep
             g.fill();
           }
       if (kind === 'stripes') for (let y = 0; y < 4; y++) g.fillRect(0, y * 64 + 8, 256, 30);
+      if (kind === 'zigzag' || kind === 'hearts' || kind === 'checks' || kind === 'waves') paintPattern(kind, g);
       if (kind === 'stars')
         for (let y = 0; y < 3; y++)
           for (let x = 0; x < 3; x++) {
@@ -194,6 +196,8 @@ function faceAlong(o: THREE.Object3D, n: THREE.Vector3, up = new THREE.Vector3(0
 
 function bodyGeometry(shape: Creature['body'], low: boolean): THREE.BufferGeometry {
   const seg = low ? 22 : 34;
+  const more = extraBody(shape, low);
+  if (more) return more;
   switch (shape) {
     case 'blob': {
       const g = new THREE.SphereGeometry(1, seg, Math.round(seg * 0.75));
@@ -219,7 +223,7 @@ function bodyGeometry(shape: Creature['body'], low: boolean): THREE.BufferGeomet
     }
     case 'box':
       return new RoundedBoxGeometry(1.05, 0.95, 0.95, low ? 3 : 5, 0.24);
-    case 'drop': {
+    default: {
       // A gumdrop: a wide, softly flat bottom and a round narrower top.
       const pts: THREE.Vector2[] = [];
       const n = 28;
@@ -239,6 +243,8 @@ function bodyGeometry(shape: Creature['body'], low: boolean): THREE.BufferGeomet
 
 function headGeometry(shape: Creature['head'], low: boolean): THREE.BufferGeometry {
   const seg = low ? 20 : 30;
+  const more = extraHead(shape, low);
+  if (more) return more;
   if (shape === 'box') return new RoundedBoxGeometry(0.78, 0.66, 0.66, low ? 3 : 4, 0.2);
   if (shape === 'bean') {
     const g = new THREE.CapsuleGeometry(0.32, 0.42, low ? 6 : 8, seg);
@@ -477,7 +483,7 @@ export class CreatureActor {
     this.reg('body', this.bodyMesh);
 
     // ── Legs: rows across the body, every foot on the ground ──
-    const legLen = c.legs === 0 ? 0 : c.legStyle === 'long' ? 0.6 : c.legStyle === 'tentacle' ? 0.42 : 0.24;
+    const legLen = c.legs === 0 ? 0 : c.legStyle === 'long' ? 0.6 : c.legStyle === 'tentacle' ? 0.42 : c.legStyle === 'spring' ? 0.34 : 0.24;
     const slots = legSlots(c.legs, hx, hz, c.body);
     const bottomAt = (x: number, z: number) => surfaceOf(bodyGeo, V(x, 0, z), V(0, -1, 0)).p.y;
     const minBottom = c.legs === 0 ? bb.min.y : Math.min(...slots.map((s) => bottomAt(s.x, s.z)));
@@ -550,19 +556,30 @@ export class CreatureActor {
     this.faceHost.add(this.mouth);
     this.reg('mouth', this.mouth);
 
+    // ── Nose (between the eyes and the mouth) ──
+    const noseG = buildNose(c.nose, hostK * (c.head === 'none' ? 1.1 : 1), k, low);
+    if (noseG) {
+      const ns = face(0, c.eyes >= 3 ? -0.2 : -0.1);
+      noseG.position.copy(ns.p).addScaledVector(ns.n, 0.012);
+      faceAlong(noseG, ns.n);
+      this.faceHost.add(noseG);
+      this.reg('nose', noseG);
+    }
+
     // ── Top (horns, antennae, ears, spikes) ──
     const topG = new THREE.Group();
     const topAt = (x: number, z = 0) => surfaceOf(hostGeo, hostCenter, V(x * hostHalf, hostH * 1.1, z));
     if (c.top !== 'none') {
-      const pairs = c.top === 'crest' ? [] : [-1, 1];
+      const single = SINGLE_TOPS.includes(c.top);
+      const pairs = c.top === 'crest' ? [] : c.top === 'unicorn' ? [0] : c.top === 'flower' ? [1] : [-1, 1];
       for (const side of pairs) {
-        const spread = c.top === 'bunny' ? 0.36 : c.top === 'cat' ? 0.55 : c.top === 'antennae' ? 0.3 : 0.5;
+        const spread = c.top === 'unicorn' ? 0 : c.top === 'flower' ? 0.5 : c.top === 'bunny' ? 0.36 : c.top === 'cat' ? 0.55 : c.top === 'antennae' || c.top === 'eyestalks' ? 0.3 : c.top === 'elf' || c.top === 'floppy' ? 0.85 : c.top === 'bear' ? 0.62 : 0.5;
         const s = topAt(side * spread, c.top === 'cat' ? 0.05 : 0);
         const pivot = new THREE.Group();
         pivot.position.copy(s.p).addScaledVector(s.n, -0.02);
         const up = V(0, 1, 0).lerp(s.n, 0.55).normalize();
         pivot.quaternion.setFromUnitVectors(V(0, 1, 0), up);
-        pivot.add(buildTopPiece(c.top, side, hostK, k, low, shadow));
+        pivot.add(buildTopPiece(c.top, single ? 1 : side, hostK, k, low, shadow));
         topG.add(pivot);
         this.tops.push({ pivot, sx: new Spring(90, 5), sz: new Spring(90, 5) });
       }
@@ -658,7 +675,29 @@ export class CreatureActor {
     this.root.updateMatrixWorld(true);
     const box = new THREE.Box3().setFromObject(this.root);
     this.height = box.max.y;
+
+    // ── Magic around it, and a little buddy beside it (outside the squash, so they keep their size) ──
+    const aura = buildAura(c.aura, this.halfWidth, this.height, low);
+    if (aura) {
+      this.aura = aura.sprites;
+      this.auraMats = aura.mats;
+      this.root.add(aura.group);
+      this.reg('aura', aura.group);
+    }
+    const pet = buildPet(c.pet, low);
+    if (pet) {
+      this.pet = pet;
+      pet.group.position.x = this.halfWidth + 0.42;
+      pet.group.position.z = 0.15;
+      pet.group.scale.setScalar(0.8 + 0.25 * this.scale);
+      this.root.add(pet.group);
+      this.reg('pet', pet.group);
+    }
   }
+
+  private aura: AuraSprite[] = [];
+  private auraMats: THREE.Material[] = [];
+  private pet: Buddy | null = null;
 
   private reg(key: string, o: THREE.Object3D) {
     this.parts.set(key, [...(this.parts.get(key) ?? []), o]);
@@ -708,6 +747,8 @@ export class CreatureActor {
       g.position.y = -0.01 * s;
       m.add(g);
       this.mouthJaw = g;
+    } else if (kind === 'cat' || kind === 'grin' || kind === 'moustache' || kind === 'gap') {
+      this.mouthJaw = extraMouth(kind, s, k, low, m);
     } else if (kind === 'beak') {
       const orange = std('#ffa23a', { roughness: 0.45 });
       this.kit.all.push(orange);
@@ -750,7 +791,10 @@ export class CreatureActor {
       mouth: ['mouth'],
       top: ['top'],
       hat: ['hat'],
-      all: ['legs', 'body', 'head', 'arms', 'eyes', 'mouth', 'wings', 'tail', 'top', 'hat'],
+      nose: ['nose'],
+      aura: ['aura'],
+      pet: ['pet'],
+      all: ['legs', 'body', 'head', 'arms', 'eyes', 'mouth', 'wings', 'tail', 'top', 'hat', 'nose', 'aura', 'pet'],
     };
     const names = [...new Set(keys.flatMap((k) => map[k] ?? []))];
     names.forEach((n, i) => {
@@ -1100,6 +1144,17 @@ export class CreatureActor {
         this.hat.rotation.z = 0;
       }
     }
+    // Magic drifts around it; the buddy bobs beside it.
+    if (this.aura.length) {
+      const calm = reduce ? 0.3 : 1;
+      for (const a of this.aura) {
+        const ang = a.a + t * a.speed * 0.6 * calm;
+        a.obj.position.set(Math.cos(ang) * a.r, a.y + Math.sin(t * 1.6 + a.bob) * 0.06 * calm, Math.sin(ang) * a.r * 0.8);
+        a.obj.rotation.y = t * 0.8 * calm;
+        a.obj.scale.setScalar(1 + Math.sin(t * 2.4 + a.bob) * 0.15 * calm);
+      }
+    }
+    if (this.pet) this.pet.tick(t, reduce ? 0.3 : 1);
     if (this.propeller) this.propeller.rotation.y += dt * (g.fly > 0.3 || flapBoost ? 30 : 4 + Math.sin(t) * 2);
     if (this.tongue) this.tongue.rotation.z = 0.25 + Math.sin(t * 6) * 0.18 * E;
 
@@ -1161,6 +1216,8 @@ export class CreatureActor {
       if (m.isMesh) m.geometry.dispose();
     });
     for (const m of this.kit.all) m.dispose();
+    for (const m of this.auraMats) m.dispose();
+    this.pet?.mats.forEach((m) => m.dispose());
   }
 }
 
@@ -1204,6 +1261,8 @@ export function legSlots(n: number, hx: number, hz: number, body: Creature['body
 
 /** One leg hanging from its hip down to the ground (length `len`). Returns its pieces, the first being the hip. */
 function buildLeg(style: Creature['legStyle'], len: number, thick: number, k: Kit, low: boolean, shadow: boolean, x: number): THREE.Group[] {
+  const more = extraLeg(style, len, thick, k, low, shadow);
+  if (more) return more;
   const g = new THREE.Group();
   const seg = low ? 8 : 12;
   if (style === 'stubby') {
@@ -1258,6 +1317,8 @@ function buildLeg(style: Creature['legStyle'], len: number, thick: number, k: Ki
 }
 
 function buildArm(style: Creature['armStyle'], k: Kit, low: boolean, shadow: boolean): THREE.Group {
+  const more = extraArm(style, k, low, shadow);
+  if (more) return more;
   const g = new THREE.Group();
   const seg = low ? 8 : 12;
   if (style === 'noodle') {
@@ -1294,6 +1355,8 @@ function buildArm(style: Creature['armStyle'], k: Kit, low: boolean, shadow: boo
 
 /** One wing, built for the right side (mirrored for the left), in the XY plane. */
 function buildWing(kind: Creature['wings'], k: Kit, low: boolean, shadow: boolean, span: number): THREE.Group {
+  const more = extraWing(kind, k, low, shadow, span);
+  if (more) return more;
   const g = new THREE.Group();
   const s = kind === 'tiny' ? span * 0.38 : span;
   if (kind === 'bird' || kind === 'tiny') {
@@ -1342,6 +1405,8 @@ function buildWing(kind: Creature['wings'], k: Kit, low: boolean, shadow: boolea
 
 /** The tail, pointing backwards (−Z). */
 function buildTail(kind: Creature['tail'], k: Kit, low: boolean, shadow: boolean): THREE.Group {
+  const more = extraTail(kind, k, low, shadow);
+  if (more) return more;
   const g = new THREE.Group();
   const seg = low ? 8 : 12;
   if (kind === 'fish') {
@@ -1400,6 +1465,8 @@ function buildTail(kind: Creature['tail'], k: Kit, low: boolean, shadow: boolean
 
 /** One horn / antenna / ear (side −1 or 1), standing up from its pivot. */
 function buildTopPiece(kind: Creature['top'], side: number, s: number, k: Kit, low: boolean, shadow: boolean): THREE.Group {
+  const more = extraTop(kind, side, s, k, low, shadow);
+  if (more) return more;
   const g = new THREE.Group();
   const seg = low ? 8 : 12;
   if (kind === 'horns') {
@@ -1436,6 +1503,8 @@ function buildTopPiece(kind: Creature['top'], side: number, s: number, k: Kit, l
 
 /** Hats sit on their brim at y = 0. */
 export function buildHat(kind: Creature['hat'], s: number, k: Kit, low: boolean, shadow: boolean): { group: THREE.Group; propeller: THREE.Object3D | null } {
+  const more = extraHat(kind, s, k, low, shadow);
+  if (more) return { group: more, propeller: null };
   const g = new THREE.Group();
   const seg = low ? 12 : 20;
   let propeller: THREE.Object3D | null = null;
@@ -1508,7 +1577,7 @@ export function costumePieces(c: Creature, opts: ActorOpts) {
   const low = opts.lowPower;
   const hat = c.hat !== 'none' ? buildHat(c.hat, 1.25, kit, low, true) : null;
   const tops: THREE.Group[] = [];
-  if (c.top !== 'none' && c.top !== 'crest') for (const side of [-1, 1]) tops.push(buildTopPiece(c.top, side, 1.3, kit, low, true));
+  if (c.top !== 'none' && c.top !== 'crest') for (const side of SINGLE_TOPS.includes(c.top) ? [1] : [-1, 1]) tops.push(buildTopPiece(c.top, side, 1.3, kit, low, true));
   const wings: THREE.Group[] = [];
   if (c.wings !== 'none')
     for (const side of [-1, 1]) {
