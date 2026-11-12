@@ -549,7 +549,7 @@ export class CreatureActor {
     this.reg('eyes', eyesG);
 
     // ── Mouth ──
-    const ms = face(0, c.eyes >= 3 ? -0.52 : -0.42);
+    const ms = face(0, (c.eyes >= 3 ? -0.52 : -0.42) - (c.nose !== 'none' ? 0.1 : 0));
     this.mouth.position.copy(ms.p).addScaledVector(ms.n, 0.01);
     faceAlong(this.mouth, ms.n);
     this.buildMouth(c.mouth, hostK * (c.head === 'none' ? 1.1 : 1), low);
@@ -557,10 +557,10 @@ export class CreatureActor {
     this.reg('mouth', this.mouth);
 
     // ── Nose (between the eyes and the mouth) ──
-    const noseG = buildNose(c.nose, hostK * (c.head === 'none' ? 1.1 : 1), k, low);
+    const noseG = buildNose(c.nose, 1.7 * hostK * (c.head === 'none' ? 1.1 : 1), k, low);
     if (noseG) {
-      const ns = face(0, c.eyes >= 3 ? -0.2 : -0.1);
-      noseG.position.copy(ns.p).addScaledVector(ns.n, 0.012);
+      const ns = face(0, c.eyes >= 3 ? -0.32 : -0.24);
+      noseG.position.copy(ns.p).addScaledVector(ns.n, 0.05);
       faceAlong(noseG, ns.n);
       this.faceHost.add(noseG);
       this.reg('nose', noseG);
