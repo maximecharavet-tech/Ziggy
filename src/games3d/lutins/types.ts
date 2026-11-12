@@ -6,7 +6,7 @@
 export const ELF_IDS = ['pepin', 'grelotte', 'noisette'] as const;
 export type ElfId = (typeof ELF_IDS)[number];
 
-export const ELF_POSES = ['stand', 'sit', 'wave', 'laugh', 'peek', 'tiptoe', 'point'] as const;
+export const ELF_POSES = ['stand', 'sit', 'wave', 'laugh', 'peek', 'tiptoe', 'point', 'cheer', 'dance', 'shy', 'think'] as const;
 export type ElfPose = (typeof ELF_POSES)[number];
 
 export type LutinsSceneMode = 'hero' | 'sheet' | 'stage';

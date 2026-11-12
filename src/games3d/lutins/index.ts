@@ -285,6 +285,18 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
   // ---------------------------------------------------------------------
   // Loop (hero, stage)
 
+  // Juice: in the hero scene each elf pops in with an elastic bounce (one after the other).
+  // With reduced motion they are simply there. A tap makes an elf react (and giggle).
+  const intro = new Map<ElfActor, number>();
+  const BASE_POSE = new Map<ElfActor, { pose: ElfPose; side: 1 | -1 }>();
+  if (hero && !reduce)
+    actors.forEach((a, i) => {
+      intro.set(a, -0.35 - i * 0.28);
+      a.scale.setScalar(0.001);
+    });
+  if (hero) for (const spot of hero.spots) for (const a of actors) if (a.userData.id === spot.id) BASE_POSE.set(a, { pose: opts.poses?.[spot.id] ?? spot.pose, side: spot.side });
+  const elastic = (k: number) => (k >= 1 ? 1 : 1 - Math.exp(-6.5 * k) * Math.cos(10 * k));
+
   let raf = 0;
   let hidden = typeof document !== 'undefined' && document.hidden;
   const timer = new THREE.Timer();
@@ -304,6 +316,16 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       camera.position.y += Math.sin(time * 0.19) * 0.03;
       camera.lookAt(base.target);
     }
+    for (const [a, t0] of intro) {
+      const t = t0 + dt / 0.9;
+      if (t >= 1) {
+        a.scale.setScalar(1);
+        intro.delete(a);
+      } else {
+        intro.set(a, t);
+        a.scale.setScalar(Math.max(0.001, t <= 0 ? 0.001 : elastic(t)));
+      }
+    }
     for (const a of actors) {
       const rig = a.userData.rig;
       // Look toward the camera (a little).
@@ -318,6 +340,56 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
     hidden = document.hidden;
     timer.update();
   };
+  // Tap an elf: it cheers, dances or giggles shyly for a moment, then goes back to what it was doing.
+  const REACT: ElfPose[] = ['cheer', 'dance', 'shy', 'laugh', 'wave', 'think'];
+  const ray = new THREE.Raycaster();
+  const ndc = new THREE.Vector2();
+  let tapN = 0;
+  let audio: AudioContext | null = null;
+  const giggle = (pitch: number) => {
+    try {
+      audio ??= new AudioContext();
+      const t = audio.currentTime + 0.01;
+      for (let i = 0; i < 4; i++) {
+        const o = audio.createOscillator();
+        const g = audio.createGain();
+        o.type = 'sine';
+        o.frequency.setValueAtTime(pitch * (1 + (i % 2) * 0.18), t + i * 0.08);
+        g.gain.setValueAtTime(0.0001, t + i * 0.08);
+        g.gain.exponentialRampToValueAtTime(0.1, t + i * 0.08 + 0.015);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.08 + 0.07);
+        o.connect(g);
+        g.connect(audio.destination);
+        o.start(t + i * 0.08);
+        o.stop(t + i * 0.08 + 0.09);
+      }
+    } catch {
+      /* no audio: the elf still reacts */
+    }
+  };
+  const reactTimers: number[] = [];
+  const onTap = (e: PointerEvent) => {
+    const r = canvas.getBoundingClientRect();
+    ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const hit = ray.intersectObjects(actors, true)[0];
+    if (!hit) return;
+    let o: THREE.Object3D | null = hit.object;
+    while (o && !actors.includes(o as ElfActor)) o = o.parent;
+    const a = o as ElfActor | null;
+    if (!a || intro.has(a)) return;
+    const base = BASE_POSE.get(a);
+    const reaction = REACT[tapN++ % REACT.length];
+    a.userData.rig.setPose(reaction, base?.side ?? 1);
+    giggle(a.userData.id === 'noisette' ? 980 : a.userData.id === 'grelotte' ? 760 : 560);
+    reactTimers.push(
+      window.setTimeout(() => {
+        if (!disposed && base) a.userData.rig.setPose(base.pose, base.side);
+      }, 1900)
+    );
+  };
+  if (hero) canvas.addEventListener('pointerdown', onTap);
+
   const ro = !sheet && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => resize()) : null;
   if (!sheet) {
     document.addEventListener('visibilitychange', onVisibility);
@@ -347,6 +419,9 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       cancelAnimationFrame(raf);
       document.removeEventListener('visibilitychange', onVisibility);
       ro?.disconnect();
+      canvas.removeEventListener('pointerdown', onTap);
+      reactTimers.forEach((t) => window.clearTimeout(t));
+      void audio?.close();
       timer.dispose();
       envCleanups.forEach((f) => f());
       if (hero) disposeTree(hero.root);

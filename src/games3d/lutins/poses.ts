@@ -134,6 +134,44 @@ export function poseTarget(pose: ElfPose, side: 1 | -1 = 1): PoseState {
       P.headTilt = side * 0.08;
       P.mouth = 0.45;
       break;
+    case 'cheer':
+      // Both arms way up, bouncing: hooray!
+      P.arms = [arm(2.5, 0.2, 0.35), arm(2.5, 0.2, 0.35)];
+      P.headPitch = -0.14;
+      P.mouth = 0.9;
+      P.bounce = 0.8;
+      P.lean = -0.05;
+      break;
+    case 'dance':
+      // A little wiggle: one arm up, hips swaying, head tilting to the beat.
+      P.arms[act] = arm(2.0, 0.3, 0.8);
+      P.arms[other] = arm(0.8, 0.5, 1.2);
+      P.roll = side * 0.1;
+      P.turn = side * 0.15;
+      P.headTilt = -side * 0.18;
+      P.legs[act] = leg(0.18, 0.1);
+      P.legs[other] = leg(-0.1, 0.06);
+      P.mouth = 0.5;
+      P.bounce = 0.55;
+      break;
+    case 'shy':
+      // Hands up by the cheeks, shoulders up, a bashful little giggle.
+      P.arms = [arm(1.35, 0.85, 1.5), arm(1.35, 0.85, 1.5)];
+      P.headTilt = side * 0.22;
+      P.headPitch = -0.02;
+      P.turn = -side * 0.12;
+      P.lean = -0.04;
+      P.mouth = 0.3;
+      break;
+    case 'think':
+      // A finger to the chin: hmm, what shall we do next?
+      P.arms[act] = arm(1.55, 0.7, 1.7);
+      P.arms[other] = arm(0.6, 0.4, 1.4);
+      P.headTilt = side * 0.2;
+      P.headYaw = -side * 0.2;
+      P.headPitch = -0.12;
+      P.mouth = 0.1;
+      break;
     case 'stand':
     default:
       break;
