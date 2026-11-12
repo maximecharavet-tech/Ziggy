@@ -11,6 +11,7 @@
  * hint, there is no timer, no streak, nothing to unlock.
  */
 import type { L } from '@/lib/i18n-text';
+import parts from '@/data/creatures/parts.json';
 import { rng } from '../kit/rng';
 
 export type Band = 'little' | 'middle' | 'big';
@@ -557,7 +558,7 @@ export function movesOf(c: Creature): MoveKind[] {
   const moves: MoveKind[] = [];
   const canFly = c.wings !== 'none' && c.wings !== 'tiny';
   if (canFly) moves.push('fly');
-  if (c.tail === 'fish') moves.push('swim');
+  if (c.tail === 'fish' || (c.legStyle === 'paddle' && c.legs > 0)) moves.push('swim');
   if (!canFly || c.legs > 1 || moves.length < 2) moves.unshift(ground);
   if (c.wings === 'tiny') moves.push('flutter');
   return moves.slice(0, 3);
@@ -565,7 +566,7 @@ export function movesOf(c: Creature): MoveKind[] {
 
 /** What it can do (the words for "it flies AND swims"). */
 export function abilities(c: Creature) {
-  return { fly: c.wings !== 'none' && c.wings !== 'tiny', swim: c.tail === 'fish', walk: c.legs > 0 };
+  return { fly: c.wings !== 'none' && c.wings !== 'tiny', swim: c.tail === 'fish' || (c.legStyle === 'paddle' && c.legs > 0), walk: c.legs > 0 };
 }
 
 export type VoiceKind = 'squeak' | 'honk' | 'boing' | 'blub' | 'buzz' | 'purr' | 'roar';
@@ -596,6 +597,15 @@ export function limbs(c: Creature) {
 
 export type ChallengeSkill = 'vocabulary' | 'counting' | 'addition' | 'colors' | 'logic';
 
+export type PowerKey = 'bounce' | 'fly' | 'swim' | 'sparkle' | 'dance' | 'camo' | 'laugh' | 'rainbow' | 'roll' | 'float' | 'zap' | 'hearts' | 'music';
+
+/** The powers a creature has (rules shared with the Rust core through parts.json). Never empty. */
+export function powerKeys(c: Creature): PowerKey[] {
+  const rec = c as unknown as Record<string, string | number>;
+  const out = parts.powers.filter((rule) => (rule.any as [string, string | number][]).some(([f, v]) => String(rec[f]) === String(v))).map((rule) => rule.id as PowerKey);
+  return out.length ? out : ['dance'];
+}
+
 export type Req =
   | { k: 'legs'; n: number }
   | { k: 'arms'; n: number }
@@ -613,7 +623,12 @@ export type Req =
   | { k: 'limbs'; n: number }
   | { k: 'sumAll'; n: number }
   | { k: 'eyesEqLegs' }
-  | { k: 'oddLegs' };
+  | { k: 'oddLegs' }
+  | { k: 'power'; is: PowerKey }
+  | { k: 'nose'; is: NoseKind }
+  | { k: 'aura'; is: AuraKind }
+  | { k: 'pet'; is: PetKind }
+  | { k: 'body'; is: BodyShape };
 
 export interface Challenge {
   id: string;
@@ -686,6 +701,16 @@ export function reqMet(r: Req, c: Creature): boolean {
       return c.eyes === c.legs;
     case 'oddLegs':
       return c.legs % 2 === 1;
+    case 'power':
+      return powerKeys(c).includes(r.is);
+    case 'nose':
+      return c.nose === r.is;
+    case 'aura':
+      return c.aura === r.is;
+    case 'pet':
+      return c.pet === r.is;
+    case 'body':
+      return c.body === r.is;
   }
 }
 
@@ -709,15 +734,37 @@ export function solveChallenge(ch: Challenge): Creature | null {
     if (r.k === 'pattern') base = { ...base, pattern: r.is };
     if (r.k === 'color') base = { ...base, color: r.is };
     if (r.k === 'legStyle') base = { ...base, legStyle: r.is };
+    if (r.k === 'nose') base = { ...base, nose: r.is };
+    if (r.k === 'aura') base = { ...base, aura: r.is };
+    if (r.k === 'pet') base = { ...base, pet: r.is };
+    if (r.k === 'body') base = { ...base, body: r.is };
   }
-  for (const legs of LEG_COUNTS)
-    for (const arms of ARM_COUNTS)
-      for (const eyes of EYE_COUNTS) {
-        const c = { ...base, legs, arms, eyes };
-        if (checkChallenge(ch, c).ok) return c;
-      }
+  // Powers: try each way of getting one that leaves the other requirements' fields alone.
+  const fixed = new Set<string>(ch.reqs.flatMap((r) => (r.k === 'power' ? [] : [r.k === 'wings' || r.k === 'wingsIs' ? 'wings' : r.k === 'tail' ? 'tail' : r.k === 'top' ? 'top' : r.k === 'hat' || r.k === 'hatIs' ? 'hat' : r.k === 'legStyle' ? 'legStyle' : r.k])));
+  let variants: Creature[] = [base];
+  for (const r of ch.reqs) {
+    if (r.k !== 'power') continue;
+    const rule = parts.powers.find((x) => x.id === r.is);
+    if (!rule) return null;
+    const next: Creature[] = [];
+    for (const v of variants) {
+      next.push(v);
+      for (const [f, val] of rule.any as [string, string | number][])
+        if (typeof val === 'string' && !fixed.has(f)) next.push({ ...v, [f]: val });
+    }
+    variants = next;
+  }
+  for (const b of variants)
+    for (const legs of LEG_COUNTS)
+      for (const arms of ARM_COUNTS)
+        for (const eyes of EYE_COUNTS) {
+          const c = { ...b, legs, arms, eyes };
+          if (checkChallenge(ch, c).ok) return c;
+        }
   return null;
 }
+
+const POWER_ICON: Record<PowerKey, string> = { bounce: '🦘', fly: '🕊️', swim: '🐟', sparkle: '✨', dance: '💃', camo: '🍃', laugh: '😂', rainbow: '🌈', roll: '🛞', float: '🎈', zap: '⚡', hearts: '💖', music: '🎵' };
 
 /** Little pictures for each requirement (the challenge card, for those who can't read yet). */
 export function reqChip(r: Req, c: Creature): { icon: string; n?: string; have?: string } {
@@ -756,6 +803,16 @@ export function reqChip(r: Req, c: Creature): { icon: string; n?: string; have?:
       return { icon: '👁️ = 🦵' };
     case 'oddLegs':
       return { icon: '🦵', n: '1·3·5·7' };
+    case 'power':
+      return { icon: POWER_ICON[r.is] };
+    case 'nose':
+      return { icon: OPTIONS.nose.find((o) => o.key === `nose:${r.is}`)!.icon };
+    case 'aura':
+      return { icon: OPTIONS.aura.find((o) => o.key === `aura:${r.is}`)!.icon };
+    case 'pet':
+      return { icon: OPTIONS.pet.find((o) => o.key === `pet:${r.is}`)!.icon };
+    case 'body':
+      return { icon: '🥚' };
   }
 }
 
@@ -789,6 +846,15 @@ export function reqCategory(r: Req): CategoryId {
       return 'pattern';
     case 'color':
       return 'color';
+    case 'nose':
+      return 'nose';
+    case 'aura':
+    case 'power':
+      return 'aura';
+    case 'pet':
+      return 'pet';
+    case 'body':
+      return 'body';
   }
 }
 
@@ -863,6 +929,16 @@ export function hintFor(ch: Challenge, c: Creature, locale: string): string {
       return fr
         ? `Elle a ${num(c.eyes, EYE[0], EYE[1], locale)} et ${num(c.legs, LEG[0], LEG[1], locale)} : il faut le même nombre.`
         : `It has ${num(c.eyes, EYE[0], EYE[1], locale)} and ${num(c.legs, LEG[0], LEG[1], locale)}: they must be the same number.`;
+    case 'power':
+      return fr ? 'Il lui manque un pouvoir : essaie les ailes, la magie, les chapeaux, la bouche…' : 'It still needs a power: try wings, magic, hats, the mouth…';
+    case 'nose':
+      return fr ? `Il faut le nez « ${label('nose', `nose:${r.is}`)} ».` : `It needs the “${label('nose', `nose:${r.is}`)}” nose.`;
+    case 'aura':
+      return fr ? `Il faut la magie « ${label('aura', `aura:${r.is}`)} ».` : `It needs the “${label('aura', `aura:${r.is}`)}” magic.`;
+    case 'pet':
+      return fr ? `Il faut le copain « ${label('pet', `pet:${r.is}`)} ».` : `It needs the “${label('pet', `pet:${r.is}`)}” buddy.`;
+    case 'body':
+      return fr ? `Il faut le corps « ${label('body', `body:${r.is}`)} ».` : `It needs the “${label('body', `body:${r.is}`)}” body.`;
     case 'oddLegs':
       return fr ? `${c.legs} est un nombre pair. Essaie 1, 3, 5 ou 7 pattes !` : `${c.legs} is an even number. Try 1, 3, 5 or 7 legs!`;
   }

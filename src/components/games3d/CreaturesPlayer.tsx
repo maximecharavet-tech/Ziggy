@@ -736,7 +736,10 @@ export function CreaturesPlayer() {
   const startChallenge = () => {
     const m = getMemory();
     const level = Math.min(m.skills.counting?.difficulty ?? 1, maxDifficulty(m));
-    const ch = nextChallenge(band, level, done, Math.floor(Math.random() * 1e6));
+    const core = getCore();
+    // The Rust engine invents new, always buildable challenges; the fixed list is the fallback.
+    const fresh = core.engine === 'wasm' && Math.random() < 0.65 ? (core.generateChallenge(band, Math.floor(Math.random() * 1e9)) as unknown as Challenge | null) : null;
+    const ch = fresh ?? nextChallenge(band, level, done, Math.floor(Math.random() * 1e6));
     setChallenge({ ch, at: Date.now(), mistakes: 0 });
     speak([tr(ch.text, locale)], 'challenge');
   };

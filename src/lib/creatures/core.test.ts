@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { beforeAll, describe, expect, it } from 'vitest';
 import { loadCore, getCore, tsCore, type CreatureCore } from './index';
 import { rng } from '@/games3d/kit/rng';
-import { NAME_BLOCKLIST, LOOK_KEYS, sanitize, STARTER } from '@/games3d/creatures/logic';
+import { NAME_BLOCKLIST, LOOK_KEYS, sanitize, STARTER, solveChallenge, checkChallenge, hintFor, reqChip, reqCategory, type Challenge } from '@/games3d/creatures/logic';
 
 let wasm: CreatureCore;
 beforeAll(async () => {
@@ -89,5 +89,37 @@ describe('what the engine makes is always safe', () => {
       expect(ch.reqs.length).toBeGreaterThan(0);
     }
     expect(wasm.checkRequirements([{ k: 'eyes', n: 2 }], STARTER)).toEqual([true]);
+  });
+});
+
+describe('generated challenges work with the game (TS side)', () => {
+  it('every generated challenge is buildable, hinted, and has pictures', () => {
+    for (const band of ['little', 'middle', 'big'] as const)
+      for (let s = 1; s < 250; s++) {
+        const ch = wasm.generateChallenge(band, s * 17)! as unknown as Challenge;
+        const sol = solveChallenge(ch);
+        expect(sol, `${band} ${s} ${ch.text.en}`).not.toBeNull();
+        expect(checkChallenge(ch, sol!).ok).toBe(true);
+        expect(hintFor(ch, STARTER, 'fr').length).toBeGreaterThan(3);
+        for (const r of ch.reqs) {
+          expect(reqChip(r, STARTER).icon).toBeTruthy();
+          expect(reqCategory(r)).toBeTruthy();
+        }
+        // TS and Rust judge a creature the same way.
+        expect(wasm.checkRequirements(ch.reqs, sol!)).toEqual(checkChallenge(ch, sol!).met);
+        expect(wasm.checkRequirements(ch.reqs, STARTER)).toEqual(checkChallenge(ch, STARTER).met);
+      }
+  });
+});
+
+describe('moves and voice: Rust and TS agree', () => {
+  it('for any creature', async () => {
+    const glue = await import('./wasm/creatures_core.js');
+    const { movesOf, voiceOf } = await import('@/games3d/creatures/logic');
+    for (const s of seeds) {
+      const c = tsCore.randomCreature(s);
+      expect(JSON.parse(glue.moves_of(JSON.stringify(c))), String(s)).toEqual(movesOf(c));
+      expect(JSON.parse(glue.voice_of(JSON.stringify(c))), String(s)).toEqual(voiceOf(c));
+    }
   });
 });

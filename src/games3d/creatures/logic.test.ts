@@ -314,7 +314,7 @@ describe('What each age sees', () => {
           return d.options.some((o) => (o.apply(STARTER) as unknown as Record<string, unknown>)[field] === value);
         });
       for (const r of ch.reqs) {
-        const fields: string[] = { legs: ['legs'], arms: ['arms'], eyes: ['eyes'], wings: ['wings'], wingsIs: ['wings'], tail: ['tail'], top: ['top'], hat: ['hat'], hatIs: ['hat'], mouth: ['mouth'], pattern: ['pattern'], color: ['color'], legStyle: ['legStyle', 'legs'], limbs: ['legs', 'arms'], sumAll: ['legs', 'arms', 'eyes'], eyesEqLegs: ['eyes', 'legs'], oddLegs: ['legs'] }[r.k];
+        const fields: string[] = ({ legs: ['legs'], arms: ['arms'], eyes: ['eyes'], wings: ['wings'], wingsIs: ['wings'], tail: ['tail'], top: ['top'], hat: ['hat'], hatIs: ['hat'], mouth: ['mouth'], pattern: ['pattern'], color: ['color'], legStyle: ['legStyle', 'legs'], limbs: ['legs', 'arms'], sumAll: ['legs', 'arms', 'eyes'], eyesEqLegs: ['eyes', 'legs'], oddLegs: ['legs'], nose: ['nose'], aura: ['aura'], pet: ['pet'], body: ['body'], power: [] } as Record<string, string[]>)[r.k] ?? [];
         for (const f of fields) {
           const v = (sol as unknown as Record<string, unknown>)[f];
           if (v === (STARTER as unknown as Record<string, unknown>)[f] && !['legs', 'eyes', 'arms'].includes(f)) continue;

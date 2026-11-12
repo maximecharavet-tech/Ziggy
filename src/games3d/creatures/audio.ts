@@ -174,6 +174,18 @@ export class FactoryAudio {
       case 'hat':
         [1046, 1318, 1568].forEach((f, i) => this.osc('sine', this.vary(f), f, t + i * 0.06, 0.6, 0.12));
         break;
+      case 'nose':
+        // Honk! A clown-nose squeeze.
+        this.osc('square', this.vary(330), 220, t, 0.14, 0.06);
+        this.osc('triangle', this.vary(660), 440, t, 0.16, 0.2);
+        break;
+      case 'aura':
+        [1568, 1976, 2349].forEach((f, i) => this.osc('sine', this.vary(f), f * 1.02, t + i * 0.07, 0.35, 0.09));
+        break;
+      case 'pet':
+        this.osc('sine', this.vary(1200), 1700, t, 0.07, 0.2);
+        this.osc('sine', this.vary(1500), 1900, t + 0.09, 0.07, 0.2);
+        break;
       case 'size':
         this.osc('sine', this.vary(n > 1 ? 180 : 700), n > 1 ? 90 : 1300, t, 0.4, 0.26);
         break;

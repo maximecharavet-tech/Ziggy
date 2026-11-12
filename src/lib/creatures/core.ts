@@ -5,7 +5,7 @@
  */
 import parts from '@/data/creatures/parts.json';
 import { rng } from '@/games3d/kit/rng';
-import { cleanName, STARTER, type Creature } from '@/games3d/creatures/logic';
+import { cleanName, powerKeys, STARTER, type Creature, type PowerKey } from '@/games3d/creatures/logic';
 
 type Data = typeof parts;
 const D: Data = parts;
@@ -89,12 +89,9 @@ export function comboCount(): number {
   return ALL_FIELDS.reduce((n, f) => n * fullList(f).length, 1);
 }
 
-export type PowerId = 'bounce' | 'fly' | 'swim' | 'sparkle' | 'dance' | 'camo' | 'laugh' | 'rainbow' | 'roll' | 'float' | 'zap' | 'hearts' | 'music';
+export type PowerId = PowerKey;
 
-export function powersOf(c: Creature): PowerId[] {
-  const out = D.powers.filter((rule) => (rule.any as [string, string | number][]).some(([f, v]) => get(c, f) === String(v))).map((rule) => rule.id as PowerId);
-  return out.length ? out : ['dance'];
-}
+export const powersOf = (c: Creature): PowerId[] => powerKeys(c);
 
 export type SillyEvent = 'confetti' | 'flash' | 'wonky' | 'sneeze' | 'hiccup' | 'applause' | 'surprised' | 'bubbles';
 
