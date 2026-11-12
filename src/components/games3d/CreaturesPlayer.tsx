@@ -1069,12 +1069,12 @@ export function CreaturesPlayer() {
             {mode === 'atelier' ? challengeCard : null}
             {mode === 'atelier' ? (
               <div className="pointer-events-auto mt-2 flex flex-wrap items-center justify-center gap-1.5" data-tv-row="" data-tv-wrap="false" aria-label={tr({ fr: 'Pouvoirs', en: 'Powers' }, locale)}>
-                {powers.slice(0, 4).map((id) => (
+                {powers.slice(0, 3).map((id) => (
                   <motion.button key={id} type="button" onClick={() => showPower(id)} whileTap={reduce ? undefined : { scale: 0.88 }} aria-label={tr(POWER_INFO[id].label, locale)} className="flex min-h-[56px] min-w-[56px] items-center justify-center gap-1 rounded-2xl bg-white/90 px-2 shadow-md ring-2 ring-[#ffe08a]">
                     <span className="text-2xl" aria-hidden="true">
                       {POWER_INFO[id].icon}
                     </span>
-                    <span className={band === 'little' ? 'sr-only' : 'text-xs font-bold text-[#5b3f8f]'}>{tr(POWER_INFO[id].label, locale)}</span>
+                    <span className={band === 'little' ? 'sr-only' : 'text-xs font-bold text-[#5b3f8f] max-[479px]:sr-only'}>{tr(POWER_INFO[id].label, locale)}</span>
                   </motion.button>
                 ))}
                 {album.length ? (
@@ -1082,7 +1082,7 @@ export function CreaturesPlayer() {
                     <span className="text-2xl" aria-hidden="true">
                       💞
                     </span>
-                    <span className={band === 'little' ? 'sr-only' : 'text-xs font-bold text-[#5b3f8f]'}>{tr({ fr: 'Croiser', en: 'Cross' }, locale)}</span>
+                    <span className={band === 'little' ? 'sr-only' : 'text-xs font-bold text-[#5b3f8f] max-[479px]:sr-only'}>{tr({ fr: 'Croiser', en: 'Cross' }, locale)}</span>
                   </motion.button>
                 ) : null}
                 {band !== 'little' ? (
@@ -1090,7 +1090,7 @@ export function CreaturesPlayer() {
                     <span className="text-2xl" aria-hidden="true">
                       🔑
                     </span>
-                    <span className="text-xs font-bold text-[#5b3f8f]">{tr({ fr: 'Code', en: 'Code' }, locale)}</span>
+                    <span className="text-xs font-bold text-[#5b3f8f] max-[479px]:sr-only">{tr({ fr: 'Code', en: 'Code' }, locale)}</span>
                   </motion.button>
                 ) : null}
               </div>

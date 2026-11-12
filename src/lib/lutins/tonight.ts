@@ -71,7 +71,10 @@ export function planTonight(req: PlanRequest): Plan {
       let bestKey = keyOf(req.seed, night, best.id);
       for (const p of from.slice(1)) {
         const k = keyOf(req.seed, night, p.id);
-        if (k < bestKey) (best = p), (bestKey = k);
+        if (k < bestKey) {
+          best = p;
+          bestKey = k;
+        }
       }
       chosen = best.id;
     } else if (pool.length) {

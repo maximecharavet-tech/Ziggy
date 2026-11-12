@@ -60,6 +60,7 @@ export function LutinsScene({ mode, elves, poses, camera, transparent, sheet, po
   const pokeRef = useRef(onPoke);
   pokeRef.current = onPoke;
   const elvesKey = (elves ?? []).join(',');
+  const wantsPoke = Boolean(onPoke);
 
   useEffect(() => {
     const box = boxRef.current;
@@ -82,7 +83,7 @@ export function LutinsScene({ mode, elves, poses, camera, transparent, sheet, po
           transparent: init.transparent ?? mode === 'stage',
           sheet: init.sheet,
           popIn: init.popIn,
-          onPoke: onPoke ? (id, r) => pokeRef.current?.(id, r) : undefined,
+          onPoke: wantsPoke ? (id, r) => pokeRef.current?.(id, r) : undefined,
           reducedMotion: reduce,
         });
         handleRef.current = handle;
@@ -108,7 +109,7 @@ export function LutinsScene({ mode, elves, poses, camera, transparent, sheet, po
       setReady(false);
     };
     // The scene is rebuilt when the mode, the elves or the motion preference change.
-  }, [mode, reduce, elvesKey]);
+  }, [mode, reduce, elvesKey, wantsPoke]);
 
   const camKey = camera ? `${camera.azimuth ?? ''}|${camera.elevation ?? ''}|${camera.zoom ?? ''}` : '';
   useEffect(() => {
