@@ -152,6 +152,14 @@ function BodyIcon({ shape, color }: { shape: string; color: string }) {
       {shape === 'egg' ? <path d="M24 6c9 0 15 13 15 22a15 15 0 0 1-30 0C9 19 15 6 24 6z" {...s} /> : null}
       {shape === 'bean' ? <rect x="4" y="13" width="40" height="24" rx="12" {...s} /> : null}
       {shape === 'box' ? <rect x="8" y="9" width="32" height="31" rx="9" {...s} /> : null}
+      {shape === 'pear' ? <path d="M24 6c5 0 8 5 9 11 1 5 9 9 9 17 0 6-8 9-18 9S6 40 6 34c0-8 8-12 9-17 1-6 4-11 9-11z" {...s} /> : null}
+      {shape === 'cloud' ? <path d="M13 35a8 8 0 0 1-1-16 9 9 0 0 1 15-4 9 9 0 0 1 11 9 7 7 0 0 1-2 11z" {...s} /> : null}
+      {shape === 'tall' ? <rect x="14" y="4" width="20" height="40" rx="10" {...s} /> : null}
+      {shape === 'barrel' ? <path d="M13 7h22c5 6 5 28 0 34H13C8 35 8 13 13 7z" {...s} /> : null}
+      {shape === 'bell' ? <path d="M24 6c8 0 11 9 11 17 0 7 7 10 9 17H4c2-7 9-10 9-17 0-8 3-17 11-17z" {...s} /> : null}
+      {shape === 'pillow' ? <path d="M9 10c10 3 20 3 30 0 3 9 3 19 0 28-10-3-20-3-30 0-3-9-3-19 0-28z" {...s} /> : null}
+      {shape === 'wide' ? <ellipse cx="24" cy="25" rx="21" ry="13" {...s} /> : null}
+      {shape === 'cone' ? <path d="M24 5c5 6 9 18 15 26 0 7-8 11-15 11S9 38 9 31C15 23 19 11 24 5z" {...s} /> : null}
       {shape === 'drop' ? <path d="M24 7c6 0 9 6 11 12 3 7 7 11 7 15 0 5-8 8-18 8S6 39 6 34c0-4 4-8 7-15 2-6 5-12 11-12z" {...s} /> : null}
       {shape === 'none' ? (
         <g>
@@ -175,6 +183,10 @@ function PatternIcon({ kind, color, accent }: { kind: string; color: string; acc
       <circle cx="24" cy="24" r="18" fill={color} />
       <g clipPath={`url(#cp-${kind})`} fill={accent}>
         {kind === 'dots' ? [10, 24, 38].flatMap((x, i) => [14, 30].map((y) => <circle key={`${x}-${y}`} cx={x + (y > 20 ? 7 : 0) - (i === 2 ? 0 : 0)} cy={y} r="4.5" />)) : null}
+        {kind === 'zigzag' ? [10, 22, 34].map((y) => <path key={y} d={`M0 ${y}l8 8 8-8 8 8 8-8 8 8 8-8`} fill="none" stroke={accent} strokeWidth="4" />) : null}
+        {kind === 'hearts' ? [[15, 18], [32, 22], [21, 34]].map(([x, y]) => <path key={x} d={`M${x} ${y + 5}c-9-5-7-11-3-11 2 0 3 1 3 3 0-2 1-3 3-3 4 0 6 6-3 11z`} />) : null}
+        {kind === 'checks' ? [0, 1, 2, 3].flatMap((i) => [0, 1, 2, 3].filter((j) => (i + j) % 2 === 0).map((j) => <rect key={`${i}${j}`} x={6 + i * 9} y={6 + j * 9} width="9" height="9" />)) : null}
+        {kind === 'waves' ? [12, 24, 36].map((y) => <path key={y} d={`M0 ${y}q6-8 12 0t12 0 12 0 12 0`} fill="none" stroke={accent} strokeWidth="4" />) : null}
         {kind === 'stripes' ? [8, 20, 32].map((y) => <rect key={y} x="0" y={y} width="48" height="6" />) : null}
         {kind === 'stars' ? [[16, 17], [31, 22], [20, 33]].map(([x, y]) => <path key={x} d={`M${x} ${y - 6}l1.8 4 4.4.4-3.3 2.9 1 4.3-3.9-2.3-3.9 2.3 1-4.3-3.3-2.9 4.4-.4z`} />) : null}
       </g>
