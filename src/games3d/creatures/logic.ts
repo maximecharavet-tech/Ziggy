@@ -17,21 +17,24 @@ export type Band = 'little' | 'middle' | 'big';
 
 /* ───────────────────────── Parts ───────────────────────── */
 
-export const BODIES = ['blob', 'egg', 'bean', 'box', 'drop'] as const;
-export const HEADS = ['none', 'ball', 'box', 'bean'] as const;
-export const LEG_STYLES = ['stubby', 'long', 'tentacle'] as const;
-export const ARM_STYLES = ['noodle', 'pincer', 'mitten'] as const;
-export const WINGS = ['none', 'bird', 'bat', 'butterfly', 'tiny'] as const;
-export const TAILS = ['none', 'fish', 'curly', 'pompom', 'dragon'] as const;
-export const MOUTHS = ['smile', 'fangs', 'beak', 'tongue', 'oh', 'teeth'] as const;
-export const TOPS = ['none', 'horns', 'antennae', 'bunny', 'cat', 'crest'] as const;
-export const HATS = ['none', 'top', 'party', 'crown', 'propeller', 'bow'] as const;
-export const PATTERNS = ['plain', 'dots', 'stripes', 'stars'] as const;
+export const BODIES = ['blob', 'egg', 'bean', 'box', 'drop', 'pear', 'cloud', 'tall', 'barrel', 'bell', 'pillow'] as const;
+export const HEADS = ['none', 'ball', 'box', 'bean', 'wide', 'tall', 'drop', 'cone'] as const;
+export const LEG_STYLES = ['stubby', 'long', 'tentacle', 'spring', 'wheel', 'paddle'] as const;
+export const ARM_STYLES = ['noodle', 'pincer', 'mitten', 'glove', 'fin', 'feather'] as const;
+export const WINGS = ['none', 'bird', 'bat', 'butterfly', 'tiny', 'angel', 'fairy', 'leaf', 'rainbow'] as const;
+export const TAILS = ['none', 'fish', 'curly', 'pompom', 'dragon', 'lightning', 'plume', 'balloon', 'ribbon'] as const;
+export const MOUTHS = ['smile', 'fangs', 'beak', 'tongue', 'oh', 'teeth', 'cat', 'grin', 'moustache', 'gap'] as const;
+export const TOPS = ['none', 'horns', 'antennae', 'bunny', 'cat', 'crest', 'eyestalks', 'elf', 'floppy', 'bear', 'unicorn', 'flower'] as const;
+export const HATS = ['none', 'top', 'party', 'crown', 'propeller', 'bow', 'wizard', 'chef', 'cap', 'beanie', 'halo', 'captain'] as const;
+export const PATTERNS = ['plain', 'dots', 'stripes', 'stars', 'zigzag', 'hearts', 'checks', 'waves'] as const;
 export const EYE_SIZES = ['small', 'big'] as const;
 export const LEG_COUNTS = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const;
 export const ARM_COUNTS = [0, 2, 4] as const;
 export const EYE_COUNTS = [1, 2, 3, 4, 5] as const;
 export const SIZES = [1, 2, 3] as const;
+export const NOSES = ['none', 'button', 'clown', 'snout', 'carrot', 'heart'] as const;
+export const AURAS = ['none', 'sparkles', 'hearts', 'bubbles', 'stars', 'notes'] as const;
+export const PETS = ['none', 'ladybug', 'chick', 'cloud', 'snail', 'balloon'] as const;
 
 export type BodyShape = (typeof BODIES)[number];
 export type HeadShape = (typeof HEADS)[number];
@@ -45,6 +48,9 @@ export type HatKind = (typeof HATS)[number];
 export type PatternKind = (typeof PATTERNS)[number];
 export type EyeSize = (typeof EYE_SIZES)[number];
 export type SizeKind = (typeof SIZES)[number];
+export type NoseKind = (typeof NOSES)[number];
+export type AuraKind = (typeof AURAS)[number];
+export type PetKind = (typeof PETS)[number];
 
 export const COLORS = {
   red: { hex: '#ff4d5e', label: { fr: 'rouge', en: 'red' } },
@@ -84,10 +90,13 @@ export interface Creature {
   color: ColorId;
   accent: ColorId;
   size: SizeKind;
+  nose: NoseKind;
+  aura: AuraKind;
+  pet: PetKind;
 }
 
 /** Everything that changes the look (not the id or the name). */
-export const LOOK_KEYS = ['body', 'head', 'legs', 'legStyle', 'arms', 'armStyle', 'wings', 'tail', 'eyes', 'eyeSize', 'mouth', 'top', 'hat', 'pattern', 'color', 'accent', 'size'] as const;
+export const LOOK_KEYS = ['body', 'head', 'legs', 'legStyle', 'arms', 'armStyle', 'wings', 'tail', 'eyes', 'eyeSize', 'mouth', 'top', 'hat', 'pattern', 'color', 'accent', 'size', 'nose', 'aura', 'pet'] as const;
 export type LookKey = (typeof LOOK_KEYS)[number];
 
 /** The friendly first creature waiting on the turntable. */
@@ -111,11 +120,14 @@ export const STARTER: Creature = {
   color: 'teal',
   accent: 'yellow',
   size: 2,
+  nose: 'none',
+  aura: 'none',
+  pet: 'none',
 };
 
 /* ───────────────────────── Categories (the HUD tabs) ───────────────────────── */
 
-export type CategoryId = 'color' | 'accent' | 'wingtail' | 'body' | 'head' | 'eyes' | 'mouth' | 'legs' | 'arms' | 'wings' | 'tail' | 'top' | 'hat' | 'pattern' | 'size';
+export type CategoryId = 'color' | 'accent' | 'wingtail' | 'body' | 'head' | 'eyes' | 'mouth' | 'legs' | 'arms' | 'wings' | 'tail' | 'top' | 'hat' | 'pattern' | 'size' | 'nose' | 'aura' | 'pet';
 
 export interface Category {
   id: CategoryId;
@@ -137,7 +149,10 @@ export const CATEGORIES: Category[] = [
   { id: 'tail', icon: '🐟', label: { fr: 'Queue', en: 'Tail' } },
   { id: 'top', icon: '🦄', label: { fr: 'Cornes & oreilles', en: 'Horns & ears' } },
   { id: 'hat', icon: '🎩', label: { fr: 'Chapeau', en: 'Hat' } },
-  { id: 'pattern', icon: '✨', label: { fr: 'Motif', en: 'Pattern' } },
+  { id: 'pattern', icon: '🌈', label: { fr: 'Motif', en: 'Pattern' } },
+  { id: 'nose', icon: '👃', label: { fr: 'Nez', en: 'Nose' } },
+  { id: 'aura', icon: '✨', label: { fr: 'Magie', en: 'Magic' } },
+  { id: 'pet', icon: '🐞', label: { fr: 'Copain', en: 'Buddy' } },
   { id: 'size', icon: '📏', label: { fr: 'Taille', en: 'Size' } },
 ];
 
@@ -292,9 +307,9 @@ export function categoryOf(key: LookKey): CategoryId {
  * big pictures, older kids more tabs, more choices and exact counters.
  */
 export const BAND_CATEGORIES: Record<Band, CategoryId[]> = {
-  little: ['color', 'eyes', 'legs', 'wingtail', 'hat', 'mouth'],
-  middle: ['color', 'body', 'eyes', 'mouth', 'legs', 'arms', 'wings', 'tail', 'top', 'hat'],
-  big: ['color', 'accent', 'body', 'head', 'eyes', 'mouth', 'legs', 'arms', 'wings', 'tail', 'top', 'hat', 'pattern', 'size'],
+  little: ['color', 'eyes', 'legs', 'wingtail', 'hat', 'mouth', 'aura'],
+  middle: ['color', 'body', 'eyes', 'mouth', 'nose', 'legs', 'arms', 'wings', 'tail', 'top', 'hat', 'aura', 'pet'],
+  big: ['color', 'accent', 'body', 'head', 'eyes', 'mouth', 'legs', 'arms', 'wings', 'tail', 'top', 'hat', 'nose', 'pattern', 'aura', 'pet', 'size'],
 };
 
 /** "− 6 +" for the exact number of legs or eyes. */
@@ -378,6 +393,9 @@ export function sanitize(x: unknown): Creature | null {
     color: pick(COLOR_IDS, o.color, STARTER.color),
     accent: pick(COLOR_IDS, o.accent, STARTER.accent),
     size: pick(SIZES, o.size, STARTER.size),
+    nose: pick(NOSES, o.nose, STARTER.nose),
+    aura: pick(AURAS, o.aura, STARTER.aura),
+    pet: pick(PETS, o.pet, STARTER.pet),
   };
   return c;
 }
