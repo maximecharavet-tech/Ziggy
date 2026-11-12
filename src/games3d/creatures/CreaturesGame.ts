@@ -6,6 +6,7 @@ import { FactoryAudio } from './audio';
 import { CreatureActor, costumePieces, disposeCreatureTextures, type ActorCue, type Kit } from './creature3d';
 import { SPOT, makeFactory, type Factory } from './factory';
 import { Particles, RAINBOW, disposeFxTextures, easeInOut, easeOut, fxTex } from './fx';
+import { getCore, type PowerId, type SillyEvent } from '@/lib/creatures';
 import { COLORS, movesOf, voiceOf, type CategoryId, type Creature, type LookKey, type MoveKind } from './logic';
 
 /**
@@ -30,6 +31,8 @@ export interface GameCallbacks {
   onArrive: () => void;
   /** Tapped Ziggy (costume). */
   onZiggy: () => void;
+  /** A power or a silly surprise is playing (the player may show its name). */
+  onPower?: (id: PowerId | SillyEvent, kind: 'power' | 'silly') => void;
 }
 
 interface Step {
@@ -429,7 +432,10 @@ export class CreaturesGame {
               a.cue('hop');
               this.speak(a, true);
               this.cb.onArrive();
-              if (!first) this.cb.onSay('surprise');
+              if (!first) {
+                this.cb.onSay('surprise');
+                if (Math.random() < 0.3) this.wait(1.4, () => this.silly());
+              }
               rig.cue('giggle');
             });
           },
@@ -806,6 +812,107 @@ export class CreaturesGame {
     if (this.tickles.length === 1) this.cb.onSay('tickle');
   }
 
+  /* ───────────────────────── Powers and silly surprises ───────────────────────── */
+
+  /** Which Rust pose, how long, and what flies out, for each power. */
+  private powerShow(id: PowerId): { pose: string; dur: number; fx: () => void } {
+    const a = this.actor!;
+    const top = () => a.anchor('top');
+    const burst = (tex: THREE.Texture, color: string | string[], n = 14, extra: Partial<Parameters<Particles['emit']>[1]> = {}) => this.fx.emit(top(), { tex, color, count: this.lowPower ? Math.ceil(n / 2) : n, spread: 2, up: 1.6, life: 1.3, size: 0.2, ...extra });
+    switch (id) {
+      case 'bounce':
+        return { pose: 'bounce', dur: 1.5, fx: () => this.dust(a.anchor('feet'), 6) };
+      case 'fly':
+      case 'float':
+        return { pose: 'float', dur: 1.8, fx: () => burst(fxTex.puff(), '#ffffff', 5, { size: 0.5, grow: 1, opacity: 0.6, up: 0.4 }) };
+      case 'swim':
+        return { pose: 'giggle', dur: 1.4, fx: () => burst(fxTex.bubble(), '#bfe8ff', 12, { gravity: -0.6, size: 0.17 }) };
+      case 'sparkle':
+        return { pose: 'stretch', dur: 1.3, fx: () => burst(fxTex.star(), ['#fff3a0', '#ffd23f', '#ffffff'], 18, { additive: true, spin: 6, size: 0.22 }) };
+      case 'dance':
+        return { pose: 'dance', dur: 2.2, fx: () => burst(fxTex.note(), ['#ff7ad9', '#4fc3f7', '#ffd93d'], 8, { gravity: -0.3, up: 1 }) };
+      case 'music':
+        return { pose: 'dance', dur: 2.2, fx: () => burst(fxTex.note(), ['#8b7bff', '#4fc3f7', '#6bdc6b'], 10, { gravity: -0.3, up: 1 }) };
+      case 'camo':
+        return { pose: 'camo', dur: 2.0, fx: () => burst(fxTex.puff(), '#ffffff', 4, { size: 0.6, grow: 1.2, opacity: 0.5, up: 0.2 }) };
+      case 'laugh':
+        return { pose: 'giggle', dur: 1.6, fx: () => burst(fxTex.heart(), ['#ffd93d', '#ff9f43'], 6, { size: 0.16 }) };
+      case 'rainbow':
+        return { pose: 'stretch', dur: 1.5, fx: () => burst(fxTex.confetti(), RAINBOW, 36, { spread: 4, up: 2.4, gravity: 3, spin: 8, size: 0.12, drag: 1 }) };
+      case 'roll':
+        return { pose: 'roll', dur: 1.1, fx: () => this.dust(a.anchor('feet'), 8) };
+      case 'zap':
+        return { pose: 'zap', dur: 1.0, fx: () => burst(fxTex.star(), ['#fff3a0', '#4fc3f7'], 16, { additive: true, spread: 3, life: 0.5, size: 0.18 }) };
+      case 'hearts':
+        return { pose: 'giggle', dur: 1.5, fx: () => burst(fxTex.heart(), ['#ff6fa8', '#ff9fc8'], 12, { size: 0.2 }) };
+    }
+  }
+
+  /** The creature shows one of its powers (they take turns). Returns the power shown. */
+  usePower(which?: PowerId): PowerId | null {
+    const a = this.actor;
+    if (!a || a.busy || this.mode !== 'atelier') return null;
+    const list = getCore().powersOf(a.recipe);
+    const id = which && list.includes(which) ? which : list[this.powerN++ % list.length];
+    this.touch();
+    const show = this.powerShow(id);
+    a.playPose(show.pose, show.dur);
+    this.audio.power(id);
+    show.fx();
+    if (id === 'laugh' || id === 'hearts') this.wait(0.3, () => this.audio.giggle(1.1));
+    this.cb.onPower?.(id, 'power');
+    return id;
+  }
+  private powerN = 0;
+
+  /** A little silly surprise, now and then (seeded by the engine). Nothing cruel, nothing scary. */
+  silly(ev?: SillyEvent) {
+    const a = this.actor;
+    if (!a || a.busy || this.mode !== 'atelier') return;
+    const e = ev ?? getCore().sillyEvent(Math.floor(Math.random() * 1e9));
+    this.touch();
+    const top = a.anchor('top');
+    switch (e) {
+      case 'confetti':
+        this.confetti(top, 1);
+        a.playPose('dance', 1.2);
+        break;
+      case 'flash':
+        this.audio.silly('flash');
+        this.fx.emit(a.anchor('center'), { tex: fxTex.dot(), color: '#ffffff', count: 3, spread: 0.1, up: 0, life: 0.35, size: 2.4, grow: 1.2, additive: true });
+        this.fx.emit(top, { tex: fxTex.star(), color: ['#fff3a0', '#ffffff'], count: 14, spread: 3, up: 1.6, life: 0.9, size: 0.2, additive: true, spin: 6 });
+        a.playPose('stretch', 0.8);
+        break;
+      case 'wonky':
+        this.audio.silly('wonky');
+        a.wonky();
+        break;
+      case 'sneeze':
+        a.cue('sneeze');
+        this.audio.sneeze(voiceOf(a.recipe));
+        break;
+      case 'hiccup':
+        this.audio.silly('hiccup');
+        a.playPose('surprised', 0.5, () => this.wait(0.2, () => a.playPose('surprised', 0.5)));
+        this.fx.emit(top, { tex: fxTex.bubble(), color: '#bfe8ff', count: 5, spread: 1, up: 1, life: 1.2, size: 0.15 });
+        break;
+      case 'applause':
+        this.audio.silly('applause');
+        a.playPose('clap', 1.6);
+        this.fx.emit(top, { tex: fxTex.star(), color: ['#ffd23f', '#ff9f43'], count: 10, spread: 3, up: 1.4, life: 1.0, size: 0.18, additive: true });
+        break;
+      case 'surprised':
+        this.audio.silly('surprised');
+        a.playPose('surprised', 0.9);
+        break;
+      case 'bubbles':
+        this.audio.silly('bubbles');
+        this.fx.emit(top, { tex: fxTex.bubble(), color: '#bfe8ff', count: this.lowPower ? 8 : 16, spread: 2.4, up: 1.2, life: 1.8, size: 0.2, gravity: -0.4 });
+        break;
+    }
+    this.cb.onPower?.(e, 'silly');
+  }
+
   private touch() {
     this.lastTouch = this.time;
   }
@@ -828,6 +935,7 @@ export class CreaturesGame {
         this.audio.sneeze(voiceOf(a.recipe));
       },
       () => a.cue('peek'),
+      () => this.silly(),
       () => {
         this.ziggy.userData.rig.cue('wave');
         a.cue('wave');

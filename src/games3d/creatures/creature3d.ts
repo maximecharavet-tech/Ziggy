@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { RoundedBoxGeometry } from 'three/examples/jsm/geometries/RoundedBoxGeometry.js';
+import { getCore } from '@/lib/creatures';
 import { COLORS, type Creature, type LookKey } from './logic';
 import { buildAura, buildNose, buildPet, extraArm, extraBody, extraHat, extraHead, extraLeg, extraMouth, extraTail, extraTop, extraWing, paintPattern, SINGLE_TOPS, type AuraSprite, type Buddy } from './parts2';
 
@@ -822,6 +823,23 @@ export class CreatureActor {
     if (kind === 'hop') this.hopY.kick(3.2);
   }
 
+  /** A power or a silly reaction: the Rust `pose` curve is added to its own motion for `dur` seconds. */
+  playPose(kind: string, dur: number, done?: () => void) {
+    this.poseKind = kind;
+    this.poseT = 0;
+    this.poseDur = Math.max(0.2, dur);
+    this.poseDone = done ?? null;
+  }
+  /** One eye pops wide and looks the wrong way, for a moment (then all is well). */
+  wonky() {
+    this.wonkyT = 1.6;
+  }
+  private wonkyT = 0;
+  private poseKind: string | null = null;
+  private poseT = 0;
+  private poseDur = 1;
+  private poseDone: (() => void) | null = null;
+
   get busy() {
     return this.cueKind !== null;
   }
@@ -1014,6 +1032,32 @@ export class CreatureActor {
       happyEyes = env01(p);
     }
 
+    // Powers: the pose from the engine (Rust/WASM) on top of everything else; camouflage fades the body.
+    if (this.poseKind) {
+      this.poseT += dt / this.poseDur;
+      const q = Math.min(1, this.poseT);
+      const [pl, ps, pr, py, pp] = getCore().pose(this.poseKind, q);
+      liftY += pl * E;
+      sqTarget += ps * E;
+      roll += pr * E;
+      yaw += py * (reduce ? 0 : 1);
+      pitch += pp * (reduce ? 0 : 1);
+      if (this.poseKind === 'camo') {
+        this.kit.body.transparent = true;
+        this.kit.body.opacity = 1 - 0.65 * Math.sin(q * Math.PI);
+      }
+      if (this.poseT >= 1) {
+        if (this.poseKind === 'camo') {
+          this.kit.body.opacity = 1;
+          this.kit.body.transparent = false;
+        }
+        const d = this.poseDone;
+        this.poseKind = null;
+        this.poseDone = null;
+        d?.();
+      }
+    }
+
     // Walking / pogo / swimming / flying, driven by the game.
     const g = this.gait;
     const walk = Math.max(g.walk, this.gaitBoost ? 0.8 : 0);
@@ -1168,6 +1212,13 @@ export class CreatureActor {
     const lid = Math.max(this.blink > 0 ? Math.sin(this.blink * Math.PI) : 0, eyesClosed);
     const ey = Math.max(0.06, 1 - lid * 0.94 - happyEyes * 0.55);
     this.lookK = Math.min(1, dt * 9);
+    if (this.wonkyT > 0 && this.eyes.length > 1) {
+      this.wonkyT = Math.max(0, this.wonkyT - dt);
+      const w = Math.sin(Math.min(1, this.wonkyT / 1.6) * Math.PI) * (reduce ? 0.5 : 1);
+      this.eyes[0].g.scale.setScalar(1 + 0.45 * w);
+      this.eyes[this.eyes.length - 1].g.scale.setScalar(1 - 0.25 * w);
+      if (this.wonkyT === 0) for (const e of this.eyes) e.g.scale.setScalar(1);
+    }
     this.eyes.forEach((e, i) => {
       e.lid.scale.y = ey;
       e.look(this.lookTarget, this.lookK, this.eyes.length > 2 ? Math.sin(t * 0.5 + i) * 0.04 : 0);

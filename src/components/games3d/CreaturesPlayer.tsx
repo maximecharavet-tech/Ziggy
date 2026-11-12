@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Link } from '@/i18n/navigation';
 import type { CreaturesGame, Mode, SayKind } from '@/games3d/creatures/CreaturesGame';
+import { getCore, loadCore, type PowerId } from '@/lib/creatures';
+import { POWER_INFO } from '@/lib/creatures/powers';
 import {
   ALBUM_KEY,
   BAND_CATEGORIES,
@@ -308,6 +310,10 @@ export function CreaturesPlayer() {
   const [confirmDel, setConfirmDel] = useState(false);
   const [dressed, setDressed] = useState(false);
   const [busyPic, setBusyPic] = useState(false);
+  const [codeOpen, setCodeOpen] = useState(false);
+  const [codeIn, setCodeIn] = useState('');
+  const [codeMsg, setCodeMsg] = useState('');
+  const [powerTick, setPowerTick] = useState(0);
   const okRef = useRef<HTMLButtonElement>(null);
   const unlocked = useRef(false);
   const pendingName = useRef(false);
@@ -316,6 +322,7 @@ export function CreaturesPlayer() {
   const cats = BAND_CATEGORIES[band];
 
   useEffect(() => {
+    void loadCore().then(() => setPowerTick((n) => n + 1));
     setSupported(webglOk());
     const a = parseAlbum(readStore(ALBUM_KEY));
     albumRef.current = a;
@@ -552,6 +559,49 @@ export function CreaturesPlayer() {
     const text = `${v} ${word} !`;
     setToast({ text, id: Date.now() });
     speak([text], 'step');
+  };
+
+  const powers = getCore().powersOf(creature);
+  void powerTick;
+
+  const showPower = (id?: PowerId) => {
+    const shown = g()?.usePower(id);
+    if (!shown) return;
+    const info = POWER_INFO[shown];
+    const text = tr(info.say, locale);
+    setToast({ text, id: Date.now() });
+    speak([text], 'power');
+  };
+
+  /** Cross-breed the creature on stage with one from the Parade: a surprise child with parts of both. */
+  const mixWithParade = () => {
+    const list = albumRef.current;
+    if (!list.length) {
+      say(tr(T.emptyParade, locale), 'empty');
+      return;
+    }
+    const mate = list[Math.floor(Math.random() * list.length)];
+    const child = getCore().cross(creatureRef.current, mate, Math.floor(Math.random() * 1e9));
+    commit(child);
+    g()?.surprise(child);
+    afterEdit('body');
+    setDressed(false);
+    const text = locale === 'fr' ? `Un bébé de ${creatureRef.current.name === child.name ? 'deux créatures' : 'deux créatures'} : ${child.name} !` : `A baby of two creatures: ${child.name}!`;
+    setToast({ text, id: Date.now() });
+  };
+
+  const useCode = () => {
+    const c = getCore().decodeCode(codeIn);
+    if (!c) {
+      setCodeMsg(tr({ fr: 'Ce code n’est pas bon. Vérifie les lettres et les chiffres !', en: 'That code isn’t right. Check the letters and numbers!' }, locale));
+      return;
+    }
+    commit(c);
+    g()?.surprise(c);
+    afterEdit('body');
+    setCodeOpen(false);
+    setCodeIn('');
+    setCodeMsg('');
   };
 
   const surprise = () => {
@@ -1014,6 +1064,34 @@ export function CreaturesPlayer() {
               </button>
             </div>
             {mode === 'atelier' ? challengeCard : null}
+            {mode === 'atelier' ? (
+              <div className="pointer-events-auto mt-2 flex flex-wrap items-center justify-center gap-1.5" data-tv-row="" data-tv-wrap="false" aria-label={tr({ fr: 'Pouvoirs', en: 'Powers' }, locale)}>
+                {powers.slice(0, 4).map((id) => (
+                  <motion.button key={id} type="button" onClick={() => showPower(id)} whileTap={reduce ? undefined : { scale: 0.88 }} aria-label={tr(POWER_INFO[id].label, locale)} className="flex min-h-[56px] min-w-[56px] items-center justify-center gap-1 rounded-2xl bg-white/90 px-2 shadow-md ring-2 ring-[#ffe08a]">
+                    <span className="text-2xl" aria-hidden="true">
+                      {POWER_INFO[id].icon}
+                    </span>
+                    <span className={band === 'little' ? 'sr-only' : 'text-xs font-bold text-[#5b3f8f]'}>{tr(POWER_INFO[id].label, locale)}</span>
+                  </motion.button>
+                ))}
+                {album.length ? (
+                  <motion.button type="button" onClick={mixWithParade} whileTap={reduce ? undefined : { scale: 0.88 }} aria-label={tr({ fr: 'Croiser avec une créature de la Parade', en: 'Cross with a Parade creature' }, locale)} className="flex min-h-[56px] min-w-[56px] items-center justify-center gap-1 rounded-2xl bg-white/90 px-2 shadow-md ring-2 ring-[#ffb3d1]">
+                    <span className="text-2xl" aria-hidden="true">
+                      💞
+                    </span>
+                    <span className={band === 'little' ? 'sr-only' : 'text-xs font-bold text-[#5b3f8f]'}>{tr({ fr: 'Croiser', en: 'Cross' }, locale)}</span>
+                  </motion.button>
+                ) : null}
+                {band !== 'little' ? (
+                  <motion.button type="button" onClick={() => setCodeOpen(true)} whileTap={reduce ? undefined : { scale: 0.88 }} aria-label={tr({ fr: 'Code de la créature', en: 'Creature code' }, locale)} className="flex min-h-[56px] min-w-[56px] items-center justify-center gap-1 rounded-2xl bg-white/90 px-2 shadow-md ring-2 ring-[#b9e6ff]">
+                    <span className="text-2xl" aria-hidden="true">
+                      🔑
+                    </span>
+                    <span className="text-xs font-bold text-[#5b3f8f]">{tr({ fr: 'Code', en: 'Code' }, locale)}</span>
+                  </motion.button>
+                ) : null}
+              </div>
+            ) : null}
             <AnimatePresence>
               {offerVisible ? (
                 <motion.button
@@ -1125,6 +1203,30 @@ export function CreaturesPlayer() {
           </div>
         </>
       ) : null}
+
+      <AnimatePresence>
+        {codeOpen ? (
+          <motion.div key="code" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="absolute inset-0 z-[70] grid place-items-center bg-black/35 p-4" role="dialog" aria-modal="true" aria-label={tr({ fr: 'Code de la créature', en: 'Creature code' }, locale)}>
+            <div className="w-full max-w-sm rounded-3xl bg-white p-4 shadow-2xl">
+              <p className="text-sm font-bold text-[#5b3f8f]">{tr({ fr: 'Le code de ta créature (à recopier ou à donner à un copain) :', en: 'Your creature’s code (copy it or give it to a friend):' }, locale)}</p>
+              <p className="mt-1 select-all break-all rounded-2xl bg-[#f3ecff] p-3 text-center font-mono text-lg font-bold tracking-wide text-[#3b2a6b]">{getCore().encodeCode(creature)}</p>
+              <label className="mt-3 block text-sm font-bold text-[#5b3f8f]" htmlFor="creature-code">
+                {tr({ fr: 'Tu as un code ? Écris-le ici :', en: 'Got a code? Type it here:' }, locale)}
+              </label>
+              <input id="creature-code" value={codeIn} onChange={(e) => { setCodeIn(e.target.value.slice(0, 80)); setCodeMsg(''); }} autoCapitalize="characters" autoComplete="off" spellCheck={false} className="mt-1 min-h-[56px] w-full rounded-2xl border-2 border-[#d9ccff] px-3 font-mono text-lg uppercase" placeholder="ZC2-XXXXX-XXXXX" />
+              {codeMsg ? <p role="status" className="mt-1 text-sm font-bold text-[#c2410c]">{codeMsg}</p> : null}
+              <div className="mt-3 flex gap-2">
+                <button type="button" onClick={useCode} disabled={!codeIn.trim()} className="min-h-[56px] flex-1 rounded-2xl bg-gradient-to-b from-[#6bdc6b] to-[#3fae3f] font-display text-lg font-bold text-white disabled:opacity-40">
+                  {tr({ fr: 'Fabriquer !', en: 'Build it!' }, locale)}
+                </button>
+                <button type="button" onClick={() => { setCodeOpen(false); setCodeMsg(''); }} aria-label={tr(T.close, locale)} className="min-h-[56px] min-w-[56px] rounded-2xl bg-[#f3ecff] text-xl font-bold text-[#7c5cff]">
+                  ✕
+                </button>
+              </div>
+            </div>
+          </motion.div>
+        ) : null}
+      </AnimatePresence>
 
       {/* The photo, framed, with the colouring page for grown-ups */}
       <AnimatePresence>
