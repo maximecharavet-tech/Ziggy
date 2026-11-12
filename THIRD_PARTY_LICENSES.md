@@ -1,5 +1,7 @@
 # Third-party licenses
 
+Claude Code game-dev skills added on branch `claude/ziggy-creatures-lutins-20261112` are listed in `THIRD_PARTY.md` (Apache-2.0 subset of gamedev-skills/awesome-gamedev-agent-skills).
+
 Dependencies added during the Ziggy evolution work. (The full list of existing dependencies and
 their licenses is audited in `docs/evolution/INVENTORY.md`.)
 
