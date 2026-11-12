@@ -224,3 +224,34 @@ export type CardStyle = {
   /** Glow colour ['#ffd27a']. */
   glow_color?: string;
 };
+
+/** Output of `checkIdea`: the parent's own prank idea, cleaned and checked. */
+export type IdeaCheck = {
+  /** The cleaned text (what to send). */
+  text: string;
+  ok: boolean;
+  /** `too_short`, `unsafe_word:<word>`. */
+  reasons: string[];
+};
+
+/** Input of `planPranks` ("the prank of the night"). */
+export type PlanRequest = {
+  /** Any 32-bit unsigned number; the same seed gives the same answer. */
+  seed: number;
+  /** Only this place (a `PrankCategory`); omit for anywhere in the house. */
+  place?: string | null;
+  /** Pranks already done, most recent first. */
+  recent?: string[];
+  /** No repeat over this many recent nights [14]. */
+  no_repeat?: number;
+  /** Nights to plan, 1–31 [1]. */
+  count?: number;
+};
+
+/** Output of `planPranks`. */
+export type Plan = {
+  /** One prank id per night. */
+  ids: string[];
+  /** The no-repeat window had to be relaxed (the place has few pranks). */
+  relaxed: boolean;
+};

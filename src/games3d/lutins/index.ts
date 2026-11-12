@@ -3,7 +3,8 @@ import { disposeTree, prefersLowPower, studioEnvironment } from '../kit/look';
 import { fitOrtho, fitSphereDistance, orbit, packRow, sheetViews, stageCamera } from './framing';
 import { makeElf, type ElfActor } from './elf';
 import { buildHero, type HeroSet } from './hero';
-import { ELF_IDS, type ElfId, type ElfPose, type LutinsSceneHandle, type LutinsSceneOptions, type SheetLayout, type StageCamera } from './types';
+import { reactionPlan } from './poses';
+import { ELF_IDS, type ElfId, type ElfPose, type ElfReaction, type LutinsSceneHandle, type LutinsSceneOptions, type SheetLayout, type StageCamera } from './types';
 
 export { makeElf, buildElf, ElfRig, ELF_COLORS, type ElfActor, type ElfModel, type ElfOptions } from './elf';
 export { ELF_IDS, ELF_POSES, type ElfId, type ElfPose, type LutinsSceneHandle, type LutinsSceneOptions, type SheetLayout, type StageCamera } from './types';
@@ -289,7 +290,7 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
   // With reduced motion they are simply there. A tap makes an elf react (and giggle).
   const intro = new Map<ElfActor, number>();
   const BASE_POSE = new Map<ElfActor, { pose: ElfPose; side: 1 | -1 }>();
-  if (hero && !reduce)
+  if ((hero || opts.popIn) && !reduce)
     actors.forEach((a, i) => {
       intro.set(a, -0.35 - i * 0.28);
       a.scale.setScalar(0.001);
@@ -334,14 +335,79 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       rig.update(dt);
     }
     hero?.update(dt, time);
+    updateSparks(dt);
     renderer.render(scene, camera);
   };
   const onVisibility = () => {
     hidden = document.hidden;
     timer.update();
   };
-  // Tap an elf: it cheers, dances or giggles shyly for a moment, then goes back to what it was doing.
-  const REACT: ElfPose[] = ['cheer', 'dance', 'shy', 'laugh', 'wave', 'think'];
+  // Reactions: a pose held for a moment (or a hop), then back to what the elf was doing.
+  // Reduced motion: only a wink, a soft giggle or a bow (see `reactionPlan`).
+  const reactTimers: number[] = [];
+  const basePose = (a: ElfActor): { pose: ElfPose; side: 1 | -1 } => BASE_POSE.get(a) ?? { pose: a.userData.rig.pose, side: a.userData.rig.side };
+  const reactOne = (a: ElfActor, kind: ElfReaction) => {
+    const plan = reactionPlan(kind, reduce);
+    const base = basePose(a);
+    if (plan.hop) a.userData.rig.hop();
+    if (plan.pose) a.userData.rig.setPose(plan.pose, base.side);
+    reactTimers.push(
+      window.setTimeout(() => {
+        if (!disposed) a.userData.rig.setPose(base.pose, base.side);
+      }, plan.seconds * 1000)
+    );
+  };
+
+  // Sparkles: a soft burst of confetti above an elf (nothing under reduced motion).
+  const sparks: { s: THREE.Sprite; v: THREE.Vector3; life: number; max: number }[] = [];
+  const sparkTex = (() => {
+    const c = document.createElement('canvas');
+    c.width = c.height = 64;
+    const g = c.getContext('2d')!;
+    const gr = g.createRadialGradient(32, 32, 0, 32, 32, 32);
+    gr.addColorStop(0, 'rgba(255,255,255,1)');
+    gr.addColorStop(0.5, 'rgba(255,255,255,0.7)');
+    gr.addColorStop(1, 'rgba(255,255,255,0)');
+    g.fillStyle = gr;
+    g.fillRect(0, 0, 64, 64);
+    return new THREE.CanvasTexture(c);
+  })();
+  const SPARK_COLORS = ['#ffd23f', '#ff7ab8', '#6bdc6b', '#4fc3f7', '#ffffff', '#ff9f43'];
+  const sparkle = (id?: ElfId) => {
+    if (reduce || sheet) return;
+    const targets = id ? actors.filter((a) => a.userData.id === id) : actors;
+    for (const a of targets) {
+      a.getWorldPosition(tmp);
+      const top = new THREE.Box3().setFromObject(a).max.y;
+      for (let i = 0; i < (low ? 6 : 12); i++) {
+        if (sparks.length > 80) break;
+        const m = new THREE.SpriteMaterial({ map: sparkTex, color: SPARK_COLORS[i % SPARK_COLORS.length], transparent: true, depthWrite: false, blending: THREE.AdditiveBlending });
+        const sp = new THREE.Sprite(m);
+        sp.position.set(tmp.x + (Math.random() - 0.5) * 0.15, top * 0.9, tmp.z + (Math.random() - 0.5) * 0.1);
+        sp.scale.setScalar(0.03 + Math.random() * 0.03);
+        scene.add(sp);
+        const max = 0.9 + Math.random() * 0.5;
+        sparks.push({ s: sp, v: new THREE.Vector3((Math.random() - 0.5) * 0.4, 0.25 + Math.random() * 0.35, (Math.random() - 0.5) * 0.2), life: max, max });
+      }
+    }
+  };
+  const updateSparks = (dt: number) => {
+    for (let i = sparks.length - 1; i >= 0; i--) {
+      const p = sparks[i];
+      p.life -= dt;
+      p.v.y -= 0.45 * dt;
+      p.s.position.addScaledVector(p.v, dt);
+      (p.s.material as THREE.SpriteMaterial).opacity = Math.max(0, p.life / p.max);
+      if (p.life <= 0) {
+        scene.remove(p.s);
+        (p.s.material as THREE.SpriteMaterial).dispose();
+        sparks.splice(i, 1);
+      }
+    }
+  };
+
+  // Tap an elf: it reacts, and the page may play its giggle (`onPoke`); without a listener the scene giggles itself.
+  const REACT: ElfReaction[] = ['hop', 'giggle', 'cheer', 'wink', 'dance', 'tickle', 'bow'];
   const ray = new THREE.Raycaster();
   const ndc = new THREE.Vector2();
   let tapN = 0;
@@ -367,7 +433,6 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       /* no audio: the elf still reacts */
     }
   };
-  const reactTimers: number[] = [];
   const onTap = (e: PointerEvent) => {
     const r = canvas.getBoundingClientRect();
     ndc.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
@@ -378,17 +443,13 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
     while (o && !actors.includes(o as ElfActor)) o = o.parent;
     const a = o as ElfActor | null;
     if (!a || intro.has(a)) return;
-    const base = BASE_POSE.get(a);
-    const reaction = REACT[tapN++ % REACT.length];
-    a.userData.rig.setPose(reaction, base?.side ?? 1);
-    giggle(a.userData.id === 'noisette' ? 980 : a.userData.id === 'grelotte' ? 760 : 560);
-    reactTimers.push(
-      window.setTimeout(() => {
-        if (!disposed && base) a.userData.rig.setPose(base.pose, base.side);
-      }, 1900)
-    );
+    const kind = REACT[tapN++ % REACT.length];
+    reactOne(a, kind);
+    sparkle(a.userData.id);
+    if (opts.onPoke) opts.onPoke(a.userData.id, kind);
+    else giggle(a.userData.id === 'noisette' ? 980 : a.userData.id === 'grelotte' ? 760 : 560);
   };
-  if (hero) canvas.addEventListener('pointerdown', onTap);
+  if (hero || opts.mode === 'stage') canvas.addEventListener('pointerdown', onTap);
 
   const ro = !sheet && typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => resize()) : null;
   if (!sheet) {
@@ -407,6 +468,10 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       }
       if (sheet) renderSheet();
     },
+    react(id: ElfId | 'all', reaction: ElfReaction) {
+      for (const a of actors) if (id === 'all' || a.userData.id === id) reactOne(a, reaction);
+    },
+    sparkle,
     setCamera(cam: StageCamera) {
       stageCam = stageCamera({ ...stageCam, ...cam });
       if (opts.mode === 'stage') frameCamera();
@@ -422,6 +487,8 @@ export function mountLutinsScene(canvas: HTMLCanvasElement, opts: LutinsSceneOpt
       canvas.removeEventListener('pointerdown', onTap);
       reactTimers.forEach((t) => window.clearTimeout(t));
       void audio?.close();
+      for (const p of sparks) (p.s.material as THREE.SpriteMaterial).dispose();
+      sparkTex.dispose();
       timer.dispose();
       envCleanups.forEach((f) => f());
       if (hero) disposeTree(hero.root);

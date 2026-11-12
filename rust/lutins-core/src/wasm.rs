@@ -164,16 +164,26 @@ pub fn bible_hash() -> u32 {
     crate::bible::bible_hash()
 }
 
-/// The forbidden words found in a prank idea (JSON array of strings; `[]` = gentle).
+/// FNV-1a 32 of the embedded `pranks.json` (detects a stale build).
 #[wasm_bindgen]
-pub fn gentle_check(text: &str) -> Result<String, JsError> {
-    json(&crate::pranks::gentle_check(text))
+pub fn pranks_hash() -> u32 {
+    crate::pranks::pranks_hash()
 }
 
-/// Tonight's suggestion among the catalogue ids, avoiding the recent ones (`ids_json`, `recent_json`: arrays of strings). Empty string if none.
+/// Cleans and checks a parent's own prank idea → `IdeaCheck` JSON.
 #[wasm_bindgen]
-pub fn pick_prank(ids_json: &str, recent_json: &str, seed: u32) -> Result<String, JsError> {
-    let ids: Vec<String> = serde_json::from_str(ids_json).map_err(|e| JsError::new(&format!("lutins-core: ids: {e}")))?;
-    let recent: Vec<String> = serde_json::from_str(recent_json).map_err(|e| JsError::new(&format!("lutins-core: recent: {e}")))?;
-    Ok(crate::pranks::pick_prank(&ids, &recent, seed).unwrap_or_default())
+pub fn check_idea(text: &str) -> Result<String, JsError> {
+    json(&crate::pranks::check_idea(text))
+}
+
+/// Whether `id` is a prank of the catalogue.
+#[wasm_bindgen]
+pub fn is_prank_id(id: &str) -> bool {
+    crate::pranks::is_prank_id(id)
+}
+
+/// The prank(s) of the night: `PlanRequest` JSON → `Plan` JSON (deterministic in the seed).
+#[wasm_bindgen]
+pub fn plan_pranks(request_json: &str) -> Result<String, JsError> {
+    json(&crate::pranks::plan_json(request_json).map_err(js)?)
 }

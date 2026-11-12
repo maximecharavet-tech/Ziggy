@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
-import type { ElfId, ElfPose, LutinsSceneHandle, LutinsSceneMode, SheetLayout, StageCamera } from '@/games3d/lutins/types';
+import type { ElfId, ElfPose, ElfReaction, LutinsSceneHandle, LutinsSceneMode, SheetLayout, StageCamera } from '@/games3d/lutins/types';
 
 export type { LutinsSceneHandle };
 
@@ -16,6 +16,10 @@ export interface LutinsSceneProps {
   camera?: StageCamera;
   /** Transparent background (stage overlay on a photo). */
   transparent?: boolean;
+  /** Stage: the elves pop in one after the other (skipped under reduced motion). */
+  popIn?: boolean;
+  /** A tap on an elf: who and how it reacted (play a sound if you like). */
+  onPoke?: (id: ElfId, reaction: ElfReaction) => void;
   /** Sheet mode only: what to render. */
   sheet?: SheetLayout;
   /** The box the scene fills; give it a size. */
@@ -40,7 +44,7 @@ const PLACEHOLDER: Record<LutinsSceneMode, string> = {
  * scene load on demand; a soft gradient shows until the first frames are
  * ready. Change `mode`, `elves` or `transparent` by remounting (use a `key`).
  */
-export function LutinsScene({ mode, elves, poses, camera, transparent, sheet, className = '', onReady, onError, label }: LutinsSceneProps) {
+export function LutinsScene({ mode, elves, poses, camera, transparent, sheet, popIn, onPoke, className = '', onReady, onError, label }: LutinsSceneProps) {
   const boxRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const handleRef = useRef<LutinsSceneHandle | null>(null);
@@ -51,8 +55,10 @@ export function LutinsScene({ mode, elves, poses, camera, transparent, sheet, cl
   const errorRef = useRef(onError);
   errorRef.current = onError;
   // Read at mount only (remount to change them); kept in refs so the effect stays stable.
-  const initRef = useRef({ elves, poses, camera, transparent, sheet });
-  initRef.current = { elves, poses, camera, transparent, sheet };
+  const initRef = useRef({ elves, poses, camera, transparent, sheet, popIn });
+  initRef.current = { elves, poses, camera, transparent, sheet, popIn };
+  const pokeRef = useRef(onPoke);
+  pokeRef.current = onPoke;
   const elvesKey = (elves ?? []).join(',');
 
   useEffect(() => {
@@ -75,6 +81,8 @@ export function LutinsScene({ mode, elves, poses, camera, transparent, sheet, cl
           camera: init.camera,
           transparent: init.transparent ?? mode === 'stage',
           sheet: init.sheet,
+          popIn: init.popIn,
+          onPoke: onPoke ? (id, r) => pokeRef.current?.(id, r) : undefined,
           reducedMotion: reduce,
         });
         handleRef.current = handle;

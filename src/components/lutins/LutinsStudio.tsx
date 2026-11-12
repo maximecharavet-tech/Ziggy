@@ -244,19 +244,21 @@ export function LutinsStudio() {
     );
   }
 
-  /** The Rust engine suggests a prank that is not one of the last two weeks' (the journal never leaves the device). */
+  /** "The prank of the night": the Rust engine draws one that is not among the last two weeks' (the journal never leaves the device). */
   const surpriseMe = async () => {
     const recent = (await journal.list()).slice(0, 14).map((e) => e.prankId).filter((x): x is string => !!x);
-    const ids = PRANKS.filter((p) => cat === 'partout' || p.cat === cat).map((p) => p.id);
+    const seed = Math.floor(Math.random() * 2 ** 31);
+    const place = cat === 'partout' ? null : cat;
     try {
       const engine = await loadEngine();
-      const id = engine.pickPrank(ids, recent, Math.floor(Math.random() * 2 ** 31));
+      const id = engine.planPranks({ seed, place, recent, no_repeat: 14, count: 1 }).ids[0];
       if (id) {
         setOwnMode(false);
         setPrankId(id);
       }
     } catch {
-      setPrankId(ids[Math.floor(Math.random() * ids.length)] ?? null);
+      const ids = PRANKS.filter((p) => !place || p.cat === place).map((p) => p.id);
+      setPrankId(ids[seed % Math.max(1, ids.length)] ?? null);
       setOwnMode(false);
     }
   };

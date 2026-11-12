@@ -62,6 +62,10 @@ describe('lutins-core WebAssembly (Node build)', () => {
     // A stale build (bible changed, `npm run lutins:wasm` not rerun) fails here.
     const bytes = readFileSync(here('../../data/lutins/bible.json'));
     expect(engine.bibleHash).toBe(fnv1a32(bytes));
+    // Same for the prank catalogue and the gentle words.
+    const pranks = readFileSync(here('../../data/lutins/pranks.json'));
+    const gentle = readFileSync(here('../../data/lutins/gentle.json'));
+    expect(engine.pranksHash).toBe(fnv1a32(Buffer.concat([pranks, gentle])));
   });
 
   it('builds the same prompt and seed as the Rust tests', () => {
@@ -174,24 +178,10 @@ describe('lutins-core WebAssembly (browser build)', () => {
     const fromWeb = JSON.parse(web.analyze_scene(new Uint8Array(img.data.buffer), img.width, img.height));
     expect(fromWeb).toEqual(engine.analyzeScene(img));
     expect(web.bible_hash()).toBe(engine.bibleHash);
+    expect(web.pranks_hash()).toBe(engine.pranksHash);
     expect('decode_image' in web).toBe(false);
     expect(JSON.parse(web.build_prompt(JSON.stringify({ locale: 'fr', elves: ['pepin', 'grelotte'] }))).seed).toBe(
       SEED_PEPIN_GRELOTTE_FR,
     );
-  });
-});
-
-describe('lutins-core: gentle pranks', () => {
-  it('the Rust check and the TypeScript check agree', async () => {
-    const { gentleCheck } = await import('./gentle');
-    const eng = await loadEngine();
-    for (const t of ['ils font du ski sur la rampe d’escalier', 'they climb the stairs with a knife', 'Ils ont CASSÉ le vase', 'four elves and a felt pen', 'Le feu de camp', 'des lutins dans les céréales', '']) expect(eng.gentleCheck(t), t).toEqual(gentleCheck(t));
-  });
-  it('tonight’s suggestion skips recent pranks and is the same for the same seed', async () => {
-    const eng = await loadEngine();
-    const ids = ['a', 'b', 'c', 'd', 'e'];
-    for (let s = 0; s < 30; s++) expect(['d', 'e']).toContain(eng.pickPrank(ids, ['a', 'b', 'c'], s));
-    expect(eng.pickPrank(ids, [], 9)).toBe(eng.pickPrank(ids, [], 9));
-    expect(eng.pickPrank([], [], 1)).toBeNull();
   });
 });

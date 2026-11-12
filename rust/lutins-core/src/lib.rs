@@ -7,10 +7,10 @@
 //! | module | what |
 //! |---|---|
 //! | [`analysis`] | scene analysis of the room photo: brightness, contrast, colour temperature, light direction, palette, sharpness, stages for the elves |
+//! | [`pranks`] | the prank catalogue (shared JSON), idea check, deterministic "prank of the night" |
 //! | [`prompt`] | image-model prompt from the bible + scene + prank, seed, child's caption |
 //! | [`verify`] | does the generated picture keep the room and show the requested elves? |
 //! | [`card`] | on-device animated "magic card" (Ken Burns, snow, sparkles, glow) |
-//! | [`pranks`] | is a prank idea gentle enough (shared word list), tonight's suggestion without repeats |
 //! | [`prepare`] | photo downscale + mild auto white balance before upload |
 //! | [`decode`] | PNG / JPEG / WebP decoding (server side) |
 //! | [`align`] | FFT phase correlation (alignment before verification) |
@@ -32,8 +32,8 @@ pub mod color;
 pub mod decode;
 pub mod filters;
 pub mod image;
-pub mod pranks;
 pub mod prepare;
+pub mod pranks;
 pub mod prompt;
 pub mod resize;
 pub mod rng;
@@ -43,6 +43,7 @@ mod wasm;
 pub use analysis::{analyze_scene, SceneAnalysis};
 pub use card::{render_card_frame, CardRenderer, CardStyle};
 pub use image::{EngineError, RgbaImage, RgbaView};
+pub use pranks::{check_idea, plan, IdeaCheck, Plan, PlanRequest};
 pub use prepare::prepare_photo;
 pub use prompt::{build_prompt, build_prompt_json, PromptInput, PromptOut};
 pub use verify::{verify, Verification, VerifyRequest};
