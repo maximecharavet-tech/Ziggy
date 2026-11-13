@@ -386,7 +386,7 @@ function MapNode({ world, index, memory, stars, locale, current, row }: { world:
   const cls = `group flex items-center rounded-3xl outline-none focus-visible:ring-4 focus-visible:ring-sky/50 ${row ? 'gap-3 border-[3px] bg-bg-card p-2 pe-4 shadow-[0_5px_0_rgba(40,30,80,0.08)]' : 'flex-col'}`;
   const rowStyle = row ? { borderColor: unlocked ? lighten(a, 0.6) : '#E5E7EB' } : undefined;
   return unlocked ? (
-    <Link href={`/monde/${world.id}`} className={cls} style={rowStyle} aria-label={label}>
+    <Link href={`/monde/${world.id}`} className={cls} style={rowStyle}>
       {bubble}
       {text}
     </Link>

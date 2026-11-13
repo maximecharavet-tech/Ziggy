@@ -3,6 +3,7 @@
 import { useEffect, useRef, type ReactNode } from 'react';
 import { motion } from 'motion/react';
 import { tr, type L } from '@/lib/i18n-text';
+import { KEEP_TITLE } from './KeepForTonight';
 import { SPEEDS, TEXT_SIZES, updateDodo, type DodoSettings } from '@/lib/dodo/client';
 
 const T = {
@@ -41,6 +42,7 @@ export function PlayerOptions({
   versions = [],
   version,
   onVersion,
+  keep,
   onClose,
 }: {
   locale: string;
@@ -53,6 +55,8 @@ export function PlayerOptions({
   versions?: { id: string; label: string }[];
   version?: string;
   onVersion?: (id: string) => void;
+  /** The « Garder pour ce soir » block (offline listening), grown-up area. */
+  keep?: ReactNode;
   onClose: () => void;
 }) {
   const musical = hasMusic && settings.narration === 'music';
@@ -110,6 +114,8 @@ export function PlayerOptions({
             <VersionChoice locale={locale} versions={versions} value={version} onChange={onVersion} />
           </Group>
         ) : null}
+
+        {keep ? <Group label={tr(KEEP_TITLE, locale)}>{keep}</Group> : null}
 
         <Group label={tr(T.size, locale)}>
           <div className="flex items-center gap-3">

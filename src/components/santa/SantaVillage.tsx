@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { tr, type L } from "@/lib/i18n-text";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { SayButton } from "@/components/arcade/read-aloud";
-import { SantaScene } from "@/components/santa/SantaScene";
+import { VillageScene } from "@/components/santa/landing/VillageScene";
 import {
   SANTA_FREE_FEATURES,
   SANTA_OFFERS,
@@ -179,7 +179,7 @@ export function SantaVillage() {
       {/* The 3D scene gets the screen; the words sit under it, on the snow, so Santa stays visible. */}
       <section className="relative w-full">
         <div className="relative h-[68svh] min-h-[420px] w-full overflow-hidden sm:h-[74svh]">
-          <SantaScene mode="village" className="absolute inset-0" />
+          <VillageScene className="absolute inset-0" />
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(11,10,38,0.5)_0%,rgba(11,10,38,0)_22%,rgba(11,10,38,0)_70%,rgba(11,10,38,1)_100%)]"
@@ -202,9 +202,10 @@ export function SantaVillage() {
             {tr(T.eyebrow, locale)}
           </p>
           <div className="mt-2 flex items-center gap-3">
-            <h1 className="font-display text-[2.6rem] font-bold leading-[1.02] text-balance drop-shadow-[0_4px_0_rgba(0,0,0,0.35)] sm:text-6xl">
+            {/* The landing's own <h1> is the page title; this one is a section heading. */}
+            <h2 className="font-display text-[2.6rem] font-bold leading-[1.02] text-balance drop-shadow-[0_4px_0_rgba(0,0,0,0.35)] sm:text-6xl">
               {tr(T.title, locale)}
-            </h1>
+            </h2>
             <SayButton
               texts={[tr(T.title, locale), tr(T.subtitle, locale)]}
               locale={locale}
@@ -224,7 +225,7 @@ export function SantaVillage() {
             </Link>
             <Link
               href="/pere-noel/appel"
-              className="inline-flex min-h-16 items-center justify-center gap-2 rounded-full bg-[#2fb344] px-8 font-display text-xl font-bold shadow-[0_8px_0_#1e7a2e] transition-transform active:translate-y-1 active:shadow-[0_3px_0_#1e7a2e]"
+              className="inline-flex min-h-16 items-center justify-center gap-2 rounded-full bg-[#1e7a2e] px-8 font-display text-xl font-bold shadow-[0_8px_0_#14521e] transition-transform active:translate-y-1 active:shadow-[0_3px_0_#14521e]"
             >
               📞 {tr(T.call, locale)}
             </Link>

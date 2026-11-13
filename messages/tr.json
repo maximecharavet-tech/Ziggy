@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Ziggy — Çocuklar için Yapay Zeka Eğitimi",
-    "description": "5-12 yaş arası çocuklara yapay zeka, matematik, mantık ve yaratıcılık öğreten yapay zeka destekli eğitim arkadaşı."
+    "description": "4-12 yaş arası çocuklara yapay zeka, matematik, mantık ve yaratıcılık öğreten yapay zeka destekli eğitim arkadaşı."
   },
   "nav": {
     "features": "Özellikler",
@@ -28,7 +28,7 @@
     "switch_language": "Dili değiştir"
   },
   "hero": {
-    "badge": "5-12 yaş çocuklar için yapay zeka eğitimi",
+    "badge": "4-12 yaş çocuklar için yapay zeka eğitimi",
     "title": "Çocuğunuzun yapay zeka öğrenme macerası burada başlıyor",
     "subtitle": "Ziggy, çocuklara yapay zeka, matematik, mantık ve yaratıcılık öğreten sevimli bir robot — oyunla, baskısız.",
     "cta_primary": "Ücretsiz dene",
@@ -69,7 +69,7 @@
     "subtitle": "Merakı ateşlemek için uzmanlar tarafından hazırlanmış beş modül",
     "ai_basics": "Yapay zeka temelleri",
     "ai_basics_desc": "Yapay zeka nasıl düşünür, öğrenir ve bize her gün nasıl yardım eder",
-    "ai_basics_ages": "5-12 yaş",
+    "ai_basics_ages": "4-12 yaş",
     "prompt_champion": "Prompt şampiyonu",
     "prompt_champion_desc": "Yapay zeka ile konuşma sanatını öğren",
     "prompt_champion_ages": "7-12 yaş",
@@ -81,7 +81,7 @@
     "creativity_ages": "6-12 yaş",
     "holiday": "Tatil modu",
     "holiday_desc": "Mevsimsel günlük öğrenme programları",
-    "holiday_ages": "5-12 yaş"
+    "holiday_ages": "4-12 yaş"
   },
   "pricing": {
     "title": "Basit ve şeffaf fiyatlandırma",
@@ -168,7 +168,7 @@
     "q1": "Ziggy çocuğum için güvenli mi?",
     "a1": "Ziggy çocuklar için tasarlandı: reklam yok, yabancılarla iletişim yok ve hesabı bir veli oluşturur ve yönetir. Yalnızca çocuğun adını, yaş grubunu ve oyun sonuçlarını Avrupa’da saklarız. Hesap, veli alanından istenildiği zaman silinebilir.",
     "q2": "Ziggy hangi yaşlar için tasarlanmıştır?",
-    "a2": "Ziggy 5-12 yaş arası çocuklar için tasarlanmıştır. Yapay zeka, dili, zorluğu ve içeriği çocuğun yaşına ve öğrenme hızına göre uyarlar.",
+    "a2": "Ziggy 4-12 yaş arası çocuklar için tasarlanmıştır. Yapay zeka, dili, zorluğu ve içeriği çocuğun yaşına ve öğrenme hızına göre uyarlar.",
     "q3": "Aboneliğimi istediğim zaman iptal edebilir miyim?",
     "a3": "Evet, istediğiniz zaman soru sorulmadan iptal edebilirsiniz. Verileriniz 72 saat içinde dışa aktarılabilir veya tamamen silinebilir.",
     "q4": "Ziggy hangi dilleri destekliyor?",

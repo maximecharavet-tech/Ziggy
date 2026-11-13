@@ -181,7 +181,7 @@ export function DodoHome({ voices }: { voices?: VoiceSummary }) {
               <Moon size="clamp(7.5rem, 6rem + 7vw, 13rem)" />
             </motion.div>
             <div className={`${css.float} absolute bottom-0 left-3 sm:left-4`}>
-              <Ziggy3D className="h-48 w-36 sm:h-64 sm:w-48" idle="calm" mood="calm" accessory="nightcap" framing="full" fallback="heart" />
+              <Ziggy3D className="h-48 w-36 sm:h-64 sm:w-48" idle="calm" mood="calm" accessory="nightcap" framing="full" fallback="heart" priorityFallback />
             </div>
             {/* A soft cloud for Ziggy to sit on. */}
             <div className="pointer-events-none absolute -bottom-4 left-0 h-14 w-[80%]" aria-hidden="true">
@@ -240,7 +240,7 @@ export function DodoHome({ voices }: { voices?: VoiceSummary }) {
         {/* The library */}
         <section className="mt-16" aria-labelledby="dodo-library">
           <h2 id="dodo-library" className="font-display text-3xl font-bold">
-            📚 {tr(T.library, locale)} <span className="text-lg font-semibold text-white/45">· {shown.length}</span>
+            📚 {tr(T.library, locale)} <span className="text-lg font-semibold text-white/70">· {shown.length}</span>
           </h2>
 
           <div className="-mx-4 mt-5 flex items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
@@ -401,6 +401,7 @@ export function DodoCover({ story, manifest, big }: { story: DodoStory; manifest
         src={image}
         alt=""
         loading={big ? 'eager' : 'lazy'}
+        fetchPriority={big ? 'high' : 'auto'}
         decoding="async"
         onError={() => setFailed(true)}
         className={`absolute inset-0 h-full w-full object-cover transition-transform duration-[2500ms] ease-out group-hover:scale-[1.06] ${story.cover ? 'object-[50%_25%]' : ''}`}

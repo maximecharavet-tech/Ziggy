@@ -1,16 +1,27 @@
 import type { Metadata } from 'next';
 import { routing } from '@/i18n/routing';
+import { AGE_MAX, AGE_MIN } from '@/lib/ages';
+import { FULLY_TRANSLATED_LOCALES, isFullyTranslated } from '@/i18n/config';
 
 /**
  * Canonical + hreflang for one page. French is the default locale and has no
  * prefix (`/monde`); the others are prefixed (`/en/monde`). `path` starts with
  * "/" ("" for the home page).
+ *
+ * Only the fully translated locales are announced (hreflang); any other locale
+ * has its canonical on the English page (see `robotsFor`, which also makes it
+ * noindex).
  */
 export function alternatesFor(locale: string, path: string): Metadata['alternates'] {
   const href = (l: string) => (l === routing.defaultLocale ? path || '/' : `/${l}${path}`);
-  const languages: Record<string, string> = Object.fromEntries(routing.locales.map((l) => [l, href(l)]));
+  const languages: Record<string, string> = Object.fromEntries(FULLY_TRANSLATED_LOCALES.map((l) => [l, href(l)]));
   languages['x-default'] = href(routing.defaultLocale);
-  return { canonical: href(locale), languages };
+  return { canonical: isFullyTranslated(locale) ? href(locale) : href('en'), languages };
+}
+
+/** Indexable only when the locale's content is really translated; links are always followed. */
+export function robotsFor(locale: string): NonNullable<Metadata['robots']> {
+  return { index: isFullyTranslated(locale), follow: true };
 }
 
 /** Absolute URL of a page in a locale (French has no prefix; home keeps its trailing slash). */
@@ -33,14 +44,14 @@ export function frSeoTitle(name: string, keywords: string | string[]): string {
 }
 
 export const FR_GAME_KEYWORDS = [
-  'jeu éducatif en ligne pour enfants de 5 à 12 ans',
+  `jeu éducatif en ligne pour enfants de ${AGE_MIN} à ${AGE_MAX} ans`,
   'jeu éducatif en ligne pour les enfants',
   'jeu éducatif en ligne pour enfants',
   'jeu éducatif pour enfants',
   'jeu éducatif',
 ];
 export const FR_WORLD_KEYWORDS = [
-  'jeux éducatifs pour enfants de 5 à 12 ans',
+  `jeux éducatifs pour enfants de ${AGE_MIN} à ${AGE_MAX} ans`,
   'monde de jeux éducatifs pour enfants',
   'jeux éducatifs pour enfants',
   'jeux éducatifs',
