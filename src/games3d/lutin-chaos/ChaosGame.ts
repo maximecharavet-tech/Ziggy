@@ -164,6 +164,8 @@ export type ChaosCommands = BaseGameCommands & {
   photoPose: { who: Who };
   snap: void;
   talking: { who: string | null; seconds: number };
+  /** Pixels of the canvas covered by the HUD (top bar, bottom panel): the room stays in the free part. */
+  insets: { top: number; bottom: number };
 };
 
 type Host = GameHost<ChaosEvents, ChaosCommands>;
@@ -400,6 +402,8 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   private done = false;
   private lastHint: Extract<FixCheck, { solved: false }> | null = null;
   private hiddenRefPos = new Map<string, THREE.Vector3>();
+  private insets = { top: 0, bottom: 0 };
+  private lastSize = { w: 1, h: 1 };
 
   constructor(
     private rt: ChaosRuntime,
@@ -501,11 +505,16 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   }
 
   private frameCamera(w: number, h: number) {
+    this.lastSize = { w, h };
     const aspect = w / Math.max(1, h);
     const portrait = aspect < 0.9;
     this.rig.aspect = portrait ? Math.max(aspect * 1.75, 0.7) : aspect;
-    this.rig.addView('room', portrait ? { c: [0, 0.4, 0.6], r: 12.6, pitch: 0.52, yaw: 0 } : { c: [0, 1.45, 0.5], r: 11.6, pitch: 0.36, yaw: 0 });
-    this.rig.limits = { min: [portrait ? -3 : -1.6, 0, -1], max: [portrait ? 3 : 1.6, 3, 1.6] };
+    const base = portrait ? { c: [0, 0.4, 0.6] as [number, number, number], r: 12.6, pitch: 0.52, yaw: 0 } : { c: [0, 1.45, 0.5] as [number, number, number], r: 11.6, pitch: 0.36, yaw: 0 };
+    // look lower when a panel covers the bottom: the room (and Ziggy at the front) moves up into view
+    const free = Math.max(-0.1, Math.min(0.45, (this.insets.bottom - this.insets.top) / Math.max(1, h)));
+    const shift = free * base.r * Math.tan((20 * Math.PI) / 180) * (portrait ? 1.1 : 1.25);
+    this.rig.addView('room', { ...base, c: [base.c[0], base.c[1] - shift, base.c[2]] });
+    this.rig.limits = { min: [portrait ? -3 : -1.6, -6, -1], max: [portrait ? 3 : 1.6, 3, 1.6] };
     if (this.host) this.rig.goTo('room', { keepPan: true });
   }
 
@@ -715,6 +724,12 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
         break;
       case 'talking':
         this.talking(c.who, c.seconds);
+        break;
+      case 'insets':
+        if (Math.abs(c.bottom - this.insets.bottom) > 12 || Math.abs(c.top - this.insets.top) > 12) {
+          this.insets = { top: c.top, bottom: c.bottom };
+          this.frameCamera(this.lastSize.w, this.lastSize.h);
+        }
         break;
       case 'hint':
         if (this.o.mode === 'play') this.act({ type: 'magnifier' });

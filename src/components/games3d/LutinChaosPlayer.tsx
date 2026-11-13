@@ -41,6 +41,7 @@ import { readAloudOn } from '@/lib/world/memory';
 import { finishExtraGame } from '@/lib/world/play';
 import type { MagicMoment } from '@/lib/world/engine';
 import { speakSequence, stopSpeaking, unlockAudio } from '@/lib/voice';
+import { isMuted } from '@/lib/sound';
 import { lutinsStore, nightKey } from '@/lib/lutins/family';
 import { tr, type L } from '@/lib/i18n-text';
 import { SayButton } from '@/components/arcade/read-aloud';
@@ -869,9 +870,11 @@ export function LutinChaosPlayer() {
   const queue = useRef<{ who: string; text: string }[]>([]);
   const speaking = useRef(false);
   const flushTimer = useRef<number | null>(null);
+  const gen = useRef(0);
   const pump = useCallback(() => {
     if (speaking.current || !queue.current.length) return;
     const batch = queue.current.splice(0, 6);
+    const mine = gen.current;
     speaking.current = true;
     const show = (i: number) => {
       const item = batch[i];
@@ -880,11 +883,12 @@ export function LutinChaosPlayer() {
       cmd({ type: 'talking', who: item.who, seconds: Math.min(4, 0.6 + item.text.length * 0.05) });
     };
     const done = () => {
+      if (mine !== gen.current) return;
       speaking.current = false;
       cmd({ type: 'talking', who: null, seconds: 0 });
       if (queue.current.length) window.setTimeout(pump, 120);
     };
-    if (readAloudOn(getMemory())) {
+    if (readAloudOn(getMemory()) && !isMuted()) {
       void speakSequence(
         `chaos-${Date.now()}`,
         batch.map((b) => b.text),
@@ -894,6 +898,7 @@ export function LutinChaosPlayer() {
     } else {
       let i = 0;
       const step = () => {
+        if (mine !== gen.current) return;
         if (i >= batch.length) return done();
         show(i);
         const ms = 1300 + batch[i].text.length * 38;
@@ -915,6 +920,13 @@ export function LutinChaosPlayer() {
     },
     [pump]
   );
+  const hush = useCallback(() => {
+    gen.current++;
+    queue.current = [];
+    speaking.current = false;
+    stopSpeaking();
+    setBubble(null);
+  }, []);
   useEffect(() => {
     if (!bubble) return;
     const t = window.setTimeout(() => setBubble((b) => (b?.id === bubble.id ? null : b)), Math.min(9000, 3200 + bubble.text.length * 50));
@@ -1003,15 +1015,13 @@ export function LutinChaosPlayer() {
     setResult(null);
     setOverlay(null);
     startedAt.current = Date.now();
-    queue.current = [];
-    stopSpeaking();
+    hush();
     cmd({ type: 'open', roomId, band, seed: resume?.seed ?? playSeed(roomId, plays, s.salt), night: resume?.night ?? night, resume, costume });
   };
   const goHouse = () => {
     setResult(null);
     setOverlay(null);
-    queue.current = [];
-    stopSpeaking();
+    hush();
     cmd({ type: 'house', ...houseState(), costume });
   };
   const openSandbox = (roomId: string) => {
@@ -1046,6 +1056,25 @@ export function LutinChaosPlayer() {
   }, [phase === 'play']);
 
   const act = (action: ChaosAction) => cmd({ type: 'act', action });
+
+  // tell the scene how much the HUD covers, so the room and Ziggy stay in view
+  const bottomRef = useRef<HTMLDivElement>(null);
+  const hasHud = Boolean(hud);
+  useEffect(() => {
+    if (phase !== 'play' || !hasHud) return;
+    const measure = () => {
+      const b = bottomRef.current?.getBoundingClientRect();
+      cmd({ type: 'insets', top: 60, bottom: b && b.height > 0 ? window.innerHeight - b.top : 0 });
+    };
+    measure();
+    const ro = new ResizeObserver(measure);
+    if (bottomRef.current) ro.observe(bottomRef.current);
+    window.addEventListener('resize', measure);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, [phase, hasHud, cmd]);
 
   // TV: land on the panel's first button when the panel changes
   const rootRef = useRef<HTMLDivElement>(null);
@@ -1544,7 +1573,9 @@ export function LutinChaosPlayer() {
             </motion.div>
           ) : null}
         </AnimatePresence>
-        {panel}
+        <div ref={bottomRef} className="flex w-full flex-col items-center">
+          {panel}
+        </div>
       </div>
     );
   };
