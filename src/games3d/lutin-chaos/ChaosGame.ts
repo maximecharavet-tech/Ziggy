@@ -403,6 +403,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   private lastHint: Extract<FixCheck, { solved: false }> | null = null;
   private hiddenRefPos = new Map<string, THREE.Vector3>();
   private insets = { top: 0, bottom: 0 };
+  private freezeQueue: { elf: ElfCtl; pose: ElfPose; side?: 1 | -1 }[] = [];
   private lastSize = { w: 1, h: 1 };
 
   constructor(
@@ -947,8 +948,13 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
         case 'room-done': {
           const result = ev.result;
           this.photoPose();
-          tw.after(reduce ? 0.1 : 0.9, () => {
+          tw.after(reduce ? 0.45 : 0.9, () => {
             this.rt.sfx('flash');
+            for (const q of this.freezeQueue.splice(0)) {
+              q.elf.root.visible = true;
+              q.elf.snapPose(q.pose, q.side);
+              this.freezeNow(q.elf);
+            }
             const photo = capture(this.host, this.view.scene, this.view.camera);
             this.host.emit('roomDone', { result, seed: this.session!.seed, photo });
             tw.after(1.6, () => this.napEnding());
@@ -1214,8 +1220,10 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   /** Put an elf in a pose: live with a hop on capable devices, a still billboard on the low path. */
   private posed(elf: ElfCtl, pose: ElfPose, side?: 1 | -1) {
     if (this.host.lowPower) {
-      elf.snapPose(pose, side);
-      this.freezeNow(elf);
+      // one capture per frame (a capture costs an elf's draw calls once): the elves pop in one by one
+      elf.root.visible = false;
+      this.freezeQueue = this.freezeQueue.filter((q) => q.elf !== elf);
+      this.freezeQueue.push({ elf, pose, side });
     } else {
       elf.pose(pose, side);
       elf.hop(this.host.tween, this.host.reducedMotion);
@@ -1432,6 +1440,12 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     this.rig.applyTo(this.view.camera);
     const z = this.cast.ziggy(this.rt.costume);
     z.update(dt);
+    const next = this.freezeQueue.shift();
+    if (next && next.elf.mode !== 'away') {
+      next.elf.root.visible = true;
+      next.elf.snapPose(next.pose, next.side);
+      this.freezeNow(next.elf);
+    }
     for (const id of ELF_IDS) this.cast.elves[id].update(dt);
     for (const v of this.props.values()) if (v.group.visible) v.updateCenter();
     this.confetti.update(dt);

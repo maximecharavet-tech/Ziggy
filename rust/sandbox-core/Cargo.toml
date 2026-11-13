@@ -1,0 +1,31 @@
+[package]
+name = "sandbox-core"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.80"
+description = "Le Bac à sable magique (Ziggy): falling-sand simulation and software renderer, compiled to WebAssembly."
+license = "MIT"
+publish = false
+
+# Standalone crate (not part of another workspace).
+[workspace]
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = "=0.2.129"
+
+# Tuned for speed, not size: the step and the renderer run every frame.
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+panic = "abort"
+strip = true
+
+# The behaviour tests run thousands of ticks: keep them fast, with checks on.
+[profile.test]
+opt-level = 2
+debug-assertions = true
+overflow-checks = true

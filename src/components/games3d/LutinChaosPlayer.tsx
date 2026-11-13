@@ -873,7 +873,7 @@ export function LutinChaosPlayer() {
   const gen = useRef(0);
   const pump = useCallback(() => {
     if (speaking.current || !queue.current.length) return;
-    const batch = queue.current.splice(0, 6);
+    const batch = queue.current.splice(0, 4);
     const mine = gen.current;
     speaking.current = true;
     const show = (i: number) => {
@@ -914,7 +914,7 @@ export function LutinChaosPlayer() {
       const last = queue.current[queue.current.length - 1];
       if (last && last.text === text) return;
       queue.current.push({ who, text });
-      if (queue.current.length > 10) queue.current.splice(0, queue.current.length - 10);
+      if (queue.current.length > 4) queue.current.splice(0, queue.current.length - 4);
       if (flushTimer.current) window.clearTimeout(flushTimer.current);
       flushTimer.current = window.setTimeout(pump, 30);
     },
