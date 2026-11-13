@@ -1,6 +1,7 @@
 'use client';
 
 import type { CSSProperties, ReactNode } from 'react';
+import { AppChristmas } from './AppChristmas';
 import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { AnimatePresence, motion } from 'motion/react';
@@ -111,6 +112,8 @@ export function AppHome() {
                 <SayButton texts={[tr(greeting, locale), tr(T.ask, locale)]} locale={locale} size="lg" className="mt-3 md:mt-5" />
               </div>
             </header>
+
+            <AppChristmas />
 
             {/* Phones: one column. Tablets: Ziggy World wide on top, the two others side by side. Wide tablets and computers: three. */}
             <ul className="mt-7 grid gap-x-6 gap-y-8 sm:grid-cols-2 md:mt-10 md:gap-x-8 md:gap-y-10 xl:grid-cols-3">
