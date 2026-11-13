@@ -11,7 +11,7 @@ const VERSION = 'ziggy-v7';
 const STATIC = `${VERSION}-static`;
 const PAGES = `${VERSION}-pages`;
 const OFFLINE_URL = '/offline.html';
-const PRECACHE = [OFFLINE_URL, '/favicon.svg', '/manifest.json'];
+const PRECACHE = [OFFLINE_URL, '/favicon.svg', '/manifest.webmanifest'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(STATIC).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting()));
