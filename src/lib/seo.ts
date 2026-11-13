@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { routing } from '@/i18n/routing';
+import { AGE_MAX, AGE_MIN } from '@/lib/ages';
 import { FULLY_TRANSLATED_LOCALES, isFullyTranslated } from '@/i18n/config';
 
 /**
@@ -43,14 +44,14 @@ export function frSeoTitle(name: string, keywords: string | string[]): string {
 }
 
 export const FR_GAME_KEYWORDS = [
-  'jeu éducatif en ligne pour enfants de 5 à 12 ans',
+  `jeu éducatif en ligne pour enfants de ${AGE_MIN} à ${AGE_MAX} ans`,
   'jeu éducatif en ligne pour les enfants',
   'jeu éducatif en ligne pour enfants',
   'jeu éducatif pour enfants',
   'jeu éducatif',
 ];
 export const FR_WORLD_KEYWORDS = [
-  'jeux éducatifs pour enfants de 5 à 12 ans',
+  `jeux éducatifs pour enfants de ${AGE_MIN} à ${AGE_MAX} ans`,
   'monde de jeux éducatifs pour enfants',
   'jeux éducatifs pour enfants',
   'jeux éducatifs',

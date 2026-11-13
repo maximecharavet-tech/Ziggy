@@ -16,12 +16,12 @@ export type LandingPath = (typeof FR_LANDING_PATHS)[number];
 
 export const LANDING_COPY: Record<LandingPath, { title: string; description: string; h1: string; intro: string[]; crumb: string; footer: string }> = {
   '/jeux-educatifs-enfants': {
-    title: 'Jeux éducatifs pour enfants de 5 à 12 ans | Ziggy',
+    title: 'Jeux éducatifs pour enfants de 4 à 12 ans | Ziggy',
     description:
-      'Mini-jeux et jeux 3D pour muscler la mémoire, le calcul et la logique des enfants de 5 à 12 ans. Sans publicité, jouable sans compte.',
+      'Mini-jeux et jeux 3D pour muscler la mémoire, le calcul et la logique des enfants de 4 à 12 ans. Sans publicité, jouable sans compte.',
     h1: 'Jeux éducatifs pour enfants',
     intro: [
-      'On retient beaucoup mieux quand on s’amuse. Avec Ziggy, les enfants de 5 à 12 ans jouent pour muscler leur mémoire, leur calcul et leur logique — et tout comprendre à l’IA.',
+      'On retient beaucoup mieux quand on s’amuse. Avec Ziggy, les enfants de 4 à 12 ans jouent pour muscler leur mémoire, leur calcul et leur logique — et tout comprendre à l’IA.',
       'Passer d’un jeu à l’autre (calcul, logique, mémoire) aide à choisir la bonne méthode. Étoiles, badges et récompenses transforment l’apprentissage en jeu : zéro pression, que du plaisir.',
     ],
     crumb: 'Jeux éducatifs',
@@ -51,7 +51,7 @@ export const LANDING_COPY: Record<LandingPath, { title: string; description: str
     footer: 'Coloriage en ligne',
   },
   '/apprendre-ia-enfants': {
-    title: 'Apprendre l’IA aux enfants de 5 à 12 ans | Ziggy',
+    title: 'Apprendre l’IA aux enfants de 4 à 12 ans | Ziggy',
     description:
       'Ziggy enseigne l’intelligence artificielle aux enfants en jouant : entraîne une vraie IA au Labo, découvre les biais et deviens expert de l’IA.',
     h1: 'Apprendre l’intelligence artificielle aux enfants',

@@ -18,7 +18,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
     title: 'Politique de confidentialité',
     updated: `Dernière mise à jour : ${UPDATED.fr}`,
     intro:
-      'Ziggy est une plateforme d’apprentissage pour les enfants de 5 à 12 ans. Nous collectons le strict minimum, nous ne vendons aucune donnée et nous n’affichons aucune publicité.',
+      'Ziggy est une plateforme d’apprentissage pour les enfants de 4 à 12 ans. Nous collectons le strict minimum, nous ne vendons aucune donnée et nous n’affichons aucune publicité.',
     sections: [
       {
         title: '1. Qui crée le compte',
@@ -112,7 +112,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
   en: {
     title: 'Privacy Policy',
     updated: `Last updated: ${UPDATED.en}`,
-    intro: 'Ziggy is a learning platform for children aged 5 to 12. We collect the bare minimum, sell no data and show no advertising.',
+    intro: 'Ziggy is a learning platform for children aged 4 to 12. We collect the bare minimum, sell no data and show no advertising.',
     sections: [
       {
         title: '1. Who creates the account',

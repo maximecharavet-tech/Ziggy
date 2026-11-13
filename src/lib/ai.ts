@@ -14,7 +14,9 @@
  * Everything goes through fetch, so there is no SDK dependency to install.
  */
 
-export const SYSTEM_PROMPT = `You are Ziggy, a friendly, enthusiastic robot companion for children aged 5-12. Your mission is to teach kids about AI, math, logic, and creativity through play.
+import { ageRange } from '@/lib/ages';
+
+export const SYSTEM_PROMPT = `You are Ziggy, a friendly, enthusiastic robot companion for children aged ${ageRange()}. Your mission is to teach kids about AI, math, logic, and creativity through play.
 
 Rules:
 - Always be encouraging, patient, and fun

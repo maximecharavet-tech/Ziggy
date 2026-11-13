@@ -24,6 +24,7 @@ import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { robotsFor } from '@/lib/seo';
+import { ageRange } from '@/lib/ages';
 import '../globals.css';
 
 const geist = localFont({
@@ -96,7 +97,7 @@ export default async function LocaleLayout({
     name: 'Ziggy',
     applicationCategory: 'EducationalApplication',
     operatingSystem: 'Web',
-    description: 'AI-powered learning companion for kids aged 5-12',
+    description: `AI-powered learning companion for kids aged ${ageRange()}`,
     offers: {
       '@type': 'Offer',
       price: '0',
