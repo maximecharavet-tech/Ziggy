@@ -35,3 +35,23 @@ space / Moon / Mars, more creation and many more interactions.
 10. **Tests**: port the 23 behaviour tests; one unit test per reaction; determinism hash native == wasm;
     golden frames with tolerance; fuzz commands and `load` bytes; FR+EN + banned-word tests; no
     wall-clock speed assertions (ratio to a calibration loop).
+
+## Addendum (owner, 2026-11-13): performant 3D presentation with game motion
+The owner wants "a performant 3D engine, with game motion animation". Decision 1 is amended:
+- **Stage 3b (required, after the Rust renderer works): a GPU 3D-relief presentation** on capable
+  devices. The Rust engine exports compact per-cell planes (species/shade, height/depth, emissive,
+  temperature, liquid mask) zero-copy; a WebGL2 layer (three.js is already a dependency; raw WebGL2 is
+  fine too) draws the world as a lit relief: height-mapped cells with normals from the planes, a moving
+  world light with soft shadows, liquids as a separate translucent surface with refraction, fresnel
+  highlights and gentle waves, lava/stars/plankton with real bloom, depth-layered 3D backdrops with
+  parallax, a subtle camera (tilt/parallax on pointer or device tilt, gentle push-in on discoveries).
+- **The Rust software renderer stays complete** and is the path on low-power devices, when WebGL2 is
+  missing or the context is lost, and for photos/thumbnails. Both paths are tested (4 cores and
+  `hardwareConcurrency` 8; the white-veil lesson: keep bloom subtle, verify exposure).
+- **Game motion ("juice")**, on both paths where possible: squash & stretch on splashes and impacts,
+  elastic pops when elements are placed, anticipation/overshoot on critters (rigged with simple bones
+  or sprite sheets rendered in code), particle bursts and ribbons on reactions, camera micro-shake only
+  as a soft bump (off under reduced motion), animated world-picker transitions (zoom into the world),
+  eased UI motion. Reduced motion: no camera movement, no shake, calmer particles.
+- Budgets: GPU path ≤ 4 ms CPU + one draw pass set per frame at device resolution (DPR capped at 2);
+  measure frame time in the page on both paths.
