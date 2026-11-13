@@ -225,7 +225,7 @@ export function SantaVillage() {
             </Link>
             <Link
               href="/pere-noel/appel"
-              className="inline-flex min-h-16 items-center justify-center gap-2 rounded-full bg-[#2fb344] px-8 font-display text-xl font-bold shadow-[0_8px_0_#1e7a2e] transition-transform active:translate-y-1 active:shadow-[0_3px_0_#1e7a2e]"
+              className="inline-flex min-h-16 items-center justify-center gap-2 rounded-full bg-[#1e7a2e] px-8 font-display text-xl font-bold shadow-[0_8px_0_#14521e] transition-transform active:translate-y-1 active:shadow-[0_3px_0_#14521e]"
             >
               📞 {tr(T.call, locale)}
             </Link>

@@ -38,7 +38,7 @@ export function Footer() {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 lg:gap-12">
           <div className="col-span-2 md:col-span-1">
             <ZiggyLogo size={132} className="mb-2" />
-            <Link href="/hyper" className="group inline-flex items-center gap-2 mb-4" aria-label="Hyper™ AI Engine">
+            <Link href="/hyper" className="group inline-flex items-center gap-2 mb-4">
               <Image src="/hyper/hyper-mark.webp" alt="" width={28} height={28} className="hyper-mark rounded-md" />
               <HyperBadge variant="inline" />
             </Link>
@@ -51,7 +51,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold text-text-body text-sm mb-4 uppercase tracking-wider text-xs">{t('product')}</h4>
+            <h3 className="font-bold text-text-body mb-4 uppercase tracking-wider text-xs">{t('product')}</h3>
             <ul className="space-y-3">
               {productLinks.map((link) => (
                 <li key={link.label}>
@@ -70,7 +70,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold text-text-body text-sm mb-4 uppercase tracking-wider text-xs">{t('company')}</h4>
+            <h3 className="font-bold text-text-body mb-4 uppercase tracking-wider text-xs">{t('company')}</h3>
             <ul className="space-y-3">
               {companyLinks.map((link) => (
                 <li key={link.label}>
@@ -89,7 +89,7 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-bold text-text-body text-sm mb-4 uppercase tracking-wider text-xs">{t('legal')}</h4>
+            <h3 className="font-bold text-text-body mb-4 uppercase tracking-wider text-xs">{t('legal')}</h3>
             <ul className="space-y-3">
               {legalLinks.map((link) => (
                 <li key={link.label}>

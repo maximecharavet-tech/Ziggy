@@ -240,7 +240,7 @@ export function DodoHome({ voices }: { voices?: VoiceSummary }) {
         {/* The library */}
         <section className="mt-16" aria-labelledby="dodo-library">
           <h2 id="dodo-library" className="font-display text-3xl font-bold">
-            📚 {tr(T.library, locale)} <span className="text-lg font-semibold text-white/45">· {shown.length}</span>
+            📚 {tr(T.library, locale)} <span className="text-lg font-semibold text-white/70">· {shown.length}</span>
           </h2>
 
           <div className="-mx-4 mt-5 flex items-center gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">

@@ -22,5 +22,10 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function CreaturesPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  return <CreaturesPlayer />;
+  return (
+    <>
+      <h1 className="sr-only">{locale === 'fr' ? 'L’Usine à Créatures de Ziggy' : 'Ziggy’s Creature Factory'}</h1>
+      <CreaturesPlayer />
+    </>
+  );
 }

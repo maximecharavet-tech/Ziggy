@@ -101,7 +101,7 @@ export function HeroSection() {
         {/* ── Copy ── */}
         <div className="text-center lg:text-start">
           <motion.div variants={rise} initial="hidden" animate="visible" custom={0}>
-            <span className="inline-flex items-center gap-2 rounded-full border border-green/25 bg-green/10 ps-1.5 pe-4 py-1 text-sm font-bold text-green">
+            <span className="inline-flex items-center gap-2 rounded-full border border-green/25 bg-green/10 ps-1.5 pe-4 py-1 text-sm font-bold text-[#166534] dark:text-green">
               <ZiggyAvatar size={26} ring={false} />
               {t('badge')}
             </span>
