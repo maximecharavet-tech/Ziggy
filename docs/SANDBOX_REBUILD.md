@@ -55,3 +55,17 @@ The owner wants "a performant 3D engine, with game motion animation". Decision 1
   eased UI motion. Reduced motion: no camera movement, no shake, calmer particles.
 - Budgets: GPU path ≤ 4 ms CPU + one draw pass set per frame at device resolution (DPR capped at 2);
   measure frame time in the page on both paths.
+
+## Addendum 2 (owner, 2026-11-13): no GPU
+The owner does not want a GPU path. **The previous addendum's WebGL2 presentation is cancelled.**
+Everything is drawn by the Rust software renderer, on every device:
+- The 3D-relief look is computed in Rust: a per-cell height field (piles, liquid surfaces, rocks) →
+  normals → directional world light with soft shadows (short height-field shadow march or
+  horizon trick), specular/fresnel highlights on liquids, refraction by offsetting the background
+  sample, ambient occlusion from neighbour heights, emissive glow via the downsampled blur buffer,
+  depth-layered backdrops with parallax (the "camera" is a software offset/scale of layers), fog/depth
+  tint. Keep it within the frame budget with LUTs, integer maths, dirty-region rendering and the
+  2×/3× tiers; consider an optional wasm-SIMD binary for blur/blend/upscale if benchmarks justify it.
+- Game motion stays as specified (squash & stretch, elastic pops, animated critters, particle bursts,
+  world-picker zoom), drawn in the software renderer or as DOM/CSS transform-opacity animations for UI.
+- No WebGL/WebGPU anywhere in the sandbox; canvas 2D `putImageData`/`drawImage` only for the blit.
