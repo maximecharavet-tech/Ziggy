@@ -1184,7 +1184,7 @@ export function LutinChaosPlayer() {
   const renderNaming = (p: PrankHud) => {
     const out = new Set(p.eliminated.map((e) => e.elf));
     return (
-      <Panel>
+      <Panel className="max-h-[58vh] overflow-y-auto">
         <Prompt text={tr(T.whoDidIt, locale)} locale={locale} />
         <div className="mb-2 flex flex-wrap gap-1.5">
           {p.clues.map((c) => (
@@ -1434,7 +1434,7 @@ export function LutinChaosPlayer() {
         <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} className="pointer-events-auto w-full max-w-md rounded-[2rem] bg-white/95 p-4 text-center shadow-2xl ring-1 ring-white" role="dialog" aria-modal="true" aria-labelledby="chaos-done">
           {result.photo ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={result.photo} alt="" className="mx-auto mb-2 w-full max-w-[300px] rotate-[-2deg] rounded-xl border-[6px] border-white shadow-lg" />
+            <img src={result.photo} alt="" className="mx-auto mb-2 max-h-[34vh] w-auto max-w-full rotate-[-2deg] rounded-xl border-[6px] border-white shadow-lg" />
           ) : null}
           <h2 id="chaos-done" className="font-display text-2xl font-bold text-[#4a2a62]">
             {ROOM_ICON[room?.number ?? 1]} {tr(T.roomDone, locale)}
@@ -1604,7 +1604,7 @@ export function LutinChaosPlayer() {
       {phase === 'play' ? (
         <>
           {renderTop()}
-          {narrow && hud && hud.view !== 'house' && !hud.puzzle && !result && !overlay
+          {narrow && hud && hud.view !== 'house' && !hud.puzzle && !result && !overlay && !(active?.phase === 'spotted' && hud.band !== 'little')
             ? ([-1, 1] as const).map((d) => (
                 <button
                   key={d}

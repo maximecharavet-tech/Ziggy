@@ -828,6 +828,12 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
           const elf = this.cast.elves[ev.elf];
           if (hide) {
             tw.after(delay, () => {
+              // the clues did their job: clear the marks (and their draw calls) when the elf shows up
+              if (this.marks) {
+                this.view.scene.remove(this.marks);
+                disposeMarks(this.marks);
+                this.marks = null;
+              }
               elf.peek(tw, hide.peek, reduce);
               this.peekRing.show(hide.peek, elf.id === 'noisette' ? 1.2 : 1.6);
               this.focusPoint(hide.peek, 0.3);
