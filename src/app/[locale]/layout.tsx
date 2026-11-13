@@ -23,6 +23,7 @@ import { TvTopBar } from '@/components/tv/TvTopBar';
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { robotsFor } from '@/lib/seo';
 import '../globals.css';
 
 const geist = localFont({
@@ -64,10 +65,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title: t('title'),
       description: t('description'),
     },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    robots: robotsFor(locale),
   };
 }
 
