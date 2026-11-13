@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Menu, X } from 'lucide-react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';

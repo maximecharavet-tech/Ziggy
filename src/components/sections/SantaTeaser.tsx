@@ -6,6 +6,7 @@ import { tr, type L } from '@/lib/i18n-text';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { Snow } from '@/components/santa/Snow';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
+import { motion } from 'motion/react';
 
 const T = {
   badge: { fr: 'Nouveau pour Noël', en: 'New for Christmas' },
@@ -27,7 +28,7 @@ export function SantaTeaser() {
       <div className="relative overflow-hidden rounded-[2rem] bg-[radial-gradient(120%_120%_at_20%_0%,#3b2385_0%,#17124a_55%,#0b0a26_100%)] p-6 text-white shadow-[0_24px_60px_-24px_rgba(20,10,60,0.8)] ring-1 ring-white/10 sm:p-10">
         <Snow count={reduced ? 0 : 28} />
         <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(64,255,190,0.25),transparent_70%)] blur-2xl" />
-        <div className="relative grid items-center gap-6 sm:grid-cols-[1fr_auto]">
+        <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="relative grid items-center gap-6 sm:grid-cols-[1fr_auto]">
           <div>
             <span className="inline-flex rounded-full bg-amber-300 px-3 py-1 text-xs font-black uppercase tracking-wider text-[#3b1f00]">🎄 {tr(T.badge, locale)}</span>
             <div className="mt-3 flex items-center gap-3">
@@ -44,11 +45,10 @@ export function SantaTeaser() {
               </Link>
             </div>
           </div>
-          <div aria-hidden="true" className={`hidden text-[9rem] leading-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.45)] sm:block ${reduced ? '' : 'animate-[santa-bob_4s_ease-in-out_infinite]'}`}>
+          <motion.div aria-hidden="true" animate={reduced ? { opacity: 1 } : { y: [0, -10, 0], rotate: [-3, 3, -3] }} transition={{ duration: 4, repeat: Infinity }} className="hidden text-[9rem] leading-none drop-shadow-[0_20px_30px_rgba(0,0,0,0.45)] sm:block">
             🎅
-          </div>
-        </div>
-        <style>{`@keyframes santa-bob { 0%,100% { transform: translateY(0) rotate(-3deg); } 50% { transform: translateY(-10px) rotate(3deg); } }`}</style>
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

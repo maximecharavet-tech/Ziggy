@@ -55,8 +55,8 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'biscotte', name: { fr: 'Biscotte', en: 'Biscuit' }, emoji: '🐉', role: { fr: 'Dragon gentil et gourmand', en: 'A kind, snack-loving dragon' } },
     ],
     companions: ['unicorn', 'cat', 'owl'],
-    learningSkills: ['letters', 'reading', 'art', 'memory', 'music'],
-    availableGames: ['alphabet_quest', 'story_builder_game', 'art_studio', 'memory_magic', 'music_garden'],
+    learningSkills: ['letters', 'reading', 'art', 'memory'],
+    availableGames: ['alphabet_quest', 'word_forest', 'color_lab', 'memory_magic'],
     quests: [
       {
         game: 'alphabet_quest',
@@ -65,16 +65,12 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Le portail ne s’ouvre qu’avec les bonnes lettres. Tu m’aides ?', en: 'The gate only opens with the right letters. Will you help me?' },
         outcome: { kind: 'place', id: 'castle_gate', label: { fr: 'Portail du château', en: 'Castle gate' }, emoji: '🏰' },
       },
-      {
-        game: 'story_builder_game',
-        skill: 'reading',
+      { game: 'word_forest', skill: 'reading',
         title: { fr: 'Le livre du château', en: 'The Castle Storybook' },
         intro: { fr: 'Les pages du vieux livre se sont mélangées. Remettons-les en ordre !', en: 'The old book’s pages got mixed up. Let’s put them in order!' },
         outcome: { kind: 'item', id: 'storybook', label: { fr: 'Livre d’histoires', en: 'Storybook' }, emoji: '📖' },
       },
-      {
-        game: 'art_studio',
-        skill: 'art',
+      { game: 'color_lab', skill: 'art',
         title: { fr: 'Les couleurs du bal', en: 'Colours for the Ball' },
         intro: { fr: 'Il faut peindre les bannières du bal. Prépare les couleurs avec moi !', en: 'The ball banners need painting. Mix the colours with me!' },
         outcome: { kind: 'item', id: 'banners', label: { fr: 'Bannières colorées', en: 'Colourful banners' }, emoji: '🎀' },
@@ -86,16 +82,12 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Les invitations se sont envolées par paires. Retrouve-les !', en: 'The invitations flew away in pairs. Find them again!' },
         outcome: { kind: 'character', id: 'biscotte', label: { fr: 'Biscotte le dragon', en: 'Biscuit the dragon' }, emoji: '🐉' },
       },
-      {
-        game: 'music_garden',
-        skill: 'music',
+      { game: 'memory_magic', skill: 'memory',
         title: { fr: 'La mélodie du bal', en: 'The Ballroom Tune' },
         intro: { fr: 'L’orchestre a oublié sa chanson. Rejoue-la avec les fleurs !', en: 'The band forgot its song. Play it back with the flowers!' },
         outcome: { kind: 'place', id: 'ballroom', label: { fr: 'Salle de bal', en: 'Ballroom' }, emoji: '🎶' },
       },
-      {
-        game: 'story_builder_game',
-        skill: 'reading',
+      { game: 'word_forest', skill: 'reading',
         title: { fr: 'Le grand Bal des étoiles', en: 'The Great Star Ball' },
         intro: { fr: 'Raconte la soirée dans l’ordre pour que tout le monde s’en souvienne !', en: 'Tell the evening in order so everyone remembers it!' },
         outcome: { kind: 'item', id: 'star_crown', label: { fr: 'Couronne d’étoiles', en: 'Star crown' }, emoji: '👑' },
@@ -121,11 +113,9 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['robot', 'owl', 'dragon'],
     learningSkills: ['astronomy', 'addition', 'subtraction', 'memory', 'science'],
-    availableGames: ['space_mission', 'space_memory', 'math_runner', 'little_scientist'],
+    availableGames: ['number_island', 'space_mission', 'memory_magic', 'little_scientist'],
     quests: [
-      {
-        game: 'math_runner',
-        skill: 'addition',
+      { game: 'number_island', skill: 'addition',
         title: { fr: 'Le compte à rebours', en: 'The Countdown' },
         intro: { fr: 'Avant le décollage, on vérifie les calculs du carburant !', en: 'Before lift-off, let’s check the fuel sums!' },
         outcome: { kind: 'place', id: 'launch_pad', label: { fr: 'Pas de tir', en: 'Launch pad' }, emoji: '🚀' },
@@ -137,9 +127,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Pilote la fusée entre les étoiles jusqu’à la Lune !', en: 'Steer the rocket through the stars to the Moon!' },
         outcome: { kind: 'place', id: 'moon_base', label: { fr: 'Base lunaire', en: 'Moon base' }, emoji: '🌙' },
       },
-      {
-        game: 'space_memory',
-        skill: 'memory',
+      { game: 'memory_magic', skill: 'memory',
         title: { fr: 'La carte des étoiles', en: 'The Star Map' },
         intro: { fr: 'Notre carte du ciel est en morceaux. Retrouve les paires !', en: 'Our sky map is in pieces. Find the pairs!' },
         outcome: { kind: 'item', id: 'star_map', label: { fr: 'Carte du ciel', en: 'Sky map' }, emoji: '🗺️' },
@@ -151,9 +139,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Les savants de la station ont des questions pour toi !', en: 'The station scientists have questions for you!' },
         outcome: { kind: 'character', id: 'zorbi', label: { fr: 'Zorbi l’extraterrestre', en: 'Zorbi the alien' }, emoji: '👽' },
       },
-      {
-        game: 'math_runner',
-        skill: 'subtraction',
+      { game: 'number_island', skill: 'subtraction',
         title: { fr: 'La pluie de météorites', en: 'The Meteor Shower' },
         intro: { fr: 'Esquive les météorites en choisissant le bon chemin !', en: 'Dodge the meteors by picking the right path!' },
         outcome: { kind: 'place', id: 'ring_road', label: { fr: 'Anneaux de Saturne', en: 'Saturn’s rings' }, emoji: '🪐' },
@@ -185,8 +171,8 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'grandma_toad', name: { fr: 'Mamie Crapaud', en: 'Granny Toad' }, emoji: '🐸', role: { fr: 'Connaît tous les secrets de la mare', en: 'Knows every secret of the pond' } },
     ],
     companions: ['unicorn', 'fox', 'panda'],
-    learningSkills: ['colors', 'ecology', 'music', 'vocabulary', 'science'],
-    availableGames: ['color_lab', 'eco_world', 'music_garden', 'word_forest', 'little_scientist'],
+    learningSkills: ['colors', 'ecology', 'vocabulary', 'science'],
+    availableGames: ['color_lab', 'word_forest', 'eco_world', 'little_scientist', 'memory_magic'],
     quests: [
       {
         game: 'color_lab',
@@ -216,9 +202,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Mamie Crapaud te pose ses devinettes de nature.', en: 'Granny Toad has nature riddles for you.' },
         outcome: { kind: 'character', id: 'grandma_toad', label: { fr: 'Mamie Crapaud', en: 'Granny Toad' }, emoji: '🐸' },
       },
-      {
-        game: 'music_garden',
-        skill: 'music',
+      { game: 'memory_magic', skill: 'vocabulary',
         title: { fr: 'Le chant des clochettes', en: 'The Bluebell Song' },
         intro: { fr: 'Les clochettes chantent une mélodie. Rejoue-la pour réveiller le printemps !', en: 'The bluebells sing a tune. Play it back to wake up spring!' },
         outcome: { kind: 'place', id: 'bell_meadow', label: { fr: 'Prairie des clochettes', en: 'Bluebell meadow' }, emoji: '🔔' },
@@ -251,7 +235,7 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['dolphin', 'fox', 'cat'],
     learningSkills: ['geography', 'counting', 'logic', 'memory'],
-    availableGames: ['geography_explorer', 'number_island', 'puzzle_castle', 'memory_magic'],
+    availableGames: ['number_island', 'puzzle_castle', 'geography_explorer', 'memory_magic'],
     quests: [
       {
         game: 'number_island',
@@ -316,11 +300,9 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['dragon', 'owl', 'panda'],
     learningSkills: ['science', 'animals', 'counting', 'memory'],
-    availableGames: ['dino_dig', 'little_scientist', 'number_island', 'memory_magic'],
+    availableGames: ['little_scientist', 'number_island', 'memory_magic', 'color_lab'],
     quests: [
-      {
-        game: 'dino_dig',
-        skill: 'science',
+      { game: 'little_scientist', skill: 'science',
         title: { fr: 'Premier coup de pelle', en: 'First Dig' },
         intro: { fr: 'Quelque chose brille dans la terre… creusons doucement !', en: 'Something is shining in the dirt… let’s dig gently!' },
         outcome: { kind: 'item', id: 'fossil_shell', label: { fr: 'Coquillage fossile', en: 'Fossil shell' }, emoji: '🐚' },
@@ -346,16 +328,12 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Les œufs ont roulé ! Retrouve les paires pour les remettre au nid.', en: 'The eggs rolled away! Find the pairs to put them back in the nest.' },
         outcome: { kind: 'place', id: 'nest_hill', label: { fr: 'Colline des nids', en: 'Nest hill' }, emoji: '🪺' },
       },
-      {
-        game: 'dino_dig',
-        skill: 'counting',
+      { game: 'number_island', skill: 'counting',
         title: { fr: 'Le grand squelette', en: 'The Big Skeleton' },
         intro: { fr: 'Compte les os pour reconstruire un grand squelette !', en: 'Count the bones to rebuild a giant skeleton!' },
         outcome: { kind: 'character', id: 'rexy', label: { fr: 'Rexy le petit T. rex', en: 'Rexy the little T. rex' }, emoji: '🦖' },
       },
-      {
-        game: 'dino_dig',
-        skill: 'animals',
+      { game: 'little_scientist', skill: 'animals',
         title: { fr: 'Le musée de la vallée', en: 'The Valley Museum' },
         intro: { fr: 'Dernière fouille pour ouvrir notre musée des dinosaures !', en: 'One last dig to open our dinosaur museum!' },
         outcome: { kind: 'place', id: 'dino_museum', label: { fr: 'Musée des dinos', en: 'Dino museum' }, emoji: '🏛️' },
@@ -380,8 +358,8 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'tiny_pegasus', name: { fr: 'Plumette', en: 'Feather' }, emoji: '🪽', role: { fr: 'Petit cheval ailé timide', en: 'A shy little winged horse' } },
     ],
     companions: ['unicorn', 'cat', 'dragon'],
-    learningSkills: ['colors', 'art', 'music', 'memory', 'reading'],
-    availableGames: ['color_lab', 'art_studio', 'music_garden', 'memory_magic', 'story_builder_game'],
+    learningSkills: ['colors', 'art', 'memory', 'reading'],
+    availableGames: ['color_lab', 'memory_magic', 'word_forest', 'alphabet_quest'],
     quests: [
       {
         game: 'color_lab',
@@ -397,30 +375,22 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Les fers à cheval brillants vont par deux. Retrouve-les !', en: 'The shiny horseshoes come in twos. Find them!' },
         outcome: { kind: 'item', id: 'magic_bell', label: { fr: 'Clochette magique', en: 'Magic bell' }, emoji: '🔔' },
       },
-      {
-        game: 'story_builder_game',
-        skill: 'reading',
+      { game: 'word_forest', skill: 'reading',
         title: { fr: 'L’histoire de Plumette', en: 'Feather’s Story' },
         intro: { fr: 'Plumette est timide. Lis son histoire pour la rassurer.', en: 'Feather is shy. Read her story to help her feel brave.' },
         outcome: { kind: 'character', id: 'tiny_pegasus', label: { fr: 'Plumette', en: 'Feather' }, emoji: '🪽' },
       },
-      {
-        game: 'art_studio',
-        skill: 'art',
+      { game: 'color_lab', skill: 'art',
         title: { fr: 'Les gâteaux-nuages', en: 'The Cloud Cakes' },
         intro: { fr: 'Décore les gâteaux de la fête avec de jolies couleurs !', en: 'Decorate the festival cakes with pretty colours!' },
         outcome: { kind: 'item', id: 'cloud_cake', label: { fr: 'Gâteau-nuage', en: 'Cloud cake' }, emoji: '🎂' },
       },
-      {
-        game: 'music_garden',
-        skill: 'music',
+      { game: 'memory_magic', skill: 'memory',
         title: { fr: 'La danse des licornes', en: 'The Unicorn Dance' },
         intro: { fr: 'Les licornes dansent sur une mélodie. Joue-la avec elles !', en: 'The unicorns dance to a tune. Play it with them!' },
         outcome: { kind: 'place', id: 'starlight_meadow', label: { fr: 'Prairie étoilée', en: 'Starlight meadow' }, emoji: '✨' },
       },
-      {
-        game: 'art_studio',
-        skill: 'colors',
+      { game: 'color_lab', skill: 'colors',
         title: { fr: 'La fête des couleurs', en: 'The Festival of Colours' },
         intro: { fr: 'C’est le grand jour ! Peins le ciel pour la fête !', en: 'It’s the big day! Paint the sky for the festival!' },
         outcome: { kind: 'item', id: 'rainbow_ribbon', label: { fr: 'Ruban arc-en-ciel', en: 'Rainbow ribbon' }, emoji: '🎗️' },
@@ -446,11 +416,9 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['fox', 'robot', 'dragon'],
     learningSkills: ['addition', 'logic', 'ecology', 'animals'],
-    availableGames: ['math_runner', 'dragon_academy', 'eco_world', 'animal_rescue', 'puzzle_castle'],
+    availableGames: ['number_island', 'dragon_academy', 'animal_rescue', 'eco_world', 'puzzle_castle'],
     quests: [
-      {
-        game: 'math_runner',
-        skill: 'addition',
+      { game: 'number_island', skill: 'addition',
         title: { fr: 'L’entraînement du matin', en: 'Morning Training' },
         intro: { fr: 'Cours sur la piste et calcule vite, jeune héros !', en: 'Run the track and calculate fast, young hero!' },
         outcome: { kind: 'place', id: 'training_track', label: { fr: 'Piste d’entraînement', en: 'Training track' }, emoji: '🏃' },
@@ -483,9 +451,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Le pont est en morceaux. Remets les pièces en place pour aider les passants !', en: 'The bridge is in pieces. Slide them back to help everyone cross!' },
         outcome: { kind: 'character', id: 'helper_hana', label: { fr: 'Hana l’entraide', en: 'Helpful Hana' }, emoji: '🧑‍🚒' },
       },
-      {
-        game: 'math_runner',
-        skill: 'addition',
+      { game: 'number_island', skill: 'addition',
         title: { fr: 'La remise des capes', en: 'The Cape Ceremony' },
         intro: { fr: 'Dernière course avant de recevoir ta cape de héros !', en: 'One last run before you get your hero cape!' },
         outcome: { kind: 'item', id: 'hero_cape', label: { fr: 'Cape de héros', en: 'Hero cape' }, emoji: '🦸' },
@@ -511,7 +477,7 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['owl', 'dragon', 'cat'],
     learningSkills: ['logic', 'vocabulary', 'letters', 'colors', 'science'],
-    availableGames: ['dragon_academy', 'word_forest', 'alphabet_quest', 'color_lab', 'little_scientist'],
+    availableGames: ['alphabet_quest', 'word_forest', 'color_lab', 'dragon_academy', 'little_scientist'],
     quests: [
       {
         game: 'alphabet_quest',
@@ -576,7 +542,7 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['dolphin', 'owl', 'panda'],
     learningSkills: ['animals', 'ecology', 'memory', 'counting'],
-    availableGames: ['animal_rescue', 'eco_world', 'memory_magic', 'number_island'],
+    availableGames: ['number_island', 'memory_magic', 'eco_world', 'animal_rescue'],
     quests: [
       {
         game: 'number_island',
@@ -640,8 +606,8 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'mama_jaguar', name: { fr: 'Maman Jaguar', en: 'Mama Jaguar' }, emoji: '🐆', role: { fr: 'Protège la jungle', en: 'Protects the jungle' } },
     ],
     companions: ['fox', 'panda', 'cat'],
-    learningSkills: ['animals', 'vocabulary', 'music', 'geography'],
-    availableGames: ['animal_rescue', 'word_forest', 'music_garden', 'geography_explorer'],
+    learningSkills: ['animals', 'vocabulary', 'geography'],
+    availableGames: ['word_forest', 'memory_magic', 'animal_rescue', 'geography_explorer'],
     quests: [
       {
         game: 'word_forest',
@@ -650,9 +616,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'La pluie a brouillé les panneaux. Réécris les mots !', en: 'The rain smudged the signs. Spell the words again!' },
         outcome: { kind: 'place', id: 'liana_path', label: { fr: 'Chemin des lianes', en: 'Vine path' }, emoji: '🌿' },
       },
-      {
-        game: 'music_garden',
-        skill: 'music',
+      { game: 'memory_magic', skill: 'vocabulary',
         title: { fr: 'Le chant de Tuki', en: 'Tuki’s Song' },
         intro: { fr: 'Tuki a une chanson pour toi. Peux-tu la répéter ?', en: 'Tuki has a song for you. Can you repeat it?' },
         outcome: { kind: 'character', id: 'tuki', label: { fr: 'Tuki le toucan', en: 'Tuki the toucan' }, emoji: '🦜' },
@@ -705,12 +669,10 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'sprocket', name: { fr: 'Pignon', en: 'Sprocket' }, emoji: '🐕', role: { fr: 'Chien-robot farceur', en: 'A playful robot dog' } },
     ],
     companions: ['robot', 'fox', 'owl'],
-    learningSkills: ['sequencing', 'multiplication', 'logic', 'shapes'],
-    availableGames: ['robot_factory', 'math_runner', 'puzzle_castle', 'dragon_academy'],
+    learningSkills: ['sequencing', 'logic', 'shapes'],
+    availableGames: ['dragon_academy', 'puzzle_castle', 'number_island', 'little_scientist'],
     quests: [
-      {
-        game: 'robot_factory',
-        skill: 'sequencing',
+      { game: 'dragon_academy', skill: 'sequencing',
         title: { fr: 'Le premier robot', en: 'The First Robot' },
         intro: { fr: 'Suis les étapes dans le bon ordre pour construire Gizmo !', en: 'Follow the steps in the right order to build Gizmo!' },
         outcome: { kind: 'character', id: 'gizmo', label: { fr: 'Gizmo le robot', en: 'Gizmo the robot' }, emoji: '🤖' },
@@ -722,9 +684,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Le plan est tout mélangé. Fais glisser les pièces !', en: 'The plan is all jumbled. Slide the pieces!' },
         outcome: { kind: 'place', id: 'assembly_line', label: { fr: 'Chaîne de montage', en: 'Assembly line' }, emoji: '🏭' },
       },
-      {
-        game: 'math_runner',
-        skill: 'multiplication',
+      { game: 'number_island', skill: 'logic',
         title: { fr: 'Le tapis roulant', en: 'The Conveyor Belt' },
         intro: { fr: 'Les pièces arrivent par paquets. Calcule vite sur le tapis !', en: 'Parts arrive in groups. Calculate fast on the belt!' },
         outcome: { kind: 'item', id: 'golden_gear', label: { fr: 'Engrenage doré', en: 'Golden gear' }, emoji: '⚙️' },
@@ -736,16 +696,12 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Les lumières clignotent en suite. Devine la prochaine !', en: 'The lights blink in a pattern. Guess the next one!' },
         outcome: { kind: 'place', id: 'control_room', label: { fr: 'Salle de contrôle', en: 'Control room' }, emoji: '💡' },
       },
-      {
-        game: 'robot_factory',
-        skill: 'logic',
+      { game: 'dragon_academy', skill: 'logic',
         title: { fr: 'Pignon en panne', en: 'Sprocket Needs Fixing' },
         intro: { fr: 'Pignon ne remue plus la queue. Répare-le étape par étape !', en: 'Sprocket can’t wag its tail. Fix it step by step!' },
         outcome: { kind: 'character', id: 'sprocket', label: { fr: 'Pignon le chien-robot', en: 'Sprocket the robot dog' }, emoji: '🐕' },
       },
-      {
-        game: 'robot_factory',
-        skill: 'sequencing',
+      { game: 'dragon_academy', skill: 'sequencing',
         title: { fr: 'La grande parade', en: 'The Big Parade' },
         intro: { fr: 'Prépare tous les robots pour la parade de l’usine !', en: 'Get all the robots ready for the factory parade!' },
         outcome: { kind: 'item', id: 'inventor_badge', label: { fr: 'Badge d’inventeur', en: 'Inventor badge' }, emoji: '🏅' },
@@ -770,8 +726,8 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'maestro_cricket', name: { fr: 'Maestro Grillon', en: 'Maestro Cricket' }, emoji: '🦗', role: { fr: 'Chef d’orchestre', en: 'Orchestra conductor' } },
     ],
     companions: ['unicorn', 'cat', 'panda'],
-    learningSkills: ['art', 'colors', 'shapes', 'music'],
-    availableGames: ['art_studio', 'color_lab', 'puzzle_castle', 'music_garden'],
+    learningSkills: ['art', 'colors', 'shapes'],
+    availableGames: ['color_lab', 'puzzle_castle', 'alphabet_quest'],
     quests: [
       {
         game: 'color_lab',
@@ -787,23 +743,17 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Un tableau est tombé ! Remets les morceaux en place.', en: 'A painting fell down! Put the pieces back.' },
         outcome: { kind: 'character', id: 'doodle', label: { fr: 'Gribouillis le crayon', en: 'Doodle the pencil' }, emoji: '✏️' },
       },
-      {
-        game: 'art_studio',
-        skill: 'art',
+      { game: 'color_lab', skill: 'art',
         title: { fr: 'Le portrait du soleil', en: 'The Sun’s Portrait' },
         intro: { fr: 'Le soleil veut son portrait ! Prépare des couleurs chaudes.', en: 'The sun wants a portrait! Prepare warm colours.' },
         outcome: { kind: 'place', id: 'gallery', label: { fr: 'La galerie', en: 'The gallery' }, emoji: '🖼️' },
       },
-      {
-        game: 'music_garden',
-        skill: 'music',
+      { game: 'color_lab', skill: 'colors',
         title: { fr: 'La musique des couleurs', en: 'The Music of Colours' },
         intro: { fr: 'Chaque couleur a sa note. Rejoue la mélodie du Maestro !', en: 'Each colour has a note. Play back the Maestro’s tune!' },
         outcome: { kind: 'character', id: 'maestro_cricket', label: { fr: 'Maestro Grillon', en: 'Maestro Cricket' }, emoji: '🦗' },
       },
-      {
-        game: 'art_studio',
-        skill: 'colors',
+      { game: 'color_lab', skill: 'colors',
         title: { fr: 'La fresque géante', en: 'The Giant Mural' },
         intro: { fr: 'Tout le village peint une fresque. Prépare les couleurs !', en: 'The whole village is painting a mural. Get the colours ready!' },
         outcome: { kind: 'place', id: 'mural_wall', label: { fr: 'Mur de la fresque', en: 'Mural wall' }, emoji: '🧱' },
@@ -836,7 +786,7 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['panda', 'cat', 'fox'],
     learningSkills: ['nutrition', 'sequencing', 'counting', 'ecology', 'vocabulary'],
-    availableGames: ['little_chef', 'number_island', 'eco_world', 'word_forest'],
+    availableGames: ['word_forest', 'number_island', 'little_chef', 'eco_world'],
     quests: [
       {
         game: 'word_forest',
@@ -900,19 +850,15 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'cosmo_owl', name: { fr: 'Cosmo', en: 'Cosmo' }, emoji: '🦉', role: { fr: 'Hibou veilleur de nuit', en: 'Night-watch owl' } },
     ],
     companions: ['owl', 'robot', 'unicorn'],
-    learningSkills: ['astronomy', 'memory', 'music', 'sequencing'],
-    availableGames: ['space_memory', 'space_mission', 'music_garden', 'dragon_academy'],
+    learningSkills: ['astronomy', 'memory', 'sequencing'],
+    availableGames: ['space_mission', 'memory_magic', 'dragon_academy', 'little_chef'],
     quests: [
-      {
-        game: 'space_memory',
-        skill: 'astronomy',
+      { game: 'space_mission', skill: 'astronomy',
         title: { fr: 'Les cartes du ciel', en: 'The Sky Cards' },
         intro: { fr: 'Associe chaque planète à son nom pour ouvrir l’observatoire.', en: 'Match each planet with its name to open the observatory.' },
         outcome: { kind: 'place', id: 'observatory', label: { fr: 'Observatoire', en: 'Observatory' }, emoji: '🔭' },
       },
-      {
-        game: 'music_garden',
-        skill: 'music',
+      { game: 'memory_magic', skill: 'memory',
         title: { fr: 'La chanson des étoiles', en: 'The Star Song' },
         intro: { fr: 'Les étoiles fredonnent. Rejoue leur mélodie !', en: 'The stars are humming. Play back their tune!' },
         outcome: { kind: 'character', id: 'twinkle', label: { fr: 'Scintille l’étoile', en: 'Twinkle the star' }, emoji: '⭐' },
@@ -931,9 +877,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Une comète passe ! Suis-la à travers les questions.', en: 'A comet is passing! Follow it through the questions.' },
         outcome: { kind: 'place', id: 'comet_trail', label: { fr: 'Traînée de la comète', en: 'Comet trail' }, emoji: '☄️' },
       },
-      {
-        game: 'space_memory',
-        skill: 'memory',
+      { game: 'memory_magic', skill: 'memory',
         title: { fr: 'Les constellations', en: 'The Constellations' },
         intro: { fr: 'Retrouve les paires de constellations cachées dans la nuit.', en: 'Find the constellation pairs hidden in the night.' },
         outcome: { kind: 'character', id: 'cosmo_owl', label: { fr: 'Cosmo le hibou', en: 'Cosmo the owl' }, emoji: '🦉' },
@@ -966,7 +910,7 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['dolphin', 'panda', 'owl'],
     learningSkills: ['animals', 'science', 'subtraction', 'logic'],
-    availableGames: ['animal_rescue', 'little_scientist', 'math_runner', 'puzzle_castle'],
+    availableGames: ['little_scientist', 'number_island', 'animal_rescue', 'puzzle_castle'],
     quests: [
       {
         game: 'little_scientist',
@@ -975,9 +919,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Pourquoi la glace fond-elle ? Découvrons-le ensemble !', en: 'Why does ice melt? Let’s find out together!' },
         outcome: { kind: 'place', id: 'crystal_cave', label: { fr: 'Grotte de cristal', en: 'Crystal cave' }, emoji: '💎' },
       },
-      {
-        game: 'math_runner',
-        skill: 'subtraction',
+      { game: 'number_island', skill: 'subtraction',
         title: { fr: 'La glissade', en: 'The Big Slide' },
         intro: { fr: 'Glisse sur la glace et choisis le bon résultat !', en: 'Slide across the ice and pick the right answer!' },
         outcome: { kind: 'character', id: 'pingu', label: { fr: 'Pingo le manchot', en: 'Pingo the penguin' }, emoji: '🐧' },
@@ -1003,9 +945,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Comment les animaux restent-ils au chaud ? Réponds à Nanouk !', en: 'How do animals stay warm? Answer Nanook’s questions!' },
         outcome: { kind: 'character', id: 'nanuk', label: { fr: 'Nanouk l’ours polaire', en: 'Nanook the polar bear' }, emoji: '🐻‍❄️' },
       },
-      {
-        game: 'math_runner',
-        skill: 'subtraction',
+      { game: 'number_island', skill: 'subtraction',
         title: { fr: 'La fête des flocons', en: 'The Snowflake Festival' },
         intro: { fr: 'Une dernière course pour allumer les lumières de la fête !', en: 'One last run to light up the festival!' },
         outcome: { kind: 'item', id: 'snow_globe', label: { fr: 'Boule à neige', en: 'Snow globe' }, emoji: '🔮' },
@@ -1031,7 +971,7 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['owl', 'unicorn', 'fox'],
     learningSkills: ['reading', 'letters', 'vocabulary', 'memory', 'sequencing'],
-    availableGames: ['story_builder_game', 'alphabet_quest', 'word_forest', 'memory_magic'],
+    availableGames: ['alphabet_quest', 'little_chef', 'word_forest', 'memory_magic'],
     quests: [
       {
         game: 'alphabet_quest',
@@ -1040,9 +980,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Les lettres du titre se sont enfuies. Rattrape-les !', en: 'The title letters ran away. Catch them!' },
         outcome: { kind: 'item', id: 'golden_key', label: { fr: 'Clé dorée du livre', en: 'Golden book key' }, emoji: '🗝️' },
       },
-      {
-        game: 'story_builder_game',
-        skill: 'sequencing',
+      { game: 'little_chef', skill: 'sequencing',
         title: { fr: 'Il était une fois…', en: 'Once Upon a Time…' },
         intro: { fr: 'Remets le début de l’histoire dans le bon ordre.', en: 'Put the start of the story back in order.' },
         outcome: { kind: 'place', id: 'enchanted_forest', label: { fr: 'Forêt enchantée', en: 'Enchanted forest' }, emoji: '🌳' },
@@ -1061,16 +999,12 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Les images du conte vont par paires. Retrouve-les !', en: 'The story pictures come in pairs. Find them!' },
         outcome: { kind: 'place', id: 'gingerbread_house', label: { fr: 'Maison en pain d’épices', en: 'Gingerbread house' }, emoji: '🏡' },
       },
-      {
-        game: 'story_builder_game',
-        skill: 'reading',
+      { game: 'word_forest', skill: 'reading',
         title: { fr: 'Le chemin de Petit Loup', en: 'Little Wolf’s Way Home' },
         intro: { fr: 'Lis l’histoire pour aider Petit Loup à rentrer chez lui.', en: 'Read the story to help Little Wolf get home.' },
         outcome: { kind: 'character', id: 'little_wolf', label: { fr: 'Petit Loup', en: 'Little Wolf' }, emoji: '🐺' },
       },
-      {
-        game: 'story_builder_game',
-        skill: 'reading',
+      { game: 'word_forest', skill: 'reading',
         title: { fr: '… et ils vécurent heureux', en: '… Happily Ever After' },
         intro: { fr: 'Termine le grand livre pour que tous retrouvent leur page !', en: 'Finish the big book so everyone finds their page!' },
         outcome: { kind: 'item', id: 'wonder_book', label: { fr: 'Livre merveilleux', en: 'Wonder book' }, emoji: '📖' },
@@ -1096,7 +1030,7 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['fox', 'panda', 'dragon'],
     learningSkills: ['animals', 'geography', 'counting', 'science'],
-    availableGames: ['animal_rescue', 'geography_explorer', 'number_island', 'little_scientist'],
+    availableGames: ['number_island', 'animal_rescue', 'little_scientist', 'geography_explorer'],
     quests: [
       {
         game: 'number_island',
@@ -1161,7 +1095,7 @@ export const WORLDS: WorldDefinition[] = [
     ],
     companions: ['dolphin', 'unicorn', 'robot'],
     learningSkills: ['ecology', 'animals', 'memory', 'colors'],
-    availableGames: ['eco_world', 'animal_rescue', 'memory_magic', 'color_lab'],
+    availableGames: ['color_lab', 'memory_magic', 'eco_world', 'animal_rescue'],
     quests: [
       {
         game: 'color_lab',
@@ -1225,12 +1159,10 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'pixel', name: { fr: 'Pixel', en: 'Pixel' }, emoji: '🛸', role: { fr: 'Petit drone livreur', en: 'A little delivery drone' } },
     ],
     companions: ['robot', 'fox', 'dolphin'],
-    learningSkills: ['sequencing', 'ecology', 'multiplication', 'geography', 'logic'],
-    availableGames: ['robot_factory', 'eco_world', 'math_runner', 'geography_explorer', 'dragon_academy'],
+    learningSkills: ['sequencing', 'ecology', 'geography', 'logic'],
+    availableGames: ['dragon_academy', 'eco_world', 'number_island', 'geography_explorer'],
     quests: [
-      {
-        game: 'robot_factory',
-        skill: 'sequencing',
+      { game: 'dragon_academy', skill: 'sequencing',
         title: { fr: 'Le robot jardinier', en: 'The Gardening Robot' },
         intro: { fr: 'Construis Volt pour qu’il plante des jardins sur les toits !', en: 'Build Volt so it can plant rooftop gardens!' },
         outcome: { kind: 'character', id: 'volt', label: { fr: 'Volt le robot', en: 'Volt the robot' }, emoji: '🤖' },
@@ -1242,9 +1174,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Dans la ville du futur, rien ne se perd. Trions tout !', en: 'In the city of the future, nothing goes to waste. Let’s sort it all!' },
         outcome: { kind: 'place', id: 'recycle_tower', label: { fr: 'Tour du recyclage', en: 'Recycling tower' }, emoji: '♻️' },
       },
-      {
-        game: 'math_runner',
-        skill: 'multiplication',
+      { game: 'number_island', skill: 'logic',
         title: { fr: 'Le train volant', en: 'The Flying Train' },
         intro: { fr: 'Calcule les wagons pour faire décoller le train !', en: 'Calculate the carriages to make the train take off!' },
         outcome: { kind: 'place', id: 'sky_station', label: { fr: 'Gare des nuages', en: 'Sky station' }, emoji: '🚝' },
@@ -1263,9 +1193,7 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Notre ville a des amies partout dans le monde. Retrouve-les !', en: 'Our city has friends all over the world. Find them!' },
         outcome: { kind: 'character', id: 'pixel', label: { fr: 'Pixel le drone', en: 'Pixel the drone' }, emoji: '🛸' },
       },
-      {
-        game: 'robot_factory',
-        skill: 'sequencing',
+      { game: 'dragon_academy', skill: 'sequencing',
         title: { fr: 'L’inauguration', en: 'The Grand Opening' },
         intro: { fr: 'Prépare les robots pour l’inauguration de la ville verte !', en: 'Get the robots ready for the green city’s opening!' },
         outcome: { kind: 'place', id: 'green_plaza', label: { fr: 'Place verte', en: 'Green plaza' }, emoji: '🌳' },
@@ -1290,8 +1218,8 @@ export const WORLDS: WorldDefinition[] = [
       { id: 'grandpa_oak', name: { fr: 'Papi Chêne', en: 'Grandpa Oak' }, emoji: '🌳', role: { fr: 'Vieil arbre conteur', en: 'An old storytelling tree' } },
     ],
     companions: ['dragon', 'cat', 'unicorn'],
-    learningSkills: ['nutrition', 'reading', 'music', 'letters', 'counting'],
-    availableGames: ['little_chef', 'story_builder_game', 'music_garden', 'alphabet_quest', 'number_island'],
+    learningSkills: ['nutrition', 'reading', 'letters', 'counting'],
+    availableGames: ['alphabet_quest', 'number_island', 'little_chef', 'word_forest', 'memory_magic'],
     quests: [
       {
         game: 'alphabet_quest',
@@ -1314,16 +1242,12 @@ export const WORLDS: WorldDefinition[] = [
         intro: { fr: 'Prépare les bons plats de la fête avec Béa !', en: 'Make tasty party food with Bea!' },
         outcome: { kind: 'item', id: 'party_cake', label: { fr: 'Gâteau de fête', en: 'Party cake' }, emoji: '🍰' },
       },
-      {
-        game: 'story_builder_game',
-        skill: 'reading',
+      { game: 'word_forest', skill: 'reading',
         title: { fr: 'Les histoires de Papi Chêne', en: 'Grandpa Oak’s Stories' },
         intro: { fr: 'Papi Chêne a mélangé ses histoires. Aide-le à les raconter !', en: 'Grandpa Oak mixed up his stories. Help him tell them!' },
         outcome: { kind: 'character', id: 'grandpa_oak', label: { fr: 'Papi Chêne', en: 'Grandpa Oak' }, emoji: '🌳' },
       },
-      {
-        game: 'music_garden',
-        skill: 'music',
+      { game: 'memory_magic', skill: 'counting',
         title: { fr: 'L’orchestre du village', en: 'The Village Band' },
         intro: { fr: 'L’orchestre a besoin d’une mélodie pour ouvrir le bal !', en: 'The band needs a tune to start the dancing!' },
         outcome: { kind: 'place', id: 'bandstand', label: { fr: 'Kiosque à musique', en: 'Bandstand' }, emoji: '🎺' },

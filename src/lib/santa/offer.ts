@@ -24,6 +24,19 @@ export const SANTA_AI_SECONDS = SANTA_AI_MINUTES * 60;
 
 export const SANTA_CURRENCY = 'eur';
 
+/** Proposed prices are display-only until the owner enables the flag. */
+export const SANTA_NEW_PRICING = false;
+export const SANTA_PROPOSED_OFFERS = [
+  { id: 'pack-noel', amount: 599, price: { fr: '5,99 €', en: '€5.99' }, name: { fr: 'Pack Noël', en: 'Christmas Pack' }, details: { fr: 'Appels guidés, photos HD et 3 enfants', en: 'Guided calls, HD photos and 3 children' } },
+  { id: 'pack-magique', amount: 1299, price: { fr: '12,99 €', en: '€12.99' }, name: { fr: 'Pack Magique', en: 'Magic Pack' }, details: { fr: 'Tout le Pack Noël et 30 min d’appel en direct', en: 'Everything in the Christmas Pack and 30 minutes live' } },
+  { id: 'famille-ultime', amount: 1999, price: { fr: '19,99 €', en: '€19.99' }, name: { fr: 'Famille Ultime', en: 'Ultimate Family' }, details: { fr: 'Jusqu’à 5 enfants et 60 min en direct', en: 'Up to 5 children and 60 minutes live' } },
+  { id: 'recharge-15', amount: 399, price: { fr: '3,99 €', en: '€3.99' }, name: { fr: 'Recharge 15 min', en: '15-minute top-up' }, details: { fr: '15 minutes d’appel en direct', en: '15 minutes of live calls' } },
+  { id: 'recharge-30', amount: 699, price: { fr: '6,99 €', en: '€6.99' }, name: { fr: 'Recharge 30 min', en: '30-minute top-up' }, details: { fr: '30 minutes d’appel en direct', en: '30 minutes of live calls' } },
+  { id: 'appel-24', amount: 299, price: { fr: '2,99 €', en: '€2.99' }, name: { fr: 'Appel du 24', en: 'Christmas Eve call' }, details: { fr: 'Un appel programmé le 24 décembre', en: 'One scheduled call on December 24' } },
+  { id: 'carte-cadeau-10', amount: 999, price: { fr: '9,99 €', en: '€9.99' }, name: { fr: 'Carte cadeau', en: 'Gift card' }, details: { fr: 'Une surprise à offrir', en: 'A surprise to give' } },
+  { id: 'carte-cadeau-15', amount: 1499, price: { fr: '14,99 €', en: '€14.99' }, name: { fr: 'Carte cadeau', en: 'Gift card' }, details: { fr: 'Une grande surprise à offrir', en: 'A bigger surprise to give' } },
+] as const;
+
 /** How many children a family can add. */
 export function santaMaxChildren(tier: SantaTier | null): number {
   return tier ? 3 : 1;

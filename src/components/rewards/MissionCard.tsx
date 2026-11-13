@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Flame, Check, Star, ArrowRight, Target } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { missionFor, isDone, readToday, readStreak, currentStreak, dayKey, MISSION_EVENT, type Mission } from '@/lib/mission';

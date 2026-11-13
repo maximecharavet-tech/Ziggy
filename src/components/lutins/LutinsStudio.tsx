@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';

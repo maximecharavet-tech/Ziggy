@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { WORLDS } from '@/data/worlds';
 import { COMPANIONS } from '@/data/companions';
@@ -65,7 +65,7 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
   const memory = useWorldMemory();
   const world = worldId ? WORLDS.find((w) => w.id === worldId) : undefined;
   const quest = world && questId ? world.quests.find((q) => q.id === questId) : undefined;
-  const gameId: ArcadeGameId = quest?.gameId ?? freeGameId ?? 'math_runner';
+  const gameId: ArcadeGameId = quest?.gameId ?? freeGameId ?? 'alphabet_quest';
   const game = getGame(gameId);
   const skill: LearningSkill = quest?.skill ?? game.skills[0];
   const companion = COMPANIONS.find((c) => c.id === memory.companion) ?? COMPANIONS[0];

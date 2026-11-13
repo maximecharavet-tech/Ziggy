@@ -13,3 +13,7 @@ next-env.d.ts
 
 # Santa photo booth: MediaPipe wasm is copied from node_modules at install (scripts/santa-mediapipe.mjs)
 /public/santa/mediapipe/wasm/
+
+# santa_voice_v2 (Python generation tool)
+__pycache__/
+.pytest_cache/

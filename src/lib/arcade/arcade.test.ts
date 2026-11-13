@@ -272,6 +272,6 @@ describe('generateContent', () => {
   });
 
   it('gives different content for different seeds', () => {
-    expect(generateContent('math_runner', 3, 'en', 1)).not.toEqual(generateContent('math_runner', 3, 'en', 2));
+    expect(generateContent('number_island', 3, 'en', 1)).not.toEqual(generateContent('number_island', 3, 'en', 2));
   });
 });

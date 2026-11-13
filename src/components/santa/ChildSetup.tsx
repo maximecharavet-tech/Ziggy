@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useLocale } from 'next-intl';
 import { tr, type L } from '@/lib/i18n-text';
 import { useReducedMotion } from '@/lib/use-reduced-motion';

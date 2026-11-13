@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Eraser, Brain, Check, X, RotateCcw, Sparkles, FlaskConical, ArrowLeft, Lightbulb } from 'lucide-react';
 import { DrawPad, type DrawPadHandle } from './DrawPad';
 import { PixelView } from './PixelView';

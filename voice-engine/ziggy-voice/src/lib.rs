@@ -21,6 +21,7 @@ pub mod prosody;
 pub mod prosody_check;
 pub mod recipe;
 pub mod render;
+pub mod santa;
 pub mod stories;
 pub mod text;
 pub mod visemes;

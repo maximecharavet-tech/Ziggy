@@ -53,7 +53,7 @@ export function spokenWishes(child: SantaChild, max = 3): string[] {
   return child.wishes.filter((id) => giftById(id)).slice(0, max);
 }
 
-export function buildCall(kind: CallKind, child: SantaChild, opts: { preview?: boolean; ai?: boolean; seed?: number } = {}): CallStep[] {
+export function buildCall(kind: CallKind, child: SantaChild, opts: { preview?: boolean; ai?: boolean; seed?: number; scheduled?: boolean } = {}): CallStep[] {
   const seed = opts.seed ?? 7;
   const react = reactions(seed);
   const giftReact = rand(seed + 1);
@@ -63,6 +63,7 @@ export function buildCall(kind: CallKind, child: SantaChild, opts: { preview?: b
 
   if (kind === 'message') {
     steps.push(say([nameClip(child, 'hello'), line('msg.open')], 'wave'));
+    if (opts.scheduled) steps.push(say([line('sched.open')], 'laugh'));
     steps.push(say([line(child.letterSentAt ? 'msg.letter' : 'msg.noLetter')], 'laugh'));
     steps.push(say([line('msg.busy')]));
     steps.push(say([line('msg.close'), nameClip(child, 'bye')], 'wave'));
@@ -72,6 +73,7 @@ export function buildCall(kind: CallKind, child: SantaChild, opts: { preview?: b
 
   // Every call opens the same warm way.
   steps.push(say([line('open.hohoho'), nameClip(child, 'hello')], 'wave'));
+  if (opts.scheduled) steps.push(say([line('sched.open')], 'laugh'));
   steps.push(say([line('open.hear')], 'listen'), listen(5000), say([line('open.hear.react')], 'laugh'));
 
   if (kind === 'liste') {
@@ -139,4 +141,11 @@ export function buildCall(kind: CallKind, child: SantaChild, opts: { preview?: b
 /** Every clip a call needs, to fetch them all while the phone rings. */
 export function callClips(steps: CallStep[]): string[] {
   return [...new Set(steps.flatMap((s) => (s.t === 'say' ? s.clips : [])))];
+}
+
+/** A stable seed from a scheduled call's id, so the clips stored in advance are exactly the ones the call plays. */
+export function seedFromId(id: string): number {
+  let h = 7;
+  for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) % 997;
+  return h;
 }

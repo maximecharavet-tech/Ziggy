@@ -2,7 +2,7 @@
 
 import { useMemo, useState, type CSSProperties } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { ARCADE_GAMES } from '@/lib/arcade/registry';
 import type { GameDefinition } from '@/lib/arcade/types';
@@ -10,8 +10,7 @@ import { SKILL_FAMILY, SKILL_NAMES } from '@/lib/learning/skills';
 import { useHydrated, useWorldMemory } from '@/lib/world/store';
 import { tr } from '@/lib/i18n-text';
 import { wt } from './text';
-import { Games3DShowcase } from '@/components/games3d/Games3DShowcase';
-import { PlatformerCard } from '@/components/platformer/PlatformerCard';
+import { GamesCoverSlider } from '@/components/games3d/GamesCoverSlider';
 import { GameScene } from '@/components/arcade/stage/GameScene';
 import { GAME_MOTIFS, NIGHT_GAMES, scenePalette } from '@/components/arcade/stage/themes';
 import { SpeechBubble, Title3D } from '@/components/arcade/stage/Showpieces';
@@ -34,7 +33,7 @@ const FAMILY_EMOJI: Record<(typeof FAMILIES)[number], string> = { all: '🌈', m
 const ARCADE_COLOR = '#FF8A65';
 const HELLO = { kind: 'wave' as const, id: 0 };
 
-/** The 20 arcade games, free play. Each one adapts its level to the child's skill. */
+/** Arcade games, free play. Each one adapts its level to the child's skill. */
 export function ArcadeHome() {
   const locale = useLocale();
   const hydrated = useHydrated();
@@ -42,7 +41,8 @@ export function ArcadeHome() {
   const [family, setFamily] = useState<(typeof FAMILIES)[number]>('all');
   const games = useMemo(() => Object.values(ARCADE_GAMES).filter((g) => family === 'all' || g.skills.some((s) => SKILL_FAMILY[s] === family)), [family]);
   const palette = useMemo(() => scenePalette(ARCADE_COLOR), []);
-  const title = locale === 'fr' ? '20 jeux qui grandissent avec toi' : '20 games that grow with you';
+  const total = Object.keys(ARCADE_GAMES).length;
+  const title = locale === 'fr' ? `${total} jeux qui grandissent avec toi` : `${total} games that grow with you`;
   const subtitle =
     locale === 'fr'
       ? 'Chaque jeu s’adapte à ton niveau : jamais trop facile, jamais trop dur. Et aucune partie n’est perdue !'
@@ -77,8 +77,7 @@ export function ArcadeHome() {
           </div>
         </header>
 
-        <Games3DShowcase locale={locale} />
-        <PlatformerCard locale={locale} />
+        <GamesCoverSlider locale={locale} />
         {/* One arcade: the 8 original mini-games are reachable from here too. */}
         <Link
           href="/games"

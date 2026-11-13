@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { createPortal } from 'react-dom';
 import { Download, PartyPopper, X } from 'lucide-react';

@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, Check, MailCheck, Loader2, Eye, EyeOff } from 'lucide-react';
 import { useRouter, Link } from '@/i18n/navigation';
 import { AgentAvatar } from '@/components/agents/AgentAvatar';

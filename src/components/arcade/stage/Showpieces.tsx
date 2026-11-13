@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, type CSSProperties, type ReactNode } from 'react';
-import { animate, motion } from 'framer-motion';
+import { animate, motion } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { playSound } from '@/lib/sound';
 import { Burst, SparkleIcon } from './Burst';

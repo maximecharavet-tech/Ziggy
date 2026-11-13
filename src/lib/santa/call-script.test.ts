@@ -73,3 +73,14 @@ describe('Santa’s words', () => {
     expect(cleanName('Léa <b>')).toBe('');
   });
 });
+
+describe('scheduled calls', () => {
+  it('open with the "right on time" line and keep a stable seed', async () => {
+    const { buildCall, callClips, seedFromId } = await import('./call-script');
+    const child = { id: 'c', name: 'Léa', age: 6, wishes: [], proud: null };
+    const steps = buildCall('veille', child, { scheduled: true, seed: seedFromId('abc123') });
+    expect(callClips(steps)).toContain('line:sched.open');
+    expect(seedFromId('abc123')).toBe(seedFromId('abc123'));
+    expect(callClips(buildCall('veille', child, {}))).not.toContain('line:sched.open');
+  });
+});

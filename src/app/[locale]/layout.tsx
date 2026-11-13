@@ -21,6 +21,8 @@ import { AppShellProvider } from '@/components/app/AppShellProvider';
 import { AppTabBar } from '@/components/app/AppTabBar';
 import { TvTopBar } from '@/components/tv/TvTopBar';
 import type { Metadata } from 'next';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import '../globals.css';
 
 const geist = localFont({
@@ -152,6 +154,8 @@ export default async function LocaleLayout({
           <AppTabBar />
           <RewardCeremony />
           <BreakReminder />
+          <Analytics />
+          <SpeedInsights />
           </AppShellProvider>
           </MotionProvider>
         </NextIntlClientProvider>

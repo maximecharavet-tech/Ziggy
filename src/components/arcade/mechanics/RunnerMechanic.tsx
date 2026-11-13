@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import type { MechanicProps } from '@/lib/arcade/types';
 import type { RunnerScene } from './runner/RunnerScene';
 import { runnerLanes } from '../logic';

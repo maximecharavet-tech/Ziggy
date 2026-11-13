@@ -547,3 +547,57 @@ Livré avec le site : uniquement l’audio produit (MP3 + `timing.json`).
   **espeak-ng 1.52 (GPL-3.0)** via la wheel `espeakng-loader` (MIT), chargé dynamiquement sur la
   machine de fabrication uniquement ; **FFmpeg** + libmp3lame (LGPL/GPL), outil système.
   Aucun de ces codes n’est lié au site ni livré avec lui.
+
+## Santa's voice (L'appli du Père Noël)
+
+```sh
+node voice-engine/dump-santa.mjs /tmp/santa-clips.json
+voice-engine/target/release/ziggy-voice santa --clips /tmp/santa-clips.json
+```
+
+Records every fixed clip (`src/data/santa/voice-clips.ts`: calls, message,
+gifts, proud moments, ages, Advent) into `public/santa/voice/<locale>/` and
+updates `src/data/santa/voice-manifest.json` (key → hash of the words). Runs
+are resumable: only new or changed texts are re-recorded. Voice:
+`recipe::santa` (French: timbre am_santa 0.35 + em_santa 0.15 + ff_siwis 0.5,
+prosody ff_siwis, f0 × 0.56, formant 0.93, speed 0.86; English: am_santa),
+then `santa::fx` (FunDSP: chest bell 150 Hz, low shelf 300 Hz, softer top,
+25 % tanh) and the usual mastering (−18 LUFS, −2 dBTP). Lab overrides:
+`--timbre --prosody --pitch --formant --speed --only --out --manifest --wav`.
+About 7 min for 336 clips on 8 CPU cores.
+
+### santa-v2: old-man voice (`santa_voice_v2/`, Python, current)
+
+```sh
+uv venv -p 3.12 /tmp/v312 && uv pip install -p /tmp/v312/bin/python -r voice-engine/requirements-santa.txt
+# Kokoro files: kokoro-v1.0.onnx (= .cache/kokoro-fp32.onnx) and voices-v1.0.bin
+# (npz of .cache/voices/*.bin, each 510×1×256 float32) in ~/.cache/kokoro
+node voice-engine/dump-santa.mjs /tmp/santa-clips.json
+/tmp/v312/bin/python voice-engine/santa_voice_v2.py --clips /tmp/santa-clips.json --models ~/.cache/kokoro --jobs 4 --age 0.7
+/tmp/v312/bin/python -m pytest -q voice-engine/tests
+```
+
+Pipeline per clip: punctuation plan (`plan.py`: one Kokoro call per sentence,
+end contour from . ? ! … , a separate aspirated « Ho ! ×3 » with falling pitch
+and a belly envelope) → Kokoro with a blended voice table (timbre and prosody
+halves, `synth.py`; Kokoro is never run below speed 0.92, the rest of the slow
+delivery is a WORLD time-stretch) → WORLD (`world_fx.py`: target F0 108 Hz fr /
+100 Hz en, melody range, intonation, emphasis, formants, ageing: jitter,
+shimmer, breath, creak, slow-down; `--age 0..1`) → colour (`colour.py`: EQ, soft
+saturation, de-esser, −18 LUFS, true-peak limiter) → MP3. The manifest's
+`voice` becomes `santa-v2` (a voice change regenerates everything) and the site
+adds `&v=<voice>` to each clip URL so week-long caches pick up the new voice.
+`--ab DIR --qa` writes A/B files and a WER report (faster-whisper, float32).
+About 20 min for 336 clips on 8 CPU cores.
+
+### First names and lip sync (santa-v2)
+
+- `santa_names.py` builds the first-name list (INSEE 2010–2022 top 2,000 French
+  names, US SSA 1998–2008 top 800 English names) as greetings recorded with the
+  same chain (`--out public/santa/names --mp3-q 6`), then the index the site
+  loads (`public/santa/names/index.json`, lazy, ~30 kB). Unknown names: the
+  same-voice `line:name.hello` / `line:name.bye`.
+- `santa_visemes.py` runs Rhubarb Lip Sync (MIT, phonetic recognizer) on every
+  recorded clip and writes `public/santa/visemes/<locale>.json` (cue strings
+  "X0 C6 B13 …", resumable). The call's 3D Santa reads them in sync with the
+  AudioContext clock; first names use the loudness.

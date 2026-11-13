@@ -7,7 +7,7 @@
  * - API calls and anything cross-origin: untouched (no data is cached).
  * Bump VERSION to clear old caches.
  */
-const VERSION = 'ziggy-v5';
+const VERSION = 'ziggy-v6';
 const STATIC = `${VERSION}-static`;
 const PAGES = `${VERSION}-pages`;
 const OFFLINE_URL = '/offline.html';
@@ -63,4 +63,20 @@ self.addEventListener('fetch', (event) => {
       })()
     );
   }
+});
+
+// L'appli du Père Noël: a scheduled call's notification opens (or focuses) the ringing call page.
+self.addEventListener('notificationclick', (event) => {
+  const url = (event.notification.data && event.notification.data.url) || '/pere-noel/appel';
+  event.notification.close();
+  event.waitUntil(
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      for (const c of list) {
+        if ('focus' in c && new URL(c.url).origin === self.location.origin) {
+          return c.focus().then((w) => (w && 'navigate' in w ? w.navigate(url) : undefined));
+        }
+      }
+      return self.clients.openWindow(url);
+    })
+  );
 });

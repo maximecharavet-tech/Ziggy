@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { WORLDS } from '@/data/worlds';
 import { AVATAR_STYLES, EYE_COLORS, HAIR_COLORS, HAIR_LENGTHS, HAIR_STYLES, OUTFITS, SKIN_TONES, type AvatarRequest, type VisualBlueprint } from '@/lib/hyper-engine/schemas';

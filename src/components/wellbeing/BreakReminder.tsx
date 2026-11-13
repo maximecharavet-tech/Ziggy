@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Wind, X } from 'lucide-react';
 import { Breathe } from './Breathe';
 import { ZiggyAvatar } from '@/components/ziggy/Mascot';

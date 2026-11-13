@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { SpeakButton } from '@/components/ziggy/VoiceControls';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { Star, ArrowRight, RotateCcw, Sparkles, Gamepad2, Trophy } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Confetti } from '@/components/ui/Confetti';

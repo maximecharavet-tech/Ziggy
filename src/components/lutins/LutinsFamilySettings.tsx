@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence } from 'framer-motion';
+import { AnimatePresence } from 'motion/react';
 import { useLocale } from 'next-intl';
 import { tr, type L } from '@/lib/i18n-text';
 import { cleanName } from '@/lib/santa/store';

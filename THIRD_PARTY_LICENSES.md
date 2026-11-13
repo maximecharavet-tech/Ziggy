@@ -8,6 +8,8 @@ their licenses is audited in `docs/evolution/INVENTORY.md`.)
 | three.js | https://github.com/mrdoob/three.js | MIT | © 2010–2026 three.js authors | 0.186.1 |
 | @types/three (dev only) | https://github.com/DefinitelyTyped/DefinitelyTyped | MIT | © Microsoft Corporation | 0.186.0 |
 | wasm-bindgen (Rust crate compiled into `src/lib/tv/wasm/`, and its generated JS glue) | https://github.com/rustwasm/wasm-bindgen | MIT OR Apache-2.0 | © The wasm-bindgen Developers | 0.2.129 |
+| @vercel/analytics | https://github.com/vercel/analytics | MIT | © Vercel, Inc. | 1.6.1 |
+| @vercel/speed-insights | https://github.com/vercel/speed-insights | MIT | © Vercel, Inc. | 1.3.1 |
 | @mediapipe/tasks-vision (Santa photo booth: on-device person segmentation; its wasm runtime is self-hosted in `public/santa/mediapipe/wasm/` by `scripts/santa-mediapipe.mjs`) | https://github.com/google-ai-edge/mediapipe | Apache-2.0 | © Google LLC | 1.2.2 |
 | MediaPipe selfie segmentation models `selfie_segmenter.tflite` (float16) and `selfie_multiclass_256x256.tflite` (float32), self-hosted in `public/santa/mediapipe/` | https://ai.google.dev/edge/mediapipe/solutions/vision/image_segmenter | Apache-2.0 (per their model cards) | © Google LLC | latest (downloaded 2026-11-08) |
 

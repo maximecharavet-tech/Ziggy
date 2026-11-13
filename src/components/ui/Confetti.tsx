@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 
 const COLORS = ['#7FC85C', '#5FB6EA', '#F2647B', '#FBBF24', '#A78BFA', '#4FC9C0'];
 

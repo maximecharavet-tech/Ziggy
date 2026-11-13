@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState, type CSSProperties } from 'react';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { GOALS, HEROES, OBJECTS, PLACES, STORY_COMPANIONS, pick, type StoryChoices } from '@/lib/story/choices';
 import type { StoryJson } from '@/lib/hyper-engine/schemas';

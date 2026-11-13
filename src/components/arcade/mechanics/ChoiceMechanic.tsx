@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { ChoiceQuestion } from './ChoiceQuestion';
 import { RoundProgress, Stage, useFinishIfEmpty, useGameRun } from './shared';

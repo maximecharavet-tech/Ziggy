@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { WORLDS } from '@/data/worlds';
 import { COMPANIONS } from '@/data/companions';
@@ -16,7 +16,7 @@ import { tr } from '@/lib/i18n-text';
 import { StatusBar } from './StatusBar';
 import { CompanionBuddy } from './CompanionBuddy';
 import { wt } from './text';
-import { Games3DShowcase } from '@/components/games3d/Games3DShowcase';
+import { GamesCoverSlider } from '@/components/games3d/GamesCoverSlider';
 import { AgePicker, AGE_CHOICES } from './AgePicker';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { GameScene } from '@/components/arcade/stage/GameScene';
@@ -75,7 +75,7 @@ export function WorldMapHome() {
 
         <QuickLinks locale={locale} />
 
-        <Games3DShowcase locale={locale} />
+        <GamesCoverSlider locale={locale} />
 
         <section className="mt-12" aria-labelledby="map-title">
           <h2 id="map-title" className="font-display text-3xl font-bold text-text-body">

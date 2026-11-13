@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { Bot, ArrowUp, ArrowDown, ArrowLeft, ArrowRight, Play, Trash2, X, Lightbulb, Bug } from 'lucide-react';
 import { runProgram, shortestPath, robotStars, same, GRID, type Cell, type Dir, type Level } from '@/lib/games/robot';

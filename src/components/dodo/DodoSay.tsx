@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { speakSequence, stopSpeaking, unlockAudio, voiceStore } from '@/lib/voice';
 import { isMuted } from '@/lib/sound';
 import { tr } from '@/lib/i18n-text';

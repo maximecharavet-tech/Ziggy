@@ -1,6 +1,7 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import Image from 'next/image';
+import { motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
 import { Tilt3D } from '@/components/ui/Tilt3D';
@@ -8,6 +9,7 @@ import { Tilt3D } from '@/components/ui/Tilt3D';
 export const GAMES_3D: {
   href: string;
   emoji: string;
+  cover: string;
   title: L;
   teaser: L;
   from: string;
@@ -17,6 +19,7 @@ export const GAMES_3D: {
   {
     href: '/monde/3d/noel',
     emoji: '🎄',
+    cover: '/covers/noel.webp',
     title: { fr: 'Le Noël de Ziggy', en: 'Ziggy’s Christmas' },
     teaser: {
       fr: 'Livre les cadeaux du village enneigé et illumine le grand sapin.',
@@ -32,6 +35,7 @@ export const GAMES_3D: {
   {
     href: '/monde/3d/luge',
     emoji: '🛷',
+    cover: '/covers/luge.webp',
     title: { fr: 'La Luge des nombres', en: 'The Number Sled' },
     teaser: {
       fr: 'Dévale la piste et passe sous l’arche de la bonne réponse.',
@@ -47,6 +51,7 @@ export const GAMES_3D: {
   {
     href: '/monde/3d/kart',
     emoji: '🏎️',
+    cover: '/covers/kart.webp',
     title: { fr: 'Ziggy Kart des lettres', en: 'Ziggy’s Letter Kart' },
     teaser: {
       fr: 'Roule sur la route arc-en-ciel et passe sous les bonnes lettres pour écrire les mots.',
@@ -59,6 +64,7 @@ export const GAMES_3D: {
   {
     href: '/monde/3d/planetes',
     emoji: '🪐',
+    cover: '/covers/planetes.webp',
     title: { fr: 'Le Facteur des Planètes', en: 'The Planet Postman' },
     teaser: {
       fr: 'Livre les colis de planète en planète : résous l’énigme pour trouver la bonne adresse !',
@@ -71,6 +77,7 @@ export const GAMES_3D: {
   {
     href: '/monde/3d/grand-huit',
     emoji: '🎢',
+    cover: '/covers/grand-huit.webp',
     title: { fr: 'Le Grand Huit des Nombres', en: 'The Number Coaster' },
     teaser: {
       fr: 'Construis le trajet du wagonnet et arrête Ziggy pile à la bonne gare… Splash !',
@@ -79,9 +86,11 @@ export const GAMES_3D: {
     from: '#4a5bc4',
     to: '#ff8a5c',
     skill: { fr: 'Compter · additions · soustractions · tables · suites', en: 'Counting · sums · take-aways · times tables · patterns' },
-  },  {
+  },
+  {
     href: '/monde/3d/dino',
     emoji: '🦕',
+    cover: '/covers/dino.webp',
     title: { fr: 'Ziggy Paléontologue', en: 'Ziggy the Dino Digger' },
     teaser: {
       fr: 'Creuse le sable, reconstruis les squelettes et regarde les dinosaures se réveiller !',
@@ -90,9 +99,11 @@ export const GAMES_3D: {
     from: '#7a3b12',
     to: '#f2994a',
     skill: { fr: 'Animaux · formes · sciences · compter', en: 'Animals · shapes · science · counting' },
-  },  {
+  },
+  {
     href: '/monde/3d/detective',
     emoji: '🔍',
+    cover: '/covers/detective.webp',
     title: { fr: 'Ziggy Détective', en: 'Detective Ziggy' },
     teaser: {
       fr: 'Trouve les indices au village et découvre qui a mangé le gâteau !',
@@ -101,9 +112,11 @@ export const GAMES_3D: {
     from: '#2f6fb3',
     to: '#f29a3c',
     skill: { fr: 'Logique · lecture · vocabulaire', en: 'Logic · reading · vocabulary' },
-  },  {
+  },
+  {
     href: '/monde/3d/pizza',
     emoji: '🍕',
+    cover: '/covers/pizza.webp',
     title: { fr: 'La Pizzeria de Ziggy', en: 'Ziggy’s Pizzeria' },
     teaser: {
       fr: 'Garnis les pizzas des animaux du village et régale tout le monde !',
@@ -125,46 +138,40 @@ export function Games3DShowcase({ locale, title = true }: { locale: string; titl
         </h2>
       ) : null}
       <div className="grid gap-4 sm:grid-cols-2">
-        {GAMES_3D.map((g, i) => (
-          <motion.div key={g.href} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 * i }}>
-            <Tilt3D className="rounded-[2rem]">
-              <Link
-                href={g.href}
-                className="group relative block overflow-hidden rounded-[2rem] p-6 text-white shadow-xl ring-1 ring-white/10 transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-300/60"
-                style={{
-                  background: `linear-gradient(140deg, ${g.from}, ${g.to})`,
-                }}
-              >
-                <span
-                  className="pointer-events-none absolute -right-4 -top-6 text-[9rem] opacity-25 transition duration-700 group-hover:rotate-6 group-hover:scale-110"
-                  aria-hidden="true"
+        {GAMES_3D.map((g, i) => {
+          const gameTitle = tr(g.title, locale);
+          return (
+            <motion.div key={g.href} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.08 * i }}>
+              <Tilt3D className="rounded-[2rem]">
+                <Link
+                  href={g.href}
+                  className="group relative block overflow-hidden rounded-[2rem] text-white shadow-xl ring-1 ring-white/10 transition hover:-translate-y-1 focus-visible:outline focus-visible:outline-4 focus-visible:outline-amber-300/60"
+                  style={{ background: `linear-gradient(140deg, ${g.from}, ${g.to})` }}
                 >
-                  {g.emoji}
-                </span>
-                {Array.from({ length: 14 }, (_, k) => (
-                  <span
-                    key={k}
-                    className="pointer-events-none absolute h-1 w-1 rounded-full bg-white/70"
-                    style={{
-                      left: `${(k * 41) % 100}%`,
-                      top: `${(k * 23) % 100}%`,
-                    }}
-                    aria-hidden="true"
-                  />
-                ))}
-                <span className="relative inline-flex rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-black text-[#2a1650]">3D</span>
-                <h3 className="relative mt-3 font-display text-2xl font-bold">
-                  {g.emoji} {tr(g.title, locale)}
-                </h3>
-                <p className="relative mt-1 max-w-xs text-white/80">{tr(g.teaser, locale)}</p>
-                <p className="relative mt-3 text-xs font-semibold text-white/60">{tr(g.skill, locale)}</p>
-                <span className="relative mt-4 inline-flex rounded-full bg-white/95 px-5 py-2 font-bold text-[#1b2150] transition group-hover:scale-105">
-                  ▶ {locale === 'fr' ? 'Jouer' : 'Play'}
-                </span>
-              </Link>
-            </Tilt3D>
-          </motion.div>
-        ))}
+                  <span className="relative block aspect-[4/5] w-full overflow-hidden">
+                    <Image
+                      src={g.cover}
+                      alt={gameTitle}
+                      fill
+                      sizes="(max-width: 640px) 100vw, 50vw"
+                      className="object-cover transition duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                  </span>
+                  <span className="relative block space-y-2 p-5">
+                    <span className="inline-flex rounded-full bg-amber-300 px-2.5 py-0.5 text-xs font-black text-[#2a1650]">3D</span>
+                    <h3 className="font-display text-xl font-bold leading-tight">{gameTitle}</h3>
+                    <p className="max-w-xs text-sm text-white/85">{tr(g.teaser, locale)}</p>
+                    <p className="text-xs font-semibold text-white/60">{tr(g.skill, locale)}</p>
+                    <span className="mt-1 inline-flex rounded-full bg-white/95 px-5 py-2 font-bold text-[#1b2150] transition group-hover:scale-105">
+                      ▶ {locale === 'fr' ? 'Jouer' : 'Play'}
+                    </span>
+                  </span>
+                </Link>
+              </Tilt3D>
+            </motion.div>
+          );
+        })}
       </div>
     </section>
   );

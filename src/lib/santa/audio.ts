@@ -1,19 +1,44 @@
 'use client';
 
 import { santaText, type SantaLocale } from '@/data/santa/lines';
+import { staticClipUrl } from '@/data/santa/voice-clips';
+import { cachedClip } from './precache';
+import { anonNameKey, nameClipUrl, type NameVariant } from './names';
+import { cuesAt, loadVisemes, type Viseme } from './visemes';
 
 /**
- * Santa's voice on the device: fetches the cached clips (/api/santa/voice),
- * plays them through an analyser so the 3D Santa's mouth follows the voice,
- * and falls back to the device's own voice when a clip can't be fetched.
+ * Santa's voice on the device: ONE voice everywhere. Plays Santa's recorded
+ * clips (public/santa/voice, santa-v2, made offline for free) and the child's
+ * first name from the recorded greetings (public/santa/names), or a same-voice
+ * greeting without the name when it is not recorded. When a clip cannot be
+ * fetched, Santa's words show as a caption (no other voice takes over).
+ * The mouth follows each clip's precomputed mouth cues (Rhubarb Lip Sync,
+ * public/santa/visemes), or the loudness for the first names.
  * Also code-built sounds (no audio files): the phone ringing, sleigh bells, a
  * reindeer's snort and a sparkle.
  */
 
-/** Bump when the texts of src/data/santa/lines.ts change (busts the CDN cache). */
+/** Bump when the texts of src/data/santa/lines.ts change (busts the CDN cache of the live AI route). */
 export const VOICE_VERSION = 1;
+/** Pause before the one retry of a clip the live AI route could not make (502/429). */
+export const RETRY_MS = 1500;
 
 export const clipUrl = (key: string, locale: SantaLocale) => `/api/santa/voice?k=${encodeURIComponent(key)}&l=${locale}&v=${VOICE_VERSION}`;
+
+/** Where a clip comes from: its recorded file (first names: the recorded greeting, or the nameless one). */
+export const clipSources = async (key: string, locale: SantaLocale, fetcher?: typeof fetch): Promise<string[]> => {
+  const [kind, variant, ...rest] = key.split(':');
+  if (kind === 'name' && (variant === 'hello' || variant === 'bye')) {
+    const named = await nameClipUrl(variant as NameVariant, rest.join(':'), locale, fetcher);
+    const anon = staticClipUrl(anonNameKey(variant as NameVariant), locale);
+    return [named, anon].filter((u): u is string => Boolean(u));
+  }
+  const file = staticClipUrl(key, locale);
+  return file ? [file] : [];
+};
+
+/** A clip's mouth-cue name: `line-open.hohoho` for `/santa/voice/fr/line-open.hohoho.mp3?…`. */
+export const cueName = (url: string) => (url.startsWith('/santa/voice/') ? (url.split('/').pop() ?? '').replace(/\.mp3.*$/, '') : null);
 
 type Level = (v: number) => void;
 
@@ -25,9 +50,12 @@ export class SantaAudio {
   private current: AudioBufferSourceNode | null = null;
   private raf = 0;
   private stopped = false;
-  private voiceDown = false;
+  private cut = false;
 
-  constructor(private locale: SantaLocale, private onLevel: Level) {
+  private urls = new Map<string, string>();
+  private visemes: Promise<Record<string, string> | null>;
+
+  constructor(private locale: SantaLocale, private onLevel: Level, private onViseme?: (v: Viseme | null) => void) {
     const AC = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
     this.ctx = new AC();
     this.master = this.ctx.createGain();
@@ -35,6 +63,7 @@ export class SantaAudio {
     this.analyser = this.ctx.createAnalyser();
     this.analyser.fftSize = 512;
     this.master.connect(this.ctx.destination);
+    this.visemes = onViseme ? loadVisemes(locale) : Promise.resolve(null);
   }
 
   /** Must run from a tap (browsers start audio only after a gesture). */
@@ -42,7 +71,7 @@ export class SantaAudio {
     if (this.ctx.state === 'suspended') await this.ctx.resume().catch(() => {});
   }
 
-  /** Fetches and decodes clips, several at a time; reports progress 0–1. */
+  /** Fetches and decodes clips, two at a time; reports progress 0–1. */
   async preload(keys: string[], onProgress?: (p: number) => void) {
     let done = 0;
     const queue = keys.filter((k) => !this.buffers.has(k));
@@ -52,21 +81,30 @@ export class SantaAudio {
         onProgress?.(++done / keys.length);
       }
     };
-    await Promise.all([worker(), worker(), worker(), worker()]);
+    // Two at a time: clips not recorded are made one by one by the voice service, which limits bursts.
+    await Promise.all([worker(), worker()]);
     onProgress?.(1);
   }
 
   private async load(key: string): Promise<AudioBuffer | null> {
     if (this.buffers.has(key)) return this.buffers.get(key) ?? null;
-    if (this.voiceDown) {
-      this.buffers.set(key, null);
-      return null;
-    }
     try {
-      const res = await fetch(clipUrl(key, this.locale));
-      if (res.status === 503) this.voiceDown = true;
-      if (!res.ok) throw new Error(String(res.status));
-      const buf = await this.ctx.decodeAudioData(await res.arrayBuffer());
+      let bytes: ArrayBuffer | null = null;
+      for (const url of await clipSources(key, this.locale)) {
+        // A scheduled call's clips were stored on the device in advance (precache.ts).
+        bytes = await cachedClip(url);
+        if (!bytes) {
+          const res = await fetch(url).catch(() => null);
+          if (this.stopped) throw new Error('stopped');
+          bytes = res?.ok ? await res.arrayBuffer() : null;
+        }
+        if (bytes) {
+          this.urls.set(key, url);
+          break;
+        }
+      }
+      if (!bytes) throw new Error('no clip');
+      const buf = await this.ctx.decodeAudioData(bytes);
       this.buffers.set(key, buf);
       return buf;
     } catch {
@@ -82,8 +120,13 @@ export class SantaAudio {
     onText?.(text);
     const buf = await this.load(key);
     if (this.stopped) return;
-    if (buf) return this.playBuffer(buf);
-    return this.speakFallback(text);
+    if (buf) {
+      const name = cueName(this.urls.get(key) ?? '');
+      const cues = name ? (await this.visemes)?.[name] ?? null : null;
+      return this.playBuffer(buf, cues);
+    }
+    // No clip: Santa's words stay as the caption for as long as he would speak them.
+    return this.silentCaption(text);
   }
 
   /** A reply from the live AI call: WAV bytes, or the text for the device voice. */
@@ -97,10 +140,10 @@ export class SantaAudio {
         /* fall through */
       }
     }
-    return this.speakFallback(text);
+    return this.silentCaption(text);
   }
 
-  private playBuffer(buf: AudioBuffer): Promise<void> {
+  private playBuffer(buf: AudioBuffer, cues: string | null = null): Promise<void> {
     return new Promise((resolve) => {
       const src = this.ctx.createBufferSource();
       src.buffer = buf;
@@ -108,16 +151,22 @@ export class SantaAudio {
       this.analyser.connect(this.master);
       this.current = src;
       const data = new Uint8Array(this.analyser.fftSize);
+      const t0 = this.ctx.currentTime;
+      // Output latency: the mouth should move with what is heard, not what is scheduled.
+      const lat = (this.ctx as AudioContext & { outputLatency?: number }).outputLatency ?? this.ctx.baseLatency ?? 0;
       const tick = () => {
         this.analyser.getByteTimeDomainData(data);
         let sum = 0;
         for (const v of data) sum += ((v - 128) / 128) ** 2;
-        this.onLevel(Math.min(1, Math.sqrt(sum / data.length) * 5));
+        const level = Math.min(1, Math.sqrt(sum / data.length) * 5);
+        if (cues && this.onViseme) this.onViseme(cuesAt(cues, this.ctx.currentTime - t0 - lat));
+        else this.onLevel(level);
         this.raf = requestAnimationFrame(tick);
       };
       tick();
       src.onended = () => {
         cancelAnimationFrame(this.raf);
+        this.onViseme?.(null);
         this.onLevel(0);
         src.disconnect();
         if (this.current === src) this.current = null;
@@ -127,32 +176,9 @@ export class SantaAudio {
     });
   }
 
-  private speakFallback(text: string): Promise<void> {
-    return new Promise((resolve) => {
-      const synth = typeof speechSynthesis !== 'undefined' ? speechSynthesis : null;
-      if (!synth || !text) {
-        setTimeout(resolve, 600);
-        return;
-      }
-      const u = new SpeechSynthesisUtterance(text);
-      u.lang = this.locale === 'fr' ? 'fr-FR' : 'en-GB';
-      u.pitch = 0.55;
-      u.rate = 0.88;
-      const voice = synth.getVoices().find((v) => v.lang.startsWith(this.locale) && /male|homme|thomas|daniel|google/i.test(v.name));
-      if (voice) u.voice = voice;
-      let t = 0;
-      const wobble = setInterval(() => this.onLevel(0.35 + 0.35 * Math.abs(Math.sin((t += 0.6)))), 90);
-      const done = () => {
-        clearInterval(wobble);
-        this.onLevel(0);
-        resolve();
-      };
-      u.onend = done;
-      u.onerror = done;
-      // Some browsers never fire onend: a safety net based on length.
-      setTimeout(done, 1500 + text.length * 90);
-      synth.speak(u);
-    });
+  /** The last resort: no sound, the caption stays up (about the time it takes to say it). */
+  private silentCaption(text: string): Promise<void> {
+    return new Promise((resolve) => setTimeout(resolve, Math.min(9000, 900 + text.length * 60)));
   }
 
   /** Code-built sounds. */
@@ -231,6 +257,28 @@ export class SantaAudio {
     return 0.5;
   }
 
+  /** Santa is interrupted (the child speaks over him): the current sound stops, the call goes on. */
+  interrupt() {
+    this.cut = true;
+    try {
+      this.current?.stop();
+    } catch {
+      /* already stopped */
+    }
+  }
+
+  /** True once after `interrupt()` (read by the live call to skip the rest of a reply). */
+  takeInterrupted(): boolean {
+    const c = this.cut;
+    this.cut = false;
+    return c;
+  }
+
+  /** Is Santa's voice playing right now? */
+  get speaking(): boolean {
+    return this.current !== null;
+  }
+
   stop() {
     this.stopped = true;
     try {
@@ -238,7 +286,6 @@ export class SantaAudio {
     } catch {
       /* already stopped */
     }
-    if (typeof speechSynthesis !== 'undefined') speechSynthesis.cancel();
     cancelAnimationFrame(this.raf);
     this.onLevel(0);
   }

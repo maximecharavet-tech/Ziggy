@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Home, Sparkles } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { MascotCutout } from '@/components/ziggy/Mascot';

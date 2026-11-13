@@ -7,8 +7,11 @@ export function Snow({ count = 40, className = '' }: { count?: number; className
   const flakes = useMemo(
     () =>
       Array.from({ length: count }, (_, i) => {
-        const r = (n: number) => ((Math.sin(i * 9301 + n * 49297) + 1) / 2) % 1;
-        return { left: r(1) * 100, size: 3 + r(2) * 6, dur: 7 + r(3) * 9, delay: -r(4) * 16, drift: (r(5) - 0.5) * 60, opacity: 0.45 + r(6) * 0.5 };
+        // Rounded: Math.sin's last digits differ between the server and some
+        // browsers, which made the snow a hydration mismatch.
+        const r = (n: number) => Math.round((((Math.sin(i * 9301 + n * 49297) + 1) / 2) % 1) * 1000) / 1000;
+        const q = (v: number) => Math.round(v * 100) / 100;
+        return { left: q(r(1) * 100), size: q(3 + r(2) * 6), dur: q(7 + r(3) * 9), delay: q(-r(4) * 16), drift: q((r(5) - 0.5) * 60), opacity: q(0.45 + r(6) * 0.5) };
       }),
     [count]
   );
@@ -21,8 +24,8 @@ export function Snow({ count = 40, className = '' }: { count?: number; className
           className="santa-flake absolute top-[-12px] rounded-full bg-white"
           style={{
             left: `${f.left}%`,
-            width: f.size,
-            height: f.size,
+            width: `${f.size}px`,
+            height: `${f.size}px`,
             opacity: f.opacity,
             animationDuration: `${f.dur}s`,
             animationDelay: `${f.delay}s`,

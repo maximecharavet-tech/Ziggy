@@ -6,7 +6,7 @@ import { SayButton } from '@/components/arcade/read-aloud';
 import { alternatesFor } from '@/lib/seo';
 
 /** Lutin Chaos lives in `jeux/chahut` (built by the other team); set false to show "soon" instead. */
-const CHAHUT_READY = true;
+const CHAHUT_READY = false;
 
 const T = {
   title: { fr: 'Les jeux des lutins', en: 'The elves’ games' },

@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type CSSProperties, type ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import { useLocale } from 'next-intl';
-import { AnimatePresence, motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Link } from '@/i18n/navigation';
 import { GameHost } from '@/components/games3d/engine/GameHost';

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence, LayoutGroup, motion } from 'framer-motion';
+import { AnimatePresence, LayoutGroup, motion } from 'motion/react';
 import type { MechanicProps } from '@/lib/arcade/types';
 import { playSound } from '@/lib/sound';
 import { normWord, shuffleNotIdentity, spellLetters } from '../logic';

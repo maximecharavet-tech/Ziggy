@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, type CSSProperties, type ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { Link } from '@/i18n/navigation';
 import { DepthProvider, useAwake, usePointerDepth, useTilt } from './Parallax';
 import { fx, shade } from './toy';

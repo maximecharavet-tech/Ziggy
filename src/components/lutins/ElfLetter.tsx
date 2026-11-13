@@ -2,7 +2,7 @@
 
 import { useEffect, useId, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { useLocale } from 'next-intl';
 import { tr, type L } from '@/lib/i18n-text';
 import { useReducedMotion } from '@/lib/use-reduced-motion';

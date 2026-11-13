@@ -35,7 +35,11 @@ type Expression = Parameters<SantaSceneHandle['setExpression']>[0];
 export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptions): SantaSceneHandle {
   const low = opts.lowPower ?? prefersLowPower();
   const reduce = Boolean(opts.reducedMotion);
-  const ctx: StageContext = { lowPower: low, energy: reduce ? 0.4 : 1 };
+  // Heavier touches (depth of field) only on strong devices: never on phones with little memory.
+  const nav = typeof navigator !== 'undefined' ? (navigator as Navigator & { deviceMemory?: number }) : null;
+  const mobile = /Android|iPhone|iPad|Mobile/i.test(nav?.userAgent ?? '');
+  const rich = !low && !mobile && (nav?.deviceMemory ?? 8) >= 6 && (nav?.hardwareConcurrency ?? 8) >= 6;
+  const ctx: StageContext = { lowPower: low, energy: reduce ? 0.4 : 1, rich };
   const booth = opts.mode === 'booth';
 
   const renderer = new THREE.WebGLRenderer({
@@ -100,6 +104,7 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
     base.target.copy(f.target);
     camera.position.copy(f.pos);
     camera.lookAt(f.target);
+    post?.setFocus(f.pos.distanceTo(f.target));
   };
 
   const resize = () => {
@@ -120,6 +125,7 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
   let time = 0;
   let hidden = typeof document !== 'undefined' && document.hidden;
   const tmp = new THREE.Vector3();
+  const slow = { t: 0, n: 0 };
   const loop = () => {
     raf = requestAnimationFrame(loop);
     const raw = clock.getDelta();
@@ -141,6 +147,15 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
     rig.update(dt);
     stage.update(dt, time, camera);
     post?.render(dt);
+    // Adaptive quality: when frames get slow (a software GPU, a busy phone),
+    // the heavy touches (depth of field, film grade) switch off for good.
+    slow.t += raw;
+    slow.n++;
+    if (slow.t >= 2) {
+      if (slow.t / slow.n > 1 / 24) post?.lighten();
+      slow.t = 0;
+      slow.n = 0;
+    }
   };
   const onVisibility = () => {
     hidden = document.hidden;
@@ -165,6 +180,12 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
     canvas,
     setTalk(level: number) {
       rig.setTalk(level);
+    },
+    setMouth(open: number, wide: number) {
+      rig.setMouth(open, wide);
+    },
+    ziggy(cmd) {
+      stage.ziggy?.(cmd);
     },
     setExpression(e: Expression) {
       expression = e;

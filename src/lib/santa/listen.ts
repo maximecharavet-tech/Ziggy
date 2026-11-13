@@ -10,6 +10,12 @@
 export type Ears = {
   /** Resolves when the child finished speaking (true) or nobody spoke (false). */
   listen(maxMs: number, onLevel?: (v: number) => void): Promise<boolean>;
+  /**
+   * Barge-in: calls `onSpeech` once when the child starts talking over Santa
+   * (a stricter threshold than `listen`, so Santa's own voice coming back
+   * through the microphone does not trigger it). Returns a stop function.
+   */
+  watch(onSpeech: () => void): () => void;
   close(): void;
 };
 
@@ -34,6 +40,18 @@ export function makeTurnDetector(opts: { stepMs: number; noise: number }) {
     }
     if (speaking && silence >= 1000) return 'done';
     return speaking ? 'speaking' : 'wait';
+  };
+}
+
+/** Barge-in detector (pure): the child must be clearly louder than the room for `holdMs`. */
+export function makeBargeInDetector(opts: { noise: number; holdMs?: number }) {
+  const start = Math.max(0.07, opts.noise * 4);
+  const hold = opts.holdMs ?? 380;
+  let loud = 0;
+  return (level: number, dtMs: number): boolean => {
+    const dt = Math.max(0, Math.min(dtMs, 1000));
+    loud = level > start ? loud + dt : Math.max(0, loud - dt * 2);
+    return loud >= hold;
   };
 }
 
@@ -90,6 +108,19 @@ export async function openEars(ctx: AudioContext, given?: MediaStream | null): P
           }
         }, step);
       });
+    },
+    watch(onSpeech) {
+      const detect = makeBargeInDetector({ noise });
+      let last = performance.now();
+      const w = setInterval(() => {
+        const now = performance.now();
+        if (detect(level(), now - last)) {
+          clearInterval(w);
+          onSpeech();
+        }
+        last = now;
+      }, 40);
+      return () => clearInterval(w);
     },
     close() {
       if (timer) clearInterval(timer);

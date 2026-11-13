@@ -55,7 +55,7 @@ describe('strict AI schemas', () => {
     explain: '2 + 3 = 5',
   };
   const factory = {
-    gameType: 'math_runner',
+    gameType: 'number_island',
     difficulty: 2,
     skill: 'addition',
     questions: [question, question, question],
@@ -207,7 +207,7 @@ describe('local fallbacks', () => {
 
   it('maps Game Factory output onto mechanics, keeping local content otherwise', () => {
     const out = GameFactorySchema.parse({
-      gameType: 'math_runner',
+      gameType: 'number_island',
       difficulty: 1,
       skill: 'addition',
       questions: [0, 1, 2].map((i) => ({

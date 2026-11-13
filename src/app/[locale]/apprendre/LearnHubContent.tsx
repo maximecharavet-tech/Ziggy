@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { GraduationCap, ArrowRight, Wind } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { AppPage } from '@/components/learn/AppPage';

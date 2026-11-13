@@ -1,6 +1,11 @@
 import { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { APK_PATH, APK_RELEASE_URL } from './src/lib/downloads';
+import { defaultLocale, locales } from './src/i18n/config';
+
+// Short links of L'appli du Père Noël: ziggy-ai.fr/appel, /avent, /certificat (and /en/appel…).
+const SANTA_SHORT = '(appel|avent|certificat)';
+const OTHER_LOCALES = locales.filter((l) => l !== defaultLocale).join('|');
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -28,7 +33,7 @@ const nextConfig: NextConfig = {
   // The share image reads the mascot from disk at request time.
   outputFileTracingIncludes: {
     '/[locale]/opengraph-image': ['./public/mascot/og-ziggy.png'],
-    '/[locale]/pere-noel/opengraph-image': ['./public/mascot/og-ziggy.png'],
+    '/[locale]/pere-noel/opengraph-image': ['./public/santa/art/og-fr.jpg', './public/santa/art/og-en.jpg'],
     '/api/lutins/generate': ['./public/lutins/refs/sheet.png', './src/lib/lutins/wasm/lutins_core_full_bg.wasm'],
     '/api/lutins/**': ['./src/lib/lutins/wasm/lutins_core_full_bg.wasm'],
     '/[locale]/dodo/[story]/opengraph-image': ['./public/mascot/og-ziggy.png', './public/dodo/**/*-og.jpg'],
@@ -43,6 +48,9 @@ const nextConfig: NextConfig = {
       // Short links for the Christmas campaign (TikTok bio, videos): ziggy-ai.fr/noel, /santa.
       { source: '/noel', destination: '/pere-noel', permanent: false },
       { source: '/santa', destination: '/en/pere-noel', permanent: false },
+      { source: `/:page${SANTA_SHORT}`, destination: '/pere-noel/:page', permanent: false },
+      { source: `/${defaultLocale}/:page${SANTA_SHORT}`, destination: '/pere-noel/:page', permanent: false },
+      { source: `/:locale(${OTHER_LOCALES})/:page${SANTA_SHORT}`, destination: '/:locale/pere-noel/:page', permanent: false },
       // Search Console 404s: crawlers once read the price period ("/mois", "/Monat") and a stray "$" as links.
       { source: '/mois', destination: '/', permanent: true },
       { source: '/Monat', destination: '/', permanent: true },
@@ -69,8 +77,10 @@ const nextConfig: NextConfig = {
           { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
         ],
       },
+      // Santa's recorded voice: the site asks for each file with ?h=<hash of its words>.
+      { source: '/santa/voice/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
       {
-        source: '/(mascot|media)/:path*',
+        source: '/(mascot|media|covers)/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],
       },
     ];

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useRef, useEffect, useMemo } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { SearchCheck, Lightbulb } from 'lucide-react';
 import { GameShell, GameStartScreen, GameResultScreen } from './GameShell';

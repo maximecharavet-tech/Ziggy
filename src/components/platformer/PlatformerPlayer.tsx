@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocale } from 'next-intl';
-import { motion } from 'framer-motion';
+import { motion } from 'motion/react';
 import { ArrowLeft, Hand, Keyboard, Maximize2, Minimize2, Smartphone } from 'lucide-react';
 import { Link } from '@/i18n/navigation';
 import { tr } from '@/lib/i18n-text';

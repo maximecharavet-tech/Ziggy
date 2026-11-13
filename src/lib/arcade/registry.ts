@@ -1,5 +1,5 @@
 /**
- * Ziggy Arcade — the catalogue of the 20 games.
+ * Ziggy Arcade — the catalogue of the arcade games.
  * Each game is one mechanic (see types.ts) fed with local or AI content.
  */
 import type { ArcadeGameId, GameDefinition, Mechanic } from './types';
@@ -20,19 +20,6 @@ const ROUNDS: Record<Mechanic, GameDefinition['rounds']> = {
 type GameSpec = Omit<GameDefinition, 'rounds'>;
 
 const SPECS: GameSpec[] = [
-  {
-    id: 'math_runner',
-    name: { fr: 'Course des calculs', en: 'Math Runner' },
-    description: {
-      fr: 'Cours et passe par la porte du bon résultat !',
-      en: 'Run and dash through the gate with the right answer!',
-    },
-    emoji: '🏃',
-    color: '#FF8A65',
-    mechanic: 'runner',
-    skills: ['addition', 'subtraction', 'multiplication', 'counting'],
-    aiContent: false,
-  },
   {
     id: 'alphabet_quest',
     name: { fr: 'La quête de l’alphabet', en: 'Alphabet Quest' },
@@ -125,32 +112,6 @@ const SPECS: GameSpec[] = [
     aiContent: true,
   },
   {
-    id: 'dino_dig',
-    name: { fr: 'Fouille des dinos', en: 'Dino Dig' },
-    description: {
-      fr: 'Réponds pour creuser et découvrir un fossile caché.',
-      en: 'Answer to dig and uncover a hidden fossil.',
-    },
-    emoji: '🦕',
-    color: '#A1887F',
-    mechanic: 'dig',
-    skills: ['science', 'animals', 'counting'],
-    aiContent: true,
-  },
-  {
-    id: 'music_garden',
-    name: { fr: 'Jardin musical', en: 'Music Garden' },
-    description: {
-      fr: 'Écoute la mélodie des fleurs et rejoue-la.',
-      en: 'Listen to the flowers’ tune and play it back.',
-    },
-    emoji: '🎵',
-    color: '#FFB74D',
-    mechanic: 'melody',
-    skills: ['music', 'memory', 'sequencing'],
-    aiContent: false,
-  },
-  {
     id: 'puzzle_castle',
     name: { fr: 'Château des puzzles', en: 'Puzzle Castle' },
     description: {
@@ -161,19 +122,6 @@ const SPECS: GameSpec[] = [
     color: '#9575CD',
     mechanic: 'slide',
     skills: ['logic', 'shapes'],
-    aiContent: false,
-  },
-  {
-    id: 'robot_factory',
-    name: { fr: 'Usine à robots', en: 'Robot Factory' },
-    description: {
-      fr: 'Range les étapes dans l’ordre pour construire des robots.',
-      en: 'Put the steps in order to build robots.',
-    },
-    emoji: '🤖',
-    color: '#90A4AE',
-    mechanic: 'order',
-    skills: ['sequencing', 'logic', 'science'],
     aiContent: false,
   },
   {
@@ -227,45 +175,6 @@ const SPECS: GameSpec[] = [
     mechanic: 'choice',
     skills: ['geography', 'vocabulary'],
     aiContent: true,
-  },
-  {
-    id: 'story_builder_game',
-    name: { fr: 'Fabrique à histoires', en: 'Story Builder' },
-    description: {
-      fr: 'Remets les morceaux de l’histoire dans l’ordre.',
-      en: 'Put the pieces of the story back in order.',
-    },
-    emoji: '📖',
-    color: '#E57373',
-    mechanic: 'order',
-    skills: ['reading', 'sequencing', 'vocabulary'],
-    aiContent: true,
-  },
-  {
-    id: 'art_studio',
-    name: { fr: 'Atelier d’art', en: 'Art Studio' },
-    description: {
-      fr: 'Prépare les couleurs de ton tableau en les mélangeant.',
-      en: 'Prepare your painting’s colours by mixing them.',
-    },
-    emoji: '🎨',
-    color: '#EC407A',
-    mechanic: 'mix',
-    skills: ['art', 'colors'],
-    aiContent: false,
-  },
-  {
-    id: 'space_memory',
-    name: { fr: 'Mémoire des étoiles', en: 'Space Memory' },
-    description: {
-      fr: 'Retrouve les paires de planètes et de constellations.',
-      en: 'Match pairs of planets and constellations.',
-    },
-    emoji: '🌌',
-    color: '#7E57C2',
-    mechanic: 'pairs',
-    skills: ['memory', 'astronomy'],
-    aiContent: false,
   },
   {
     id: 'dragon_academy',
