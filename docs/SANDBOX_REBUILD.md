@@ -69,3 +69,50 @@ Everything is drawn by the Rust software renderer, on every device:
 - Game motion stays as specified (squash & stretch, elastic pops, animated critters, particle bursts,
   world-picker zoom), drawn in the software renderer or as DOM/CSS transform-opacity animations for UI.
 - No WebGL/WebGPU anywhere in the sandbox; canvas 2D `putImageData`/`drawImage` only for the blit.
+
+## Addendum 3 (owner, 2026-11-13): Ziggy's flying saucer and the lost parcel
+Owner: best possible graphics with animations, and Ziggy flying by in his saucer; tapping it triggers
+an interaction such as a lost parcel with a special surprise — "huge and never seen before".
+
+**The saucer.** Every so often (after a calm moment, never on a visible timer; if missed it simply
+comes back later) Ziggy crosses the sky in a wobbly little saucer — the real felt-plush Ziggy
+(`MascotCutout` / `public/mascot/*`) in a code-drawn saucer with blinking lights, as a DOM/CSS
+transform layer above the canvas (anticipation, overshoot, a loop-the-loop now and then; reduced
+motion: a gentle straight glide). It reacts to the world: dodges clouds, gets misted by a geyser and
+shakes dry, floats sideways in space, bobs like a submarine with a periscope undersea, wears a tiny
+helmet on the Moon. Always cheerful. A big tap target (≥ 64 px), a read-aloud line.
+
+**Tap = "Oups, mon colis !"** Ziggy waves, the saucer hiccups and drops a parcel on a parachute. The
+parcel is a real object in the simulation (engine entity colliding with cells): it drifts on wind,
+falls at 1/6 speed on the Moon, bobs up underwater, orbits the planetoid in space, rolls down slopes.
+
+**The chameleon parcel (the new idea).** The parcel does not open by tapping: it opens through what the
+child does to it with the elements, and *what comes out depends on how it was opened*:
+- watered → it sprouts: a **rainbow seed** (a tree whose fruits are drops of colour that tint water);
+- warmed (sun/lava glow) → it pops like popcorn: a **baby critter egg** hatches (a baby of the world's
+  resident: baby Bloup, baby pufferfish, baby moon bunny…) that follows the child's finger;
+- frozen/snowed → it becomes a **music snow-globe**: every element that falls nearby plays its note;
+- buried in sand/dust → a **treasure map** appears on the notebook: an X somewhere in the world where
+  digging reveals a glowing fossil/shell/meteorite sticker;
+- bubbled / underwater → a **message in a bottle** from another world ("Bonjour du volcan !") that
+  unlocks a postcard of that world and a shortcut to visit it;
+- left in the wind → it unfolds into a **kite/aurora ribbon** the child can steer, painting the sky;
+- in space / low gravity → a **pocket star**: a tiny star the child can place to make night-glow and
+  gather stardust into a ring.
+Per world, one extra "signature" surprise (volcano: a mini friendly volcano toy that burps heart
+smoke; undersea: a pearl lantern; Moon: a flag the child draws themselves; Mars: a tiny greenhouse
+dome kit; garden: a giant sunflower that turns toward the finger; mountain: an echo crystal;
+islands: a sandcastle mould set).
+Each first opening is a notebook discovery ("Le colis a aimé l'eau !") with a one-line why, and a
+sticker in the album; surprises are permanent tools/friends in that world afterwards. ~15 surprises
+in total, so the parcel stays a mystery for weeks. No timers, no "missed it" message, no rarity
+gambling: the outcome is caused by the child's action, never random luck.
+
+**Tractor beam (bonus tool once the saucer has visited).** Press and hold on the saucer: a soft beam
+lifts the cells under it (anti-gravity column) and sets them down where the child drags — a playful
+way to move a pile of sand, a puddle or a critter (who giggles).
+
+Engine needs: entity support for the parcel (position, velocity, collision with cells, per-world
+physics, state machine by exposure: wet/hot/cold/buried/bubbled/windy/low-g counters), a beam force
+field, events for JS. Tests: each opening condition deterministically yields its surprise; the parcel
+can never be lost or destroyed (it respawns safely if it leaves the world or gets stuck).
