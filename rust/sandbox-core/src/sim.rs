@@ -32,6 +32,8 @@ pub const V_CACTUS: u8 = 1;
 pub const V_REED: u8 = 2;
 pub const V_GIANT: u8 = 3;
 pub const V_PALM: u8 = 4;
+/// The rainbow seed of Ziggy's parcel: every petal has its own colour.
+pub const V_RAINBOW: u8 = 5;
 
 /// Chunks are 32×32 cells; a chunk with nothing going on sleeps.
 pub const CHUNK: usize = 32;
@@ -137,6 +139,9 @@ pub struct World {
     /// Ticks of rainbow left in the sky, and raindrops since the last one.
     pub rainbow: u16,
     pub(crate) raindrops: u16,
+    pub parcel: crate::parcel::Parcel,
+    /// Where the child's finger is, in cells (baby critters follow it); negative when away.
+    pub pointer: (i32, i32),
 }
 
 impl World {
@@ -219,6 +224,8 @@ impl World {
             fx: Vec::with_capacity(96),
             rainbow: 0,
             raindrops: 0,
+            parcel: crate::parcel::Parcel::default(),
+            pointer: (-1, -1),
         };
         world.set_gravity(100);
         world
@@ -376,6 +383,9 @@ impl World {
             mix(c.y as u32);
             mix(c.state as u32 | (c.timer as u32) << 8);
         }
+        mix(self.parcel.state as u32 | (self.parcel.opened as u32) << 8);
+        mix(self.parcel.x as u32);
+        mix(self.parcel.y as u32);
         h
     }
 
@@ -593,6 +603,7 @@ impl World {
             self.diffuse();
         }
         self.step_critters();
+        self.step_parcel();
     }
 
     /// Runs the world for a while without reporting anything: a freshly built

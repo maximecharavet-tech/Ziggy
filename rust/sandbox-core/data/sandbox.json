@@ -135,7 +135,23 @@
     { "id": "sublimate" },
     { "id": "hover" },
     { "id": "dust_devil" },
-    { "id": "mars_garden" }
+    { "id": "mars_garden" },
+
+    { "id": "gift_water" },
+    { "id": "gift_warm" },
+    { "id": "gift_cold" },
+    { "id": "gift_buried" },
+    { "id": "gift_bubble" },
+    { "id": "gift_wind" },
+    { "id": "gift_lowg" },
+    { "id": "gift_garden" },
+    { "id": "gift_mountain" },
+    { "id": "gift_islands" },
+    { "id": "gift_volcano" },
+    { "id": "gift_undersea" },
+    { "id": "gift_space" },
+    { "id": "gift_moon" },
+    { "id": "gift_mars" }
   ],
   "quietRules": [
     { "a": "lava", "b": "ice", "chance": 300, "outB": "water", "event": "melt_ice" },

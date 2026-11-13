@@ -164,6 +164,7 @@ impl World {
             }
         }
         self.stir(cx as i32, cy as i32, r as i32 + 2);
+        self.blow_parcel(cx, cy, r, dir);
     }
 
     /* ── Save and restore a creation ── */
@@ -184,11 +185,18 @@ impl World {
         out.push(self.gravity_pct);
         out.push(self.critters.len() as u8);
         for c in &self.critters {
-            out.push(c.kind);
+            out.push(c.kind | if c.baby { 0x80 } else { 0 });
             out.extend_from_slice(&c.x.to_le_bytes());
             out.extend_from_slice(&c.y.to_le_bytes());
             out.push(c.count);
             out.push(c.hat);
+        }
+        let p = &self.parcel;
+        out.push(p.state);
+        out.extend_from_slice(&p.x.to_le_bytes());
+        out.extend_from_slice(&p.y.to_le_bytes());
+        for e in p.exposure {
+            out.extend_from_slice(&e.to_le_bytes());
         }
         for plane in 0..5 {
             let bytes: Vec<u8> = match plane {
@@ -229,13 +237,20 @@ impl World {
         for _ in 0..nc {
             let (Some(kind), Some(x), Some(y), Some(count), Some(hat)) = (r.u8(), r.u32(), r.u32(), r.u8(), r.u8()) else { return false };
             if critters.len() < crate::critters::MAX_CRITTERS {
-                let mut c = crate::critters::Critter::new(kind % WORLD_COUNT, 0, 0);
+                let mut c = crate::critters::Critter::new((kind & 0x7f) % WORLD_COUNT, 0, 0);
+                c.baby = kind & 0x80 != 0;
                 c.x = (x as i32).clamp(0, (self.w as i32 - 1) * 16);
                 c.y = (y as i32).clamp(0, (self.h as i32 - 1) * 16);
                 c.count = count;
                 c.hat = if (hat as usize) < ELEMENT_COUNT { hat } else { 0 };
                 critters.push(c);
             }
+        }
+        let (Some(pstate), Some(px), Some(py)) = (r.u8(), r.u32(), r.u32()) else { return false };
+        let mut parcel = crate::parcel::Parcel { state: if pstate <= 2 { pstate } else { 0 }, x: (px as i32).clamp(0, self.w as i32 * 16), y: (py as i32).clamp(0, self.h as i32 * 16), ..Default::default() };
+        for k in 0..crate::parcel::EXPOSURES {
+            let Some(e) = r.u16() else { return false };
+            parcel.exposure[k] = e.min(crate::parcel::OPEN_AT - 1);
         }
         let mut planes: Vec<Vec<u8>> = Vec::with_capacity(5);
         for _ in 0..5 {
@@ -257,6 +272,7 @@ impl World {
         self.rng = if rng == 0 { 0x9e37_79b9 } else { rng };
         self.crng = crng | 1;
         self.critters = critters;
+        self.parcel = parcel;
         self.set_night(night != 0);
         self.set_gravity(grav as u32);
         self.set_temp_offset(toff as i8 as i32);

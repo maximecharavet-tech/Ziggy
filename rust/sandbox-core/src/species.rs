@@ -203,7 +203,10 @@ impl World {
                 }
             }
         }
-        if t == MUD {
+        if cb(self.cells[i]) == 1 {
+            variant = V_RAINBOW;
+        }
+        if t == MUD && variant != V_RAINBOW {
             variant = V_REED;
             let sh = shade(self.cells[n]);
             self.put(n, mk(SOIL, 0, 0, sh));
@@ -219,7 +222,7 @@ impl World {
         let (budget, water) = match variant {
             V_CACTUS => (5 + (r % 5) as u8, 40),
             V_REED => (13 + (r % 8) as u8, 40),
-            V_GIANT => (30 + (r % 16) as u8, 60),
+            V_GIANT | V_RAINBOW => (30 + (r % 16) as u8, 60),
             _ => (10 + (r % 14) as u8, 14),
         };
         let sh = (shade(self.cells[i]) & 31) | (variant << 5);
@@ -288,7 +291,7 @@ impl World {
         }
         let budget = b & BUDGET;
         if budget > 0 {
-            if a < 2 || y == 0 || !self.chance(if variant == V_GIANT { 8 } else { 14 }) {
+            if a < 2 || y == 0 || !self.chance(if variant == V_GIANT || variant == V_RAINBOW { 8 } else { 14 }) {
                 return;
             }
             let straight = variant == V_CACTUS || variant == V_REED || variant == V_PALM;
@@ -321,7 +324,7 @@ impl World {
                 let leafy = match variant {
                     V_CACTUS | V_PALM => false,
                     V_REED => self.chance(6),
-                    V_GIANT => self.chance(2),
+                    V_GIANT | V_RAINBOW => self.chance(2),
                     _ => self.chance(3),
                 };
                 if leafy {
@@ -382,7 +385,7 @@ impl World {
         self.aux[i] = height;
         let petals: &[(i32, i32)] = match variant {
             V_REED => &[(0, 1), (0, -1)],
-            V_GIANT => &[(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (-2, 0), (2, 0), (0, -2)],
+            V_GIANT | V_RAINBOW => &[(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (-2, 0), (2, 0), (0, -2)],
             _ => &[(-1, 0), (1, 0), (0, -1), (0, 1)],
         };
         for &(dx, dy) in petals {
@@ -396,6 +399,7 @@ impl World {
                 continue;
             }
             let sh = self.fresh_shade();
+            let hue = if variant == V_RAINBOW { sh % 10 } else { hue };
             self.put(j, mk(FLOWER, hue, if variant == V_REED { CENTER } else { PETAL }, sh));
             self.aux[j] = height;
         }

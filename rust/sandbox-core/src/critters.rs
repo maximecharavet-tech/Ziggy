@@ -34,11 +34,13 @@ pub struct Critter {
     pub count: u8,
     /// Ticks since it last landed or turned (for squash and stretch).
     pub bounce: u8,
+    /// A baby hatched from Ziggy's parcel: smaller, and it follows the child's finger.
+    pub baby: bool,
 }
 
 impl Critter {
     pub fn new(kind: u8, cx: i32, cy: i32) -> Critter {
-        Critter { kind, x: cx * 16 + 8, y: cy * 16, vx: 0, vy: 0, dir: 1, state: C_IDLE, timer: 40, mood: 0, shield: 0, hat: 0, count: 0, bounce: 0 }
+        Critter { kind, x: cx * 16 + 8, y: cy * 16, vx: 0, vy: 0, dir: 1, state: C_IDLE, timer: 40, mood: 0, shield: 0, hat: 0, count: 0, bounce: 0, baby: false }
     }
 }
 
@@ -79,6 +81,15 @@ impl World {
         self.critters.push(c);
         self.effect(FX_HEART, cx, cy - 4, 0);
         self.critters.len() as u32
+    }
+
+    /// The baby that hatches from Ziggy's warmed parcel.
+    pub fn hatch_baby(&mut self, cx: i32, cy: i32) {
+        self.stamp_critter(cx, cy);
+        if let Some(c) = self.critters.last_mut() {
+            c.baby = true;
+            c.mood = 120;
+        }
     }
 
     pub(crate) fn step_critters(&mut self) {
@@ -197,6 +208,15 @@ impl World {
             c.y += c.vy;
             c.state = C_AIR;
             return;
+        }
+        if c.baby && self.pointer.0 >= 0 && c.state != C_AIR {
+            // The baby trots after the finger.
+            let gap = self.pointer.0 - cx;
+            if gap.abs() > 3 {
+                c.dir = gap.signum() as i8;
+                c.state = C_WALK;
+                c.timer = c.timer.max(10);
+            }
         }
         if c.timer == 0 {
             let r = self.crand();
