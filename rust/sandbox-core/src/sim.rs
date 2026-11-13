@@ -125,7 +125,7 @@ pub struct World {
     pub(crate) grav_dirty: bool,
     pub sources: Vec<(i32, i32, i32)>,
     pub stars: Vec<(i32, i32)>,
-    stars_next: Vec<(i32, i32)>,
+    pub(crate) stars_next: Vec<(i32, i32)>,
     pub(crate) phase: [u8; 64],
     visit: [bool; 64],
     thermal: [bool; 64],
