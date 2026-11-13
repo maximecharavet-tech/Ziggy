@@ -401,6 +401,7 @@ export function DodoCover({ story, manifest, big }: { story: DodoStory; manifest
         src={image}
         alt=""
         loading={big ? 'eager' : 'lazy'}
+        fetchPriority={big ? 'high' : 'auto'}
         decoding="async"
         onError={() => setFailed(true)}
         className={`absolute inset-0 h-full w-full object-cover transition-transform duration-[2500ms] ease-out group-hover:scale-[1.06] ${story.cover ? 'object-[50%_25%]' : ''}`}

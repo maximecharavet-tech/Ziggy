@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from '@/i18n/navigation';
-import { ZiggyAvatar } from '@/components/ziggy/Mascot';
 
 const KEY = 'cookie-consent';
 
@@ -35,35 +34,35 @@ export function CookieConsent() {
     setVisible(false);
   };
 
+  // One line for the bar: the first sentence ("no ads, no tracking"); the full detail is on the cookies page.
+  const text = t('text');
+  const short = text.match(/^.+?[.。!！](?=\s|$)/)?.[0] ?? text;
+
   return (
     <AnimatePresence>
       {visible && (
         <motion.div
           role="region"
           aria-label={t('title')}
-          initial={{ y: 100, opacity: 0 }}
+          initial={{ y: 60, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          exit={{ y: 100, opacity: 0 }}
+          exit={{ y: 60, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-          className="web-only fixed bottom-4 inset-x-4 sm:inset-x-auto sm:end-6 sm:bottom-6 sm:max-w-sm z-50 glass-strong rounded-2xl border border-border/50 p-4 shadow-xl"
+          className="web-only fixed inset-x-0 bottom-0 z-50 glass-strong border-t border-border/50 px-3 py-2 shadow-[0_-6px_20px_-12px_rgba(0,0,0,0.25)] sm:px-6"
         >
-          <div className="flex items-start gap-3">
-            <ZiggyAvatar size={40} />
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-bold text-text-body mb-1">{t('title')}</p>
-              <p className="text-xs text-text-muted leading-relaxed mb-3">{t('text')}</p>
-              <div className="flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={dismiss}
-                  className="px-4 py-2 text-xs font-bold rounded-xl gradient-green-cta text-white shadow-sm shadow-green/20 hover:shadow-md hover:shadow-green/30 transition-shadow"
-                >
-                  {t('ok')}
-                </button>
-                <Link href="/cookies" className="text-xs font-semibold text-text-muted hover:text-green transition-colors">
-                  {t('more')}
-                </Link>
-              </div>
+          <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-4 gap-y-1">
+            <p className="min-w-0 text-xs font-semibold leading-snug text-text-body sm:text-sm">{short}</p>
+            <div className="flex shrink-0 items-center gap-3">
+              <button
+                type="button"
+                onClick={dismiss}
+                className="min-h-10 rounded-xl px-4 text-xs font-bold text-white shadow-sm shadow-green/20 gradient-green-cta"
+              >
+                {t('ok')}
+              </button>
+              <Link href="/cookies" aria-label={`${t('more')} – ${t('title')}`} className="inline-flex min-h-10 items-center text-xs font-semibold text-text-muted underline-offset-2 hover:text-green hover:underline">
+                {t('more')}
+              </Link>
             </div>
           </div>
         </motion.div>

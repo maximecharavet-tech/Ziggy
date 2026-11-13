@@ -164,7 +164,7 @@ export function HeroSection() {
         </div>
 
         {/* ── Stage: the official Ziggy film ── */}
-        <div className="flex flex-col items-center gap-5 order-first lg:order-none">
+        <div className="flex flex-col items-center gap-5 order-last sm:order-first lg:order-none">
           <motion.div
             initial={{ opacity: 0, y: 30, scale: 0.94 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}

@@ -95,7 +95,7 @@ export function SantaLanding() {
     <section className="relative isolate flex min-h-[690px] items-end overflow-hidden px-5 pb-20 pt-28 sm:min-h-[760px] sm:items-center sm:px-10">
       <ArtSlot asset={heroVideo} priority posterOnSmall />
       <div aria-hidden className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,12,38,.9),rgba(8,12,38,.52)_55%,rgba(8,12,38,.12)),linear-gradient(0deg,rgba(8,12,38,.55),transparent_55%)]" />
-      <Snow count={reduced ? 0 : 34} />
+      <Snow count={reduced ? 0 : 18} />
       <motion.div aria-hidden="true" style={{ y: auroraY }} className="pointer-events-none absolute -right-10 top-5 h-64 w-[55vw] rounded-full bg-cyan-300/20 blur-[90px]" />
       <div className="relative mx-auto grid w-full max-w-7xl items-end gap-12 sm:grid-cols-[1.1fr_.9fr]">
         <motion.div initial={{ opacity: 0, y: reduced ? 0 : 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65 }}>

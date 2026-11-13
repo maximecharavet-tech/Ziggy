@@ -5,14 +5,15 @@ import { FACE } from '@/lib/mascot';
 import { ZiggyLogo } from './ZiggyLogo';
 
 const KEY = 'ziggy:intro';
-const DURATION = 2300;
+const DURATION = 1500;
 
 /**
  * The once-per-session welcome: Ziggy's face pops in, a ring traces around
  * it, three ripples spread, the wordmark rises and the Hyper™ signature
  * follows; then the whole curtain lifts.
  *
- * It is server-rendered and driven by CSS, and only shown when an inline
+ * Kept short (1.5 s) so the page behind it is what counts as the largest
+ * paint. It is server-rendered and driven by CSS, and only shown when an inline
  * script in the layout has set html[data-intro] (first view of the session,
  * no reduced-motion preference). Any click, key, scroll or touch skips it.
  */
