@@ -21,9 +21,11 @@ import { FILMS, FILM_ASPECT } from '@/lib/mascot';
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
+// The copy slides up but is never transparent: it is server-rendered visible, so the largest
+// paint (the subtitle) does not wait for hydration.
 const rise = {
-  hidden: { opacity: 0, y: 28 },
-  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: 0.1 + i * 0.1, duration: 0.8, ease } }),
+  hidden: { opacity: 1, y: 24 },
+  visible: (i: number) => ({ opacity: 1, y: 0, transition: { delay: 0.1 + i * 0.08, duration: 0.7, ease } }),
 };
 
 /** Little stickers that drift around the film. */

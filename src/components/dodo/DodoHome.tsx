@@ -181,7 +181,7 @@ export function DodoHome({ voices }: { voices?: VoiceSummary }) {
               <Moon size="clamp(7.5rem, 6rem + 7vw, 13rem)" />
             </motion.div>
             <div className={`${css.float} absolute bottom-0 left-3 sm:left-4`}>
-              <Ziggy3D className="h-48 w-36 sm:h-64 sm:w-48" idle="calm" mood="calm" accessory="nightcap" framing="full" fallback="heart" />
+              <Ziggy3D className="h-48 w-36 sm:h-64 sm:w-48" idle="calm" mood="calm" accessory="nightcap" framing="full" fallback="heart" priorityFallback />
             </div>
             {/* A soft cloud for Ziggy to sit on. */}
             <div className="pointer-events-none absolute -bottom-4 left-0 h-14 w-[80%]" aria-hidden="true">

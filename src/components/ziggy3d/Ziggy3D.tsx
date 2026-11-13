@@ -28,6 +28,8 @@ export interface Ziggy3DProps {
   onTap?: () => void;
   /** Picture shown while the 3D loads, and instead of it without WebGL. */
   fallback?: CutoutPose;
+  /** The fallback picture is the page's first big image: load it at once (the page's LCP). */
+  priorityFallback?: boolean;
   /** Accessible name; Ziggy is decorative when omitted. */
   label?: string;
 }
@@ -53,6 +55,7 @@ export function Ziggy3D({
   accessory = 'none',
   onTap,
   fallback = 'wave',
+  priorityFallback = false,
   label,
 }: Ziggy3DProps) {
   const boxRef = useRef<HTMLDivElement>(null);
@@ -178,7 +181,7 @@ export function Ziggy3D({
     >
       {!ready || failed ? (
         <div className="pointer-events-none absolute inset-0 flex items-end justify-center">
-          <MascotCutout pose={fallback} width={320} glow className={`h-full w-auto max-w-full [&_img]:h-full [&_img]:w-auto ${failed ? '' : 'animate-float'}`} />
+          <MascotCutout pose={fallback} width={220} priority={priorityFallback} glow className={`h-full w-auto max-w-full [&_img]:h-full [&_img]:w-auto ${failed ? '' : 'animate-float'}`} />
         </div>
       ) : null}
       <canvas ref={canvasRef} className={`absolute inset-0 h-full w-full transition-opacity duration-500 ${ready && !failed ? 'opacity-100' : 'opacity-0'}`} />
