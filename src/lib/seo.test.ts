@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { alternatesFor, breadcrumbLd, clampTitle, frSeoTitle, FR_GAME_KEYWORDS, localeUrl, robotsFor } from './seo';
 import robots from '@/app/robots';
 import sitemap, { generateSitemaps, sitemapEntries, SITEMAP_PATHS } from '@/app/sitemap';
-import { sitemapIndexXml } from '@/app/sitemap.xml/route';
+import { sitemapIndexXml } from '@/lib/sitemap-index';
 import { FULLY_TRANSLATED_LOCALES, locales } from '@/i18n/config';
 
 describe('seo helpers', () => {
