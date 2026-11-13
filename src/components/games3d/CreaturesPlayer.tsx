@@ -1150,7 +1150,7 @@ export function CreaturesPlayer() {
           <motion.div animate={reduce ? undefined : { y: [0, -10, 0], rotate: [0, -4, 4, 0] }} transition={{ duration: 2.4, repeat: Infinity }} aria-hidden="true">
             <ZiggyAvatar size={112} />
           </motion.div>
-          <h1 className="font-display text-3xl font-bold text-[#4a2a8a] sm:text-5xl">{tr(T.title, locale)}</h1>
+          <p className="font-display text-3xl font-bold text-[#4a2a8a] sm:text-5xl">{tr(T.title, locale)}</p>
           {supported ? (
             <p className="flex items-center gap-2 text-lg font-semibold text-[#6b4a9a]">
               <span className="inline-block animate-spin" aria-hidden="true">
