@@ -131,7 +131,7 @@ export function Toolbar({
 
   return (
     <div className="flex flex-col items-center gap-2">
-      <div role="toolbar" aria-label={tr(TEXT.elements, locale)} className="flex max-w-full items-end gap-1 overflow-hidden rounded-[30px] bg-[#1a1650]/45 px-2 pb-1.5 pt-3 shadow-[inset_0_3px_12px_rgba(0,0,0,0.35),0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/10 sm:gap-2 sm:px-3">
+      <div role="toolbar" aria-label={tr(TEXT.elements, locale)} className="flex max-w-full flex-wrap items-end justify-center gap-x-1 gap-y-1 rounded-[30px] bg-[#1a1650]/45 px-2 pb-1.5 pt-3 shadow-[inset_0_3px_12px_rgba(0,0,0,0.35),0_1px_0_rgba(255,255,255,0.12)] ring-1 ring-white/10 sm:gap-2 sm:px-3">
         {big.map((t) => (
           <ToolBall key={t.id} t={t} on={t.id === tool} size="big" locale={locale} onPick={onTool} />
         ))}
@@ -203,7 +203,7 @@ export function Toolbar({
 
       <AnimatePresence>
         {open ? (
-          <motion.div key="drawer" className="fixed inset-0 z-[66]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="drawer" className="fixed inset-0 z-[66]" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}>
             <button type="button" aria-label={tr(TEXT.close, locale)} className="absolute inset-0 bg-[#0d0b2a]/60" onClick={() => setOpen(false)} />
             <motion.div
               ref={drawer}

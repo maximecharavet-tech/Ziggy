@@ -956,7 +956,12 @@ impl World {
                         break;
                     }
                     let j = cy as usize * self.w + cx as usize;
-                    if self.cells[j] != 0 {
+                    let t = sp(self.cells[j]);
+                    if t != EMPTY {
+                        // Water slips between plant stems instead of being dammed by them.
+                        if matches!(t, PLANT | FLOWER | KELP | CORAL) {
+                            continue;
+                        }
                         break;
                     }
                     far = Some(j);

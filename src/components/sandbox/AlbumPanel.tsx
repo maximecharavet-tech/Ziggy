@@ -32,7 +32,7 @@ export function AlbumPanel({ locale, onSave, onOpen, onClose, version }: { local
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
   return (
-    <motion.div className="fixed inset-0 z-[68] flex items-end justify-center sm:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <motion.div className="fixed inset-0 z-[68] flex items-end justify-center sm:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}>
       <button type="button" aria-label={tr(TEXT.close, locale)} className="absolute inset-0 bg-[#0d0b2a]/70" onClick={onClose} />
       <div role="dialog" aria-modal="true" aria-label={tr(TEXT.title, locale)} className="relative max-h-[88dvh] w-full max-w-2xl overflow-y-auto rounded-t-[30px] bg-[#2a2366] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] shadow-2xl ring-1 ring-white/15 sm:rounded-[30px]">
         <div className="mb-3 flex items-center gap-3">

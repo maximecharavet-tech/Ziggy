@@ -290,6 +290,7 @@ export function SandCanvas({
       if (++frames % 60 === 0) {
         const avg = busy / 60;
         el.dataset.frameMs = avg.toFixed(2);
+        el.dataset.parcel = `${e.raw.parcel_state()},${e.raw.parcel_x().toFixed(1)},${e.raw.parcel_y().toFixed(1)}`;
         busy = 0;
         if (avg > 12 && scale > 1) {
           scale -= 1;

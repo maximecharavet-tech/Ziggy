@@ -142,3 +142,20 @@ the code; no code was copied.
 | Asset | Source | Licence | Notes |
 |---|---|---|---|
 | `public/lutins/mediapipe/efficientdet_lite0.tflite` (int8) | https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/int8/latest/efficientdet_lite0.tflite (MediaPipe Object Detector model card) | Apache-2.0 | Runs in the browser only (blocks room photos with a person before upload); loaded with `@mediapipe/tasks-vision` (Apache-2.0, listed above). |
+
+## Le Bac à sable magique engine (`rust/sandbox-core/`, Rust → WebAssembly)
+
+The falling-sand simulation, the eight worlds and the software renderer of `/monde/bac-a-sable` are our own
+Rust code (MIT), compiled to `src/games2d/sandbox/wasm/` by `npm run sandbox:wasm`. All pictures (backdrops,
+critters, faces, Ziggy's parcel) are drawn in code; the saucer shows the official plush pictures of
+`public/mascot/`. Crates compiled into the WebAssembly (`cargo tree -e normal`), with the licence we use:
+
+| Name | URL | License (used under) | Copyright | Version |
+|---|---|---|---|---|
+| wasm-bindgen, wasm-bindgen-shared | https://github.com/wasm-bindgen/wasm-bindgen | MIT OR Apache-2.0 (MIT) | © The wasm-bindgen Developers | 0.2.129 |
+| cfg-if | https://github.com/rust-lang/cfg-if | MIT OR Apache-2.0 (MIT) | © Alex Crichton | 1.0.5 |
+| once_cell | https://github.com/matklad/once_cell | MIT OR Apache-2.0 (MIT) | © Aleksey Kladov | 1.21.4 |
+
+Build-time only (proc-macros, not in the WebAssembly): wasm-bindgen-macro, wasm-bindgen-macro-support,
+proc-macro2, quote, syn, bumpalo (MIT OR Apache-2.0), unicode-ident ((MIT OR Apache-2.0) AND Unicode-3.0, accepted
+by the owner on 2026-11-08).

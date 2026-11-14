@@ -25,7 +25,7 @@ export function WorldPicker({ locale, current, found, reduceMotion, onPick, onCl
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
   return (
-    <motion.div className="fixed inset-0 z-[68] flex items-end justify-center sm:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+    <motion.div className="fixed inset-0 z-[68] flex items-end justify-center sm:items-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}>
       <button type="button" aria-label={tr(TEXT.close, locale)} className="absolute inset-0 bg-[#0d0b2a]/70" onClick={onClose} />
       <motion.div
         role="dialog"

@@ -16,7 +16,7 @@ describe('sandbox engine (WebAssembly in Node)', () => {
       if (k % 50 === 0) s.raw.wind(100, 60, 8, 1);
       s.raw.step(1);
     }
-    expect(s.raw.hash()).toBe(539179940);
+    expect(s.raw.hash()).toBe(2500734713);
     s.free();
   });
 

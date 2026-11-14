@@ -1281,8 +1281,9 @@ impl Renderer {
         if p.state == P_NONE {
             return;
         }
-        let u = self.scale as f32;
-        let (cx, base) = (p.x as f32 / 16.0 * u, (p.y as f32 / 16.0 + 1.0) * u);
+        // Drawn larger than its footprint, so a child sees it well.
+        let u = self.scale as f32 * 1.8;
+        let (cx, base) = (p.x as f32 / 16.0 * self.scale as f32, (p.y as f32 / 16.0 + 1.0) * self.scale as f32);
         let age = p.age as f32;
         if p.state == P_OPEN {
             // The lid pops off with a bounce, and light pours out.

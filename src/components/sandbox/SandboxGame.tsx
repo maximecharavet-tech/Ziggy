@@ -384,7 +384,7 @@ export function SandboxGame() {
 
       {/* The sandbox, with the notebook alongside on large screens. */}
       <div className="relative z-0 flex min-h-0 flex-1 gap-4 px-3 pb-1 pt-2 sm:px-5">
-        <div className="relative min-h-0 min-w-0 flex-1">
+        <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
           <SandCanvas
             world={world}
             tool={toolById(tool)}
@@ -500,7 +500,7 @@ export function SandboxGame() {
       {/* Notebook drawer on phones and tablets. */}
       <AnimatePresence>
         {drawer ? (
-          <motion.div key="drawer" className="fixed inset-0 z-[65] lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+          <motion.div key="drawer" className="fixed inset-0 z-[65] lg:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, pointerEvents: 'none' }}>
             <button type="button" aria-label={tr(NOTEBOOK_TEXT.close, locale)} className="absolute inset-0 bg-[#0d0b2a]/70" onClick={() => setDrawer(false)} />
             <motion.div
               role="dialog"

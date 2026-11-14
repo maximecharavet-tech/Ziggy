@@ -196,7 +196,7 @@ impl World {
     fn garden(&mut self) {
         let (w, h) = (self.w as i32, self.h as i32);
         let tall = h > w;
-        let base = h * if tall { 74 } else { 78 } / 100;
+        let base = h * if tall { 62 } else { 78 } / 100;
         let ground = |x: i32| base + isin(x * 7) * h / 28 / 1024 + isin(x * 21 + 200) * 2 / 1024;
         // Earth, with a sand pit on the left and bedrock underneath.
         let pit0 = w * 4 / 100;
@@ -414,6 +414,10 @@ impl World {
             }
             if dx < bowl - 1 {
                 let d = (bowl - 1 - dx).min(6);
+                // The crater is open to the sky: the jam sits two cells below its rim.
+                for y in top - 2..top + 2 {
+                    self.fill(x, y, EMPTY);
+                }
                 for y in top + 2..=top + 1 + d {
                     self.fill(x, y, LAVA);
                     self.set_state(x, y, 255, 1, false);
@@ -479,7 +483,7 @@ impl World {
     fn undersea(&mut self) {
         let (w, h) = (self.w as i32, self.h as i32);
         let tall = h > w;
-        let base = h * if tall { 84 } else { 80 } / 100;
+        let base = h * if tall { 74 } else { 80 } / 100;
         let floor = |x: i32| base + isin(x * 6 + 300) * h / 30 / 1024 + isin(x * 19) * 2 / 1024;
         for x in 0..w {
             for y in floor(x)..h {
@@ -555,7 +559,7 @@ impl World {
     fn moon(&mut self) {
         let (w, h) = (self.w as i32, self.h as i32);
         let tall = h > w;
-        let base = h * if tall { 76 } else { 74 } / 100;
+        let base = h * if tall { 60 } else { 74 } / 100;
         let craters = [(w * 22 / 100, w * 9 / 100), (w * 63 / 100, w * 13 / 100), (w * 90 / 100, w * 5 / 100)];
         for x in 0..w {
             let mut g = base + isin(x * 5 + 150) * h / 40 / 1024;
@@ -593,7 +597,7 @@ impl World {
     fn mars(&mut self) {
         let (w, h) = (self.w as i32, self.h as i32);
         let tall = h > w;
-        let base = h * if tall { 78 } else { 80 } / 100;
+        let base = h * if tall { 64 } else { 80 } / 100;
         for x in 0..w {
             let g = base + isin(x * 8) * h / 36 / 1024 + isin(x * 23 + 400) * 2 / 1024;
             for y in g..h {
@@ -606,7 +610,7 @@ impl World {
         let mt = base - h * 16 / 100;
         for x in mx - mw..=mx + mw {
             let inset = ((x - mx).abs() - mw + 4).max(0) * 3;
-            for y in mt + inset..base + 3 {
+            for y in mt + inset..h - 1 {
                 self.fill(x, y, STONE);
             }
         }
