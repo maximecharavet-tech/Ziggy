@@ -502,3 +502,28 @@ fn ids_match_the_page() {
     const { assert!(ELEMENT_COUNT >= 35) };
     const { assert!(REACTION_COUNT >= 60) };
 }
+
+/// The same scripted run as `src/games2d/sandbox/engine.test.ts`: the WebAssembly build must reach this exact hash.
+pub fn scripted_hash() -> u32 {
+    let mut s = World::new(200, 120, 42, VOLCANO);
+    s.load_scene();
+    for k in 0..300u32 {
+        if k % 7 == 0 {
+            s.paint_line(20.0 + (k % 60) as f32, 10.0, 40.0, 30.0, 3.0, [SAND, WATER, LAVA, SEED][(k / 7 % 4) as usize], 0);
+        }
+        if k % 50 == 0 {
+            s.wind(100.0, 60.0, 8.0, 1);
+        }
+        s.step();
+    }
+    s.hash()
+}
+
+#[test]
+fn native_hash_of_the_scripted_run() {
+    // Printed so the wasm test can be checked against it: cargo test native_hash -- --nocapture
+    let h = scripted_hash();
+    println!("scripted hash: {h}");
+    assert_eq!(h, scripted_hash());
+    assert_eq!(h, 539_179_940, "the simulation changed: update the constant here and in engine.test.ts");
+}

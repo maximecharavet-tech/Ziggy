@@ -453,7 +453,7 @@ impl World {
 
     /// A coral fan: a short trunk that splits into branches curving up.
     fn coral_fan(&mut self, x: i32, ground: i32, tall: i32, hue: u8) {
-        let mut put = |world: &mut World, cx: i32, cy: i32| {
+        let put = |world: &mut World, cx: i32, cy: i32| {
             if world.inside(cx, cy) && world.get(cx, cy) == EMPTY {
                 world.set(cx, cy, CORAL);
                 world.set_state(cx, cy, 0, hue, true);

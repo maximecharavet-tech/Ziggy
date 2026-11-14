@@ -71,6 +71,8 @@ pub struct Renderer {
     frames: u32,
     /// Where the finger is, in cells (faces look at it, the backdrop leans away from it).
     pub pointer: (f32, f32),
+    /// The tractor beam being held (cell x, y, radius), drawn as a soft column of light.
+    pub beam: Option<(f32, f32, f32)>,
     cam: f32,
 }
 
@@ -181,6 +183,7 @@ impl Renderer {
             last_ms: 0.0,
             frames: 0,
             pointer: (-1.0, -1.0),
+            beam: None,
             cam: 0.0,
         }
     }
@@ -343,6 +346,10 @@ impl Renderer {
         }
         self.draw_faces(world, time, calm);
         self.draw_critters(world, time, calm);
+        self.draw_parcel(world, time, calm);
+        if let Some((bx, by, br)) = self.beam {
+            self.draw_beam(bx, by, br, time, calm);
+        }
 
         // Effects asked for by the simulation, then the particles.
         // Swap buffers instead of collecting: nothing is allocated per frame.
@@ -1264,6 +1271,99 @@ impl Renderer {
             self.particles[k] = p;
             k += 1;
         }
+    }
+
+    /* ── Ziggy's parcel and his tractor beam ── */
+
+    fn draw_parcel(&mut self, world: &World, time: u32, calm: bool) {
+        use crate::parcel::{P_FALLING, P_LANDED, P_NONE, P_OPEN};
+        let p = world.parcel;
+        if p.state == P_NONE {
+            return;
+        }
+        let u = self.scale as f32;
+        let (cx, base) = (p.x as f32 / 16.0 * u, (p.y as f32 / 16.0 + 1.0) * u);
+        let age = p.age as f32;
+        if p.state == P_OPEN {
+            // The lid pops off with a bounce, and light pours out.
+            let t = (age / 40.0).min(1.0);
+            let pop = if calm { 1.0 } else { 1.0 + (t * 9.0).sin() * (1.0 - t) * 0.5 };
+            self.glow_disc(cx, base - 3.0 * u, 9.0 * u * t.max(0.3), 0xfff2a0, 0.6 * (1.0 - age / 150.0).max(0.0));
+            self.fill_rect(cx - 2.6 * u, base - 4.0 * u, cx + 2.6 * u, base, 0xd98b4a, 255);
+            self.fill_rect(cx - 0.5 * u, base - 4.0 * u, cx + 0.5 * u, base, 0xff5a8a, 255);
+            let lift = if calm { 3.0 } else { 3.0 + t * 6.0 * pop };
+            self.fill_rect(
+                cx - 3.0 * u - t * 2.0 * u,
+                base - 5.0 * u - lift * u,
+                cx + 3.0 * u - t * 2.0 * u,
+                base - 4.0 * u - lift * u,
+                0xf0a060,
+                255,
+            );
+            return;
+        }
+        // Squash on landing, a gentle sway under the parachute.
+        let land = if p.state == P_LANDED && !calm { (-(age / 6.0)).exp() * (age / 2.5).cos() * 0.3 } else { 0.0 };
+        let sway = if p.state == P_FALLING && !calm {
+            self.sin[((time * 2) & 255) as usize] as f32 / 127.0 * 0.8 * u
+        } else {
+            0.0
+        };
+        let (sx, sy) = (1.0 + land, 1.0 - land);
+        let (w2, hh) = (2.6 * u * sx, 4.0 * u * sy);
+        let x0 = cx + sway;
+        if p.state == P_FALLING && world.params.medium != SEA {
+            // A striped parachute.
+            let top = base - hh - 9.0 * u;
+            for k in 0..5 {
+                let col = if k % 2 == 0 { 0xff7eb6 } else { 0xfff3c4 };
+                self.ellipse(x0 + (k as f32 - 2.0) * 1.6 * u, top + 1.2 * u, 1.0 * u, 1.6 * u, col, 255);
+            }
+            self.ellipse(x0, top, 4.6 * u, 2.2 * u, 0xff9ac8, 255);
+            for k in [-1.0f32, 1.0] {
+                for q in 0..8 {
+                    let f = q as f32 / 8.0;
+                    self.plot(
+                        (x0 + k * 4.0 * u * (1.0 - f) + k * w2 * f * 0.8) as i32,
+                        (top + 1.5 * u + f * (base - hh - top - 1.5 * u)) as i32,
+                        0xffffff,
+                        200,
+                    );
+                }
+            }
+        }
+        // The box, with its ribbon and a question-mark sticker.
+        self.fill_rect(x0 - w2, base - hh, x0 + w2, base, 0xd98b4a, 255);
+        self.fill_rect(x0 - w2, base - hh, x0 + w2, base - hh + 0.8 * u, 0xf0a060, 255);
+        self.fill_rect(x0 - 0.45 * u, base - hh, x0 + 0.45 * u, base, 0xff5a8a, 255);
+        self.fill_rect(x0 - w2, base - hh * 0.55, x0 + w2, base - hh * 0.55 + 0.8 * u, 0xff5a8a, 255);
+        self.ellipse(x0 - 1.0 * u, base - hh - 0.6 * u, 1.0 * u, 0.7 * u, 0xff5a8a, 255);
+        self.ellipse(x0 + 1.0 * u, base - hh - 0.6 * u, 1.0 * u, 0.7 * u, 0xff5a8a, 255);
+        // How close it is to opening: a glow that grows (no number, no timer).
+        let most = p.exposure.iter().copied().max().unwrap_or(0) as f32 / crate::parcel::OPEN_AT as f32;
+        if most > 0.05 {
+            self.glow_disc(x0, base - hh * 0.5, (3.0 + most * 5.0) * u, 0xfff2a0, most * 0.5);
+        }
+    }
+
+    fn draw_beam(&mut self, bx: f32, by: f32, br: f32, time: u32, calm: bool) {
+        let u = self.scale as f32;
+        let (cx, cy, r) = (bx * u, by * u, br * u);
+        let (fw, _fh) = (self.fw as i32, self.fh as i32);
+        let y1 = (cy + r * 0.6) as i32;
+        for py in 0..y1.max(0) {
+            let f = py as f32 / y1.max(1) as f32;
+            let half = r * (0.35 + 0.65 * f);
+            let wob =
+                if calm { 0.0 } else { self.sin[((py as u32 * 3 + time * 4) & 255) as usize] as f32 / 127.0 * 0.6 * u };
+            for px in ((cx - half + wob) as i32).max(0)..((cx + half + wob) as i32).min(fw) {
+                let edge = 1.0 - ((px as f32 - cx - wob).abs() / half).powi(2);
+                let a = (edge * 0.35 * 255.0) as u32;
+                let idx = py as usize * self.fw + px as usize;
+                self.frame[idx] = blend(self.frame[idx], 0xff_c8_ff_7a, a);
+            }
+        }
+        self.glow_disc(cx, cy, r * 1.3, 0x7affc8, 0.35);
     }
 
     /* ── Critters ── */

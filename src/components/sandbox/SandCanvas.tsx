@@ -1,277 +1,301 @@
 'use client';
 
-import { useEffect, useImperativeHandle, useRef, type Ref } from 'react';
-import { Sandbox, type SimEvent } from '@/games2d/sandbox/sim';
-import { glowSize, renderGlow, renderPixels } from '@/games2d/sandbox/render';
-import { loadScene, type SceneId } from '@/games2d/sandbox/scenes';
-import type { Tool } from '@/games2d/sandbox/content';
-import { enrich } from './shading';
+import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react';
+import { createSandbox, loadSandboxEngine, type EngineEvent, type SandEngine } from '@/games2d/sandbox/engine';
+import { REACTIONS, WORLDS, type Reaction, type Tool, type WorldId } from '@/games2d/sandbox/content';
+import { pourNote } from './sounds';
 
-/** Roughly how many cells the world has (200×120 in landscape, 120×200 in portrait). */
-const CELLS = 24000;
 const STEP_MS = 1000 / 60;
+/** The grid is the same on every device (saves are portable): landscape or portrait. */
+const LAND = { w: 320, h: 192 };
+const PORT = { w: 192, h: 320 };
+
+export type Speed = 'pause' | 'slow' | 'normal';
 
 export interface SandApi {
-  loadScene(id: SceneId): void;
+  loadScene(): void;
   clear(): void;
-  /** A burst of sparkles at a cell. */
   burst(x: number, y: number, color: string): void;
   /** Cell → position on screen (CSS pixels). */
   toClient(x: number, y: number): { x: number; y: number };
+  /** Screen → cell. */
+  toCell(clientX: number, clientY: number): { x: number; y: number };
+  snapshot(): { bytes: Uint8Array; thumb: string; w: number; h: number } | null;
+  restore(bytes: Uint8Array, w: number, h: number): boolean;
+  /** The picture as a PNG data URL (for the photo). */
+  photo(): string | null;
+  dropParcel(clientX: number, clientY: number): boolean;
+  parcel(): { state: number; x: number; y: number } | null;
+  placeGift(kind: number, x: number, y: number): void;
+  hatchBaby(x: number, y: number): void;
+  /** Cell size on screen, in CSS pixels. */
+  cellPx(): number;
 }
 
-export interface ClientEvent extends SimEvent {
+export interface ClientEvent extends EngineEvent {
   clientX: number;
   clientY: number;
 }
 
-type Sparkle = { x: number; y: number; vx: number; vy: number; life: number; size: number; color: string };
+/** Throttled report to React: the first event of each kind with its place, and exact counts since the last report. */
+export interface EventBatch {
+  events: ClientEvent[];
+  deltas: Partial<Record<Reaction, number>>;
+}
+
+type Stroke = { x: number; y: number; px: number; py: number; down: boolean };
 
 export function SandCanvas({
+  world,
   tool,
   radius,
-  paused,
-  initialScene,
+  speed,
+  night,
   label,
   help,
+  loadingLabel,
+  failLabel,
   reduceMotion,
   onEvents,
   onPaint,
+  onReady,
   apiRef,
 }: {
+  world: WorldId;
   tool: Tool;
   radius: number;
-  paused: boolean;
-  initialScene: SceneId;
+  speed: Speed;
+  night: boolean;
   label: string;
   help: string;
+  loadingLabel: string;
+  failLabel: string;
   reduceMotion: boolean;
-  onEvents: (events: ClientEvent[]) => void;
+  onEvents: (batch: EventBatch) => void;
   onPaint: () => void;
+  onReady?: () => void;
   apiRef: Ref<SandApi>;
 }) {
   const wrap = useRef<HTMLDivElement>(null);
   const canvas = useRef<HTMLCanvasElement>(null);
-  const glass = useRef<HTMLDivElement>(null);
-  const sim = useRef<Sandbox | null>(null);
+  const engine = useRef<SandEngine | null>(null);
+  const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>('loading');
+  const [shape, setShape] = useState<'land' | 'port' | null>(null);
   // Everything the animation loop reads, kept in one ref so the loop never restarts.
-  const live = useRef({ tool, radius, paused, reduceMotion, onEvents, onPaint });
-  live.current = { tool, radius, paused, reduceMotion, onEvents, onPaint };
-  const input = useRef({ down: false, keyboard: false, x: -1, y: -1, px: -1, py: -1, hover: false, focused: false });
-  const sparkles = useRef<Sparkle[]>([]);
+  const live = useRef({ tool, radius, speed, night, reduceMotion, onEvents, onPaint, world });
+  live.current = { tool, radius, speed, night, reduceMotion, onEvents, onPaint, world };
+  const strokes = useRef(new Map<number, Stroke>());
+  const keyboard = useRef({ on: false, x: -1, y: -1, down: false, focused: false });
 
-  const toClient = (x: number, y: number) => {
-    const s = sim.current;
+  // Load the engine once.
+  useEffect(() => {
+    let alive = true;
+    loadSandboxEngine().then(
+      () => alive && setStatus('ready'),
+      () => alive && setStatus('failed'),
+    );
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  // Pick the grid from the room we have, and again when the screen turns.
+  useEffect(() => {
+    const box = wrap.current;
+    if (!box) return;
+    const pick = () => {
+      const r = box.getBoundingClientRect();
+      setShape((r.width || 4) >= (r.height || 3) * 0.95 ? 'land' : 'port');
+    };
+    pick();
+    const ro = new ResizeObserver(pick);
+    ro.observe(box);
+    return () => ro.disconnect();
+  }, []);
+
+  const toCell = (clientX: number, clientY: number) => {
+    const e = engine.current;
     const r = canvas.current?.getBoundingClientRect();
-    if (!s || !r) return { x: 0, y: 0 };
-    return { x: r.left + ((x + 0.5) / s.w) * r.width, y: r.top + ((y + 0.5) / s.h) * r.height };
+    if (!e || !r || !r.width) return { x: -1, y: -1 };
+    return { x: ((clientX - r.left) / r.width) * e.w, y: ((clientY - r.top) / r.height) * e.h };
+  };
+  const toClient = (x: number, y: number) => {
+    const e = engine.current;
+    const r = canvas.current?.getBoundingClientRect();
+    if (!e || !r) return { x: 0, y: 0 };
+    return { x: r.left + ((x + 0.5) / e.w) * r.width, y: r.top + ((y + 0.5) / e.h) * r.height };
   };
 
   useImperativeHandle(apiRef, () => ({
-    loadScene(id) {
-      if (sim.current) loadScene(sim.current, id);
-    },
-    clear() {
-      sim.current?.clear();
-    },
+    loadScene: () => engine.current?.raw.load_scene(),
+    clear: () => engine.current?.raw.clear(),
     burst(x, y, color) {
-      const n = live.current.reduceMotion ? 8 : 26;
-      for (let k = 0; k < n; k++) {
-        const a = (k / n) * Math.PI * 2 + Math.random() * 0.4;
-        const v = 0.25 + Math.random() * 0.55;
-        sparkles.current.push({ x, y, vx: Math.cos(a) * v, vy: Math.sin(a) * v - 0.15, life: 1, size: 0.9 + Math.random() * 1.3, color: k % 3 === 0 ? '#ffffff' : k % 3 === 1 ? '#fff3a3' : color });
-      }
+      const n = live.current.reduceMotion ? 6 : 24;
+      engine.current?.raw.burst(x, y, parseInt(color.replace('#', ''), 16) || 0xffd447, n);
     },
     toClient,
+    toCell,
+    snapshot() {
+      const e = engine.current;
+      const c = canvas.current;
+      if (!e || !c) return null;
+      const t = document.createElement('canvas');
+      const k = 200 / Math.max(c.width, c.height);
+      t.width = Math.round(c.width * k);
+      t.height = Math.round(c.height * k);
+      t.getContext('2d')?.drawImage(c, 0, 0, t.width, t.height);
+      return { bytes: e.save(), thumb: t.toDataURL('image/png'), w: e.w, h: e.h };
+    },
+    restore(bytes, w, h) {
+      const e = engine.current;
+      if (!e || e.w !== w || e.h !== h) return false;
+      return e.load(bytes);
+    },
+    photo: () => canvas.current?.toDataURL('image/png') ?? null,
+    dropParcel(clientX, clientY) {
+      const c = toCell(clientX, clientY);
+      return engine.current?.raw.drop_parcel(Math.round(c.x), Math.round(Math.max(4, c.y))) ?? false;
+    },
+    parcel() {
+      const e = engine.current;
+      return e ? { state: e.raw.parcel_state(), x: e.raw.parcel_x(), y: e.raw.parcel_y() } : null;
+    },
+    placeGift: (kind, x, y) => engine.current?.raw.place_gift(kind, Math.round(x), Math.round(y)),
+    hatchBaby: (x, y) => engine.current?.raw.hatch_baby(Math.round(x), Math.round(y)),
+    cellPx() {
+      const e = engine.current;
+      const r = canvas.current?.getBoundingClientRect();
+      return e && r ? r.width / e.w : 4;
+    },
   }));
 
+  // Build the world (again when the world or the shape changes), and run it.
   useEffect(() => {
     const el = canvas.current;
     const box = wrap.current;
-    if (!el || !box) return;
-    const ctx = el.getContext('2d');
+    if (status !== 'ready' || !shape || !el || !box) return;
+    const ctx = el.getContext('2d', { alpha: false });
     if (!ctx) return;
+    const { w, h } = shape === 'land' ? LAND : PORT;
+    const e = createSandbox(w, h, (Math.random() * 2 ** 32) >>> 0, WORLDS.indexOf(world));
+    engine.current = e;
+    e.raw.load_scene();
+    e.raw.set_night(live.current.night);
+    // Quality tier: 3× on capable devices, 2× on small ones; drops to 1× if the frames get slow.
+    const cores = navigator.hardwareConcurrency || 4;
+    let scale = cores > 4 ? 3 : 2;
+    e.raw.set_quality(scale, scale === 3);
+    el.dataset.tier = scale === 3 ? 'high' : 'low';
 
-    // Pick the grid to match the room we have: landscape on a computer, portrait on a phone.
-    const rect = box.getBoundingClientRect();
-    const aspect = Math.min(2.2, Math.max(0.45, (rect.width || 4) / (rect.height || 3)));
-    const h = Math.round(Math.sqrt(CELLS / aspect));
-    const w = Math.round(h * aspect);
-    const world = new Sandbox(w, h, (Math.random() * 2 ** 32) >>> 0);
-    sim.current = world;
-    loadScene(world, initialScene);
-
-    const pixels = new ImageData(w, h);
-    const pix32 = new Uint32Array(pixels.data.buffer);
-    const off = document.createElement('canvas');
-    off.width = w;
-    off.height = h;
-    const offCtx = off.getContext('2d')!;
-    const { gw, gh } = glowSize(world);
-    const glow = new ImageData(gw, gh);
-    const glow32 = new Uint32Array(glow.data.buffer);
-    const glowCanvas = document.createElement('canvas');
-    glowCanvas.width = gw;
-    glowCanvas.height = gh;
-    const glowCtx = glowCanvas.getContext('2d')!;
-
-    // The sky is painted in the canvas itself, so the glow can truly add light to it.
-    let sky: CanvasGradient | null = null;
-    let sun: CanvasGradient | null = null;
-    const paintSky = () => {
-      const W = el.width;
-      const H = el.height;
-      sky = ctx.createLinearGradient(0, 0, 0, H);
-      sky.addColorStop(0, '#7db5ee');
-      sky.addColorStop(0.4, '#a8d1f6');
-      sky.addColorStop(0.72, '#d5eafb');
-      sky.addColorStop(1, '#fbe3cf');
-      sun = ctx.createRadialGradient(W * 0.86, H * 0.08, 0, W * 0.86, H * 0.08, Math.max(W, H) * 0.32);
-      sun.addColorStop(0, 'rgba(255,248,214,0.95)');
-      sun.addColorStop(0.18, 'rgba(255,240,196,0.55)');
-      sun.addColorStop(1, 'rgba(255,240,196,0)');
-    };
-
-    // Fit the canvas in its box, keeping square cells; crisp backing store at the device pixel ratio.
     const fit = () => {
       const r = box.getBoundingClientRect();
-      // Room for the toy frame around the glass.
-      const scale = Math.max(0.5, Math.min((r.width - 26) / w, (r.height - 30) / h));
-      const cssW = Math.floor(w * scale);
-      const cssH = Math.floor(h * scale);
-      el.style.width = `${cssW}px`;
-      el.style.height = `${cssH}px`;
-      if (glass.current) {
-        glass.current.style.width = `${cssW}px`;
-        glass.current.style.height = `${cssH}px`;
-      }
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      el.width = Math.round(cssW * dpr);
-      el.height = Math.round(cssH * dpr);
-      paintSky();
+      const k = Math.max(0.5, Math.min((r.width - 26) / w, (r.height - 30) / h));
+      el.style.width = `${Math.floor(w * k)}px`;
+      el.style.height = `${Math.floor(h * k)}px`;
     };
     fit();
     const ro = new ResizeObserver(fit);
     ro.observe(box);
+    live.current.onEvents({ events: [], deltas: {} });
+    onReady?.();
 
     let raf = 0;
     let last = performance.now();
     let acc = 0;
+    let slowTick = 0;
+    let lastFlush = 0;
+    let counts = e.counts();
+    const pending = new Map<Reaction, EngineEvent>();
+    let nightNow = live.current.night;
+    let frames = 0;
+    let busy = 0;
+    let lastPointer = '';
 
-    const applyBrush = () => {
-      const i = input.current;
-      if (!i.down || i.x < 0) return;
+    const brush = () => {
       const { tool: t, radius: r } = live.current;
-      if (t.wind) world.wind(i.x, i.y, r + 2, t.wind);
-      else if (t.element !== undefined) {
-        if (i.px >= 0) world.paintLine(i.px, i.py, i.x, i.y, r, t.element);
-        else world.paint(i.x, i.y, r, t.element);
+      const list = [...strokes.current.values()];
+      const k = keyboard.current;
+      if (k.down && k.on) list.push({ x: k.x, y: k.y, px: k.x, py: k.y, down: true });
+      for (const s of list) {
+        if (!s.down || s.x < 0) continue;
+        const px = s.px < 0 ? s.x : s.px;
+        const py = s.py < 0 ? s.y : s.py;
+        if (t.wind) e.raw.wind(s.x, s.y, r + 2, t.wind);
+        else if (t.id === 'beam') e.raw.beam(px, py, s.x, s.y, r + 3);
+        else if (t.element !== undefined) {
+          e.raw.paint_line(px, py, s.x, s.y, r, t.element, t.id === 'cloud' ? 1 : 0);
+          pourNote(t.element);
+        }
+        s.px = s.x;
+        s.py = s.y;
       }
-      i.px = i.x;
-      i.py = i.y;
     };
 
-    const draw = (now: number) => {
-      const W = el.width;
-      const H = el.height;
-      const k = W / w;
-      ctx.setTransform(1, 0, 0, 1, 0, 0);
-      ctx.fillStyle = sky ?? '#a8d1f6';
-      ctx.fillRect(0, 0, W, H);
-      if (sun) {
-        ctx.fillStyle = sun;
-        ctx.fillRect(0, 0, W, H);
-      }
-      renderPixels(world, pix32, now, !live.current.reduceMotion);
-      enrich(world, pix32, now, !live.current.reduceMotion);
-      offCtx.putImageData(pixels, 0, 0);
-      ctx.imageSmoothingEnabled = false;
-      ctx.drawImage(off, 0, 0, W, H);
-      // Soft light: the glow map, blown up smoothly and added on top.
-      renderGlow(world, glow32, now);
-      glowCtx.putImageData(glow, 0, 0);
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.globalAlpha = 0.85;
-      ctx.imageSmoothingEnabled = true;
-      ctx.imageSmoothingQuality = 'high';
-      // Each glow pixel covers 4×4 cells.
-      ctx.drawImage(glowCanvas, 0, 0, gw * 4 * k, gh * 4 * k);
-      ctx.restore();
-      // Sparkles of a new discovery.
-      const list = sparkles.current;
-      for (let n = list.length - 1; n >= 0; n--) {
-        const p = list[n];
-        p.x += p.vx;
-        p.y += p.vy;
-        p.vy += 0.012;
-        p.life -= 0.016;
-        if (p.life <= 0) {
-          list.splice(n, 1);
-          continue;
-        }
-        const s = p.size * k * (0.6 + p.life * 0.6);
-        ctx.save();
-        ctx.globalAlpha = Math.min(1, p.life * 1.4);
-        ctx.fillStyle = p.color;
-        ctx.translate((p.x + 0.5) * k, (p.y + 0.5) * k);
-        ctx.rotate(p.life * 3);
-        ctx.beginPath();
-        for (let q = 0; q < 8; q++) {
-          const rr = q % 2 ? s * 0.32 : s;
-          const ang = (q / 8) * Math.PI * 2;
-          ctx.lineTo(Math.cos(ang) * rr, Math.sin(ang) * rr);
-        }
-        ctx.closePath();
-        ctx.fill();
-        ctx.restore();
-      }
-      // The brush, where the finger, mouse or keyboard cursor is.
-      const i = input.current;
-      if (i.x >= 0 && (i.hover || i.down || (i.keyboard && i.focused))) {
-        const r = (live.current.radius + (live.current.tool.wind ? 2 : 0) + 0.5) * k;
-        ctx.save();
-        ctx.lineWidth = Math.max(1.5, k * 0.35);
-        ctx.strokeStyle = 'rgba(255,255,255,0.9)';
-        ctx.shadowColor = 'rgba(30,20,80,0.45)';
-        ctx.shadowBlur = 6;
-        ctx.setLineDash(live.current.tool.wind ? [k * 1.2, k * 0.9] : []);
-        ctx.beginPath();
-        ctx.arc((i.x + 0.5) * k, (i.y + 0.5) * k, r, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-      }
+    const flush = (now: number) => {
+      for (const ev of e.takeEvents()) if (!pending.has(ev.kind)) pending.set(ev.kind, ev);
+      if (now - lastFlush < 250 || !pending.size) return;
+      lastFlush = now;
+      const next = e.counts();
+      const deltas: Partial<Record<Reaction, number>> = {};
+      for (let k = 0; k < next.length; k++) if (next[k] !== counts[k]) deltas[REACTIONS[k]] = next[k] - counts[k];
+      counts = next;
+      const r = el.getBoundingClientRect();
+      const events = [...pending.values()].map((ev) => ({ ...ev, clientX: r.left + ((ev.x + 0.5) / w) * r.width, clientY: r.top + ((ev.y + 0.5) / h) * r.height }));
+      pending.clear();
+      live.current.onEvents({ events, deltas });
     };
 
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame);
       const dt = Math.min(100, now - last);
       last = now;
-      const events: SimEvent[] = [];
-      const seen = new Set<string>();
-      if (live.current.paused) {
-        applyBrush();
-        acc = 0;
-      } else {
+      const t0 = performance.now();
+      const { speed: sp, night: nt, reduceMotion: rm } = live.current;
+      if (nt !== nightNow) {
+        nightNow = nt;
+        e.raw.set_night(nt);
+      }
+      brush();
+      if (sp === 'normal') {
         acc += dt;
         let n = 0;
-        while (acc >= STEP_MS && n < 3) {
-          applyBrush();
-          world.step();
-          for (const e of world.events) {
-            if (seen.has(e.kind)) continue;
-            seen.add(e.kind);
-            events.push(e);
-          }
+        while (acc >= STEP_MS && n < 2) {
+          e.raw.step(1);
           acc -= STEP_MS;
           n++;
         }
-        if (n === 3) acc = 0; // a slow device: drop the backlog rather than spiral
+        if (n === 2) acc = 0; // a slow device: drop the backlog rather than spiral
+      } else if (sp === 'slow') {
+        acc = 0;
+        if (++slowTick % 4 === 0) e.raw.step(1);
+      } else acc = 0;
+      // The finger, for the faces and the babies.
+      const first = strokes.current.values().next().value as Stroke | undefined;
+      const p = first ?? (keyboard.current.on ? keyboard.current : null);
+      const key = p ? `${p.x | 0},${p.y | 0}` : '';
+      if (key !== lastPointer) {
+        lastPointer = key;
+        e.raw.set_pointer(p ? p.x : -1, p ? p.y : -1);
       }
-      draw(now);
-      if (events.length) {
-        const r = el.getBoundingClientRect();
-        live.current.onEvents(events.map((e) => ({ ...e, clientX: r.left + ((e.x + 0.5) / w) * r.width, clientY: r.top + ((e.y + 0.5) / h) * r.height })));
+      const img = e.render(now, rm);
+      if (el.width !== img.width || el.height !== img.height) {
+        el.width = img.width;
+        el.height = img.height;
+      }
+      ctx.putImageData(img as ImageData, 0, 0);
+      flush(now);
+      // Frame time, measured in the page (read by the tests); the tier steps down when it stays high.
+      const spent = performance.now() - t0;
+      busy += spent;
+      if (++frames % 60 === 0) {
+        const avg = busy / 60;
+        el.dataset.frameMs = avg.toFixed(2);
+        busy = 0;
+        if (avg > 12 && scale > 1) {
+          scale -= 1;
+          e.raw.set_quality(scale, false);
+          el.dataset.tier = scale === 1 ? 'rescue' : 'low';
+        }
       }
     };
 
@@ -288,59 +312,74 @@ export function SandCanvas({
     const onVisibility = () => (document.hidden ? stop() : start());
     document.addEventListener('visibilitychange', onVisibility);
     if (!document.hidden) start();
-
     return () => {
       stop();
       ro.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);
-      sim.current = null;
+      engine.current = null;
+      e.free();
     };
-    // The world is built once; scenes and clearing go through the API.
+    // The world is rebuilt only when the world or the shape changes.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [status, shape, world]);
 
-  const cell = (e: { clientX: number; clientY: number }) => {
-    const s = sim.current;
-    const r = canvas.current?.getBoundingClientRect();
-    if (!s || !r || !r.width) return { x: -1, y: -1 };
-    return { x: Math.floor(((e.clientX - r.left) / r.width) * s.w), y: Math.floor(((e.clientY - r.top) / r.height) * s.h) };
+  const down = (ev: React.PointerEvent<HTMLCanvasElement>) => {
+    ev.currentTarget.setPointerCapture(ev.pointerId);
+    const c = toCell(ev.clientX, ev.clientY);
+    const t = live.current.tool;
+    const e = engine.current;
+    live.current.onPaint();
+    keyboard.current.on = false;
+    // One-tap tools.
+    if (e && (t.id === 'critter' || t.id === 'baby' || t.id === 'rainbowSeed' || t.id === 'pocketStar' || t.id === 'toy')) {
+      if (t.id === 'critter') e.raw.stamp_critter(Math.round(c.x), Math.round(c.y));
+      else if (t.id === 'baby') e.raw.hatch_baby(Math.round(c.x), Math.round(c.y));
+      else e.raw.place_gift(t.id === 'rainbowSeed' ? 9 : t.id === 'pocketStar' ? 8 : WORLDS.indexOf(live.current.world), Math.round(c.x), Math.round(c.y));
+      return;
+    }
+    strokes.current.set(ev.pointerId, { x: c.x, y: c.y, px: -1, py: -1, down: true });
+  };
+  const move = (ev: React.PointerEvent<HTMLCanvasElement>) => {
+    const s = strokes.current.get(ev.pointerId);
+    const c = toCell(ev.clientX, ev.clientY);
+    if (s) {
+      s.x = c.x;
+      s.y = c.y;
+    } else if (ev.pointerType === 'mouse') engine.current?.raw.set_pointer(c.x, c.y);
+  };
+  const up = (ev: React.PointerEvent<HTMLCanvasElement>) => {
+    strokes.current.delete(ev.pointerId);
+    if (!strokes.current.size) engine.current?.raw.beam_off();
   };
 
-  const onKeyDown = (e: React.KeyboardEvent) => {
-    const s = sim.current;
-    if (!s) return;
-    const i = input.current;
-    const step = e.shiftKey ? 8 : 2;
-    const move = (dx: number, dy: number) => {
-      e.preventDefault();
-      if (!i.keyboard || i.x < 0) {
-        i.x = s.w >> 1;
-        i.y = s.h >> 2;
+  const onKeyDown = (ev: React.KeyboardEvent) => {
+    const e = engine.current;
+    if (!e) return;
+    const k = keyboard.current;
+    const step = ev.shiftKey ? 8 : 2;
+    const go = (dx: number, dy: number) => {
+      ev.preventDefault();
+      if (!k.on || k.x < 0) {
+        k.x = e.w >> 1;
+        k.y = e.h >> 2;
       }
-      i.keyboard = true;
-      i.x = Math.max(0, Math.min(s.w - 1, i.x + dx * step));
-      i.y = Math.max(0, Math.min(s.h - 1, i.y + dy * step));
+      k.on = true;
+      k.x = Math.max(0, Math.min(e.w - 1, k.x + dx * step));
+      k.y = Math.max(0, Math.min(e.h - 1, k.y + dy * step));
     };
-    if (e.key === 'ArrowLeft') move(-1, 0);
-    else if (e.key === 'ArrowRight') move(1, 0);
-    else if (e.key === 'ArrowUp') move(0, -1);
-    else if (e.key === 'ArrowDown') move(0, 1);
-    else if (e.key === ' ' || e.key === 'Enter') {
-      e.preventDefault();
-      if (!i.keyboard || i.x < 0) move(0, 0);
-      if (!i.down) {
-        i.down = true;
-        i.px = -1;
-        live.current.onPaint();
-      }
+    if (ev.key === 'ArrowLeft') go(-1, 0);
+    else if (ev.key === 'ArrowRight') go(1, 0);
+    else if (ev.key === 'ArrowUp') go(0, -1);
+    else if (ev.key === 'ArrowDown') go(0, 1);
+    else if (ev.key === ' ' || ev.key === 'Enter') {
+      ev.preventDefault();
+      if (!k.on) go(0, 0);
+      if (!k.down) live.current.onPaint();
+      k.down = true;
     }
   };
-
-  const onKeyUp = (e: React.KeyboardEvent) => {
-    if (e.key === ' ' || e.key === 'Enter') {
-      input.current.down = false;
-      input.current.px = -1;
-    }
+  const onKeyUp = (ev: React.KeyboardEvent) => {
+    if (ev.key === ' ' || ev.key === 'Enter') keyboard.current.down = false;
   };
 
   return (
@@ -351,40 +390,32 @@ export function SandCanvas({
         tabIndex={0}
         aria-label={label}
         aria-describedby="sandbox-help"
+        data-sandbox-canvas=""
         className="sandbox-canvas touch-none select-none rounded-[22px] outline-none focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-[14px] focus-visible:outline-white/80"
         style={{
-          imageRendering: 'pixelated',
-          background: '#a8d1f6',
+          width: 320,
+          height: 192,
+          background: '#7db5ee',
           // A moulded toy tank: white lip, sunny plastic rim with its thickness, soft shadow.
           boxShadow: '0 0 0 4px rgba(255,255,255,0.95), 0 0 0 11px #ffc94a, 0 0 0 12px #f0a92c, 0 9px 0 12px #d4861c, 0 40px 70px -18px rgba(10,8,40,0.75)',
         }}
-        onPointerDown={(e) => {
-          e.currentTarget.setPointerCapture(e.pointerId);
-          const c = cell(e);
-          Object.assign(input.current, { down: true, keyboard: false, x: c.x, y: c.y, px: -1, py: -1, hover: e.pointerType === 'mouse' });
-          live.current.onPaint();
+        onPointerDown={down}
+        onPointerMove={move}
+        onPointerUp={up}
+        onPointerCancel={up}
+        onPointerLeave={(ev) => {
+          if (ev.pointerType === 'mouse' && !strokes.current.has(ev.pointerId)) engine.current?.raw.set_pointer(-1, -1);
         }}
-        onPointerMove={(e) => {
-          const c = cell(e);
-          Object.assign(input.current, { x: c.x, y: c.y, keyboard: false, hover: e.pointerType === 'mouse' || input.current.down });
-        }}
-        onPointerUp={(e) => Object.assign(input.current, { down: false, px: -1, hover: e.pointerType === 'mouse' })}
-        onPointerCancel={() => Object.assign(input.current, { down: false, px: -1, hover: false })}
-        onPointerLeave={(e) => {
-          if (e.pointerType === 'mouse' && !input.current.down) input.current.hover = false;
-        }}
-        onFocus={() => (input.current.focused = true)}
-        onBlur={() => Object.assign(input.current, { focused: false, down: false, px: -1 })}
+        onFocus={() => (keyboard.current.focused = true)}
+        onBlur={() => Object.assign(keyboard.current, { focused: false, down: false })}
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
       />
-      {/* Glass reflection over the tank (never catches the pointer). */}
-      <div
-        ref={glass}
-        aria-hidden="true"
-        className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-[22px]"
-        style={{ background: 'linear-gradient(118deg, rgba(255,255,255,0.28) 0%, rgba(255,255,255,0.06) 18%, rgba(255,255,255,0) 32%, rgba(255,255,255,0) 78%, rgba(255,255,255,0.1) 100%)', boxShadow: 'inset 0 2px 0 rgba(255,255,255,0.5), inset 0 -10px 24px -12px rgba(20,10,60,0.35)' }}
-      />
+      {status !== 'ready' ? (
+        <p role="status" className="pointer-events-none absolute rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-[#2c2470] shadow-lg">
+          {status === 'loading' ? loadingLabel : failLabel}
+        </p>
+      ) : null}
       <p id="sandbox-help" className="sr-only">
         {help}
       </p>

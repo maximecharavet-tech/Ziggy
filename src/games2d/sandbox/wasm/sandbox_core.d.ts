@@ -7,6 +7,10 @@ export class Sandbox {
     awake_chunks(): number;
     beam(x0: number, y0: number, x1: number, y1: number, r: number): void;
     /**
+     * The beam is let go (it stops being drawn).
+     */
+    beam_off(): void;
+    /**
      * A burst of sparkles at a cell.
      */
     burst(x: number, y: number, rgb: number, n: number): void;
@@ -94,6 +98,7 @@ export interface InitOutput {
     readonly __wbg_sandbox_free: (a: number, b: number) => void;
     readonly sandbox_awake_chunks: (a: number) => number;
     readonly sandbox_beam: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+    readonly sandbox_beam_off: (a: number) => void;
     readonly sandbox_burst: (a: number, b: number, c: number, d: number, e: number) => void;
     readonly sandbox_clear: (a: number) => void;
     readonly sandbox_count: (a: number, b: number) => number;

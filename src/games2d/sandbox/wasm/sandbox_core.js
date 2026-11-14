@@ -29,6 +29,12 @@ export class Sandbox {
         wasm.sandbox_beam(this.__wbg_ptr, x0, y0, x1, y1, r);
     }
     /**
+     * The beam is let go (it stops being drawn).
+     */
+    beam_off() {
+        wasm.sandbox_beam_off(this.__wbg_ptr);
+    }
+    /**
      * A burst of sparkles at a cell.
      * @param {number} x
      * @param {number} y

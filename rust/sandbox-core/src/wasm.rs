@@ -57,6 +57,13 @@ impl Sandbox {
     }
     pub fn beam(&mut self, x0: f32, y0: f32, x1: f32, y1: f32, r: f32) {
         self.world.beam(x0, y0, x1, y1, r);
+        if x1.is_finite() && y1.is_finite() && r.is_finite() {
+            self.renderer.beam = Some((x1, y1, r.clamp(2.0, 14.0)));
+        }
+    }
+    /// The beam is let go (it stops being drawn).
+    pub fn beam_off(&mut self) {
+        self.renderer.beam = None;
     }
     pub fn stamp_critter(&mut self, x: i32, y: i32) -> u32 {
         self.world.stamp_critter(x, y)

@@ -4,6 +4,7 @@ export const memory: WebAssembly.Memory;
 export const __wbg_sandbox_free: (a: number, b: number) => void;
 export const sandbox_awake_chunks: (a: number) => number;
 export const sandbox_beam: (a: number, b: number, c: number, d: number, e: number, f: number) => void;
+export const sandbox_beam_off: (a: number) => void;
 export const sandbox_burst: (a: number, b: number, c: number, d: number, e: number) => void;
 export const sandbox_clear: (a: number) => void;
 export const sandbox_count: (a: number, b: number) => number;
