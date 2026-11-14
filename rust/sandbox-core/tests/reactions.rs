@@ -583,7 +583,14 @@ fn the_parcel_waits_quietly_and_is_never_lost() {
         for _ in 0..3000 {
             s.step();
         }
-        assert!(s.parcel.state == P_LANDED || s.parcel.state == P_FALLING, "world {world}: state {}", s.parcel.state);
+        assert!(
+            s.parcel.state == P_LANDED || s.parcel.state == P_FALLING,
+            "world {world}: state {} opened by {} at {},{}",
+            s.parcel.state,
+            s.parcel.opened,
+            s.parcel.x >> 4,
+            s.parcel.y >> 4
+        );
         assert!(s.inside(s.parcel.x >> 4, s.parcel.y >> 4));
         assert!(!s.drop_parcel(10, 10), "one parcel at a time");
     }

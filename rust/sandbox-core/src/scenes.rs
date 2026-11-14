@@ -16,6 +16,42 @@ pub fn isin(a: i32) -> i32 {
     sign * (4 * x * (512 - x)) / 256
 }
 
+/// The fronds of a grown palm, around the top of its trunk.
+const PALM_CROWN: [(i32, i32); 32] = [
+    (-1, 0),
+    (1, 0),
+    (-2, 0),
+    (2, 0),
+    (-3, 0),
+    (3, 0),
+    (-4, 1),
+    (4, 1),
+    (-5, 1),
+    (5, 1),
+    (-6, 2),
+    (6, 2),
+    (-7, 3),
+    (7, 3),
+    (-1, -1),
+    (1, -1),
+    (0, -1),
+    (-2, -1),
+    (2, -1),
+    (-3, -1),
+    (3, -1),
+    (-1, -2),
+    (1, -2),
+    (0, -2),
+    (-2, 1),
+    (2, 1),
+    (-3, 1),
+    (3, 1),
+    (-4, 2),
+    (4, 2),
+    (-5, 3),
+    (5, 3),
+];
+
 impl World {
     fn fill(&mut self, x: i32, y: i32, t: u8) {
         self.set(x, y, t);
@@ -81,21 +117,7 @@ impl World {
         }
         let h = (ground - top) as u8;
         if variant == V_PALM {
-            for (dx, dy) in [
-                (-1, 0),
-                (1, 0),
-                (-2, 1),
-                (2, 1),
-                (-1, -1),
-                (1, -1),
-                (-3, 2),
-                (3, 2),
-                (0, -1),
-                (-2, 0),
-                (2, 0),
-                (-4, 3),
-                (4, 3),
-            ] {
+            for (dx, dy) in PALM_CROWN {
                 if self.get(x + dx, top + dy) == EMPTY && self.inside(x + dx, top + dy) {
                     self.set(x + dx, top + dy, PLANT);
                     self.fix(x + dx, top + dy, 0, LEAF);
@@ -249,8 +271,8 @@ impl World {
         }
         // Two rocky peaks with thick snow caps. Slopes stay under 45°, so the snow stays on.
         let peaks = [
-            (w * 30 / 100, h * if tall { 44 } else { 22 } / 100),
-            (w * 66 / 100, h * if tall { 57 } else { 42 } / 100),
+            (w * if tall { 32 } else { 27 } / 100, h * if tall { 44 } else { 22 } / 100),
+            (w * if tall { 66 } else { 53 } / 100, h * if tall { 60 } else { 55 } / 100),
         ];
         let snow_line = h * if tall { 66 } else { 58 } / 100;
         for x in 0..w {
@@ -429,7 +451,6 @@ impl World {
         self.resident(vx);
     }
 
-
     /// A coral fan: a short trunk that splits into branches curving up.
     fn coral_fan(&mut self, x: i32, ground: i32, tall: i32, hue: u8) {
         let mut put = |world: &mut World, cx: i32, cy: i32| {
@@ -556,10 +577,15 @@ impl World {
         self.rect(cx - 12, g - 6, cx - 2, g - 5, STONE);
         self.rect(cx - 12, g - 5, cx - 11, g - 1, STONE);
         self.rect(cx - 10, g - 2, cx - 5, g - 1, ICE);
-        for f in [10, 40, 78] {
+        for (n, f) in [10, 40, 78, 52].iter().enumerate() {
             let x = w * f / 100;
             let g = self.surface(x);
-            self.fill(x, g - 1, METEORITE);
+            let r = 1 + (n as i32 % 2);
+            for dy in 0..=r {
+                for dx in -r + dy / 2..=r - dy / 2 {
+                    self.fill(x + dx, g - 1 - dy, METEORITE);
+                }
+            }
         }
         self.resident(w * 36 / 100);
     }

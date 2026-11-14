@@ -359,7 +359,6 @@ impl Renderer {
         }
     }
 
-
     /// Rock, sand and earth take the colours of each world (red rock on Mars, grey dust on the Moon…).
     fn world_palette(&mut self, world: u8) {
         let set = |pal: &mut Vec<[u8; 3]>, s: u8, a: u32, b: u32| {
@@ -407,7 +406,8 @@ impl Renderer {
                 let i = y * w + x;
                 let c = world.cells[i];
                 let st = ELEMENTS[sp(c) as usize].style;
-                let open = c == 0 || matches!(st, S_LIQUID | S_GAS | S_GLASS | S_BUBBLE | S_CLOUD | S_PLANT | S_FLOWER | S_CORAL);
+                let open = c == 0
+                    || matches!(st, S_LIQUID | S_GAS | S_GLASS | S_BUBBLE | S_CLOUD | S_PLANT | S_FLOWER | S_CORAL);
                 if open {
                     self.bury[i] = 0;
                     continue;
@@ -814,7 +814,12 @@ impl Renderer {
                 }
                 if sp_ == FLOWER && cb(c) == CENTER && ca(c) != 10 && self.blooms.len() < self.blooms.capacity() {
                     let hue = FLOWER_HUES[(ca(c) as usize).min(10)];
-                    self.blooms.push((((x * s) as i32 + off) as f32 + s as f32 * 0.5, (y * s) as f32 + s as f32 * 0.5, hue, (shade(c) >> 5) & 7));
+                    self.blooms.push((
+                        ((x * s) as i32 + off) as f32 + s as f32 * 0.5,
+                        (y * s) as f32 + s as f32 * 0.5,
+                        hue,
+                        (shade(c) >> 5) & 7,
+                    ));
                 }
             }
         }
@@ -972,7 +977,6 @@ impl Renderer {
         }
     }
 
-
     /// Flower heads drawn bigger than a cell, so a child sees real flowers: five round petals and a golden heart.
     fn draw_blooms(&mut self, night: bool) {
         let u = self.scale as f32;
@@ -1024,7 +1028,9 @@ impl Renderer {
             while fy > 5 && Self::solid_block(world, x, fy - 1, t) {
                 fy -= 1;
             }
-            if self.faces.iter().any(|f| (f.x - x).abs() < 34 && (f.y - fy).abs() < 26) {
+            if self.faces.iter().any(|f| (f.x - x).abs() < 34 && (f.y - fy).abs() < 26)
+                || self.faces.iter().filter(|f| f.species == t).count() >= 2
+            {
                 continue;
             }
             let seed = self.rnd();

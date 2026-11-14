@@ -106,9 +106,13 @@ impl World {
                     continue;
                 }
                 let t = self.get(cx + dx, cy + dy);
+                // Only what lands on it counts: something moving onto it, or lying right on its lid.
+                let j = (cy + dy) as usize * self.w + (cx + dx) as usize;
+                let fresh = self.clock[j] == self.gen || (dy <= -3 && dx.abs() <= 1);
                 match t {
-                    WATER | DYED | SALTWATER if dy < 0 => wet += 1,
-                    SNOW | ICE | DRYICE | FROST if dy < 0 => cold += 1,
+                    WATER | DYED | SALTWATER if dy < 0 && fresh => wet += 1,
+                    SNOW | FROST if dy < 0 && fresh => cold += 1,
+                    ICE | DRYICE if dy < 0 => cold += 1,
                     BUBBLE => bubbles += 1,
                     HEAT | LAVA | STAR => warm += 1,
                     _ => {}
