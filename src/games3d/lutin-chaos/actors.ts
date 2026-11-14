@@ -170,6 +170,8 @@ export class ElfCtl {
     const model = this.actor.userData.model;
     this.face = attachFace({ kind: 'elf', elf: id, setMouth: (o) => model.setMouth(o) });
     this.actor.scale.setScalar(ELF_SCALE);
+    // contact blobs instead of shadow-map casting: the cast stays affordable on capable devices too
+    this.actor.traverse((o) => (o.castShadow = false));
     this.shadow = blob(id === 'noisette' ? 0.22 : 0.36);
     this.root.add(this.actor, this.shadow);
     this.root.visible = false;
@@ -408,6 +410,7 @@ export class ZiggyCtl {
     this.actor = makeZiggy({ accessory, lowPower: low });
     optimizeZiggy(this.actor);
     this.actor.scale.setScalar(ZIGGY_SCALE);
+    this.actor.traverse((o) => (o.castShadow = false));
     this.shadow = blob(0.55);
     this.root.add(this.actor, this.shadow);
     this.root.name = 'ziggy';

@@ -618,7 +618,7 @@ impl World {
             return;
         }
         let sea = self.params.medium == SEA;
-        if self.params.medium == VACUUM && a > 10 {
+        if self.params.medium == VACUUM && a > 3 {
             // No air around to hold it, and no air to carry the sound: a silent pop.
             self.kill(i);
             self.emit(R_SILENT_POP, x, y);
@@ -1330,11 +1330,11 @@ impl World {
         if !(4..=200).contains(&fall) {
             return;
         }
-        self.aux[i] = 0;
         let dust = |t: u8| matches!(t, MOONDUST | SAND | REDDUST | SOIL | SNOW | ASH);
         if !dust(self.get(x, y + 1)) {
             return;
         }
+        self.aux[i] = 0;
         let w = self.w;
         for dx in -3..=3i32 {
             let depth = 3 - dx.abs().max(1) + 1;

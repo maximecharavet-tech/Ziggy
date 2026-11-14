@@ -444,6 +444,15 @@ fn every_reaction_can_be_caused_and_is_reported() {
             s.take_events();
         }
         if !seen {
+            let mut els = String::new();
+            for e in 0..ELEMENT_COUNT as u8 {
+                let n = s.count(e);
+                if n > 0 {
+                    els += &format!(" {e}:{n}");
+                }
+            }
+            let fired: Vec<usize> = (0..REACTION_COUNT).filter(|&k| s.counts[k] > 0).collect();
+            eprintln!("reaction {r}: elements{els}; fired {fired:?}");
             missing.push(r);
         } else {
             assert!(s.counts[r as usize] > 0);

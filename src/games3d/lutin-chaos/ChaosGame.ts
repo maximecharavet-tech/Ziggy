@@ -4,7 +4,7 @@ import type { BaseGameCommands, BaseGameEvents, SayRequest } from '../engine/eve
 import type { CommandOf, GameDefinition, GameHost, HostScene } from '../engine/host';
 import type { HotspotDef } from '../engine/input/hotspots';
 import type { InputEvent } from '../engine/input/actions';
-import { ease } from '../engine/tween';
+import { Tweener, ease } from '../engine/tween';
 import { disposeTree } from '../kit/look';
 import type { ZiggyAccessory } from '../ziggy/types';
 import { Cast, type ElfCtl } from './actors';
@@ -402,6 +402,9 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   private done = false;
   private lastHint: Extract<FixCheck, { solved: false }> | null = null;
   private hiddenRefPos = new Map<string, THREE.Vector3>();
+  /** The scene's own clock: its timers and tweens stop for good when it leaves. */
+  private tw = new Tweener();
+  private dead = false;
   private insets = { top: 0, bottom: 0 };
   private freezeQueue: { elf: ElfCtl; pose: ElfPose; side?: 1 | -1 }[] = [];
   private lastSize = { w: 1, h: 1 };
@@ -459,6 +462,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     }
     this.snapProps(this.drawn);
     this.rig.reducedMotion = host.reducedMotion;
+    this.tw.reducedMotion = host.reducedMotion;
   }
 
   enter(host: Host) {
@@ -472,7 +476,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
       else if (!this.o.resume) {
         // the tidy room for a beat, then a felt poof: the elves were here!
         this.busy(reduce ? 0.2 : 1.6);
-        host.tween.after(reduce ? 0.05 : 0.7, () => {
+        this.tw.after(reduce ? 0.05 : 0.7, () => {
           this.rt.sfx('whoosh');
           this.confetti.burst(new THREE.Vector3(0, 1.4, 0), 1.3);
           this.flyTo(this.session!.state, 'scatter');
@@ -499,6 +503,8 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   }
 
   dispose() {
+    this.dead = true;
+    this.tw.clear();
     this.rt.cast?.detachFrom(this.view.scene);
     if (this.marks) disposeMarks(this.marks);
     for (const v of this.props.values()) v.dispose();
@@ -552,7 +558,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
       puzzle: caught ? { prank: caught.id, elf: caught.culprit, puzzle: caught.puzzle, tries: caught.tries, hint: this.lastHint } : null,
       finale: this.finaleHud,
       team: [...this.team],
-      busy: this.host.tween.now < this.busyUntil,
+      busy: this.tw.now < this.busyUntil,
       sandbox: sb
         ? {
             phase: sb.phase,
@@ -576,17 +582,18 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
 
   /** HUD + hotspots after any change. */
   private refresh() {
+    if (this.dead) return;
     this.host.emit('hud', this.hud());
     this.hotspots();
   }
 
   private busy(seconds: number) {
-    this.busyUntil = Math.max(this.busyUntil, this.host.tween.now + seconds);
-    this.host.tween.after(seconds + 0.02, () => this.refresh());
+    this.busyUntil = Math.max(this.busyUntil, this.tw.now + seconds);
+    this.tw.after(seconds + 0.02, () => this.refresh());
   }
 
   private get isBusy() {
-    return this.host.tween.now < this.busyUntil;
+    return this.tw.now < this.busyUntil;
   }
 
   // ---- hotspots ---------------------------------------------------------------
@@ -766,7 +773,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
 
   /** Play the reducer's events: the only place where the room changes on screen. */
   private play(events: ChaosEvent[], before: RoomSession) {
-    const tw = this.host.tween;
+    const tw = this.tw;
     const reduce = this.host.reducedMotion;
     const z = this.cast.ziggy(this.rt.costume);
     let delay = 0;
@@ -836,7 +843,8 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
               }
               elf.peek(tw, hide.peek, reduce);
               this.peekRing.show(hide.peek, elf.id === 'noisette' ? 1.2 : 1.6);
-              this.focusPoint(hide.peek, 0.3);
+              // lean well toward the peeking elf (portrait screens show only part of the room)
+              this.focusPoint(hide.peek, this.lastSize.w < this.lastSize.h ? 0.85 : 0.4);
               this.wiggleHide(ev.spot, 0.8);
               this.rt.sfx(SFX_OF[ev.elf]);
               this.refresh();
@@ -1009,7 +1017,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   }
 
   private animateProp(v: PropView, pose: PropPose, recolour: boolean, style: 'scatter' | 'heal' | 'chain' | 'rewind', delay: number) {
-    const tw = this.host.tween;
+    const tw = this.tw;
     const from = v.group.position.clone();
     const fromRot = v.spin.rotation.z;
     const toRot = (pose.rot * Math.PI) / 2;
@@ -1052,14 +1060,14 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     const v = this.props.get(id);
     if (!v || this.host.reducedMotion || !v.group.visible) return;
     const base = v.spin.rotation.z;
-    this.host.tween.run((k) => (v.spin.rotation.z = base + Math.sin(k * Math.PI * 4) * 0.18 * strength * (1 - k)), { duration: 0.5, kind: 'other' });
+    this.tw.run((k) => (v.spin.rotation.z = base + Math.sin(k * Math.PI * 4) * 0.18 * strength * (1 - k)), { duration: 0.5, kind: 'other' });
   }
 
   private wiggleHide(id: string, strength: number) {
     const h = this.set.hides.get(id);
     if (!h || this.host.reducedMotion) return;
     const base = h.obj.rotation.z;
-    this.host.tween.run((k) => (h.obj.rotation.z = base + Math.sin(k * Math.PI * 6) * 0.08 * strength * (1 - k)), { duration: 0.9, kind: 'other' });
+    this.tw.run((k) => (h.obj.rotation.z = base + Math.sin(k * Math.PI * 6) * 0.08 * strength * (1 - k)), { duration: 0.9, kind: 'other' });
   }
 
   /** A funny miss: a cuckoo, a yawning plush cat, a sock puppet or a twirling lampshade pops out. */
@@ -1071,8 +1079,8 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     g.position.copy(h.obj.position).setY(h.h * 0.85);
     g.scale.setScalar(0.01);
     const reduce = this.host.reducedMotion;
-    this.host.tween.run((k) => g.scale.setScalar(Math.max(0.01, ease.hop(k) * 1.6)), { duration: reduce ? 1.2 : 1.4, kind: 'other', onDone: () => (g.visible = false) });
-    if (!reduce) this.host.tween.run((k) => (g.rotation.y = Math.sin(k * Math.PI * 3) * 0.5), { duration: 1.4, kind: 'other' });
+    this.tw.run((k) => g.scale.setScalar(Math.max(0.01, ease.hop(k) * 1.6)), { duration: reduce ? 1.2 : 1.4, kind: 'other', onDone: () => (g.visible = false) });
+    if (!reduce) this.tw.run((k) => (g.rotation.y = Math.sin(k * Math.PI * 3) * 0.5), { duration: 1.4, kind: 'other' });
   }
 
   private gags = new Map<string, THREE.Mesh>();
@@ -1109,7 +1117,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     this.ghosts = g;
     this.view.scene.add(g);
     mat.opacity = 0.55;
-    this.host.tween.after(3.5, () => {
+    this.tw.after(3.5, () => {
       if (this.ghosts === g) {
         this.view.scene.remove(g);
         this.ghosts = null;
@@ -1131,7 +1139,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     for (const p of s.pranks) {
       if (p.phase !== 'found' || !p.peeking) continue;
       const hide = this.set.hides.get(p.hideSpot);
-      if (hide) this.cast.elves[p.culprit].peek(this.host.tween, hide.peek, this.host.reducedMotion);
+      if (hide) this.cast.elves[p.culprit].peek(this.tw, hide.peek, this.host.reducedMotion);
     }
   }
 
@@ -1167,14 +1175,14 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
       starter.show(at, 'stage');
       starter.pose('tiptoe');
       starter.lookToward(fv.group.position.x, fv.group.position.z);
-      this.host.tween.after(0.7, () => {
+      this.tw.after(0.7, () => {
         starter.pose('point');
         this.rt.sfx('pop');
       });
-      this.host.tween.after(2.0, () => starter.popAway(this.host.tween, this.host.reducedMotion));
+      this.tw.after(2.0, () => starter.popAway(this.tw, this.host.reducedMotion));
     }
     const until = f.predictAt ?? f.steps.length;
-    this.host.tween.after(1.0, () =>
+    this.tw.after(1.0, () =>
       this.playChain(0, until, () => {
         if (f.predictAt !== null && s.finale?.phase === 'predict') {
           this.finaleHud = { ...this.finaleHud!, phase: 'predict' };
@@ -1196,7 +1204,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     for (let i = from; i < to; i++) {
       st = applyChanges(st, steps[i].changes);
       const next = st;
-      this.host.tween.after((i - from) * gap, () => {
+      this.tw.after((i - from) * gap, () => {
         this.flyTo(next, 'chain', 0.08);
         this.rt.sfx(i % 2 ? 'boing' : 'whoosh');
         const pid = steps[i].changes[0]?.prop;
@@ -1204,7 +1212,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
         if (v) this.focusPoint(v.group.position, 0.25);
       });
     }
-    this.host.tween.after((to - from) * gap + 0.3, done);
+    this.tw.after((to - from) * gap + 0.3, done);
   }
 
   private rewindPhase() {
@@ -1232,7 +1240,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
       this.freezeQueue.push({ elf, pose, side });
     } else {
       elf.pose(pose, side);
-      elf.hop(this.host.tween, this.host.reducedMotion);
+      elf.hop(this.tw, this.host.reducedMotion);
     }
   }
 
@@ -1269,7 +1277,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     const key = this.set.key;
     const h0 = hemi.intensity;
     const k0 = key.intensity;
-    this.host.tween.run(
+    this.tw.run(
       (k) => {
         hemi.intensity = h0 * (1 - 0.35 * k);
         key.intensity = k0 * (1 - 0.5 * k);
@@ -1307,7 +1315,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   }
 
   private playSandbox(events: SandboxEvent[], before: SandboxState, action: SandboxAction) {
-    const tw = this.host.tween;
+    const tw = this.tw;
     const reduce = this.host.reducedMotion;
     const z = this.cast.ziggy(this.rt.costume);
     let walkDone = 0;
@@ -1387,11 +1395,11 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
       const spot = sb.elves[e];
       const h = spot ? this.set.hides.get(spot) : undefined;
       const elf = this.cast.elves[e];
-      if (h && sb.phase === 'setup') elf.peek(this.host.tween, h.peek, this.host.reducedMotion);
+      if (h && sb.phase === 'setup') elf.peek(this.tw, h.peek, this.host.reducedMotion);
       else elf.hide();
     }
     const z = this.cast.ziggy(this.rt.costume);
-    z.walkTo(this.host.tween, this.set.ziggy, true);
+    z.walkTo(this.tw, this.set.ziggy, true);
     z.lookToward(this.set.ziggy.x * 0.3, 14);
   }
 
@@ -1441,6 +1449,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
 
   update(dt: number) {
     this.t += dt;
+    this.tw.update(dt);
     const reduce = this.host.reducedMotion;
     this.rig.update(dt);
     this.rig.applyTo(this.view.camera);
