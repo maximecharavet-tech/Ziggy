@@ -69,7 +69,7 @@ export function BreakReminder() {
           animate={{ y: 0, opacity: 1 }}
           exit={{ y: 80, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 260, damping: 26 }}
-          className="fixed bottom-4 inset-x-4 sm:inset-x-auto sm:start-6 sm:bottom-6 sm:max-w-sm z-[80] rounded-2xl border border-border/50 glass-strong p-4 shadow-xl"
+          className="fixed inset-x-4 sm:inset-x-auto sm:start-6 sm:max-w-sm z-[80] bottom-[calc(var(--tabbar-h,0px)+env(safe-area-inset-bottom,0px)+1rem)] rounded-2xl border border-border/50 glass-strong bg-bg-card/90 p-4 shadow-xl"
         >
           <div className="flex items-start gap-3">
             <ZiggyAvatar size={44} />
