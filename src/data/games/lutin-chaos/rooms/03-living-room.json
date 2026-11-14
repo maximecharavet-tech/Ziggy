@@ -1,0 +1,858 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.living-room",
+  "number": 3,
+  "version": "1.0.0",
+  "title": {
+    "fr": "Le salon",
+    "en": "The living room"
+  },
+  "season": "winter",
+  "layout": "living-room-a",
+  "assets": [
+    "chaos.room.living-room",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "patterns",
+    "spatial",
+    "counting",
+    "sorting"
+  ],
+  "skills": [
+    "sequencing",
+    "shapes",
+    "counting",
+    "colors"
+  ],
+  "intro": {
+    "fr": "Le sapin brille… mais quelque chose cloche ! Tu vois quoi ?",
+    "en": "The tree is sparkling… but something’s not right! What can you see?"
+  },
+  "slots": [
+    {
+      "id": "tree",
+      "label": {
+        "fr": "le sapin",
+        "en": "the tree"
+      },
+      "in": {
+        "fr": "sur le sapin",
+        "en": "on the tree"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "laundry-basket",
+      "label": {
+        "fr": "le panier à linge",
+        "en": "the laundry basket"
+      },
+      "in": {
+        "fr": "dans le panier à linge",
+        "en": "in the laundry basket"
+      },
+      "at": [
+        2.25,
+        0,
+        1.3
+      ]
+    },
+    {
+      "id": "tree-top",
+      "label": {
+        "fr": "le haut du sapin",
+        "en": "the tree top"
+      },
+      "in": {
+        "fr": "en haut du sapin",
+        "en": "at the top of the tree"
+      },
+      "at": [
+        1.3,
+        0,
+        2.25
+      ]
+    },
+    {
+      "id": "sofa",
+      "label": {
+        "fr": "le canapé",
+        "en": "the sofa"
+      },
+      "in": {
+        "fr": "sur le canapé",
+        "en": "on the sofa"
+      },
+      "at": [
+        0,
+        1,
+        2.6
+      ]
+    },
+    {
+      "id": "under-sofa",
+      "label": {
+        "fr": "le dessous du canapé",
+        "en": "under the sofa"
+      },
+      "in": {
+        "fr": "sous le canapé",
+        "en": "under the sofa"
+      },
+      "at": [
+        -1.3,
+        0,
+        2.25
+      ]
+    },
+    {
+      "id": "rug",
+      "label": {
+        "fr": "le tapis",
+        "en": "the rug"
+      },
+      "in": {
+        "fr": "sur le tapis",
+        "en": "on the rug"
+      },
+      "at": [
+        -2.25,
+        0,
+        1.3
+      ]
+    },
+    {
+      "id": "mantel",
+      "label": {
+        "fr": "la cheminée",
+        "en": "the mantelpiece"
+      },
+      "in": {
+        "fr": "sur la cheminée",
+        "en": "on the mantelpiece"
+      },
+      "at": [
+        -2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "track",
+      "label": {
+        "fr": "les rails",
+        "en": "the track"
+      },
+      "in": {
+        "fr": "sur les rails",
+        "en": "on the track"
+      },
+      "at": [
+        -2.25,
+        0,
+        -1.3
+      ]
+    },
+    {
+      "id": "gift-pile",
+      "label": {
+        "fr": "le pied du sapin",
+        "en": "the foot of the tree"
+      },
+      "in": {
+        "fr": "au pied du sapin",
+        "en": "under the tree"
+      },
+      "at": [
+        -1.3,
+        0,
+        -2.25
+      ]
+    },
+    {
+      "id": "side-table",
+      "label": {
+        "fr": "la petite table",
+        "en": "the side table"
+      },
+      "in": {
+        "fr": "sur la petite table",
+        "en": "on the side table"
+      },
+      "at": [
+        0,
+        1,
+        -2.6
+      ]
+    },
+    {
+      "id": "shelf",
+      "label": {
+        "fr": "l’étagère",
+        "en": "the shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère",
+        "en": "on the shelf"
+      },
+      "at": [
+        1.3,
+        0,
+        -2.25
+      ]
+    },
+    {
+      "id": "window",
+      "label": {
+        "fr": "la fenêtre",
+        "en": "the window"
+      },
+      "in": {
+        "fr": "devant la fenêtre",
+        "en": "by the window"
+      },
+      "at": [
+        2.25,
+        0,
+        -1.3
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "sock-5",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-6",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-7",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-8",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-1",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-2",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-3",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "star-1",
+      "kind": "star",
+      "slot": "tree-top",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "cushion-1",
+      "kind": "cushion",
+      "slot": "sofa",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "cushion-2",
+      "kind": "cushion",
+      "slot": "sofa",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "train-1",
+      "kind": "train",
+      "slot": "track",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "gift-1",
+      "kind": "gift",
+      "slot": "gift-pile",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "gift-2",
+      "kind": "gift",
+      "slot": "gift-pile",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-4",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-5",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "train-2",
+      "kind": "train",
+      "slot": "rug",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "block-1",
+      "kind": "block",
+      "slot": "rug",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-6",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-7",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bauble-8",
+      "kind": "bauble",
+      "slot": "tree",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-2",
+      "kind": "bell",
+      "slot": "mantel",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "tree-back",
+      "label": {
+        "fr": "derrière le sapin",
+        "en": "behind the tree"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "stocking",
+      "label": {
+        "fr": "dans la chaussette de Noël",
+        "en": "in the Christmas stocking"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "cushion-pile",
+      "label": {
+        "fr": "sous les coussins",
+        "en": "under the cushions"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "lampshade",
+      "label": {
+        "fr": "sous l’abat-jour",
+        "en": "under the lampshade"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "gift-box",
+      "label": {
+        "fr": "dans une boîte cadeau",
+        "en": "in a gift box"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "sock-garland",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "sock-5",
+          "sock-6",
+          "sock-7",
+          "sock-8"
+        ],
+        "to": "tree"
+      },
+      "culprit": "random",
+      "themes": [
+        "chaussettes",
+        "papier-toilette"
+      ],
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "sock"
+        }
+      },
+      "spot": {
+        "fr": "Une guirlande… de chaussettes !",
+        "en": "A garland… made of socks!"
+      },
+      "fixed": {
+        "fr": "Les chaussettes sont remises par paires !",
+        "en": "The socks are back in pairs!"
+      }
+    },
+    {
+      "id": "baubles-wrong-pattern",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "bauble-1",
+          "bauble-2",
+          "bauble-3"
+        ],
+        "colors": [
+          "blue",
+          "blue",
+          "green"
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "boules-jonglage",
+        "sapin-decoration"
+      ],
+      "fix": {
+        "mechanic": "pattern",
+        "params": {
+          "theme": "colors"
+        }
+      },
+      "spot": {
+        "fr": "Les boules du sapin sont toutes mélangées !",
+        "en": "The tree baubles are all muddled!"
+      },
+      "fixed": {
+        "fr": "La guirlande de boules suit la bonne suite !",
+        "en": "The baubles follow the right pattern!"
+      }
+    },
+    {
+      "id": "star-upside-down",
+      "type": "flip",
+      "params": {
+        "props": [
+          "star-1"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "themes": [
+        "sapin-decoration"
+      ],
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "star"
+        }
+      },
+      "spot": {
+        "fr": "L’étoile du sapin est la tête en bas !",
+        "en": "The star on the tree is upside down!"
+      },
+      "fixed": {
+        "fr": "L’étoile brille à l’endroit !",
+        "en": "The star shines the right way up!"
+      }
+    },
+    {
+      "id": "cushion-tower",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "cushion-1",
+          "cushion-2"
+        ],
+        "to": "rug"
+      },
+      "culprit": "random",
+      "themes": [
+        "canape-fort"
+      ],
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "size",
+          "item": "cushion"
+        }
+      },
+      "spot": {
+        "fr": "Une tour de coussins sur le tapis !",
+        "en": "A cushion tower on the rug!"
+      },
+      "fixed": {
+        "fr": "Les coussins sont rangés du plus petit au plus grand !",
+        "en": "The cushions are lined up smallest to biggest!"
+      }
+    },
+    {
+      "id": "train-off-track",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "train-1"
+        ],
+        "to": "mantel"
+      },
+      "culprit": "random",
+      "clueKinds": [
+        "footprint"
+      ],
+      "fix": {
+        "mechanic": "path",
+        "params": {}
+      },
+      "spot": {
+        "fr": "Le petit train est parti se promener sur la cheminée !",
+        "en": "The toy train went for a walk on the mantelpiece!"
+      },
+      "fixed": {
+        "fr": "Le petit train est revenu sur ses rails !",
+        "en": "The toy train is back on its track!"
+      }
+    },
+    {
+      "id": "gifts-recoloured",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "gift-1",
+          "gift-2"
+        ],
+        "colors": [
+          "orange",
+          "yellow"
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "cadeaux-tour"
+      ],
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "color"
+        }
+      },
+      "spot": {
+        "fr": "Les papiers cadeaux ont changé de couleur !",
+        "en": "The wrapping paper changed colour!"
+      },
+      "fixed": {
+        "fr": "Les cadeaux sont triés par couleur !",
+        "en": "The presents are sorted by colour!"
+      }
+    },
+    {
+      "id": "baubles-under-sofa",
+      "type": "hide",
+      "params": {
+        "props": [
+          "bauble-4",
+          "bauble-5"
+        ],
+        "in": "under-sofa"
+      },
+      "culprit": "noisette",
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "bauble",
+          "target": "tree"
+        }
+      },
+      "spot": {
+        "fr": "Des boules ont roulé sous le canapé !",
+        "en": "Baubles rolled under the sofa!"
+      },
+      "fixed": {
+        "fr": "Les boules sont revenues sur le sapin !",
+        "en": "The baubles are back on the tree!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "Le train et le domino de boules",
+      "en": "The train and the bauble domino"
+    },
+    "steps": [
+      {
+        "id": "train-starts",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "train-2"
+          ],
+          "to": "side-table"
+        },
+        "label": {
+          "fr": "Le petit train démarre",
+          "en": "The toy train sets off"
+        }
+      },
+      {
+        "id": "block-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "block-1"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le cube bascule",
+          "en": "The block tips over"
+        }
+      },
+      {
+        "id": "bauble-6-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "bauble-6"
+          ],
+          "to": "rug"
+        },
+        "label": {
+          "fr": "Une boule roule",
+          "en": "A bauble rolls"
+        }
+      },
+      {
+        "id": "bauble-7-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "bauble-7"
+          ],
+          "to": "rug"
+        },
+        "label": {
+          "fr": "Une autre boule roule",
+          "en": "Another bauble rolls"
+        }
+      },
+      {
+        "id": "bauble-8-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "bauble-8"
+          ],
+          "to": "rug"
+        },
+        "label": {
+          "fr": "Encore une boule !",
+          "en": "One more bauble!"
+        }
+      },
+      {
+        "id": "bell-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-2"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La clochette tinte",
+          "en": "The bell jingles"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "sock-garland",
+        "baubles-wrong-pattern",
+        "star-upside-down",
+        "baubles-under-sofa"
+      ],
+      "hidingSpots": [
+        "tree-back",
+        "stocking",
+        "cushion-pile"
+      ],
+      "finale": [
+        "train-starts",
+        "bauble-6-rolls"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "sock-garland",
+        "baubles-wrong-pattern",
+        "star-upside-down",
+        "cushion-tower",
+        "train-off-track",
+        "baubles-under-sofa"
+      ],
+      "hidingSpots": [
+        "tree-back",
+        "stocking",
+        "cushion-pile",
+        "lampshade"
+      ],
+      "finale": [
+        "train-starts",
+        "block-tips",
+        "bauble-6-rolls",
+        "bell-rings"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "sock-garland",
+        "baubles-wrong-pattern",
+        "star-upside-down",
+        "cushion-tower",
+        "train-off-track",
+        "gifts-recoloured",
+        "baubles-under-sofa"
+      ],
+      "hidingSpots": [
+        "tree-back",
+        "stocking",
+        "cushion-pile",
+        "lampshade",
+        "gift-box"
+      ],
+      "finale": [
+        "train-starts",
+        "block-tips",
+        "bauble-6-rolls",
+        "bauble-7-rolls",
+        "bauble-8-rolls",
+        "bell-rings"
+      ]
+    }
+  }
+}

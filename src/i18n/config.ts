@@ -18,3 +18,17 @@ export const localeNames: Record<Locale, string> = {
 };
 
 export const rtlLocales: Locale[] = ['ar'];
+
+/**
+ * Locales whose whole content is really translated (every `tr()` text exists
+ * in FR + EN only, so the other ten still show English for most of the site).
+ * Only these are announced to search engines (hreflang, sitemap, indexable);
+ * the others stay reachable from the language picker but are `noindex` and
+ * point their canonical at the English page. Add a locale here only once its
+ * `tr()` content is translated.
+ */
+export const FULLY_TRANSLATED_LOCALES: readonly Locale[] = ['fr', 'en'];
+
+export function isFullyTranslated(locale: string): boolean {
+  return (FULLY_TRANSLATED_LOCALES as readonly string[]).includes(locale);
+}

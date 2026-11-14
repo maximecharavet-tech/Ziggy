@@ -1,0 +1,109 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l03",
+  "version": "1.0.0",
+  "number": 3,
+  "hall": "wood-shop",
+  "title": {"fr":"Trois toupies","en":"Three spinning tops"},
+  "newIdea": {
+    "fr": "Le cadran du toboggan dit combien de morceaux glissent.",
+    "en": "The chute’s dial says how many pieces slide down."
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["counting"],
+  "introduces": [],
+  "bands": {
+    "little": {
+      "difficulty": 3,
+      "grid": {"w":5,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"cone"},"locked":true},
+        {"machine":"belt","at":[2,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[3,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.bunny",
+          "text": {"fr":"Trois toupies, une, deux, trois !","en":"Three spinning tops: one, two, three!"},
+          "voice": "factory.l03.little.letter"
+        }
+      ],
+      "orders": [{"toy":"top","count":3,"exact":true}],
+      "reference": [{"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":3}}]
+    },
+    "middle": {
+      "difficulty": 3,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","shaper","painter"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.bunny",
+          "text": {
+            "fr": "Pour toute ma classe, il faut dix toupies vertes. Pas une de plus, pas une de moins !",
+            "en": "For my whole class we need ten green spinning tops. Not one more, not one less!"
+          },
+          "voice": "factory.l03.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"top","props":{"color":"green"},"count":10,"exact":true}],
+      "reference": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":10}},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"cone"}},
+        {"machine":"painter","at":[2,1],"dir":"E","dial":{"color":"green"}},
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 3,
+      "grid": {"w":8,"h":5},
+      "tray": ["belt","shaper","painter"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[7,2],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.bunny",
+          "text": {
+            "fr": "Chers lutins, le club de toupies compte vingt membres : douze veulent une toupie rouge et les autres une toupie bleue. Combien de bleues ? À vous de compter !",
+            "en": "Dear elves, the spinning-top club has twenty members: twelve want a red top and the others a blue one. How many blue ones? Your turn to count!"
+          },
+          "voice": "factory.l03.big.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"top","props":{"color":"red"},"count":12,"exact":true},
+        {"toy":"top","props":{"color":"blue"},"count":8,"exact":true}
+      ],
+      "reference": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":12}},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":8}},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"cone"}},
+        {"machine":"painter","at":[2,1],"dir":"E","dial":{"color":"red"}},
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"},
+        {"machine":"belt","at":[6,1],"dir":"S"},
+        {"machine":"shaper","at":[1,3],"dir":"E","dial":{"shape":"cone"}},
+        {"machine":"painter","at":[2,3],"dir":"E","dial":{"color":"blue"}},
+        {"machine":"belt","at":[3,3],"dir":"E"},
+        {"machine":"belt","at":[4,3],"dir":"E"},
+        {"machine":"belt","at":[5,3],"dir":"E"},
+        {"machine":"belt","at":[6,3],"dir":"N"},
+        {"machine":"belt","at":[6,2],"dir":"E"}
+      ]
+    }
+  }
+}

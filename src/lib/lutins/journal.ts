@@ -17,11 +17,20 @@ export type JournalEntry = {
   elves: string[];
   image: Blob;
   video?: Blob | null;
+  /** "Caught on camera" security-camera clip of the picture (src/lib/lutins/cctv.ts), made on the device. */
+  cctv?: Blob | null;
   /** The AI's temporary URL of the picture, to make the video (expires). */
   sourceUrl?: string | null;
   /** The server's signature of `sourceUrl` (only our own pictures can be animated). */
   sourceSig?: string | null;
   seen?: boolean;
+  /**
+   * Where each elf is in the picture, for the child's "Trouve les lutins" game
+   * (marked by the parent in the studio): centre as fractions of the picture's
+   * width / height, radius as a fraction of its width. Optional: without it the
+   * game asks "Qui a fait la farce ?" instead.
+   */
+  spots?: { id: string; x: number; y: number; r: number }[];
 };
 
 const DB = 'ziggy-lutins';

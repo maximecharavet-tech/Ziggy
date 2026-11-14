@@ -1,0 +1,133 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l05",
+  "version": "1.0.0",
+  "number": 5,
+  "hall": "paint-room",
+  "title": {"fr":"Des balles en motif","en":"Balls in a pattern"},
+  "newIdea": {
+    "fr": "La machine à peindre peut changer de couleur à chaque objet : un motif !",
+    "en": "The painter can change colour for every item: a pattern!"
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["colors","sequencing","logic"],
+  "introduces": [],
+  "bands": {
+    "little": {
+      "difficulty": 4,
+      "grid": {"w":6,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":4},"locked":true},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"},"locked":true},
+        {"machine":"belt","at":[2,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[4,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[5,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [3,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"painter","dial":{"colors":["red","blue"]}},
+            {"machine":"painter","dial":{"color":"red"}},
+            {"machine":"painter","dial":{"color":"blue"}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.penguin",
+          "text": {"fr":"Des balles : rouge, bleue, rouge, bleue !","en":"Balls: red, blue, red, blue!"},
+          "voice": "factory.l05.little.letter"
+        }
+      ],
+      "orders": [
+        {
+          "sequence": [{"toy":"ball","props":{"color":"red"}},{"toy":"ball","props":{"color":"blue"}}],
+          "count": 4,
+          "exact": true
+        }
+      ],
+      "reference": [{"machine":"painter","at":[3,1],"dir":"E","dial":{"colors":["red","blue"]}}]
+    },
+    "middle": {
+      "difficulty": 4,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","shaper","painter"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.penguin",
+          "text": {
+            "fr": "Pour ma guirlande de balles : rouge, jaune, bleu, et on recommence. Six balles en tout !",
+            "en": "For my garland of balls: red, yellow, blue, and again. Six balls in all!"
+          },
+          "voice": "factory.l05.middle.letter"
+        }
+      ],
+      "orders": [
+        {
+          "sequence": [
+            {"toy":"ball","props":{"color":"red"}},
+            {"toy":"ball","props":{"color":"yellow"}},
+            {"toy":"ball","props":{"color":"blue"}}
+          ],
+          "count": 6,
+          "exact": true
+        }
+      ],
+      "reference": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":6}},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"}},
+        {"machine":"painter","at":[2,1],"dir":"E","dial":{"colors":["red","yellow","blue"]}},
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 5,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","shaper","painter"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.penguin",
+          "text": {
+            "fr": "Chers lutins, ma frise de jouets suit une règle : balle rouge, balle rouge, toupie bleue, et on recommence, trois fois. La forme ET la couleur changent !",
+            "en": "Dear elves, my toy frieze follows a rule: red ball, red ball, blue top, and again, three times. The shape AND the colour change!"
+          },
+          "voice": "factory.l05.big.letter"
+        }
+      ],
+      "orders": [
+        {
+          "sequence": [
+            {"toy":"ball","props":{"color":"red"}},
+            {"toy":"ball","props":{"color":"red"}},
+            {"toy":"top","props":{"color":"blue"}}
+          ],
+          "count": 9,
+          "exact": true
+        }
+      ],
+      "reference": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":9}},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shapes":["ball","ball","cone"]}},
+        {"machine":"painter","at":[2,1],"dir":"E","dial":{"colors":["red","red","blue"]}},
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    }
+  }
+}

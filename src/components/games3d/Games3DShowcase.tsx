@@ -153,7 +153,7 @@ export function Games3DShowcase({ locale, title = true }: { locale: string; titl
                       src={g.cover}
                       alt={gameTitle}
                       fill
-                      sizes="(max-width: 640px) 100vw, 50vw"
+                      sizes="(max-width: 640px) 92vw, (max-width: 1280px) 46vw, 560px"
                       className="object-cover transition duration-700 group-hover:scale-105"
                       loading="lazy"
                     />

@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Ziggy — AI Learning for Kids",
-    "description": "The AI-powered educational companion that teaches children aged 5-12 about artificial intelligence, math, logic, and creativity."
+    "description": "The AI-powered educational companion that teaches children aged 4-12 about artificial intelligence, math, logic, and creativity."
   },
   "nav": {
     "features": "Features",
@@ -28,7 +28,7 @@
     "switch_language": "Switch language"
   },
   "hero": {
-    "badge": "AI Education for Kids Aged 5-12",
+    "badge": "AI Education for Kids Aged 4-12",
     "title": "Your Child's AI Learning Adventure Starts Here",
     "subtitle": "Ziggy is a friendly robot that teaches kids about artificial intelligence, math, logic, and creativity — through play, zero pressure.",
     "cta_primary": "Start Free Trial",
@@ -69,7 +69,7 @@
     "subtitle": "Five expert-crafted modules to spark curiosity",
     "ai_basics": "AI Basics",
     "ai_basics_desc": "How AI thinks, learns, and helps us every day",
-    "ai_basics_ages": "Ages 5-12",
+    "ai_basics_ages": "Ages 4-12",
     "prompt_champion": "Prompt Champion",
     "prompt_champion_desc": "Master the art of talking to AI",
     "prompt_champion_ages": "Ages 7-12",
@@ -81,7 +81,7 @@
     "creativity_ages": "Ages 6-12",
     "holiday": "Holiday Mode",
     "holiday_desc": "Seasonal daily learning programs",
-    "holiday_ages": "Ages 5-12"
+    "holiday_ages": "Ages 4-12"
   },
   "pricing": {
     "title": "Simple, Transparent Pricing",
@@ -168,7 +168,7 @@
     "q1": "Is Ziggy safe for my child?",
     "a1": "Ziggy is built for children: no ads, no contact with strangers, and the account is created and managed by a parent. We only keep the child’s first name, age range and game results, stored in Europe. The account can be deleted at any time from the parent area.",
     "q2": "What ages is Ziggy designed for?",
-    "a2": "Ziggy is designed for children aged 5 to 12. The AI adapts language, difficulty, and content based on the child's age and learning pace.",
+    "a2": "Ziggy is designed for children aged 4 to 12. The AI adapts language, difficulty, and content based on the child's age and learning pace.",
     "q3": "Can I cancel my subscription anytime?",
     "a3": "Yes, you can cancel anytime with no questions asked. Your data can be exported or fully deleted within 72 hours.",
     "q4": "What languages does Ziggy support?",

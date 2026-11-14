@@ -213,9 +213,8 @@ export function GamesCoverSlider({ locale, title = true }: { locale: string; tit
                           src={g.cover}
                           alt={name}
                           fill
-                          sizes="(max-width: 1024px) 78vw, 34vw"
+                          sizes="(max-width: 640px) 78vw, (max-width: 1024px) 50vw, 360px"
                           className="object-cover"
-                          priority={i < 2}
                         />
                         {activeCard && !reduce ? (
                           <>

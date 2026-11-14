@@ -12,7 +12,7 @@ export function createRenderer(canvas: HTMLCanvasElement, opts: { lowPower: bool
   // A slightly lower internal resolution gives the console look and keeps 60 fps on tablets.
   renderer.setPixelRatio(Math.min(window.devicePixelRatio, opts.lowPower ? 0.85 : 1.35));
   renderer.shadowMap.enabled = true;
-  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
   renderer.toneMappingExposure = 1.05;
   return renderer;

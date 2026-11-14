@@ -1,0 +1,111 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l02",
+  "version": "1.0.0",
+  "number": 2,
+  "hall": "wood-shop",
+  "title": {"fr":"Une balle rouge","en":"A red ball"},
+  "newIdea": {
+    "fr": "Après la forme, la couleur : la machine à peindre.",
+    "en": "After the shape comes the colour: the painter."
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["colors","sequencing"],
+  "introduces": ["painter"],
+  "bands": {
+    "little": {
+      "difficulty": 2,
+      "grid": {"w":5,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"},"locked":true},
+        {"machine":"belt","at":[2,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [3,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"painter","dial":{"color":"red"}},
+            {"machine":"painter","dial":{"color":"blue"}},
+            {"machine":"painter","dial":{"color":"yellow"}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.fox-kit",
+          "text": {"fr":"Une balle rouge, comme ma queue !","en":"A red ball, like my tail!"},
+          "voice": "factory.l02.little.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","props":{"color":"red"},"count":1}],
+      "reference": [{"machine":"painter","at":[3,1],"dir":"E","dial":{"color":"red"}}]
+    },
+    "middle": {
+      "difficulty": 2,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","shaper","painter"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.fox-kit",
+          "text": {
+            "fr": "Je voudrais deux balles rouges, une pour moi et une pour ma cousine.",
+            "en": "I’d like two red balls, one for me and one for my cousin."
+          },
+          "voice": "factory.l02.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","props":{"color":"red"},"count":2}],
+      "reference": [
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"}},
+        {"machine":"belt","at":[2,1],"dir":"E"},
+        {"machine":"painter","at":[3,1],"dir":"E","dial":{"color":"red"}},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 3,
+      "grid": {"w":7,"h":5},
+      "tray": ["belt","shaper","painter"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"chute","at":[0,3],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"sack","at":[6,2],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.fox-kit",
+          "text": {
+            "fr": "Chers lutins, ma sœur et moi, on n’aime pas les mêmes choses : elle veut une toupie jaune, et moi une balle rouge. Les deux dans la même hotte, s’il vous plaît !",
+            "en": "Dear elves, my sister and I don’t like the same things: she wants a yellow spinning top, and I want a red ball. Both in the same sack, please!"
+          },
+          "voice": "factory.l02.big.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","props":{"color":"red"},"count":1},{"toy":"top","props":{"color":"yellow"},"count":1}],
+      "reference": [
+        {"machine":"shaper","at":[1,1],"dir":"E","dial":{"shape":"ball"}},
+        {"machine":"painter","at":[2,1],"dir":"E","dial":{"color":"red"}},
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"S"},
+        {"machine":"shaper","at":[1,3],"dir":"E","dial":{"shape":"cone"}},
+        {"machine":"painter","at":[2,3],"dir":"E","dial":{"color":"yellow"}},
+        {"machine":"belt","at":[3,3],"dir":"E"},
+        {"machine":"belt","at":[4,3],"dir":"E"},
+        {"machine":"belt","at":[5,3],"dir":"N"},
+        {"machine":"belt","at":[5,2],"dir":"E"}
+      ]
+    }
+  }
+}

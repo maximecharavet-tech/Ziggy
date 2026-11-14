@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Ziggy — Aprendizagem de IA para Crianças",
-    "description": "O companheiro educativo com IA que ensina inteligência artificial, matemática, lógica e criatividade a crianças dos 5 aos 12 anos."
+    "description": "O companheiro educativo com IA que ensina inteligência artificial, matemática, lógica e criatividade a crianças dos 4 aos 12 anos."
   },
   "nav": {
     "features": "Funcionalidades",
@@ -28,7 +28,7 @@
     "switch_language": "Mudar de idioma"
   },
   "hero": {
-    "badge": "Educação em IA para crianças dos 5 aos 12 anos",
+    "badge": "Educação em IA para crianças dos 4 aos 12 anos",
     "title": "A aventura de aprendizagem com IA do seu filho começa aqui",
     "subtitle": "Ziggy é um robô simpático que ensina às crianças inteligência artificial, matemática, lógica e criatividade — a brincar, sem pressão.",
     "cta_primary": "Teste gratuito",
@@ -69,7 +69,7 @@
     "subtitle": "Cinco módulos criados por especialistas para despertar a curiosidade",
     "ai_basics": "Bases da IA",
     "ai_basics_desc": "Como a IA pensa, aprende e nos ajuda todos os dias",
-    "ai_basics_ages": "5-12 anos",
+    "ai_basics_ages": "4-12 anos",
     "prompt_champion": "Campeão do prompt",
     "prompt_champion_desc": "Domina a arte de falar com a IA",
     "prompt_champion_ages": "7-12 anos",
@@ -81,7 +81,7 @@
     "creativity_ages": "6-12 anos",
     "holiday": "Modo férias",
     "holiday_desc": "Programas de aprendizagem diários sazonais",
-    "holiday_ages": "5-12 anos"
+    "holiday_ages": "4-12 anos"
   },
   "pricing": {
     "title": "Preços simples e transparentes",
@@ -168,7 +168,7 @@
     "q1": "Ziggy é seguro para o meu filho?",
     "a1": "O Ziggy foi pensado para crianças: sem anúncios, sem contacto com desconhecidos, e a conta é criada e gerida por um adulto. Guardamos apenas o nome da criança, a faixa etária e os resultados dos jogos, na Europa. A conta pode ser apagada a qualquer momento no espaço do adulto.",
     "q2": "Para que idades é que Ziggy foi concebido?",
-    "a2": "Ziggy foi concebido para crianças dos 5 aos 12 anos. A IA adapta a linguagem, a dificuldade e o conteúdo com base na idade e no ritmo de aprendizagem da criança.",
+    "a2": "Ziggy foi concebido para crianças dos 4 aos 12 anos. A IA adapta a linguagem, a dificuldade e o conteúdo com base na idade e no ritmo de aprendizagem da criança.",
     "q3": "Posso cancelar a minha subscrição a qualquer momento?",
     "a3": "Sim, pode cancelar a qualquer momento sem perguntas. Os seus dados podem ser exportados ou totalmente eliminados em 72 horas.",
     "q4": "Que idiomas é que Ziggy suporta?",

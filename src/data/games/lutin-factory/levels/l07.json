@@ -1,0 +1,120 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l07",
+  "version": "1.0.0",
+  "number": 7,
+  "hall": "assembly-line",
+  "title": {"fr":"Un train à 3 wagons","en":"A train with 3 wagons"},
+  "newIdea": {
+    "fr": "L’assembleuse rassemble les pièces et construit le jouet.",
+    "en": "The assembler gathers the parts and builds the toy."
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["counting","shapes"],
+  "introduces": ["assembler"],
+  "bands": {
+    "little": {
+      "difficulty": 6,
+      "grid": {"w":6,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cylinder"},"locked":true},
+        {"machine":"belt","at":[2,0],"dir":"S","locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":3},"locked":true},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cube"},"locked":true},
+        {"machine":"belt","at":[2,2],"dir":"N","locked":true},
+        {"machine":"belt","at":[3,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[4,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[5,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [2,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"assembler","dial":{"toy":"train","n":2}},
+            {"machine":"assembler","dial":{"toy":"train","n":3}},
+            {"machine":"assembler","dial":{"toy":"train","n":4}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.hedgehog",
+          "text": {"fr":"Un train avec trois wagons : un, deux, trois !","en":"A train with three wagons: one, two, three!"},
+          "voice": "factory.l07.little.letter"
+        }
+      ],
+      "orders": [{"toy":"train","props":{"n":3},"count":1}],
+      "reference": [{"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"train","n":3}}]
+    },
+    "middle": {
+      "difficulty": 6,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","shaper","painter","assembler"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.hedgehog",
+          "text": {
+            "fr": "Je voudrais un train rouge avec cinq wagons, pour emmener tous mes doudous.",
+            "en": "I’d like a red train with five wagons, to carry all my cuddly toys."
+          },
+          "voice": "factory.l07.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"train","props":{"color":"red","n":5},"count":1}],
+      "reference": [
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":5}},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cylinder"}},
+        {"machine":"belt","at":[2,0],"dir":"S"},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cube"}},
+        {"machine":"belt","at":[2,2],"dir":"N"},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"train","n":5}},
+        {"machine":"painter","at":[3,1],"dir":"E","dial":{"color":"red"}},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 7,
+      "grid": {"w":7,"h":3},
+      "tray": ["belt","shaper","painter","assembler"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":1},"locked":true,"dialLocked":false},
+        {"machine":"sack","at":[6,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.hedgehog",
+          "text": {
+            "fr": "Chers lutins, pour la gare du village : trois trains bleus, chacun avec quatre wagons. Combien de wagons faut-il fabriquer en tout ?",
+            "en": "Dear elves, for the village station: three blue trains, each with four wagons. How many wagons must you make in all?"
+          },
+          "voice": "factory.l07.big.letter"
+        }
+      ],
+      "orders": [{"toy":"train","props":{"color":"blue","n":4},"count":3,"exact":true}],
+      "reference": [
+        {"machine":"chute","at":[0,0],"dir":"E","dial":{"material":"wood","count":3}},
+        {"machine":"chute","at":[0,2],"dir":"E","dial":{"material":"wood","count":12}},
+        {"machine":"shaper","at":[1,0],"dir":"E","dial":{"shape":"cylinder"}},
+        {"machine":"belt","at":[2,0],"dir":"S"},
+        {"machine":"shaper","at":[1,2],"dir":"E","dial":{"shape":"cube"}},
+        {"machine":"belt","at":[2,2],"dir":"N"},
+        {"machine":"assembler","at":[2,1],"dir":"E","dial":{"toy":"train","n":4}},
+        {"machine":"painter","at":[3,1],"dir":"E","dial":{"color":"blue"}},
+        {"machine":"belt","at":[4,1],"dir":"E"},
+        {"machine":"belt","at":[5,1],"dir":"E"}
+      ]
+    }
+  }
+}

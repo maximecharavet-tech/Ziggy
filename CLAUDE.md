@@ -34,7 +34,7 @@ device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.
 - Every visible text exists in FR + EN (`tr()` / `L` from `@/lib/i18n-text`); little ones can't read: keep read-aloud (`SayButton`, `useAutoSay`).
 - Reduced motion: import `useReducedMotion` from `@/lib/use-reduced-motion`, never from framer-motion (hydration mismatch).
 - Big tap targets (≥ 56–64 px for game answers). Animate transform/opacity only.
-- Licences: MIT / Apache-2.0 / BSD only (ISC needs the owner's OK; Unicode-3.0 accepted by the owner on 2026-11-08 for `unicode-ident`'s data tables). Never GPL/AGPL/LGPL/MPL/NC in the shipped code. List new ones in `THIRD_PARTY_LICENSES.md`.
+- Licences: MIT / Apache-2.0 / BSD only (ISC needs the owner's OK; Unicode-3.0 accepted by the owner on 2026-11-08 for `unicode-ident`'s data tables; on 2026-11-09 the owner accepted ISC for `lucide-react`/`picocolors`, OFL-1.1 for the Fredoka font, and `sharp`'s LGPL libvips as server-only (Vercel image optimiser, never sent to browsers); check with `node scripts/licence-audit.mjs`). Never GPL/AGPL/LGPL/MPL/NC in the shipped code. List new ones in `THIRD_PARTY_LICENSES.md`.
 - Zero new running cost: prefer code-built assets and offline pre-generation.
 - The real Ziggy = the felt plush of `public/mascot/*`: 2D uses `MascotCutout`/`ZiggyAvatar`, 3D uses `<Ziggy3D>` (max one per page) or `makeZiggy()` in game scenes.
 
@@ -57,3 +57,6 @@ device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.
 - In the app (Android WebView = Chromium), `overscroll-behavior: none` on `body` blocks touch scrolling: only on `html`. Desktop checks miss it: test app pages with a finger swipe (see `/smoke`).
 - 3D games: the bloom/post path only runs on capable devices (`prefersLowPower()` is true with ≤ 4 cores, as in this sandbox). Also test with `navigator.hardwareConcurrency` forced to 8 (init script): it hid a white veil (pizzeria, kart) and a crash at start (planets).
 - A leftover agent worktree under `.claude/worktrees/` (gitignored) used to flood `eslint .` with errors; it is ignored now, but check `git worktree list` for work a cut-off subagent left there before redoing it.
+- Next `route.ts` files may only export HTTP handlers and Next config fields (a helper exported from one fails `next build` with "not a valid Route export field", though tsc and vitest pass): put helpers in `src/lib/`.
+- Only `FULLY_TRANSLATED_LOCALES` (`src/i18n/config.ts`) are announced to search engines (hreflang, sitemap, indexable); the other locales are `noindex` + canonical EN. Add a locale there only once its `tr()` content is really translated.
+- The audience is `AGE_MIN`–`AGE_MAX` in `src/lib/ages.ts` (4–12); `ages.test.ts` fails if `messages/*.json` drift. Before writing a test file, check it does not already exist (`downloads.test.ts` did).

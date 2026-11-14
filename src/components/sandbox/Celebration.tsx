@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { discoveryById } from '@/games2d/sandbox/content';
-import type { Reaction } from '@/games2d/sandbox/sim';
+import type { Reaction } from '@/games2d/sandbox/content';
 import { tr } from '@/lib/i18n-text';
 import { Equation } from './Notebook';
 

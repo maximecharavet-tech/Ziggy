@@ -7,6 +7,7 @@
 use wasm_bindgen::prelude::*;
 
 use crate::card::{CardRenderer, CardStyle};
+use crate::cctv::{CctvRenderer, CctvStyle};
 use crate::image::{EngineError, RgbaImage, RgbaView};
 
 fn js(e: EngineError) -> JsError {
@@ -139,6 +140,70 @@ impl WasmCardRenderer {
     /// Renders the frame at `t` seconds in place; read it without a copy
     /// through `new Uint8ClampedArray(memory.buffer, frame_ptr(), frame_len())`
     /// (the view is valid until the next call into the engine).
+    pub fn render_in_place(&mut self, t: f32) {
+        self.inner.render(t);
+    }
+
+    pub fn frame_ptr(&self) -> u32 {
+        self.inner.frame().as_ptr() as usize as u32
+    }
+
+    pub fn frame_len(&self) -> u32 {
+        self.inner.frame().len() as u32
+    }
+}
+
+/// One frame of the security-camera look (RGBA8 of the style's output size,
+/// default the picture's size).
+#[wasm_bindgen]
+pub fn render_cctv_frame(base: &[u8], w: u32, h: u32, t: f32, seed: u32, style_json: &str) -> Result<Vec<u8>, JsError> {
+    let style = CctvStyle::from_json(style_json).map_err(js)?;
+    Ok(crate::cctv::render_cctv_frame(view(base, w, h)?, t, seed, style))
+}
+
+/// Where the elves probably are in a picture: `{x,y,w,h}` JSON (normalised)
+/// or `null`.
+#[wasm_bindgen]
+pub fn cctv_focus(base: &[u8], w: u32, h: u32) -> Result<String, JsError> {
+    json(&crate::cctv::focus_elves(view(base, w, h)?))
+}
+
+/// Stateful security-camera renderer (same contract as `CardRenderer`).
+#[wasm_bindgen(js_name = CctvRenderer)]
+pub struct WasmCctvRenderer {
+    inner: CctvRenderer,
+}
+
+#[wasm_bindgen(js_class = CctvRenderer)]
+impl WasmCctvRenderer {
+    #[wasm_bindgen(constructor)]
+    pub fn new(base: &[u8], w: u32, h: u32, seed: u32, style_json: &str) -> Result<WasmCctvRenderer, JsError> {
+        let style = CctvStyle::from_json(style_json).map_err(js)?;
+        Ok(WasmCctvRenderer { inner: CctvRenderer::new(view(base, w, h)?, seed, style) })
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn width(&self) -> u32 {
+        self.inner.width() as u32
+    }
+
+    #[wasm_bindgen(getter)]
+    pub fn height(&self) -> u32 {
+        self.inner.height() as u32
+    }
+
+    /// The zoom target `[x, y]`, normalised to the picture.
+    pub fn focus(&self) -> Vec<f32> {
+        let (x, y) = self.inner.focus();
+        vec![x, y]
+    }
+
+    /// Renders the frame at `t` seconds and returns a copy.
+    pub fn render(&mut self, t: f32) -> Vec<u8> {
+        self.inner.render(t).to_vec()
+    }
+
+    /// Renders the frame at `t` seconds in place (read it through `frame_ptr` / `frame_len`).
     pub fn render_in_place(&mut self, t: f32) {
         self.inner.render(t);
     }

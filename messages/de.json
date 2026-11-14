@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Ziggy — KI-Lernen für Kinder",
-    "description": "Der KI-gestützte Lernbegleiter, der Kindern von 5 bis 12 Jahren künstliche Intelligenz, Mathematik, Logik und Kreativität beibringt."
+    "description": "Der KI-gestützte Lernbegleiter, der Kindern von 4 bis 12 Jahren künstliche Intelligenz, Mathematik, Logik und Kreativität beibringt."
   },
   "nav": {
     "features": "Funktionen",
@@ -28,7 +28,7 @@
     "switch_language": "Sprache wechseln"
   },
   "hero": {
-    "badge": "KI-Bildung für Kinder von 5 bis 12 Jahren",
+    "badge": "KI-Bildung für Kinder von 4 bis 12 Jahren",
     "title": "Das KI-Lernabenteuer deines Kindes beginnt hier",
     "subtitle": "Ziggy ist ein freundlicher Roboter, der Kindern künstliche Intelligenz, Mathematik, Logik und Kreativität beibringt — spielerisch und ohne Druck.",
     "cta_primary": "Kostenlos testen",
@@ -69,7 +69,7 @@
     "subtitle": "Fünf von Experten entwickelte Module, um Neugier zu wecken",
     "ai_basics": "KI-Grundlagen",
     "ai_basics_desc": "Wie KI denkt, lernt und uns jeden Tag hilft",
-    "ai_basics_ages": "5–12 Jahre",
+    "ai_basics_ages": "4–12 Jahre",
     "prompt_champion": "Prompt-Champion",
     "prompt_champion_desc": "Meistere die Kunst, mit KI zu sprechen",
     "prompt_champion_ages": "7–12 Jahre",
@@ -81,7 +81,7 @@
     "creativity_ages": "6–12 Jahre",
     "holiday": "Ferienmodus",
     "holiday_desc": "Saisonale tägliche Lernprogramme",
-    "holiday_ages": "5–12 Jahre"
+    "holiday_ages": "4–12 Jahre"
   },
   "pricing": {
     "title": "Einfache, transparente Preise",
@@ -168,7 +168,7 @@
     "q1": "Ist Ziggy sicher für mein Kind?",
     "a1": "Ziggy ist für Kinder gemacht: keine Werbung, kein Kontakt zu Fremden, und das Konto wird von einem Elternteil angelegt und verwaltet. Wir speichern nur den Vornamen, die Altersgruppe und die Spielergebnisse – in Europa. Das Konto lässt sich jederzeit im Elternbereich löschen.",
     "q2": "Für welche Altersgruppe ist Ziggy gedacht?",
-    "a2": "Ziggy ist für Kinder von 5 bis 12 Jahren konzipiert. Die KI passt Sprache, Schwierigkeitsgrad und Inhalte an das Alter und Lerntempo des Kindes an.",
+    "a2": "Ziggy ist für Kinder von 4 bis 12 Jahren konzipiert. Die KI passt Sprache, Schwierigkeitsgrad und Inhalte an das Alter und Lerntempo des Kindes an.",
     "q3": "Kann ich mein Abonnement jederzeit kündigen?",
     "a3": "Ja, du kannst jederzeit ohne Angabe von Gründen kündigen. Deine Daten können innerhalb von 72 Stunden exportiert oder vollständig gelöscht werden.",
     "q4": "Welche Sprachen unterstützt Ziggy?",

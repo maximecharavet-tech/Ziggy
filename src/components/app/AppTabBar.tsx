@@ -5,8 +5,9 @@ import { motion } from 'motion/react';
 import { Link, usePathname } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
 import { haptic } from '@/lib/app-bridge';
+import { CHRISTMAS_END } from './AppChristmas';
 
-type Tab = { href: '/app' | '/monde' | '/dodo' | '/creer'; emoji: string; label: L; color: string; match: (p: string) => boolean };
+type Tab = { href: '/app' | '/monde' | '/dodo' | '/creer' | '/pere-noel'; emoji: string; label: L; color: string; match: (p: string) => boolean };
 
 const TABS: Tab[] = [
   { href: '/app', emoji: '🏠', label: { fr: 'Accueil', en: 'Home' }, color: '#22C55E', match: (p) => p === '/app' || p === '/' },
@@ -14,6 +15,9 @@ const TABS: Tab[] = [
   { href: '/dodo', emoji: '🌙', label: { fr: 'Histoires', en: 'Stories' }, color: '#8B84F0', match: (p) => p.startsWith('/dodo') },
   { href: '/creer', emoji: '🎨', label: { fr: 'Créer', en: 'Create' }, color: '#F2647B', match: (p) => p.startsWith('/creer') || p.startsWith('/coloriage') },
 ];
+
+/** Seasonal tab: Santa's space and the elves, until Epiphany. */
+const NOEL: Tab = { href: '/pere-noel', emoji: '🎅', label: { fr: 'Noël', en: 'Xmas' }, color: '#E03131', match: (p) => p.startsWith('/pere-noel') || p.startsWith('/lutins') };
 
 /**
  * The app's tab bar (phones and tablets): the essentials, always one tap
@@ -23,14 +27,16 @@ const TABS: Tab[] = [
 export function AppTabBar() {
   const locale = useLocale();
   const pathname = usePathname();
-  const active = TABS.findIndex((t) => t.match(pathname));
+  const noel = Date.now() < CHRISTMAS_END;
+  const tabs = noel ? [...TABS, NOEL] : TABS;
+  const active = tabs.findIndex((t) => t.match(pathname));
   return (
     <nav
       aria-label={locale === 'fr' ? 'Menu principal' : 'Main menu'}
       className="app-touch-only app-tabbar fixed inset-x-0 bottom-0 z-50 px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-1.5 ps-[max(0.75rem,env(safe-area-inset-left))] pe-[max(0.75rem,env(safe-area-inset-right))]"
     >
-      <ul className="mx-auto grid h-[calc(var(--tabbar-h,4.5rem)-0.5rem)] max-w-lg grid-cols-4 gap-1 rounded-[1.75rem] md:max-w-3xl md:gap-2 md:rounded-[2.25rem] md:p-2 bg-bg-card/85 p-1.5 shadow-[0_18px_40px_-18px_rgba(40,30,80,0.45)] ring-1 ring-border/70 backdrop-blur-xl backdrop-saturate-150">
-        {TABS.map((t, i) => {
+      <ul className={`mx-auto grid h-[calc(var(--tabbar-h,4.5rem)-0.5rem)] max-w-lg ${noel ? 'grid-cols-5' : 'grid-cols-4'} gap-1 rounded-[1.75rem] md:max-w-3xl md:gap-2 md:rounded-[2.25rem] md:p-2 bg-bg-card/85 p-1.5 shadow-[0_18px_40px_-18px_rgba(40,30,80,0.45)] ring-1 ring-border/70 backdrop-blur-xl backdrop-saturate-150`}>
+        {tabs.map((t, i) => {
           const on = i === active;
           return (
             <li key={t.href} className="relative">

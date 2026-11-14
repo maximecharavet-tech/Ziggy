@@ -1,4 +1,5 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { ageRange } from '@/lib/ages';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import { GAMES, getGame } from '@/lib/games';
@@ -44,7 +45,7 @@ export default async function GamePage({ params }: { params: Promise<{ locale: s
     url,
     inLanguage: locale,
     learningResourceType: 'Game',
-    typicalAgeRange: '5-12',
+    typicalAgeRange: ageRange(),
     provider: { '@type': 'Organization', name: 'Ziggy Technologies SAS', url: SITE_URL },
   };
   const crumbs = breadcrumbLd(SITE_URL, locale, [

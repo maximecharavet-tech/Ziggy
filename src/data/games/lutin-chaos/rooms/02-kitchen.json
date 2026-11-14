@@ -1,0 +1,855 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.kitchen",
+  "number": 2,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La cuisine",
+    "en": "The kitchen"
+  },
+  "season": "winter",
+  "layout": "kitchen-a",
+  "assets": [
+    "chaos.room.kitchen",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "counting",
+    "sorting",
+    "spatial",
+    "vocabulary"
+  ],
+  "skills": [
+    "counting",
+    "logic",
+    "vocabulary",
+    "shapes"
+  ],
+  "intro": {
+    "fr": "Ça sent les biscuits… et la farce ! Regarde bien la cuisine.",
+    "en": "It smells of cookies… and pranks! Have a good look at the kitchen."
+  },
+  "slots": [
+    {
+      "id": "fridge",
+      "label": {
+        "fr": "le frigo",
+        "en": "the fridge"
+      },
+      "in": {
+        "fr": "dans le frigo",
+        "en": "in the fridge"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "laundry-basket",
+      "label": {
+        "fr": "le panier à linge",
+        "en": "the laundry basket"
+      },
+      "in": {
+        "fr": "dans le panier à linge",
+        "en": "in the laundry basket"
+      },
+      "at": [
+        2.25,
+        0,
+        1.3
+      ]
+    },
+    {
+      "id": "cookie-jar",
+      "label": {
+        "fr": "la boîte à biscuits",
+        "en": "the cookie jar"
+      },
+      "in": {
+        "fr": "dans la boîte à biscuits",
+        "en": "in the cookie jar"
+      },
+      "at": [
+        1.3,
+        0,
+        2.25
+      ]
+    },
+    {
+      "id": "table",
+      "label": {
+        "fr": "la table",
+        "en": "the table"
+      },
+      "in": {
+        "fr": "sur la table",
+        "en": "on the table"
+      },
+      "at": [
+        0,
+        1,
+        2.6
+      ]
+    },
+    {
+      "id": "utensil-pot",
+      "label": {
+        "fr": "le pot à ustensiles",
+        "en": "the utensil pot"
+      },
+      "in": {
+        "fr": "dans le pot à ustensiles",
+        "en": "in the utensil pot"
+      },
+      "at": [
+        -1.3,
+        0,
+        2.25
+      ]
+    },
+    {
+      "id": "flowerpot",
+      "label": {
+        "fr": "le pot de fleurs",
+        "en": "the flowerpot"
+      },
+      "in": {
+        "fr": "dans le pot de fleurs",
+        "en": "in the flowerpot"
+      },
+      "at": [
+        -2.25,
+        0,
+        1.3
+      ]
+    },
+    {
+      "id": "cupboard",
+      "label": {
+        "fr": "le placard",
+        "en": "the cupboard"
+      },
+      "in": {
+        "fr": "dans le placard",
+        "en": "in the cupboard"
+      },
+      "at": [
+        -2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "fruit-bowl",
+      "label": {
+        "fr": "la corbeille à fruits",
+        "en": "the fruit bowl"
+      },
+      "in": {
+        "fr": "dans la corbeille à fruits",
+        "en": "in the fruit bowl"
+      },
+      "at": [
+        -2.25,
+        0,
+        -1.3
+      ]
+    },
+    {
+      "id": "shelf",
+      "label": {
+        "fr": "l’étagère",
+        "en": "the shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère",
+        "en": "on the shelf"
+      },
+      "at": [
+        -1.3,
+        0,
+        -2.25
+      ]
+    },
+    {
+      "id": "counter",
+      "label": {
+        "fr": "le plan de travail",
+        "en": "the counter"
+      },
+      "in": {
+        "fr": "sur le plan de travail",
+        "en": "on the counter"
+      },
+      "at": [
+        0,
+        1,
+        -2.6
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        1.3,
+        0,
+        -2.25
+      ]
+    },
+    {
+      "id": "window-sill",
+      "label": {
+        "fr": "le rebord de fenêtre",
+        "en": "the window sill"
+      },
+      "in": {
+        "fr": "sur le rebord de la fenêtre",
+        "en": "on the window sill"
+      },
+      "at": [
+        2.25,
+        0,
+        -1.3
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "sock-1",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-2",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-3",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "sock-4",
+      "kind": "sock",
+      "slot": "laundry-basket",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "cookie-1",
+      "kind": "cookie",
+      "slot": "cookie-jar",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "cookie-2",
+      "kind": "cookie",
+      "slot": "cookie-jar",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "cookie-3",
+      "kind": "cookie",
+      "slot": "cookie-jar",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "spoon-1",
+      "kind": "spoon",
+      "slot": "utensil-pot",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "spoon-2",
+      "kind": "spoon",
+      "slot": "utensil-pot",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "fork-1",
+      "kind": "fork",
+      "slot": "utensil-pot",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "whisk-1",
+      "kind": "whisk",
+      "slot": "counter",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "apple-1",
+      "kind": "apple",
+      "slot": "fruit-bowl",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "banana-1",
+      "kind": "banana",
+      "slot": "fruit-bowl",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "cup-1",
+      "kind": "cup",
+      "slot": "shelf",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "cup-2",
+      "kind": "cup",
+      "slot": "shelf",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "plate-1",
+      "kind": "plate",
+      "slot": "table",
+      "color": "white",
+      "rot": 0,
+      "count": 3,
+      "hidden": false
+    },
+    {
+      "id": "rolling-pin-1",
+      "kind": "rolling-pin",
+      "slot": "counter",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "jar-1",
+      "kind": "jar",
+      "slot": "counter",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "pot-1",
+      "kind": "pot",
+      "slot": "counter",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "spoon-3",
+      "kind": "spoon",
+      "slot": "table",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "napkin-1",
+      "kind": "napkin",
+      "slot": "table",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "kettle-1",
+      "kind": "kettle",
+      "slot": "window-sill",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "teacup",
+      "label": {
+        "fr": "dans la grande tasse",
+        "en": "inside the big teacup"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "curtain",
+      "label": {
+        "fr": "derrière le rideau",
+        "en": "behind the curtain"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "bread-bin",
+      "label": {
+        "fr": "dans la boîte à pain",
+        "en": "in the bread bin"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "apron",
+      "label": {
+        "fr": "derrière le tablier",
+        "en": "behind the apron"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "sack",
+      "label": {
+        "fr": "dans le sac de pommes de terre",
+        "en": "in the potato sack"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "socks-in-fridge",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "sock-1",
+          "sock-2",
+          "sock-3",
+          "sock-4"
+        ],
+        "to": "fridge"
+      },
+      "culprit": "random",
+      "themes": [
+        "chaussettes"
+      ],
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "sock",
+          "target": "laundry-basket"
+        }
+      },
+      "spot": {
+        "fr": "Ha ha ! Les chaussettes sont dans le frigo !",
+        "en": "Ha ha! The socks are in the fridge!"
+      },
+      "fixed": {
+        "fr": "Les chaussettes sont sorties du frigo, ouf, elles avaient froid aux pieds !",
+        "en": "The socks are out of the fridge, phew, they had cold toes!"
+      }
+    },
+    {
+      "id": "cookie-face",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "cookie-1",
+          "cookie-2",
+          "cookie-3"
+        ],
+        "to": "table"
+      },
+      "culprit": "random",
+      "themes": [
+        "biscuits",
+        "visages-fruits"
+      ],
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "shape"
+        }
+      },
+      "spot": {
+        "fr": "Les biscuits font une grimace sur la table !",
+        "en": "The cookies are making a funny face on the table!"
+      },
+      "fixed": {
+        "fr": "Les biscuits sont rangés par forme !",
+        "en": "The cookies are sorted by shape!"
+      }
+    },
+    {
+      "id": "spoons-in-flowerpot",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "spoon-1",
+          "spoon-2",
+          "fork-1"
+        ],
+        "to": "flowerpot"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "category"
+        }
+      },
+      "spot": {
+        "fr": "Des cuillères qui poussent dans le pot de fleurs !",
+        "en": "Spoons growing in the flowerpot!"
+      },
+      "fixed": {
+        "fr": "Chaque chose est triée à sa place !",
+        "en": "Everything is sorted where it belongs!"
+      }
+    },
+    {
+      "id": "whisk-hidden",
+      "type": "hide",
+      "params": {
+        "props": [
+          "whisk-1"
+        ],
+        "in": "cupboard"
+      },
+      "culprit": "noisette",
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "whisk",
+          "words": [
+            "whisk",
+            "spoon",
+            "rolling-pin",
+            "pot"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "Le fouet a disparu !",
+        "en": "The whisk has vanished!"
+      },
+      "fixed": {
+        "fr": "Le fouet est retrouvé !",
+        "en": "The whisk is found!"
+      }
+    },
+    {
+      "id": "fruit-on-sill",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "apple-1",
+          "banana-1"
+        ],
+        "to": "window-sill"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "place",
+        "params": {
+          "item": "apple",
+          "anchor": "basket"
+        }
+      },
+      "spot": {
+        "fr": "Les fruits prennent le soleil sur la fenêtre !",
+        "en": "The fruit is sunbathing on the window sill!"
+      },
+      "fixed": {
+        "fr": "Les fruits sont bien placés !",
+        "en": "The fruit is back in place!"
+      }
+    },
+    {
+      "id": "cups-upside-down",
+      "type": "flip",
+      "params": {
+        "props": [
+          "cup-1",
+          "cup-2"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "cup"
+        }
+      },
+      "spot": {
+        "fr": "Les tasses font le poirier !",
+        "en": "The cups are doing handstands!"
+      },
+      "fixed": {
+        "fr": "Les tasses sont à l’endroit !",
+        "en": "The cups are the right way up!"
+      }
+    },
+    {
+      "id": "plates-multiplied",
+      "type": "multiply",
+      "params": {
+        "prop": "plate-1",
+        "count": 5
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "plate",
+          "mode": "extra"
+        }
+      },
+      "spot": {
+        "fr": "Une pile d’assiettes géante !",
+        "en": "A giant pile of plates!"
+      },
+      "fixed": {
+        "fr": "Juste le bon nombre d’assiettes !",
+        "en": "Just the right number of plates!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "Le rouleau, le petit nuage et la bouilloire",
+      "en": "The rolling pin, the little cloud and the kettle"
+    },
+    "steps": [
+      {
+        "id": "rolling-pin-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "rolling-pin-1"
+          ],
+          "to": "table"
+        },
+        "label": {
+          "fr": "Le rouleau roule",
+          "en": "The rolling pin rolls"
+        }
+      },
+      {
+        "id": "flour-puff",
+        "type": "flip",
+        "params": {
+          "props": [
+            "jar-1"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Pouf ! Un petit nuage de farine",
+          "en": "Puff! A little flour cloud"
+        }
+      },
+      {
+        "id": "pot-slides",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "pot-1"
+          ],
+          "to": "table"
+        },
+        "label": {
+          "fr": "La casserole glisse",
+          "en": "The saucepan slides"
+        }
+      },
+      {
+        "id": "spoon-spins",
+        "type": "flip",
+        "params": {
+          "props": [
+            "spoon-3"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La cuillère tourne",
+          "en": "The spoon spins"
+        }
+      },
+      {
+        "id": "napkin-flutters",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "napkin-1"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "La serviette s’envole",
+          "en": "The napkin flutters"
+        }
+      },
+      {
+        "id": "kettle-whistles",
+        "type": "flip",
+        "params": {
+          "props": [
+            "kettle-1"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La bouilloire siffle",
+          "en": "The kettle whistles"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "socks-in-fridge",
+        "cookie-face",
+        "spoons-in-flowerpot",
+        "cups-upside-down"
+      ],
+      "hidingSpots": [
+        "teacup",
+        "curtain",
+        "bread-bin"
+      ],
+      "finale": [
+        "rolling-pin-rolls",
+        "kettle-whistles"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "socks-in-fridge",
+        "cookie-face",
+        "spoons-in-flowerpot",
+        "whisk-hidden",
+        "fruit-on-sill",
+        "cups-upside-down"
+      ],
+      "hidingSpots": [
+        "teacup",
+        "curtain",
+        "bread-bin",
+        "apron"
+      ],
+      "finale": [
+        "rolling-pin-rolls",
+        "flour-puff",
+        "pot-slides",
+        "kettle-whistles"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "socks-in-fridge",
+        "cookie-face",
+        "spoons-in-flowerpot",
+        "whisk-hidden",
+        "fruit-on-sill",
+        "cups-upside-down",
+        "plates-multiplied"
+      ],
+      "hidingSpots": [
+        "teacup",
+        "curtain",
+        "bread-bin",
+        "apron",
+        "sack"
+      ],
+      "finale": [
+        "rolling-pin-rolls",
+        "flour-puff",
+        "pot-slides",
+        "spoon-spins",
+        "napkin-flutters",
+        "kettle-whistles"
+      ]
+    }
+  }
+}

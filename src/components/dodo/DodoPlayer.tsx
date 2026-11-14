@@ -32,6 +32,7 @@ import { useBackLayer } from '@/lib/back-layer';
 import { useConductor } from './conductor';
 import { Prompter } from './Prompter';
 import { NarrationChoice, PlayerOptions, VersionChoice } from './PlayerOptions';
+import { KeepForTonight } from './KeepForTonight';
 import { SongPrompter } from './SongPrompter';
 import { neighbourLine, pickVersion, songSegment, songSegmentStart, songVersions, wordsReliable } from '@/lib/dodo/song';
 import { stopSpeaking } from '@/lib/voice';
@@ -106,6 +107,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
   const { tv } = useAppShell();
   const { timing, ready: timingReady } = useTiming(raw, story.id, known);
   const clips = manifest?.audio[story.id]?.[locale] ?? null;
+  const keepImages = useMemo(() => Object.values(manifest?.images[story.id] ?? {}), [manifest, story.id]);
   const plans = useMemo(() => planStory(story, raw, { timing, clips: timing ? null : clips, fallback: settings.fallback }), [story, raw, timing, clips, settings.fallback]);
   const [c, snap] = useConductor(plans, bcp47(locale));
   const recorded = Boolean(timing);
@@ -729,6 +731,7 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
             versions={versions}
             version={song?.id}
             onVersion={chooseVersion}
+            keep={<KeepForTonight story={story} locale={raw} timing={timing} images={keepImages} />}
             onClose={() => setOptionsOpen(false)}
           />
         ) : null}

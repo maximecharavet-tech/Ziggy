@@ -27,7 +27,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '1. Le service',
         body: [
-          'Ziggy, édité par Ziggy Technologies SAS, est une plateforme d’apprentissage ludique pour les enfants de 5 à 12 ans : jeux et exercices (intelligence artificielle, maths, logique, mémoire, créativité), conversations avec Ziggy et ses agents, aventures Ziggy World (quêtes, histoires, avatars), labo IA, coloriage, création musicale et mode dodo (histoires du soir).',
+          'Ziggy, édité par Ziggy Technologies SAS, est une plateforme d’apprentissage ludique pour les enfants de 4 à 12 ans : jeux et exercices (intelligence artificielle, maths, logique, mémoire, créativité), conversations avec Ziggy et ses agents, aventures Ziggy World (quêtes, histoires, avatars), labo IA, coloriage, création musicale et mode dodo (histoires du soir).',
           'On peut utiliser Ziggy sans compte : la progression reste alors uniquement sur l’appareil. Certaines fonctions, comme les contenus créés par IA dans Ziggy World ou la sauvegarde de la progression, nécessitent un compte parent.',
         ],
       },
@@ -140,7 +140,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '1. The service',
         body: [
-          'Ziggy, published by Ziggy Technologies SAS, is a playful learning platform for children aged 5 to 12: games and exercises (artificial intelligence, maths, logic, memory, creativity), conversations with Ziggy and its agents, Ziggy World adventures (quests, stories, avatars), the AI lab, colouring, music making and bedtime mode (bedtime stories).',
+          'Ziggy, published by Ziggy Technologies SAS, is a playful learning platform for children aged 4 to 12: games and exercises (artificial intelligence, maths, logic, memory, creativity), conversations with Ziggy and its agents, Ziggy World adventures (quests, stories, avatars), the AI lab, colouring, music making and bedtime mode (bedtime stories).',
           'Ziggy can be used without an account, in which case progress stays on the device only. Some features, such as AI-made content in Ziggy World or saving progress, require a parent account.',
         ],
       },

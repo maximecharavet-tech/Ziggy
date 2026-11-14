@@ -1,0 +1,146 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l06",
+  "version": "1.0.0",
+  "number": 6,
+  "hall": "paint-room",
+  "title": {"fr":"Trier les cadeaux par couleur","en":"Sort the gifts by colour"},
+  "newIdea": {
+    "fr": "La trieuse : SI c’est pareil que le modèle, à gauche, SINON à droite.",
+    "en": "The sorter: IF it matches the picture, left; ELSE, right."
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["logic","colors"],
+  "introduces": ["sorter"],
+  "bands": {
+    "little": {
+      "difficulty": 5,
+      "grid": {"w":4,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {
+          "machine": "chute",
+          "at": [0,1],
+          "dir": "E",
+          "dial": {"material":"wood","count":4,"items":[{"shape":"ball","color":"red"},{"shape":"ball","color":"blue"}]},
+          "locked": true
+        },
+        {"machine":"belt","at":[1,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[2,0],"dir":"E","dial":{"bay":"A"},"locked":true},
+        {"machine":"sack","at":[2,2],"dir":"E","dial":{"bay":"B"},"locked":true}
+      ],
+      "slots": [
+        {
+          "at": [2,1],
+          "dir": "E",
+          "choices": [{"machine":"sorter","dial":{"color":"red"}},{"machine":"sorter","dial":{"color":"blue"}}]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.mouse",
+          "text": {
+            "fr": "Les balles rouges dans la hotte du haut, les bleues dans celle du bas !",
+            "en": "Red balls in the top sack, blue ones in the bottom sack!"
+          },
+          "voice": "factory.l06.little.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"ball","props":{"color":"red"},"count":2,"bay":"A"},
+        {"toy":"ball","props":{"color":"blue"},"count":2,"bay":"B"}
+      ],
+      "reference": [{"machine":"sorter","at":[2,1],"dir":"E","dial":{"color":"red"}}]
+    },
+    "middle": {
+      "difficulty": 5,
+      "grid": {"w":6,"h":5},
+      "tray": ["belt","sorter"],
+      "prebuilt": [
+        {
+          "machine": "chute",
+          "at": [0,2],
+          "dir": "E",
+          "dial": {
+            "material": "wood",
+            "count": 6,
+            "items": [{"shape":"ball","color":"red"},{"shape":"ball","color":"blue"},{"shape":"ball","color":"yellow"}]
+          },
+          "locked": true
+        },
+        {"machine":"sack","at":[4,0],"dir":"E","dial":{"bay":"A"},"locked":true},
+        {"machine":"sack","at":[4,4],"dir":"E","dial":{"bay":"B"},"locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.mouse",
+          "text": {
+            "fr": "Toutes les balles rouges vont dans la hotte A pour l’école. Toutes les autres vont dans la hotte B pour la crèche.",
+            "en": "All the red balls go in sack A for the school. All the others go in sack B for the nursery."
+          },
+          "voice": "factory.l06.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","props":{"color":"red"},"count":2,"bay":"A"},{"toy":"ball","count":4,"bay":"B"}],
+      "reference": [
+        {"machine":"belt","at":[1,2],"dir":"E"},
+        {"machine":"sorter","at":[2,2],"dir":"E","dial":{"color":"red"}},
+        {"machine":"belt","at":[2,1],"dir":"N"},
+        {"machine":"belt","at":[2,0],"dir":"E"},
+        {"machine":"belt","at":[3,0],"dir":"E"},
+        {"machine":"belt","at":[2,3],"dir":"S"},
+        {"machine":"belt","at":[2,4],"dir":"E"},
+        {"machine":"belt","at":[3,4],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 6,
+      "grid": {"w":7,"h":5},
+      "tray": ["belt","sorter"],
+      "prebuilt": [
+        {
+          "machine": "chute",
+          "at": [0,2],
+          "dir": "E",
+          "dial": {
+            "material": "wood",
+            "count": 9,
+            "items": [{"shape":"ball","color":"red"},{"shape":"ball","color":"blue"},{"shape":"ball","color":"yellow"}]
+          },
+          "locked": true
+        },
+        {"machine":"sack","at":[2,0],"dir":"E","dial":{"bay":"A"},"locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","dial":{"bay":"B"},"locked":true},
+        {"machine":"sack","at":[6,4],"dir":"E","dial":{"bay":"C"},"locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.mouse",
+          "text": {
+            "fr": "Chers lutins, trois villages, trois hottes : les balles rouges dans la A, les bleues dans la B, les jaunes dans la C. Une seule trieuse ne suffira pas…",
+            "en": "Dear elves, three villages, three sacks: red balls in A, blue ones in B, yellow ones in C. One sorter won’t be enough…"
+          },
+          "voice": "factory.l06.big.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"ball","props":{"color":"red"},"count":3,"bay":"A"},
+        {"toy":"ball","props":{"color":"blue"},"count":3,"bay":"B"},
+        {"toy":"ball","props":{"color":"yellow"},"count":3,"bay":"C"}
+      ],
+      "reference": [
+        {"machine":"belt","at":[1,2],"dir":"E"},
+        {"machine":"sorter","at":[2,2],"dir":"E","dial":{"color":"red"}},
+        {"machine":"belt","at":[2,1],"dir":"N"},
+        {"machine":"belt","at":[2,3],"dir":"E"},
+        {"machine":"belt","at":[3,3],"dir":"E"},
+        {"machine":"sorter","at":[4,3],"dir":"E","dial":{"color":"blue"}},
+        {"machine":"belt","at":[4,2],"dir":"N"},
+        {"machine":"belt","at":[4,4],"dir":"E"},
+        {"machine":"belt","at":[5,4],"dir":"E"}
+      ]
+    }
+  }
+}

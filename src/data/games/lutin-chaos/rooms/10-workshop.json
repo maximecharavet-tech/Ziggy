@@ -1,0 +1,804 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.workshop",
+  "number": 10,
+  "version": "1.0.0",
+  "title": {
+    "fr": "L’atelier",
+    "en": "The workshop"
+  },
+  "season": "winter",
+  "layout": "workshop-a",
+  "assets": [
+    "chaos.room.workshop",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "counting",
+    "sorting",
+    "spatial",
+    "patterns",
+    "vocabulary"
+  ],
+  "skills": [
+    "counting",
+    "multiplication",
+    "shapes",
+    "colors"
+  ],
+  "intro": {
+    "fr": "Les outils en bois ont fait la fête ! Grelotte a sûrement un plan…",
+    "en": "The wooden tools had a party! Jingle surely has a plan…"
+  },
+  "slots": [
+    {
+      "id": "outline-hammer",
+      "label": {
+        "fr": "le contour du marteau",
+        "en": "the hammer outline"
+      },
+      "in": {
+        "fr": "sur le contour du marteau",
+        "en": "on the hammer outline"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "outline-wrench",
+      "label": {
+        "fr": "le contour de la clé",
+        "en": "the spanner outline"
+      },
+      "in": {
+        "fr": "sur le contour de la clé",
+        "en": "on the spanner outline"
+      },
+      "at": [
+        2.25,
+        0,
+        1.3
+      ]
+    },
+    {
+      "id": "bolt-jar",
+      "label": {
+        "fr": "le bocal à boulons",
+        "en": "the bolt jar"
+      },
+      "in": {
+        "fr": "dans le bocal à boulons",
+        "en": "in the bolt jar"
+      },
+      "at": [
+        1.3,
+        0,
+        2.25
+      ]
+    },
+    {
+      "id": "workbench",
+      "label": {
+        "fr": "l’établi",
+        "en": "the workbench"
+      },
+      "in": {
+        "fr": "sur l’établi",
+        "en": "on the workbench"
+      },
+      "at": [
+        0,
+        1,
+        2.6
+      ]
+    },
+    {
+      "id": "brush-pot",
+      "label": {
+        "fr": "le pot à pinceaux",
+        "en": "the brush pot"
+      },
+      "in": {
+        "fr": "dans le pot à pinceaux",
+        "en": "in the brush pot"
+      },
+      "at": [
+        -1.3,
+        0,
+        2.25
+      ]
+    },
+    {
+      "id": "wheel-rack",
+      "label": {
+        "fr": "le range-roues",
+        "en": "the wheel rack"
+      },
+      "in": {
+        "fr": "sur le range-roues",
+        "en": "on the wheel rack"
+      },
+      "at": [
+        -2.25,
+        0,
+        1.3
+      ]
+    },
+    {
+      "id": "toolbox",
+      "label": {
+        "fr": "la caisse à outils",
+        "en": "the toolbox"
+      },
+      "in": {
+        "fr": "dans la caisse à outils",
+        "en": "in the toolbox"
+      },
+      "at": [
+        -2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "shelf-a",
+      "label": {
+        "fr": "l’étagère A",
+        "en": "shelf A"
+      },
+      "in": {
+        "fr": "sur l’étagère A",
+        "en": "on shelf A"
+      },
+      "at": [
+        -2.25,
+        0,
+        -1.3
+      ]
+    },
+    {
+      "id": "shelf-b",
+      "label": {
+        "fr": "l’étagère B",
+        "en": "shelf B"
+      },
+      "in": {
+        "fr": "sur l’étagère B",
+        "en": "on shelf B"
+      },
+      "at": [
+        -1.3,
+        0,
+        -2.25
+      ]
+    },
+    {
+      "id": "seesaw",
+      "label": {
+        "fr": "la balançoire à bascule",
+        "en": "the seesaw"
+      },
+      "in": {
+        "fr": "sur la balançoire à bascule",
+        "en": "on the seesaw"
+      },
+      "at": [
+        0,
+        1,
+        -2.6
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        1.3,
+        0,
+        -2.25
+      ]
+    },
+    {
+      "id": "door-hook",
+      "label": {
+        "fr": "le crochet de la porte",
+        "en": "the door hook"
+      },
+      "in": {
+        "fr": "sur le crochet de la porte",
+        "en": "on the door hook"
+      },
+      "at": [
+        2.25,
+        0,
+        -1.3
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "hammer-1",
+      "kind": "hammer",
+      "slot": "outline-hammer",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "wrench-1",
+      "kind": "wrench",
+      "slot": "outline-wrench",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bolt-1",
+      "kind": "bolt",
+      "slot": "bolt-jar",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bolt-2",
+      "kind": "bolt",
+      "slot": "bolt-jar",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bolt-3",
+      "kind": "bolt",
+      "slot": "bolt-jar",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bolt-4",
+      "kind": "bolt",
+      "slot": "bolt-jar",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "brush-1",
+      "kind": "brush",
+      "slot": "brush-pot",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "brush-2",
+      "kind": "brush",
+      "slot": "brush-pot",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "brush-3",
+      "kind": "brush",
+      "slot": "brush-pot",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "wheel-1",
+      "kind": "wheel",
+      "slot": "wheel-rack",
+      "color": "brown",
+      "rot": 0,
+      "count": 2,
+      "hidden": false
+    },
+    {
+      "id": "screwdriver-1",
+      "kind": "screwdriver",
+      "slot": "workbench",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-1",
+      "kind": "box",
+      "slot": "shelf-a",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-2",
+      "kind": "box",
+      "slot": "shelf-b",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "wheel-2",
+      "kind": "wheel",
+      "slot": "wheel-rack",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "block-9",
+      "kind": "block",
+      "slot": "seesaw",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "ball-5",
+      "kind": "ball",
+      "slot": "seesaw",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "box-3",
+      "kind": "box",
+      "slot": "workbench",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "hammer-2",
+      "kind": "hammer",
+      "slot": "workbench",
+      "color": "brown",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "bell-12",
+      "kind": "bell",
+      "slot": "door-hook",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "sawdust-sack",
+      "label": {
+        "fr": "dans le sac de copeaux",
+        "en": "in the sawdust sack"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "paint-tin",
+      "label": {
+        "fr": "derrière les pots de peinture",
+        "en": "behind the paint tins"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "wheelbarrow",
+      "label": {
+        "fr": "dans la brouette",
+        "en": "in the wheelbarrow"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "apron",
+      "label": {
+        "fr": "dans la poche du tablier",
+        "en": "in the apron pocket"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "crate",
+      "label": {
+        "fr": "sous la caisse",
+        "en": "under the crate"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "tools-wrong-outlines",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "hammer-1",
+            "wrench-1"
+          ]
+        ]
+      },
+      "culprit": "grelotte",
+      "fix": {
+        "mechanic": "pair",
+        "params": {
+          "item": "hammer",
+          "mode": "shadow"
+        }
+      },
+      "spot": {
+        "fr": "Les outils ne sont pas dans leur contour !",
+        "en": "The tools aren’t in their outlines!"
+      },
+      "fixed": {
+        "fr": "Chaque outil dans sa silhouette !",
+        "en": "Every tool in its outline!"
+      }
+    },
+    {
+      "id": "bolts-spiral",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "bolt-1",
+          "bolt-2",
+          "bolt-3",
+          "bolt-4"
+        ],
+        "to": "workbench"
+      },
+      "culprit": "random",
+      "themes": [
+        "dominos"
+      ],
+      "fix": {
+        "mechanic": "count-back",
+        "params": {
+          "item": "bolt",
+          "target": "bolt-jar"
+        }
+      },
+      "spot": {
+        "fr": "Les boulons font une spirale sur l’établi !",
+        "en": "The bolts make a spiral on the workbench!"
+      },
+      "fixed": {
+        "fr": "Tous les boulons sont dans le bocal !",
+        "en": "All the bolts are back in the jar!"
+      }
+    },
+    {
+      "id": "brushes-recoloured",
+      "type": "recolour",
+      "params": {
+        "props": [
+          "brush-1",
+          "brush-2",
+          "brush-3"
+        ],
+        "colors": [
+          "green",
+          "purple",
+          "orange"
+        ]
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "sort",
+        "params": {
+          "by": "color"
+        }
+      },
+      "spot": {
+        "fr": "Les pinceaux ont changé de couleur !",
+        "en": "The paintbrushes changed colour!"
+      },
+      "fixed": {
+        "fr": "Les pinceaux sont triés par couleur !",
+        "en": "The paintbrushes are sorted by colour!"
+      }
+    },
+    {
+      "id": "wheels-multiplied",
+      "type": "multiply",
+      "params": {
+        "prop": "wheel-1",
+        "count": 8
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "skip",
+          "item": "wheel"
+        }
+      },
+      "spot": {
+        "fr": "Plein de roues ! On compte de 2 en 2 ?",
+        "en": "So many wheels! Shall we count in twos?"
+      },
+      "fixed": {
+        "fr": "Les roues sont rangées !",
+        "en": "The wheels are tidied!"
+      }
+    },
+    {
+      "id": "screwdriver-hidden",
+      "type": "hide",
+      "params": {
+        "props": [
+          "screwdriver-1"
+        ],
+        "in": "toolbox"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "screwdriver",
+          "words": [
+            "screwdriver",
+            "hammer",
+            "wrench",
+            "brush"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "Le tournevis joue à cache-cache !",
+        "en": "The screwdriver is playing hide-and-seek!"
+      },
+      "fixed": {
+        "fr": "Le tournevis est retrouvé !",
+        "en": "The screwdriver is found!"
+      }
+    },
+    {
+      "id": "labels-mixed",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "box-1",
+            "box-2"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "themes": [
+        "post-it"
+      ],
+      "fix": {
+        "mechanic": "pattern",
+        "params": {
+          "theme": "numbers"
+        }
+      },
+      "spot": {
+        "fr": "Les numéros des boîtes sont mélangés !",
+        "en": "The box numbers are muddled!"
+      },
+      "fixed": {
+        "fr": "Les numéros suivent la bonne suite !",
+        "en": "The numbers follow the right pattern!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "La roue, la bascule et la cloche",
+      "en": "The wheel, the seesaw and the bell"
+    },
+    "steps": [
+      {
+        "id": "wheel-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "wheel-2"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "La roue roule",
+          "en": "The wheel rolls"
+        }
+      },
+      {
+        "id": "seesaw-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "block-9"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La bascule bascule",
+          "en": "The seesaw tips"
+        }
+      },
+      {
+        "id": "ball-flies",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "ball-5"
+          ],
+          "to": "workbench"
+        },
+        "label": {
+          "fr": "Le ballon s’envole",
+          "en": "The ball flies"
+        }
+      },
+      {
+        "id": "box-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "box-3"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "La boîte se renverse",
+          "en": "The box tips"
+        }
+      },
+      {
+        "id": "hammer-taps",
+        "type": "flip",
+        "params": {
+          "props": [
+            "hammer-2"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le marteau fait toc",
+          "en": "The hammer goes tap"
+        }
+      },
+      {
+        "id": "bell-rings",
+        "type": "flip",
+        "params": {
+          "props": [
+            "bell-12"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Ding ding ! La cloche",
+          "en": "Ding ding! The bell"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "tools-wrong-outlines",
+        "bolts-spiral",
+        "brushes-recoloured",
+        "screwdriver-hidden"
+      ],
+      "hidingSpots": [
+        "sawdust-sack",
+        "paint-tin",
+        "wheelbarrow"
+      ],
+      "finale": [
+        "wheel-rolls",
+        "bell-rings"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "tools-wrong-outlines",
+        "bolts-spiral",
+        "brushes-recoloured",
+        "wheels-multiplied",
+        "screwdriver-hidden"
+      ],
+      "hidingSpots": [
+        "sawdust-sack",
+        "paint-tin",
+        "wheelbarrow",
+        "apron"
+      ],
+      "finale": [
+        "wheel-rolls",
+        "seesaw-tips",
+        "bell-rings"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "tools-wrong-outlines",
+        "bolts-spiral",
+        "brushes-recoloured",
+        "wheels-multiplied",
+        "screwdriver-hidden",
+        "labels-mixed"
+      ],
+      "hidingSpots": [
+        "sawdust-sack",
+        "paint-tin",
+        "wheelbarrow",
+        "apron",
+        "crate"
+      ],
+      "finale": [
+        "wheel-rolls",
+        "seesaw-tips",
+        "ball-flies",
+        "box-tips",
+        "hammer-taps",
+        "bell-rings"
+      ]
+    }
+  }
+}

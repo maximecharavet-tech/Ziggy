@@ -1,7 +1,7 @@
 {
   "metadata": {
     "title": "Ziggy — AI-leren voor kinderen",
-    "description": "De AI-aangedreven leercompagnon die kinderen van 5 tot 12 jaar leert over kunstmatige intelligentie, wiskunde, logica en creativiteit."
+    "description": "De AI-aangedreven leercompagnon die kinderen van 4 tot 12 jaar leert over kunstmatige intelligentie, wiskunde, logica en creativiteit."
   },
   "nav": {
     "features": "Functies",
@@ -28,7 +28,7 @@
     "switch_language": "Taal wijzigen"
   },
   "hero": {
-    "badge": "AI-onderwijs voor kinderen van 5 tot 12 jaar",
+    "badge": "AI-onderwijs voor kinderen van 4 tot 12 jaar",
     "title": "Het AI-leeravontuur van je kind begint hier",
     "subtitle": "Ziggy is een vriendelijke robot die kinderen leert over kunstmatige intelligentie, wiskunde, logica en creativiteit — al spelend, zonder druk.",
     "cta_primary": "Gratis proberen",
@@ -69,7 +69,7 @@
     "subtitle": "Vijf door experts ontwikkelde modules om nieuwsgierigheid te wekken",
     "ai_basics": "AI-basiskennis",
     "ai_basics_desc": "Hoe AI denkt, leert en ons elke dag helpt",
-    "ai_basics_ages": "5-12 jaar",
+    "ai_basics_ages": "4-12 jaar",
     "prompt_champion": "Promptkampioen",
     "prompt_champion_desc": "Beheers de kunst van het praten met AI",
     "prompt_champion_ages": "7-12 jaar",
@@ -81,7 +81,7 @@
     "creativity_ages": "6-12 jaar",
     "holiday": "Vakantiemodus",
     "holiday_desc": "Seizoensgebonden dagelijkse leerprogramma's",
-    "holiday_ages": "5-12 jaar"
+    "holiday_ages": "4-12 jaar"
   },
   "pricing": {
     "title": "Eenvoudige, transparante prijzen",
@@ -168,7 +168,7 @@
     "q1": "Is Ziggy veilig voor mijn kind?",
     "a1": "Ziggy is gemaakt voor kinderen: geen reclame, geen contact met onbekenden, en het account wordt aangemaakt en beheerd door een ouder. We bewaren alleen de voornaam, de leeftijdsgroep en de spelresultaten, in Europa. Het account kan op elk moment worden verwijderd in de ouderomgeving.",
     "q2": "Voor welke leeftijden is Ziggy ontworpen?",
-    "a2": "Ziggy is ontworpen voor kinderen van 5 tot 12 jaar. De AI past taal, moeilijkheidsgraad en inhoud aan op basis van de leeftijd en het leertempo van het kind.",
+    "a2": "Ziggy is ontworpen voor kinderen van 4 tot 12 jaar. De AI past taal, moeilijkheidsgraad en inhoud aan op basis van de leeftijd en het leertempo van het kind.",
     "q3": "Kan ik mijn abonnement op elk moment opzeggen?",
     "a3": "Ja, je kunt op elk moment opzeggen zonder vragen. Je gegevens kunnen binnen 72 uur worden geëxporteerd of volledig verwijderd.",
     "q4": "Welke talen ondersteunt Ziggy?",

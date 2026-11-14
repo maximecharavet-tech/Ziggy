@@ -1,0 +1,53 @@
+{
+  "schema": "ziggy.factory-lines/1",
+  "writers": [
+    { "id": "village.bear-cub", "emoji": "🐻", "name": { "fr": "Petit Ours", "en": "Little Bear" } },
+    { "id": "village.fox-kit", "emoji": "🦊", "name": { "fr": "Renardeau", "en": "Little Fox" } },
+    { "id": "village.bunny", "emoji": "🐰", "name": { "fr": "Lapinou", "en": "Bunny" } },
+    { "id": "village.hedgehog", "emoji": "🦔", "name": { "fr": "Piquant le hérisson", "en": "Prickles the hedgehog" } },
+    { "id": "village.owlet", "emoji": "🦉", "name": { "fr": "Chouquette la chouette", "en": "Hoot the owlet" } },
+    { "id": "village.squirrel", "emoji": "🐿️", "name": { "fr": "Pompon l’écureuil", "en": "Pompom the squirrel" } },
+    { "id": "village.mouse", "emoji": "🐭", "name": { "fr": "Souricette", "en": "Little Mouse" } },
+    { "id": "village.penguin", "emoji": "🐧", "name": { "fr": "Pingouin Pom", "en": "Pom the penguin" } },
+    { "id": "village.fawn", "emoji": "🦌", "name": { "fr": "Flocon le faon", "en": "Snowflake the fawn" } },
+    { "id": "village.badger", "emoji": "🦡", "name": { "fr": "Câlin le blaireau", "en": "Cuddles the badger" } },
+    { "id": "village.otter", "emoji": "🦦", "name": { "fr": "Loulou la loutre", "en": "Lulu the otter" } },
+    { "id": "village.duckling", "emoji": "🐥", "name": { "fr": "Caneton Coin-Coin", "en": "Quack the duckling" } }
+  ],
+  "lines": [
+    { "id": "factory.letter.arrives.1", "moment": "letter-arrives", "speaker": "ziggy", "cue": "wave", "emotion": "surprise", "fr": "Oh ! Une lettre vient d’arriver à l’atelier !", "en": "Oh! A letter just arrived at the workshop!" },
+    { "id": "factory.letter.arrives.2", "moment": "letter-arrives", "speaker": "pepin", "pose": "point", "emotion": "laugh", "fr": "Une lettre ! Une lettre ! Je l’ai vue en premier !", "en": "A letter! A letter! I saw it first!" },
+    { "id": "factory.letter.arrives.3", "moment": "letter-arrives", "speaker": "grelotte", "pose": "stand", "emotion": "smile", "fr": "Lisons-la ensemble, j’ai déjà une idée de machine.", "en": "Let’s read it together, I already have a machine in mind." },
+
+    { "id": "factory.machine.placed.1", "moment": "machine-placed", "speaker": "ziggy", "cue": "nod", "emotion": "smile", "fr": "Bien placé !", "en": "Nicely placed!" },
+    { "id": "factory.machine.placed.2", "moment": "machine-placed", "speaker": "grelotte", "pose": "wave", "emotion": "smile", "fr": "Je surveille cette machine, promis !", "en": "I’ll look after this machine, promise!" },
+    { "id": "factory.machine.placed.3", "moment": "machine-placed", "speaker": "noisette", "pose": "peek", "emotion": "wink", "fr": "Hihi, je peux monter dessus ?", "en": "Hee hee, can I ride on it?" },
+
+    { "id": "factory.go.1", "moment": "go", "speaker": "ziggy", "cue": "cheer", "emotion": "laugh", "fr": "C’est parti, l’atelier se réveille !", "en": "Here we go, the workshop wakes up!" },
+    { "id": "factory.go.2", "moment": "go", "speaker": "pepin", "pose": "point", "emotion": "laugh", "fr": "J’appuie sur le gros bouton ! Tout fort !", "en": "I’m pressing the big button! Really hard!" },
+    { "id": "factory.go.warmup", "moment": "go-first-of-day", "speaker": "pepin", "pose": "laugh", "emotion": "surprise", "fr": "Pfff, pfff… l’atelier s’échauffe ! Et hop, ça tourne !", "en": "Puff, puff… the workshop is warming up! And off it goes!" },
+
+    { "id": "factory.toy.right.1", "moment": "right-toy", "speaker": "ziggy", "cue": "jump", "emotion": "laugh", "fr": "Oui ! C’est le jouet de la lettre !", "en": "Yes! That’s the toy from the letter!" },
+    { "id": "factory.toy.right.2", "moment": "right-toy", "speaker": "pepin", "pose": "laugh", "emotion": "laugh", "fr": "Ding ding ! Mon grelot est content !", "en": "Ding ding! My bell is happy!" },
+    { "id": "factory.toy.right.3", "moment": "right-toy", "speaker": "grelotte", "pose": "wave", "emotion": "smile", "fr": "Exactement comme sur le dessin. Bien joué, chef d’atelier !", "en": "Exactly like the drawing. Well done, workshop boss!" },
+
+    { "id": "factory.toy.surprise.1", "moment": "surprise-toy", "speaker": "ziggy", "cue": "think", "emotion": "surprise", "fr": "Oh, un jouet surprise ! Il me plaît beaucoup !", "en": "Ooh, a surprise toy! I really like it!" },
+    { "id": "factory.toy.surprise.2", "moment": "surprise-toy", "speaker": "noisette", "pose": "laugh", "emotion": "laugh", "fr": "Étagère surprise ! Chaque jouet trouvera un enfant !", "en": "Surprise shelf! Every toy will find a child!" },
+    { "id": "factory.toy.surprise.3", "moment": "surprise-toy", "speaker": "pepin", "pose": "laugh", "emotion": "laugh", "fr": "C’est moi qui ai appuyé à côté ! Ha ha ! On regarde ensemble ?", "en": "I pressed the button next to it! Ha ha! Shall we look together?" },
+
+    { "id": "factory.hint.offer.1", "moment": "hint-offer", "speaker": "grelotte", "pose": "point", "emotion": "smile", "fr": "Psst… j’ai une idée, si tu veux.", "en": "Psst… I have an idea, if you like." },
+    { "id": "factory.hint.offer.2", "moment": "hint-offer", "speaker": "ziggy", "cue": "think", "emotion": "listen", "fr": "On réfléchit ensemble ? Regarde la case qui brille.", "en": "Shall we think together? Look at the glowing tile." },
+
+    { "id": "factory.letter.done.1", "moment": "letter-done", "speaker": "ziggy", "cue": "cheer", "emotion": "laugh", "fr": "Et hop, dans le traîneau ! Merci, chef d’atelier !", "en": "And into the sleigh it goes! Thank you, workshop boss!" },
+    { "id": "factory.letter.done.2", "moment": "letter-done", "speaker": "noisette", "pose": "wave", "emotion": "smile", "fr": "Je fais un câlin au cadeau avant qu’il parte !", "en": "I’m giving the present a hug before it leaves!" },
+
+    { "id": "factory.day.end.1", "moment": "day-ends", "speaker": "ziggy", "cue": "wave", "emotion": "smile", "fr": "Quelle belle journée d’atelier ! À bientôt, ami !", "en": "What a workshop day! See you soon, friend!" },
+    { "id": "factory.day.end.2", "moment": "day-ends", "speaker": "pepin", "pose": "wave", "emotion": "laugh", "fr": "Le traîneau s’envole ! Au revoir, au revoir !", "en": "The sleigh is flying off! Bye-bye, bye-bye!" },
+    { "id": "factory.day.end.3", "moment": "day-ends", "speaker": "noisette", "pose": "sit", "emotion": "smile", "fr": "Bâââille… quelle journée rigolote.", "en": "Yaaawn… what a funny day." },
+
+    { "id": "factory.new.machine.1", "moment": "new-machine", "speaker": "grelotte", "pose": "point", "emotion": "surprise", "fr": "Nouvelle machine ! Je l’ai inventée cette nuit !", "en": "A new machine! I invented it last night!" },
+    { "id": "factory.new.machine.2", "moment": "new-machine", "speaker": "ziggy", "cue": "love", "emotion": "smile", "fr": "Tu sais faire ça maintenant ? Génial !", "en": "You can do that now? Brilliant!" },
+
+    { "id": "factory.stop.1", "moment": "child-leaves", "speaker": "ziggy", "cue": "wave", "emotion": "smile", "fr": "À bientôt ! Ton atelier t’attend, rien ne bouge.", "en": "See you soon! Your workshop will wait for you, just as it is." }
+  ]
+}

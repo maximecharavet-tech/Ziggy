@@ -1,0 +1,146 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l13",
+  "version": "1.0.0",
+  "number": 13,
+  "hall": "dispatch",
+  "title": {"fr":"Chaque cadeau à sa place","en":"Gifts to the right sleigh bay"},
+  "newIdea": {
+    "fr": "Les hottes ont une adresse : une lettre pour la colonne, un chiffre pour la ligne.",
+    "en": "The sacks have an address: a letter for the column, a number for the row."
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["logic","counting"],
+  "introduces": [],
+  "bands": {
+    "little": {
+      "difficulty": 8,
+      "grid": {"w":4,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {
+          "machine": "chute",
+          "at": [0,1],
+          "dir": "E",
+          "dial": {"material":"wood","count":4,"items":[{"shape":"cube","sticker":"star"},{"shape":"cube","sticker":"heart"}]},
+          "locked": true
+        },
+        {"machine":"belt","at":[1,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[2,0],"dir":"E","dial":{"bay":"C1"},"locked":true},
+        {"machine":"sack","at":[2,2],"dir":"E","dial":{"bay":"C3"},"locked":true}
+      ],
+      "slots": [
+        {
+          "at": [2,1],
+          "dir": "E",
+          "choices": [{"machine":"sorter","dial":{"sticker":"star"}},{"machine":"sorter","dial":{"sticker":"heart"}}]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.bunny",
+          "text": {
+            "fr": "Les cadeaux étoile dans la hotte C1, les cadeaux cœur dans la hotte C3 !",
+            "en": "Star gifts in sack C1, heart gifts in sack C3!"
+          },
+          "voice": "factory.l13.little.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"block","props":{"sticker":"star"},"count":2,"bay":"C1"},
+        {"toy":"block","props":{"sticker":"heart"},"count":2,"bay":"C3"}
+      ],
+      "reference": [{"machine":"sorter","at":[2,1],"dir":"E","dial":{"sticker":"star"}}]
+    },
+    "middle": {
+      "difficulty": 9,
+      "grid": {"w":6,"h":5},
+      "tray": ["belt","sorter"],
+      "prebuilt": [
+        {
+          "machine": "chute",
+          "at": [0,2],
+          "dir": "E",
+          "dial": {
+            "material": "wood",
+            "count": 6,
+            "items": [{"shape":"cube","sticker":"star"},{"shape":"cube","sticker":"heart"},{"shape":"cube","sticker":"moon"}]
+          },
+          "locked": true
+        },
+        {"machine":"sack","at":[4,0],"dir":"E","dial":{"bay":"E1"},"locked":true},
+        {"machine":"sack","at":[4,4],"dir":"E","dial":{"bay":"E5"},"locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.bunny",
+          "text": {
+            "fr": "Le traîneau du Nord prend les cadeaux étoile, en E1. Tous les autres partent du quai E5.",
+            "en": "The North sleigh takes the star gifts, at E1. All the others leave from bay E5."
+          },
+          "voice": "factory.l13.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"block","props":{"sticker":"star"},"count":2,"bay":"E1"},{"toy":"block","count":4,"bay":"E5"}],
+      "reference": [
+        {"machine":"belt","at":[1,2],"dir":"E"},
+        {"machine":"sorter","at":[2,2],"dir":"E","dial":{"sticker":"star"}},
+        {"machine":"belt","at":[2,1],"dir":"N"},
+        {"machine":"belt","at":[2,0],"dir":"E"},
+        {"machine":"belt","at":[3,0],"dir":"E"},
+        {"machine":"belt","at":[2,3],"dir":"S"},
+        {"machine":"belt","at":[2,4],"dir":"E"},
+        {"machine":"belt","at":[3,4],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 10,
+      "grid": {"w":7,"h":5},
+      "tray": ["belt","sorter"],
+      "prebuilt": [
+        {
+          "machine": "chute",
+          "at": [0,2],
+          "dir": "E",
+          "dial": {
+            "material": "wood",
+            "count": 9,
+            "items": [{"shape":"cube","sticker":"star"},{"shape":"cube","sticker":"heart"},{"shape":"cube","sticker":"moon"}]
+          },
+          "locked": true
+        },
+        {"machine":"sack","at":[2,0],"dir":"E","dial":{"bay":"C1"},"locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","dial":{"bay":"E2"},"locked":true},
+        {"machine":"sack","at":[6,4],"dir":"E","dial":{"bay":"G5"},"locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.bunny",
+          "text": {
+            "fr": "Chers lutins, ce soir trois traîneaux : étoiles au quai C1, cœurs au quai E2, lunes au quai G5. Suivez les coordonnées !",
+            "en": "Dear elves, three sleighs tonight: stars to bay C1, hearts to bay E2, moons to bay G5. Follow the coordinates!"
+          },
+          "voice": "factory.l13.big.letter"
+        }
+      ],
+      "orders": [
+        {"toy":"block","props":{"sticker":"star"},"count":3,"bay":"C1"},
+        {"toy":"block","props":{"sticker":"heart"},"count":3,"bay":"E2"},
+        {"toy":"block","props":{"sticker":"moon"},"count":3,"bay":"G5"}
+      ],
+      "reference": [
+        {"machine":"belt","at":[1,2],"dir":"E"},
+        {"machine":"sorter","at":[2,2],"dir":"E","dial":{"sticker":"star"}},
+        {"machine":"belt","at":[2,1],"dir":"N"},
+        {"machine":"belt","at":[2,3],"dir":"E"},
+        {"machine":"belt","at":[3,3],"dir":"E"},
+        {"machine":"sorter","at":[4,3],"dir":"E","dial":{"sticker":"heart"}},
+        {"machine":"belt","at":[4,2],"dir":"N"},
+        {"machine":"belt","at":[4,4],"dir":"E"},
+        {"machine":"belt","at":[5,4],"dir":"E"}
+      ]
+    }
+  }
+}

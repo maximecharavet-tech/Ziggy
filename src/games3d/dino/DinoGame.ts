@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { createRenderer, glow, glowTex, prefersLowPower } from '../kit/look';
 import { makeZiggy, type ZiggyActor } from '../kit/models';
@@ -136,7 +137,7 @@ export class DinoGame {
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(42, 1, 0.1, 400);
   private probe = new THREE.PerspectiveCamera(42, 1, 0.1, 400);
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private time = 0;
   private resize: ResizeObserver;

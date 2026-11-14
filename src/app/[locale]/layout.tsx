@@ -23,6 +23,8 @@ import { TvTopBar } from '@/components/tv/TvTopBar';
 import type { Metadata } from 'next';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
+import { robotsFor } from '@/lib/seo';
+import { ageRange } from '@/lib/ages';
 import '../globals.css';
 
 const geist = localFont({
@@ -64,10 +66,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
       title: t('title'),
       description: t('description'),
     },
-    robots: {
-      index: true,
-      follow: true,
-    },
+    robots: robotsFor(locale),
   };
 }
 
@@ -98,7 +97,7 @@ export default async function LocaleLayout({
     name: 'Ziggy',
     applicationCategory: 'EducationalApplication',
     operatingSystem: 'Web',
-    description: 'AI-powered learning companion for kids aged 5-12',
+    description: `AI-powered learning companion for kids aged ${ageRange()}`,
     offers: {
       '@type': 'Offer',
       price: '0',
@@ -125,7 +124,6 @@ export default async function LocaleLayout({
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="format-detection" content="telephone=no" />
-        <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />
       </head>

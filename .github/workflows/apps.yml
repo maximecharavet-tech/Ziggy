@@ -191,8 +191,12 @@ jobs:
           apk=$(ls dist/*.apk | head -1)
           cp "$apk" ziggy-ai-android.apk
           sha256sum ziggy-ai-android.apk > ziggy-ai-android.apk.sha256
+          warning=""
           case "$apk" in
-            *debug*) signed="clé de test (avant la clé Google Play : désinstaller l'ancienne version avant de mettre à jour)" ;;
+            *debug*)
+              signed="clé de test (avant la clé Google Play : désinstaller l'ancienne version avant de mettre à jour)"
+              warning="> ⚠️ **Build de test** : signé avec la clé de debug, pas avec la clé d'envoi de Ziggy. À réserver aux essais, pas à une diffusion publique."
+              ;;
             *) signed="clé d'envoi de Ziggy" ;;
           esac
           cat > notes.md <<EOF
@@ -201,6 +205,8 @@ jobs:
           - Installer : ouvrir **ziggy-ai.fr/telecharger** sur l'appareil, ou taper **ziggy-ai.fr/apk** dans l'appli Downloader sur une télé.
           - Signature : ${signed}.
           - SHA-256 : \`$(cut -d' ' -f1 ziggy-ai-android.apk.sha256)\`
+
+          ${warning}
           EOF
           tag="android-v${version}-${GITHUB_RUN_NUMBER}"
           gh release create "$tag" ziggy-ai-android.apk ziggy-ai-android.apk.sha256 \

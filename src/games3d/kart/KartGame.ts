@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { Post } from '../kit/post';
 import { createRenderer, disposeTree, glow, glowMat, glowTex, prefersLowPower, studioEnvironment } from '../kit/look';
 import { makeZiggy, type ZiggyActor } from '../kit/models';
@@ -116,7 +117,7 @@ export class KartGame {
   private scene = new THREE.Scene();
   private camera = new THREE.PerspectiveCamera(60, 1, 0.2, 1400);
   private post: Post;
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private running = false;
   private resize: ResizeObserver;

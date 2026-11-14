@@ -3,7 +3,7 @@
  * variant); videos as H.264 MP4 + VP9 WebM, muted, with a WebP poster.
  * Visuals: ChatGPT (images) and Grok Imagine (videos), made for Ziggy.
  */
-export type SantaArtSlot = { id: string; path: string; ratio: string; prompt: string; kind: 'image' | 'video'; poster?: string; available: boolean };
+export type SantaArtSlot = { id: string; path: string; ratio: string; prompt: string; kind: 'image' | 'video'; poster?: string; available: boolean; alt?: { fr: string; en: string } };
 
 /** `/santa/art/x.webp` → `/santa/art/x` (no extension). */
 export const artBase = (path: string) => path.replace(/\.[a-z0-9]+$/i, '');
@@ -32,6 +32,10 @@ export const SANTA_ART = [
   { id: 'calendrier-avent', path: '/santa/art/calendrier-avent.webp', ratio: '1:1', prompt: 'North Pole house facade with 24 varied little doors and warm windows, no numbers, no text.', kind: 'image', available: true },
   { id: 'og-image', path: '/santa/art/og-image.webp', ratio: '1200:630', prompt: 'Santa video-calling an anonymous child seen from behind in a festive living room, no text.', kind: 'image', available: true },
   { id: 'offres-3-cadeaux', path: '/santa/art/offres-3-cadeaux.webp', ratio: '16:9', prompt: 'Three gift boxes of increasing size under a Christmas tree, warm magical light, no text.', kind: 'image', available: true },
+  { id: 'home-village-hero', path: '/santa/art/home-village-hero.webp', ratio: '16:9', prompt: 'Ziggy the green plush robot waving in the snow before Santa’s house, aurora sky, no text.', kind: 'image', available: true, alt: { fr: 'Ziggy qui fait coucou devant la maison du Père Noël', en: 'Ziggy waving before Santa’s house' } },
+  { id: 'home-door-village', path: '/santa/art/home-door-village.webp', ratio: '4:3', prompt: 'Santa and Ziggy together on a deep blue night sky, no text.', kind: 'image', available: true, alt: { fr: 'Le Père Noël et Ziggy', en: 'Santa and Ziggy' } },
+  { id: 'home-door-lutins', path: '/santa/art/home-door-lutins.webp', ratio: '4:3', prompt: 'The three lutins Pépin, Noisette and Grelotte standing in the snow with Ziggy, no text.', kind: 'image', available: true, alt: { fr: 'Les trois lutins Pépin, Noisette et Grelotte avec Ziggy', en: 'The three lutins Pépin, Noisette, Grelotte with Ziggy' } },
+  { id: 'home-door-jeux', path: '/santa/art/home-door-jeux.webp', ratio: '4:3', prompt: 'Ziggy holding a red gift with a gold ribbon, no text.', kind: 'image', available: true, alt: { fr: 'Ziggy qui tient un cadeau', en: 'Ziggy holding a gift' } },
   { id: 'hero-loop', path: '/santa/art/hero-loop.mp4', ratio: '16:9', prompt: 'Santa smiles, laughs, winks and waves in his North Pole office, gentle seamless loop, no text.', kind: 'video', poster: '/santa/art/hero-loop-poster.webp', available: true },
   { id: 'appel-entrant-video', path: '/santa/art/appel-entrant-video.mp4', ratio: '9:16', prompt: 'A phone glows on a bed as golden sparks and snowflakes fill the room, no child, no text.', kind: 'video', poster: '/santa/art/appel-entrant-video-poster.webp', available: true },
   { id: 'traineau-decollage', path: '/santa/art/traineau-decollage.mp4', ratio: '21:9', prompt: 'Santa sleigh launches into aurora sky with a trail of stars, no text.', kind: 'video', poster: '/santa/art/traineau-decollage-poster.webp', available: true },

@@ -12,7 +12,7 @@ import { alternatesFor } from '@/lib/seo';
  */
 
 const CONTACT = 'contact@ziggy-ai.fr';
-const UPDATED = { fr: '26 octobre 2026', en: '26 October 2026' };
+const UPDATED = { fr: '14 novembre 2026', en: '14 November 2026' };
 
 type Section = { title: string; body: (string | string[])[] };
 
@@ -66,6 +66,10 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
           [
             'ziggy:songs : les chansons composées.',
             'Base IndexedDB « ziggy-coloring » : les dessins du coloriage. Ils restent sur l’appareil et ne sont jamais envoyés.',
+          ],
+          'Accueil et introductions :',
+          [
+            'ziggy:lutins-intro : l’intro vidéo des Lutins Farceurs déjà vue aujourd’hui (localStorage, une fois par jour).',
           ],
           'Le temps d’un onglet (sessionStorage, effacé à sa fermeture) :',
           [
@@ -152,6 +156,10 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
           [
             'ziggy:songs: songs the child has composed.',
             'IndexedDB database “ziggy-coloring”: colouring drawings. They stay on the device and are never uploaded.',
+          ],
+          'Welcome and introductions:',
+          [
+            'ziggy:lutins-intro: the Prankster Elves intro video already seen today (localStorage, once a day).',
           ],
           'For one tab only (sessionStorage, cleared when the tab closes):',
           [

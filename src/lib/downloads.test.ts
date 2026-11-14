@@ -1,5 +1,7 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
-import { APK_RELEASE_URL, detectDevice } from './downloads';
+import { APK_RELEASE_URL, APP_VERSION, detectDevice } from './downloads';
 
 describe('detectDevice', () => {
   it('finds Android phones, tablets and TVs', () => {
@@ -22,5 +24,13 @@ describe('detectDevice', () => {
 describe('APK_RELEASE_URL', () => {
   it('points at the stable asset name published by apps.yml', () => {
     expect(APK_RELEASE_URL).toMatch(/\/releases\/latest\/download\/ziggy-ai-android\.apk$/);
+  });
+});
+
+describe('APP_VERSION', () => {
+  it('is read from apps/ziggy-app and matches the Tauri config', () => {
+    expect(APP_VERSION).toMatch(/^\d+\.\d+\.\d+$/);
+    const tauri = JSON.parse(readFileSync(join(process.cwd(), 'apps/ziggy-app/src-tauri/tauri.conf.json'), 'utf8'));
+    expect(APP_VERSION).toBe(tauri.version);
   });
 });

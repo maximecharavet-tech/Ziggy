@@ -77,7 +77,7 @@ export function Navbar() {
           scrolled ? 'max-w-7xl h-14 sm:h-16 px-3 sm:px-5 mx-3 sm:mx-auto' : 'max-w-7xl h-16 sm:h-18 px-4 sm:px-6 lg:px-8'
         }`}
       >
-        <Link href={shell.app ? homeOf(shell) : '/'} className="relative z-10 flex items-center gap-2 group shrink-0" aria-label="Ziggy — home">
+        <Link href={shell.app ? homeOf(shell) : '/'} className="relative z-10 flex items-center gap-2 group shrink-0">
           <ZiggyAvatar size={36} className="transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6" />
           <ZiggyLogo size={96} className="transition-transform duration-300 group-hover:-rotate-1" />
         </Link>

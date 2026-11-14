@@ -1,0 +1,107 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-factory",
+  "id": "factory.l01",
+  "version": "1.0.0",
+  "number": 1,
+  "hall": "wood-shop",
+  "title": {"fr":"Une balle","en":"A ball"},
+  "newIdea": {
+    "fr": "On appuie sur « C’est parti ! » et la façonneuse donne une forme.",
+    "en": "Press GO and the shaper gives things a shape."
+  },
+  "season": "winter",
+  "assets": [],
+  "skills": ["shapes","sequencing"],
+  "introduces": ["chute","belt","shaper","sack"],
+  "bands": {
+    "little": {
+      "difficulty": 1,
+      "grid": {"w":5,"h":3},
+      "tray": [],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":1},"locked":true},
+        {"machine":"belt","at":[1,1],"dir":"E","locked":true},
+        {"machine":"belt","at":[3,1],"dir":"E","locked":true},
+        {"machine":"sack","at":[4,1],"dir":"E","locked":true}
+      ],
+      "slots": [
+        {
+          "at": [2,1],
+          "dir": "E",
+          "choices": [
+            {"machine":"shaper","dial":{"shape":"ball"}},
+            {"machine":"shaper","dial":{"shape":"cube"}},
+            {"machine":"shaper","dial":{"shape":"cone"}}
+          ]
+        }
+      ],
+      "letters": [
+        {
+          "from": "village.bear-cub",
+          "text": {"fr":"Je voudrais une balle, s’il te plaît !","en":"I’d like a ball, please!"},
+          "voice": "factory.l01.little.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","count":1}],
+      "reference": [{"machine":"shaper","at":[2,1],"dir":"E","dial":{"shape":"ball"}}]
+    },
+    "middle": {
+      "difficulty": 1,
+      "grid": {"w":6,"h":3},
+      "tray": ["belt","shaper"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,1],"dir":"E","dial":{"material":"wood","count":2},"locked":true},
+        {"machine":"sack","at":[5,1],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.bear-cub",
+          "text": {
+            "fr": "Bonjour l’atelier ! Je voudrais deux balles pour jouer avec mon frère.",
+            "en": "Hello workshop! I’d like two balls to play with my brother."
+          },
+          "voice": "factory.l01.middle.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","count":2}],
+      "reference": [
+        {"machine":"belt","at":[1,1],"dir":"E"},
+        {"machine":"shaper","at":[2,1],"dir":"E","dial":{"shape":"ball"}},
+        {"machine":"belt","at":[3,1],"dir":"E"},
+        {"machine":"belt","at":[4,1],"dir":"E"}
+      ]
+    },
+    "big": {
+      "difficulty": 2,
+      "grid": {"w":6,"h":5,"blocked":[[2,3],[2,4]]},
+      "tray": ["belt","shaper"],
+      "prebuilt": [
+        {"machine":"chute","at":[0,0],"dir":"S","dial":{"material":"wood","count":3},"locked":true},
+        {"machine":"sack","at":[5,4],"dir":"E","locked":true}
+      ],
+      "letters": [
+        {
+          "from": "village.bear-cub",
+          "text": {
+            "fr": "Chers lutins, pour la fête du village il nous faut trois balles. Attention, l’établi est au milieu de l’atelier : trouvez un chemin !",
+            "en": "Dear elves, the village party needs three balls. Careful, the workbench is in the middle of the workshop: find a way round!"
+          },
+          "voice": "factory.l01.big.letter"
+        }
+      ],
+      "orders": [{"toy":"ball","count":3}],
+      "reference": [
+        {"machine":"shaper","at":[0,1],"dir":"S","dial":{"shape":"ball"}},
+        {"machine":"belt","at":[0,2],"dir":"E"},
+        {"machine":"belt","at":[1,2],"dir":"E"},
+        {"machine":"belt","at":[2,2],"dir":"E"},
+        {"machine":"belt","at":[3,2],"dir":"E"},
+        {"machine":"belt","at":[4,2],"dir":"S"},
+        {"machine":"belt","at":[4,3],"dir":"S"},
+        {"machine":"belt","at":[4,4],"dir":"E"}
+      ],
+      "ideas": [{"kind":"max-machines","value":9}]
+    }
+  }
+}

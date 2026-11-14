@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { createRenderer, studioEnvironment, disposeTree, glow, mat, prefersLowPower } from '../kit/look';
 import { makePine, makeZiggy, PALETTE } from '../kit/models';
 import { rng } from '../kit/rng';
@@ -125,7 +126,7 @@ export class PlanetScene {
   private planet = new THREE.Group();
   private ziggy = makeZiggy({ lowPower: prefersLowPower() });
   private moon = new THREE.Group();
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private visible = true;
   private spin = 0.12;

@@ -21,6 +21,7 @@ export default function robots(): MetadataRoute.Robots {
       ...AI_AND_SEARCH_BOTS.map((userAgent) => ({ userAgent, allow: '/', disallow: '/api/' })),
       { userAgent: '*', allow: '/', disallow: '/api/' },
     ],
+    // The index lists one sitemap per fully translated language.
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
 }

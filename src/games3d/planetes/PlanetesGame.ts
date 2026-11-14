@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { FrameClock } from '../kit/clock';
 import { Post } from '../kit/post';
 import { createRenderer, disposeTree, glow, glowTex, prefersLowPower, studioEnvironment } from '../kit/look';
 import { makeZiggy, type ZiggyActor } from '../kit/models';
@@ -121,7 +122,7 @@ export class PlanetesGame {
   private camera = new THREE.PerspectiveCamera(45, 1, 0.1, 1200);
   private tmpCam = new THREE.PerspectiveCamera(45, 1, 0.1, 1200);
   private post: Post;
-  private clock = new THREE.Clock();
+  private clock = new FrameClock();
   private raf = 0;
   private running = false;
   private resize: ResizeObserver;

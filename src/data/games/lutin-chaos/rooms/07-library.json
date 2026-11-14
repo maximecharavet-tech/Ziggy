@@ -1,0 +1,773 @@
+{
+  "schema": "ziggy.level/1",
+  "game": "lutin-chaos",
+  "id": "chaos.library",
+  "number": 7,
+  "version": "1.0.0",
+  "title": {
+    "fr": "La bibliothèque",
+    "en": "The library"
+  },
+  "season": "winter",
+  "layout": "library-a",
+  "assets": [
+    "chaos.room.library",
+    "lutins.model.pepin",
+    "lutins.model.grelotte",
+    "lutins.model.noisette"
+  ],
+  "goals": [
+    "observation",
+    "logic",
+    "vocabulary",
+    "patterns",
+    "spatial"
+  ],
+  "skills": [
+    "vocabulary",
+    "letters",
+    "sequencing",
+    "counting"
+  ],
+  "intro": {
+    "fr": "Les livres ont fait des galipettes ! On les range ?",
+    "en": "The books did somersaults! Shall we tidy them?"
+  },
+  "slots": [
+    {
+      "id": "shelf-top",
+      "label": {
+        "fr": "l’étagère du haut",
+        "en": "the top shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère du haut",
+        "en": "on the top shelf"
+      },
+      "at": [
+        2.6,
+        1,
+        0
+      ]
+    },
+    {
+      "id": "shelf-mid",
+      "label": {
+        "fr": "l’étagère du milieu",
+        "en": "the middle shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère du milieu",
+        "en": "on the middle shelf"
+      },
+      "at": [
+        2.1,
+        0,
+        1.53
+      ]
+    },
+    {
+      "id": "shelf-low",
+      "label": {
+        "fr": "l’étagère du bas",
+        "en": "the bottom shelf"
+      },
+      "in": {
+        "fr": "sur l’étagère du bas",
+        "en": "on the bottom shelf"
+      },
+      "at": [
+        0.8,
+        0,
+        2.47
+      ]
+    },
+    {
+      "id": "reading-chair",
+      "label": {
+        "fr": "le fauteuil",
+        "en": "the armchair"
+      },
+      "in": {
+        "fr": "sur le fauteuil",
+        "en": "on the armchair"
+      },
+      "at": [
+        -0.8,
+        1,
+        2.47
+      ]
+    },
+    {
+      "id": "desk",
+      "label": {
+        "fr": "le bureau",
+        "en": "the desk"
+      },
+      "in": {
+        "fr": "sur le bureau",
+        "en": "on the desk"
+      },
+      "at": [
+        -2.1,
+        0,
+        1.53
+      ]
+    },
+    {
+      "id": "floor",
+      "label": {
+        "fr": "le sol",
+        "en": "the floor"
+      },
+      "in": {
+        "fr": "par terre",
+        "en": "on the floor"
+      },
+      "at": [
+        -2.6,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "basket",
+      "label": {
+        "fr": "le panier",
+        "en": "the basket"
+      },
+      "in": {
+        "fr": "dans le panier",
+        "en": "in the basket"
+      },
+      "at": [
+        -2.1,
+        1,
+        -1.53
+      ]
+    },
+    {
+      "id": "window-seat",
+      "label": {
+        "fr": "la banquette",
+        "en": "the window seat"
+      },
+      "in": {
+        "fr": "sur la banquette",
+        "en": "on the window seat"
+      },
+      "at": [
+        -0.8,
+        0,
+        -2.47
+      ]
+    },
+    {
+      "id": "lamp-table",
+      "label": {
+        "fr": "la table de la lampe",
+        "en": "the lamp table"
+      },
+      "in": {
+        "fr": "sur la table de la lampe",
+        "en": "on the lamp table"
+      },
+      "at": [
+        0.8,
+        0,
+        -2.47
+      ]
+    },
+    {
+      "id": "globe-stand",
+      "label": {
+        "fr": "le pied du globe",
+        "en": "the globe stand"
+      },
+      "in": {
+        "fr": "près du globe",
+        "en": "by the globe"
+      },
+      "at": [
+        2.1,
+        1,
+        -1.53
+      ]
+    }
+  ],
+  "props": [
+    {
+      "id": "book-3",
+      "kind": "book",
+      "slot": "shelf-top",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-4",
+      "kind": "book",
+      "slot": "shelf-top",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-5",
+      "kind": "book",
+      "slot": "shelf-top",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-6",
+      "kind": "book",
+      "slot": "shelf-mid",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-7",
+      "kind": "book",
+      "slot": "shelf-low",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-8",
+      "kind": "book",
+      "slot": "shelf-mid",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-9",
+      "kind": "book",
+      "slot": "shelf-low",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "block-7",
+      "kind": "block",
+      "slot": "shelf-mid",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "block-8",
+      "kind": "block",
+      "slot": "desk",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-10",
+      "kind": "book",
+      "slot": "shelf-low",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-11",
+      "kind": "book",
+      "slot": "shelf-low",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "lamp-2",
+      "kind": "lamp",
+      "slot": "lamp-table",
+      "color": "yellow",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "map-1",
+      "kind": "map",
+      "slot": "desk",
+      "color": "white",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-13",
+      "kind": "book",
+      "slot": "shelf-mid",
+      "color": "green",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-14",
+      "kind": "book",
+      "slot": "shelf-mid",
+      "color": "blue",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-15",
+      "kind": "book",
+      "slot": "shelf-mid",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-16",
+      "kind": "book",
+      "slot": "shelf-mid",
+      "color": "orange",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "book-17",
+      "kind": "book",
+      "slot": "shelf-mid",
+      "color": "purple",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    },
+    {
+      "id": "ball-4",
+      "kind": "ball",
+      "slot": "desk",
+      "color": "red",
+      "rot": 0,
+      "count": 1,
+      "hidden": false
+    }
+  ],
+  "hidingSpots": [
+    {
+      "id": "big-book",
+      "label": {
+        "fr": "derrière un gros livre",
+        "en": "behind a big book"
+      },
+      "at": [
+        3.2,
+        0,
+        0
+      ]
+    },
+    {
+      "id": "armchair",
+      "label": {
+        "fr": "sous le coussin du fauteuil",
+        "en": "under the armchair cushion"
+      },
+      "at": [
+        0.99,
+        0.5,
+        3.04
+      ]
+    },
+    {
+      "id": "globe",
+      "label": {
+        "fr": "derrière le globe",
+        "en": "behind the globe"
+      },
+      "at": [
+        -2.59,
+        0,
+        1.88
+      ]
+    },
+    {
+      "id": "ladder",
+      "label": {
+        "fr": "en haut de l’échelle",
+        "en": "at the top of the ladder"
+      },
+      "at": [
+        -2.59,
+        0.5,
+        -1.88
+      ]
+    },
+    {
+      "id": "magazine-rack",
+      "label": {
+        "fr": "dans le porte-revues",
+        "en": "in the magazine rack"
+      },
+      "at": [
+        0.99,
+        0,
+        -3.04
+      ]
+    }
+  ],
+  "pranks": [
+    {
+      "id": "books-upside-down",
+      "type": "flip",
+      "params": {
+        "props": [
+          "book-3",
+          "book-4",
+          "book-5"
+        ],
+        "turns": 2
+      },
+      "culprit": "random",
+      "themes": [
+        "livres"
+      ],
+      "fix": {
+        "mechanic": "rotate",
+        "params": {
+          "item": "book"
+        }
+      },
+      "spot": {
+        "fr": "Les livres sont la tête en bas !",
+        "en": "The books are upside down!"
+      },
+      "fixed": {
+        "fr": "Les livres sont à l’endroit, on peut lire !",
+        "en": "The books are the right way up, ready to read!"
+      }
+    },
+    {
+      "id": "books-out-of-order",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "book-6",
+            "book-7"
+          ],
+          [
+            "book-8",
+            "book-9"
+          ]
+        ]
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "number",
+          "item": "book"
+        }
+      },
+      "spot": {
+        "fr": "Les tomes sont dans le désordre !",
+        "en": "The volumes are all out of order!"
+      },
+      "fixed": {
+        "fr": "Les livres sont rangés dans l’ordre !",
+        "en": "The books are in order!"
+      }
+    },
+    {
+      "id": "abc-blocks",
+      "type": "swap",
+      "params": {
+        "pairs": [
+          [
+            "block-7",
+            "block-8"
+          ]
+        ]
+      },
+      "culprit": "grelotte",
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "alphabet",
+          "item": "block"
+        }
+      },
+      "spot": {
+        "fr": "Les cubes de l’alphabet sont mélangés !",
+        "en": "The alphabet blocks are muddled!"
+      },
+      "fixed": {
+        "fr": "A, B, C… tout est dans l’ordre !",
+        "en": "A, B, C… all in order!"
+      }
+    },
+    {
+      "id": "book-slide",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "book-10",
+          "book-11"
+        ],
+        "to": "floor"
+      },
+      "culprit": "random",
+      "themes": [
+        "livres"
+      ],
+      "fix": {
+        "mechanic": "order",
+        "params": {
+          "by": "size",
+          "item": "book"
+        }
+      },
+      "spot": {
+        "fr": "Un toboggan de livres !",
+        "en": "A book slide!"
+      },
+      "fixed": {
+        "fr": "Les livres sont rangés du plus petit au plus grand !",
+        "en": "The books are lined up smallest to biggest!"
+      }
+    },
+    {
+      "id": "lamp-moved",
+      "type": "move-into",
+      "params": {
+        "props": [
+          "lamp-2"
+        ],
+        "to": "window-seat"
+      },
+      "culprit": "random",
+      "fix": {
+        "mechanic": "name-it",
+        "params": {
+          "item": "lamp",
+          "words": [
+            "lamp",
+            "book",
+            "map",
+            "frame"
+          ]
+        }
+      },
+      "spot": {
+        "fr": "La lampe est partie lire à la fenêtre !",
+        "en": "The lamp went to read by the window!"
+      },
+      "fixed": {
+        "fr": "La lampe est revenue à sa place !",
+        "en": "The lamp is back in its place!"
+      }
+    },
+    {
+      "id": "map-hidden",
+      "type": "hide",
+      "params": {
+        "props": [
+          "map-1"
+        ],
+        "in": "basket"
+      },
+      "culprit": "random",
+      "clueKinds": [
+        "footprint"
+      ],
+      "fix": {
+        "mechanic": "path",
+        "params": {}
+      },
+      "spot": {
+        "fr": "La carte au trésor a disparu ! Suis les empreintes !",
+        "en": "The treasure map has vanished! Follow the footprints!"
+      },
+      "fixed": {
+        "fr": "La carte est retrouvée !",
+        "en": "The map is found!"
+      }
+    }
+  ],
+  "finale": {
+    "name": {
+      "fr": "Le domino de livres",
+      "en": "The book domino"
+    },
+    "steps": [
+      {
+        "id": "book-13-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "book-13"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Un livre bascule",
+          "en": "A book tips"
+        }
+      },
+      {
+        "id": "book-14-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "book-14"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le suivant aussi",
+          "en": "The next one too"
+        }
+      },
+      {
+        "id": "book-15-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "book-15"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Et encore un",
+          "en": "And another"
+        }
+      },
+      {
+        "id": "book-16-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "book-16"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Toujours plus !",
+          "en": "More and more!"
+        }
+      },
+      {
+        "id": "book-17-tips",
+        "type": "flip",
+        "params": {
+          "props": [
+            "book-17"
+          ],
+          "turns": 1
+        },
+        "label": {
+          "fr": "Le dernier livre",
+          "en": "The last book"
+        }
+      },
+      {
+        "id": "ball-rolls",
+        "type": "move-into",
+        "params": {
+          "props": [
+            "ball-4"
+          ],
+          "to": "floor"
+        },
+        "label": {
+          "fr": "Le ballon roule par terre",
+          "en": "The ball rolls onto the floor"
+        }
+      }
+    ]
+  },
+  "bands": {
+    "little": {
+      "pickCount": 3,
+      "pool": [
+        "books-upside-down",
+        "books-out-of-order",
+        "book-slide",
+        "lamp-moved"
+      ],
+      "hidingSpots": [
+        "big-book",
+        "armchair",
+        "globe"
+      ],
+      "finale": [
+        "book-13-tips",
+        "ball-rolls"
+      ]
+    },
+    "middle": {
+      "pickCount": 4,
+      "pool": [
+        "books-upside-down",
+        "books-out-of-order",
+        "abc-blocks",
+        "book-slide",
+        "lamp-moved",
+        "map-hidden"
+      ],
+      "hidingSpots": [
+        "big-book",
+        "armchair",
+        "globe",
+        "ladder"
+      ],
+      "finale": [
+        "book-13-tips",
+        "book-14-tips",
+        "book-15-tips",
+        "ball-rolls"
+      ]
+    },
+    "big": {
+      "pickCount": 5,
+      "pool": [
+        "books-upside-down",
+        "books-out-of-order",
+        "abc-blocks",
+        "book-slide",
+        "lamp-moved",
+        "map-hidden"
+      ],
+      "hidingSpots": [
+        "big-book",
+        "armchair",
+        "globe",
+        "ladder",
+        "magazine-rack"
+      ],
+      "finale": [
+        "book-13-tips",
+        "book-14-tips",
+        "book-15-tips",
+        "book-16-tips",
+        "book-17-tips",
+        "ball-rolls"
+      ]
+    }
+  }
+}
