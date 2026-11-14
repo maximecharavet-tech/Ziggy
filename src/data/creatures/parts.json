@@ -1,0 +1,1190 @@
+{
+ "version": 2,
+ "parts": {
+  "body": [
+   "blob",
+   "egg",
+   "bean",
+   "box",
+   "drop",
+   "pear",
+   "cloud",
+   "tall",
+   "barrel",
+   "bell",
+   "pillow"
+  ],
+  "head": [
+   "none",
+   "ball",
+   "box",
+   "bean",
+   "wide",
+   "tall",
+   "drop",
+   "cone"
+  ],
+  "legStyle": [
+   "stubby",
+   "long",
+   "tentacle",
+   "spring",
+   "wheel",
+   "paddle"
+  ],
+  "armStyle": [
+   "noodle",
+   "pincer",
+   "mitten",
+   "glove",
+   "fin",
+   "feather"
+  ],
+  "wings": [
+   "none",
+   "bird",
+   "bat",
+   "butterfly",
+   "tiny",
+   "angel",
+   "fairy",
+   "leaf",
+   "rainbow"
+  ],
+  "tail": [
+   "none",
+   "fish",
+   "curly",
+   "pompom",
+   "dragon",
+   "lightning",
+   "plume",
+   "balloon",
+   "ribbon"
+  ],
+  "mouth": [
+   "smile",
+   "fangs",
+   "beak",
+   "tongue",
+   "oh",
+   "teeth",
+   "cat",
+   "grin",
+   "moustache",
+   "gap"
+  ],
+  "top": [
+   "none",
+   "horns",
+   "antennae",
+   "bunny",
+   "cat",
+   "crest",
+   "eyestalks",
+   "elf",
+   "floppy",
+   "bear",
+   "unicorn",
+   "flower"
+  ],
+  "hat": [
+   "none",
+   "top",
+   "party",
+   "crown",
+   "propeller",
+   "bow",
+   "wizard",
+   "chef",
+   "cap",
+   "beanie",
+   "halo",
+   "captain"
+  ],
+  "pattern": [
+   "plain",
+   "dots",
+   "stripes",
+   "stars",
+   "zigzag",
+   "hearts",
+   "checks",
+   "waves"
+  ],
+  "nose": [
+   "none",
+   "button",
+   "clown",
+   "snout",
+   "carrot",
+   "heart"
+  ],
+  "aura": [
+   "none",
+   "sparkles",
+   "hearts",
+   "bubbles",
+   "stars",
+   "notes"
+  ],
+  "pet": [
+   "none",
+   "ladybug",
+   "chick",
+   "cloud",
+   "snail",
+   "balloon"
+  ],
+  "eyeSize": [
+   "small",
+   "big"
+  ],
+  "color": [
+   "red",
+   "orange",
+   "yellow",
+   "green",
+   "teal",
+   "blue",
+   "purple",
+   "pink",
+   "brown",
+   "white"
+  ]
+ },
+ "legCounts": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7,
+  8
+ ],
+ "armCounts": [
+  0,
+  2,
+  4
+ ],
+ "eyeCounts": [
+  1,
+  2,
+  3,
+  4,
+  5
+ ],
+ "sizes": [
+  1,
+  2,
+  3
+ ],
+ "powers": [
+  {
+   "id": "bounce",
+   "any": [
+    [
+     "legStyle",
+     "spring"
+    ],
+    [
+     "legs",
+     0
+    ],
+    [
+     "legs",
+     1
+    ],
+    [
+     "body",
+     "pillow"
+    ]
+   ]
+  },
+  {
+   "id": "fly",
+   "any": [
+    [
+     "wings",
+     "bird"
+    ],
+    [
+     "wings",
+     "bat"
+    ],
+    [
+     "wings",
+     "butterfly"
+    ],
+    [
+     "wings",
+     "angel"
+    ],
+    [
+     "wings",
+     "fairy"
+    ],
+    [
+     "wings",
+     "leaf"
+    ],
+    [
+     "wings",
+     "rainbow"
+    ]
+   ]
+  },
+  {
+   "id": "swim",
+   "any": [
+    [
+     "tail",
+     "fish"
+    ],
+    [
+     "legStyle",
+     "paddle"
+    ],
+    [
+     "armStyle",
+     "fin"
+    ]
+   ]
+  },
+  {
+   "id": "sparkle",
+   "any": [
+    [
+     "aura",
+     "sparkles"
+    ],
+    [
+     "aura",
+     "stars"
+    ],
+    [
+     "top",
+     "unicorn"
+    ],
+    [
+     "wings",
+     "fairy"
+    ],
+    [
+     "hat",
+     "crown"
+    ],
+    [
+     "hat",
+     "wizard"
+    ]
+   ]
+  },
+  {
+   "id": "dance",
+   "any": [
+    [
+     "aura",
+     "notes"
+    ],
+    [
+     "hat",
+     "top"
+    ],
+    [
+     "armStyle",
+     "glove"
+    ],
+    [
+     "legStyle",
+     "long"
+    ]
+   ]
+  },
+  {
+   "id": "camo",
+   "any": [
+    [
+     "wings",
+     "leaf"
+    ],
+    [
+     "top",
+     "flower"
+    ],
+    [
+     "pet",
+     "snail"
+    ],
+    [
+     "tail",
+     "plume"
+    ],
+    [
+     "body",
+     "cloud"
+    ]
+   ]
+  },
+  {
+   "id": "laugh",
+   "any": [
+    [
+     "mouth",
+     "grin"
+    ],
+    [
+     "nose",
+     "clown"
+    ],
+    [
+     "mouth",
+     "moustache"
+    ],
+    [
+     "mouth",
+     "gap"
+    ]
+   ]
+  },
+  {
+   "id": "rainbow",
+   "any": [
+    [
+     "wings",
+     "rainbow"
+    ],
+    [
+     "tail",
+     "ribbon"
+    ],
+    [
+     "pattern",
+     "waves"
+    ]
+   ]
+  },
+  {
+   "id": "roll",
+   "any": [
+    [
+     "legStyle",
+     "wheel"
+    ],
+    [
+     "body",
+     "barrel"
+    ]
+   ]
+  },
+  {
+   "id": "float",
+   "any": [
+    [
+     "tail",
+     "balloon"
+    ],
+    [
+     "pet",
+     "balloon"
+    ],
+    [
+     "aura",
+     "bubbles"
+    ],
+    [
+     "body",
+     "cloud"
+    ],
+    [
+     "pet",
+     "cloud"
+    ]
+   ]
+  },
+  {
+   "id": "zap",
+   "any": [
+    [
+     "tail",
+     "lightning"
+    ],
+    [
+     "hat",
+     "propeller"
+    ],
+    [
+     "top",
+     "antennae"
+    ]
+   ]
+  },
+  {
+   "id": "hearts",
+   "any": [
+    [
+     "aura",
+     "hearts"
+    ],
+    [
+     "nose",
+     "heart"
+    ],
+    [
+     "pattern",
+     "hearts"
+    ],
+    [
+     "pet",
+     "chick"
+    ]
+   ]
+  },
+  {
+   "id": "music",
+   "any": [
+    [
+     "aura",
+     "notes"
+    ],
+    [
+     "mouth",
+     "oh"
+    ],
+    [
+     "body",
+     "bell"
+    ],
+    [
+     "hat",
+     "captain"
+    ]
+   ]
+  }
+ ],
+ "names": {
+  "n1": [
+   "Blou",
+   "Zou",
+   "Gri",
+   "Mo",
+   "Fla",
+   "Tou",
+   "Ki",
+   "Bou",
+   "Lu",
+   "Pla",
+   "Ri",
+   "Ga",
+   "No",
+   "Zi",
+   "Fu",
+   "Ba",
+   "Glou",
+   "Wa",
+   "Pom",
+   "Tchi",
+   "Ro",
+   "Dou",
+   "Mi",
+   "Bri",
+   "Zab",
+   "Lou",
+   "Chou",
+   "Pif",
+   "Gou",
+   "Tim"
+  ],
+  "n2": [
+   "pi",
+   "li",
+   "zou",
+   "bi",
+   "mo",
+   "gou",
+   "tou",
+   "nou",
+   "lo",
+   "fi",
+   "ta",
+   "ri",
+   "bou",
+   "dou",
+   "mi",
+   "ffy",
+   "go",
+   "la",
+   "ppo",
+   "mba"
+  ],
+  "m1": [
+   "Tra",
+   "Gla",
+   "Bi",
+   "Pata",
+   "Fri",
+   "Moumou",
+   "Ziggo",
+   "Tchou",
+   "Rata",
+   "Bidou",
+   "Plou",
+   "Kiri",
+   "Mira",
+   "Gribou",
+   "Toto",
+   "Zabou",
+   "Choupi",
+   "Firfi",
+   "Pimpa",
+   "Flouf",
+   "Doudi",
+   "Marsou"
+  ],
+  "m2": [
+   "ca",
+   "la",
+   "mi",
+   "pou",
+   "fi",
+   "bou",
+   "ri",
+   "zi",
+   "lou",
+   "ga",
+   "no",
+   "mou",
+   "tchi",
+   "do"
+  ],
+  "m3": [
+   "sin",
+   "tou",
+   "lette",
+   "mouche",
+   "rinette",
+   "boulette",
+   "grouille",
+   "patine",
+   "rigolo",
+   "dodo",
+   "lala",
+   "tilou",
+   "line",
+   "chou",
+   "bidule",
+   "zou",
+   "mollet",
+   "tatin",
+   "pouet",
+   "coptère",
+   "ballon"
+  ]
+ },
+ "blocklist": [
+  "caca",
+  "pipi",
+  "prout",
+  "cul",
+  "con",
+  "bite",
+  "pute",
+  "zob",
+  "merde",
+  "nique",
+  "fesse",
+  "chie",
+  "pisse",
+  "mort",
+  "tue",
+  "nul",
+  "moche",
+  "bete",
+  "gros",
+  "pet",
+  "pouf",
+  "pine",
+  "zizi",
+  "teub",
+  "naze",
+  "boudin",
+  "nouille",
+  "crotte",
+  "vomi",
+  "bouse",
+  "kiki",
+  "lolo",
+  "gaga",
+  "zgeg",
+  "nichon",
+  "teton",
+  "foufoune",
+  "chatte",
+  "poop",
+  "pee",
+  "fart",
+  "butt",
+  "dick",
+  "ass",
+  "sex",
+  "nazi",
+  "kill",
+  "dumb",
+  "stupid",
+  "idiot",
+  "fat",
+  "ugly",
+  "shit",
+  "fuck",
+  "cock",
+  "tit",
+  "nig",
+  "hell",
+  "damn",
+  "crap",
+  "die",
+  "dead",
+  "puke",
+  "gay",
+  "fag",
+  "poo",
+  "bum",
+  "turd",
+  "wee",
+  "piss",
+  "boob",
+  "nude",
+  "snot"
+ ],
+ "events": [
+  {
+   "id": "confetti",
+   "w": 5
+  },
+  {
+   "id": "flash",
+   "w": 2
+  },
+  {
+   "id": "wonky",
+   "w": 5
+  },
+  {
+   "id": "sneeze",
+   "w": 3
+  },
+  {
+   "id": "hiccup",
+   "w": 3
+  },
+  {
+   "id": "applause",
+   "w": 3
+  },
+  {
+   "id": "surprised",
+   "w": 3
+  },
+  {
+   "id": "bubbles",
+   "w": 2
+  }
+ ],
+ "surprise": {
+  "order": [
+   "body",
+   "head",
+   "legs",
+   "legStyle",
+   "arms",
+   "armStyle",
+   "wings",
+   "tail",
+   "eyes",
+   "eyeSize",
+   "mouth",
+   "top",
+   "hat",
+   "pattern",
+   "nose",
+   "aura",
+   "pet",
+   "size"
+  ],
+  "pools": {
+   "head": [
+    "none",
+    "ball",
+    "ball",
+    "box",
+    "bean",
+    "wide",
+    "tall",
+    "drop",
+    "cone"
+   ],
+   "legs": [
+    0,
+    1,
+    2,
+    2,
+    3,
+    4,
+    4,
+    5,
+    6,
+    8
+   ],
+   "arms": [
+    0,
+    2,
+    2,
+    4
+   ],
+   "wings": [
+    "none",
+    "none",
+    "none",
+    "bird",
+    "bat",
+    "butterfly",
+    "tiny",
+    "angel",
+    "fairy",
+    "leaf",
+    "rainbow"
+   ],
+   "tail": [
+    "none",
+    "none",
+    "fish",
+    "curly",
+    "pompom",
+    "dragon",
+    "lightning",
+    "plume",
+    "balloon",
+    "ribbon"
+   ],
+   "eyes": [
+    1,
+    2,
+    2,
+    3,
+    3,
+    4,
+    5
+   ],
+   "hat": [
+    "none",
+    "none",
+    "none",
+    "top",
+    "party",
+    "crown",
+    "propeller",
+    "bow",
+    "wizard",
+    "chef",
+    "cap",
+    "beanie",
+    "halo",
+    "captain"
+   ],
+   "nose": [
+    "none",
+    "none",
+    "button",
+    "clown",
+    "snout",
+    "carrot",
+    "heart"
+   ],
+   "aura": [
+    "none",
+    "none",
+    "none",
+    "none",
+    "sparkles",
+    "hearts",
+    "bubbles",
+    "stars",
+    "notes"
+   ],
+   "pet": [
+    "none",
+    "none",
+    "none",
+    "ladybug",
+    "chick",
+    "cloud",
+    "snail",
+    "balloon"
+   ]
+  }
+ },
+ "phrases": {
+  "wings": {
+   "bird": {
+    "fr": "des ailes d’oiseau",
+    "en": "bird wings"
+   },
+   "bat": {
+    "fr": "des ailes de chauve-souris",
+    "en": "bat wings"
+   },
+   "butterfly": {
+    "fr": "des ailes de papillon",
+    "en": "butterfly wings"
+   },
+   "angel": {
+    "fr": "des ailes d’ange",
+    "en": "angel wings"
+   },
+   "fairy": {
+    "fr": "des ailes de fée",
+    "en": "fairy wings"
+   },
+   "leaf": {
+    "fr": "des ailes en feuilles",
+    "en": "leaf wings"
+   },
+   "rainbow": {
+    "fr": "des ailes arc-en-ciel",
+    "en": "rainbow wings"
+   }
+  },
+  "tail": {
+   "fish": {
+    "fr": "une queue de poisson",
+    "en": "a fish tail"
+   },
+   "curly": {
+    "fr": "une queue en tire-bouchon",
+    "en": "a curly tail"
+   },
+   "pompom": {
+    "fr": "une queue pompon",
+    "en": "a pompom tail"
+   },
+   "dragon": {
+    "fr": "une queue de dragon",
+    "en": "a dragon tail"
+   },
+   "lightning": {
+    "fr": "une queue en éclair",
+    "en": "a lightning tail"
+   },
+   "plume": {
+    "fr": "une queue en plumes",
+    "en": "a feathery tail"
+   },
+   "balloon": {
+    "fr": "une queue ballon",
+    "en": "a balloon tail"
+   },
+   "ribbon": {
+    "fr": "une queue en ruban",
+    "en": "a ribbon tail"
+   }
+  },
+  "top": {
+   "horns": {
+    "fr": "des cornes",
+    "en": "horns"
+   },
+   "antennae": {
+    "fr": "des antennes",
+    "en": "antennae"
+   },
+   "bunny": {
+    "fr": "des oreilles de lapin",
+    "en": "bunny ears"
+   },
+   "cat": {
+    "fr": "des oreilles de chat",
+    "en": "cat ears"
+   },
+   "crest": {
+    "fr": "une crête",
+    "en": "a crest"
+   },
+   "eyestalks": {
+    "fr": "des yeux sur tiges",
+    "en": "eye stalks"
+   },
+   "elf": {
+    "fr": "des oreilles d’elfe",
+    "en": "elf ears"
+   },
+   "floppy": {
+    "fr": "des oreilles tombantes",
+    "en": "floppy ears"
+   },
+   "bear": {
+    "fr": "des oreilles d’ours",
+    "en": "bear ears"
+   },
+   "unicorn": {
+    "fr": "une corne de licorne",
+    "en": "a unicorn horn"
+   },
+   "flower": {
+    "fr": "une fleur sur la tête",
+    "en": "a flower on its head"
+   }
+  },
+  "hat": {
+   "top": {
+    "fr": "un chapeau haut de forme",
+    "en": "a top hat"
+   },
+   "party": {
+    "fr": "un chapeau de fête",
+    "en": "a party hat"
+   },
+   "crown": {
+    "fr": "une couronne",
+    "en": "a crown"
+   },
+   "propeller": {
+    "fr": "une casquette à hélice",
+    "en": "a propeller cap"
+   },
+   "bow": {
+    "fr": "un nœud",
+    "en": "a bow"
+   },
+   "wizard": {
+    "fr": "un chapeau de magicien",
+    "en": "a wizard hat"
+   },
+   "chef": {
+    "fr": "une toque de cuisinier",
+    "en": "a chef hat"
+   },
+   "cap": {
+    "fr": "une casquette",
+    "en": "a cap"
+   },
+   "beanie": {
+    "fr": "un bonnet",
+    "en": "a beanie"
+   },
+   "halo": {
+    "fr": "une auréole",
+    "en": "a halo"
+   },
+   "captain": {
+    "fr": "un chapeau de capitaine",
+    "en": "a captain hat"
+   }
+  },
+  "mouth": {
+   "fangs": {
+    "fr": "des petites dents pointues",
+    "en": "little pointy teeth"
+   },
+   "beak": {
+    "fr": "un bec",
+    "en": "a beak"
+   },
+   "tongue": {
+    "fr": "la langue tirée",
+    "en": "its tongue out"
+   },
+   "oh": {
+    "fr": "la bouche en O",
+    "en": "an O mouth"
+   },
+   "teeth": {
+    "fr": "de grandes dents",
+    "en": "big teeth"
+   },
+   "cat": {
+    "fr": "une bouche de chat",
+    "en": "a cat mouth"
+   },
+   "grin": {
+    "fr": "un grand sourire",
+    "en": "a big grin"
+   },
+   "moustache": {
+    "fr": "une moustache",
+    "en": "a moustache"
+   },
+   "gap": {
+    "fr": "une dent écartée",
+    "en": "a gap-toothed smile"
+   }
+  },
+  "nose": {
+   "button": {
+    "fr": "un nez bouton",
+    "en": "a button nose"
+   },
+   "clown": {
+    "fr": "un nez de clown",
+    "en": "a clown nose"
+   },
+   "snout": {
+    "fr": "un museau",
+    "en": "a snout"
+   },
+   "carrot": {
+    "fr": "un nez carotte",
+    "en": "a carrot nose"
+   },
+   "heart": {
+    "fr": "un nez en cœur",
+    "en": "a heart nose"
+   }
+  },
+  "aura": {
+   "sparkles": {
+    "fr": "des étincelles",
+    "en": "sparkles"
+   },
+   "hearts": {
+    "fr": "des cœurs qui flottent",
+    "en": "floating hearts"
+   },
+   "bubbles": {
+    "fr": "des bulles",
+    "en": "bubbles"
+   },
+   "stars": {
+    "fr": "des étoiles",
+    "en": "stars"
+   },
+   "notes": {
+    "fr": "des notes de musique",
+    "en": "music notes"
+   }
+  },
+  "pet": {
+   "ladybug": {
+    "fr": "une coccinelle",
+    "en": "a ladybird"
+   },
+   "chick": {
+    "fr": "un poussin",
+    "en": "a chick"
+   },
+   "cloud": {
+    "fr": "un petit nuage",
+    "en": "a little cloud"
+   },
+   "snail": {
+    "fr": "un escargot",
+    "en": "a snail"
+   },
+   "balloon": {
+    "fr": "un ballon",
+    "en": "a balloon"
+   }
+  },
+  "body": {
+   "blob": {
+    "fr": "un corps rond",
+    "en": "a round body"
+   },
+   "egg": {
+    "fr": "un corps en œuf",
+    "en": "an egg body"
+   },
+   "bean": {
+    "fr": "un corps en haricot",
+    "en": "a bean body"
+   },
+   "box": {
+    "fr": "un corps carré",
+    "en": "a square body"
+   },
+   "drop": {
+    "fr": "un corps en goutte",
+    "en": "a drop body"
+   },
+   "pear": {
+    "fr": "un corps en poire",
+    "en": "a pear body"
+   },
+   "cloud": {
+    "fr": "un corps en nuage",
+    "en": "a cloud body"
+   },
+   "tall": {
+    "fr": "un grand corps tout fin",
+    "en": "a tall thin body"
+   },
+   "barrel": {
+    "fr": "un corps en tonneau",
+    "en": "a barrel body"
+   },
+   "bell": {
+    "fr": "un corps en cloche",
+    "en": "a bell body"
+   },
+   "pillow": {
+    "fr": "un corps en coussin",
+    "en": "a pillow body"
+   }
+  },
+  "power": {
+   "bounce": {
+    "fr": "qui rebondit",
+    "en": "that bounces"
+   },
+   "fly": {
+    "fr": "qui vole",
+    "en": "that flies"
+   },
+   "swim": {
+    "fr": "qui nage",
+    "en": "that swims"
+   },
+   "sparkle": {
+    "fr": "qui fait des étincelles",
+    "en": "that makes sparkles"
+   },
+   "dance": {
+    "fr": "qui danse",
+    "en": "that dances"
+   },
+   "camo": {
+    "fr": "qui se camoufle",
+    "en": "that hides by blending in"
+   },
+   "laugh": {
+    "fr": "qui rit aux éclats",
+    "en": "that laughs out loud"
+   },
+   "rainbow": {
+    "fr": "qui dessine des arcs-en-ciel",
+    "en": "that paints rainbows"
+   },
+   "roll": {
+    "fr": "qui roule",
+    "en": "that rolls"
+   },
+   "float": {
+    "fr": "qui flotte",
+    "en": "that floats"
+   },
+   "zap": {
+    "fr": "qui fait des zip-zap",
+    "en": "that goes zip-zap"
+   },
+   "hearts": {
+    "fr": "qui sème des cœurs",
+    "en": "that spreads hearts"
+   },
+   "music": {
+    "fr": "qui chante",
+    "en": "that sings"
+   }
+  }
+ }
+}

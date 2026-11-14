@@ -58,6 +58,12 @@ describe('parent text, signatures, people', () => {
 });
 
 describe('prank catalogue and bible', () => {
+  it('has about a hundred pranks in about a dozen places, the first 37 ids kept', () => {
+    expect(PRANKS.length).toBeGreaterThanOrEqual(100);
+    expect(PRANK_CATEGORIES.length).toBeGreaterThanOrEqual(10);
+    for (const c of PRANK_CATEGORIES) expect(PRANKS.filter((p) => p.cat === c.id).length).toBeGreaterThanOrEqual(3);
+    for (const id of ['papier-toilette', 'cache-cache', 'livres', 'cereales', 'canard', 'sapin-decoration', 'reveil', 'chocolat-chaud']) expect(prankById(id)).not.toBeNull();
+  });
   it('has unique ids, a known category, FR+EN titles and gentle actions', () => {
     const ids = new Set(PRANKS.map((p) => p.id));
     expect(ids.size).toBe(PRANKS.length);
@@ -66,7 +72,9 @@ describe('prank catalogue and bible', () => {
       expect(cats.has(p.cat)).toBe(true);
       expect(p.title.fr && p.title.en).toBeTruthy();
       expect(p.action.length).toBeGreaterThan(30);
-      expect(`${p.action} ${p.motion}`.toLowerCase()).not.toMatch(/\b(knife|knives|fire|flames?|medicine|pills?|socket|electric|blood|broken|smash|fridge|climb\w*|window ledge|stairs)\b/);
+      expect(`${p.action} ${p.motion}`.toLowerCase()).not.toMatch(/\b(knife|knives|fire|flames?|medicine|pills?|socket|electric|blood|broken|smash|fridge|climb\w*|window ledge|stairs|ladder|scissors|candles?|oven|stove|lighter|matches|blades?|bleach|rope|balcony|railing|poison|gun)\b/);
+      expect(p.id).toMatch(/^[a-z0-9-]+$/);
+      expect(p.action).toMatch(/^(are|have|is) /);
     }
     expect(prankById('nope')).toBeNull();
   });

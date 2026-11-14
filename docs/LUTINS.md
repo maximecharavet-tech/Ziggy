@@ -45,3 +45,15 @@ hooded cape with an acorn-cap hat). Not a copy of any commercial elf doll.
   Node API routes.
 - `src/app/api/lutins/generate` (image), `src/app/api/lutins/video` (create + poll).
 - UI: `src/app/[locale]/lutins/` (parent studio), `/lutins/journal` (child view).
+
+
+## Ajouts de la v1 (nov. 2026)
+- **106 farces douces dans 12 lieux** (`src/data/lutins/pranks.json`, source unique lue par le moteur Rust et par `pranks.ts`).
+- **La farce du soir** (`planPranks`, Rust + jumeau TS `src/lib/lutins/tonight.ts`, tests de parité) : tirage
+  déterministe sans répétition sur 14 nuits ; bouton « Surprends-moi » de l’atelier (le journal reste sur l’appareil).
+- **Vérification des idées de parents** (`checkIdea`, liste `src/data/lutins/gentle.json`, partagée Rust/TS) : le serveur
+  refuse (422 `text`) toute idée avec feu, couteaux, escalade, escaliers, objets cassés… avant même ChildShield.
+  L’exemple d’aide du studio (« du ski sur la rampe d’escalier ») a été remplacé : il contredisait cette règle.
+- **Elfes plus drôles** : 6 nouvelles poses (clin d’œil, fou rire, hourra, chatouilles, révérence, danse), un petit saut,
+  apparition élastique, éclats de confettis doux, réaction + rire au toucher (sous mouvement réduit : seulement clin d’œil,
+  rire doux ou révérence, jamais de saut).

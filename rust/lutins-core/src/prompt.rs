@@ -418,7 +418,16 @@ pub fn build_prompt(input: &PromptInput) -> Result<PromptOut> {
     let n = elves.len();
     let loc = if input.locale.eq_ignore_ascii_case("fr") { Locale::Fr } else { Locale::En };
 
-    let prank = input.prank.clone().unwrap_or_default();
+    let mut prank = input.prank.clone().unwrap_or_default();
+    // A known id without an action: the catalogue fills it in (a client never has to send the text).
+    if prank.action.trim().is_empty() {
+        if let Some(def) = crate::pranks::find(&prank.id) {
+            prank.action = def.action.clone();
+            if prank.title.is_none() {
+                prank.title = Some(TitleIn { fr: Some(def.fr.clone()), en: Some(def.en.clone()) });
+            }
+        }
+    }
     let prank_id: String =
         prank.id.chars().filter(|c| c.is_ascii_alphanumeric() || *c == '-' || *c == '_').take(64).collect();
     let action = sanitize(&prank.action, MAX_ACTION_CHARS).trim_end_matches(['.', '!', ' ']).to_string();
@@ -720,6 +729,19 @@ mod tests {
         i.parent_text = Some(long);
         let out = build_prompt(&i).unwrap();
         assert!(!out.prompt.contains(&"a".repeat(MAX_PARENT_CHARS + 1)));
+    }
+
+    #[test]
+    fn catalogue_fills_a_missing_action() {
+        let mut i = input(&["pepin"]);
+        i.prank = Some(PrankIn { id: "livres".into(), action: String::new(), title: None });
+        i.locale = "en".into();
+        let out = build_prompt(&i).unwrap();
+        assert!(out.prompt.contains("Action: Pépin has made a slide out of a big open book"), "{}", out.prompt);
+        assert!(out.caption.contains("book slide"), "{}", out.caption);
+        // An unknown id with no action stays a generic prank.
+        i.prank = Some(PrankIn { id: "nope".into(), action: String::new(), title: None });
+        assert!(build_prompt(&i).unwrap().prompt.contains("gentle, funny prank"));
     }
 
     #[test]

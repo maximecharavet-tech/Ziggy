@@ -15,6 +15,10 @@ const flat = (p: PoseState) => [
   p.wave,
   p.bounce,
   p.tiptoe,
+  p.wink,
+  p.shake,
+  p.sway,
+  p.wiggle,
   ...p.arms.flatMap((a) => [a.raise, a.swing, a.bend]),
   ...p.legs.flatMap((l) => [l.swing, l.spread]),
 ];
@@ -31,11 +35,11 @@ describe('poseTarget', () => {
       }
   });
 
-  it('only "sit" sits, only "laugh" closes the eyes, only "tiptoe" lifts the heels', () => {
+  it('only "sit" sits, only the laughing poses close the eyes, only "tiptoe" lifts the heels', () => {
     for (const pose of ELF_POSES) {
       const p = poseTarget(pose);
       expect(p.sit).toBe(pose === 'sit' ? 1 : 0);
-      expect(p.happy).toBe(pose === 'laugh' ? 1 : 0);
+      expect(p.happy).toBe(['laugh', 'giggle', 'cheer'].includes(pose) ? 1 : 0);
       expect(p.tiptoe).toBe(pose === 'tiptoe' ? 1 : 0);
     }
   });

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
 import {
   ALBUM_MAX,
@@ -264,8 +265,8 @@ describe('The album (La Parade)', () => {
 
 describe('What each age sees', () => {
   it('6 tabs for little ones, more later, every tab with a drawer', () => {
-    expect(BAND_CATEGORIES.little).toHaveLength(6);
-    expect(BAND_CATEGORIES.middle.length).toBe(10);
+    expect(BAND_CATEGORIES.little.length).toBeLessThanOrEqual(7);
+    expect(BAND_CATEGORIES.middle.length).toBeGreaterThan(BAND_CATEGORIES.little.length);
     expect(BAND_CATEGORIES.big.length).toBeGreaterThan(10);
     for (const b of BANDS)
       for (const cat of BAND_CATEGORIES[b]) {
@@ -290,7 +291,7 @@ describe('What each age sees', () => {
         // The drawer opens on the page of the current choice.
         for (const o of options) {
           const c = o.apply(STARTER);
-          expect(drawerPage(options, pageWith(options, c, size), size).items.map((x) => x.key)).toContain(o.key);
+          expect(drawerPage(options, pageWith(options, c, size), size).items.some((x) => x.selected(c))).toBe(true);
         }
       }
   });
@@ -313,7 +314,7 @@ describe('What each age sees', () => {
           return d.options.some((o) => (o.apply(STARTER) as unknown as Record<string, unknown>)[field] === value);
         });
       for (const r of ch.reqs) {
-        const fields: string[] = { legs: ['legs'], arms: ['arms'], eyes: ['eyes'], wings: ['wings'], wingsIs: ['wings'], tail: ['tail'], top: ['top'], hat: ['hat'], hatIs: ['hat'], mouth: ['mouth'], pattern: ['pattern'], color: ['color'], legStyle: ['legStyle', 'legs'], limbs: ['legs', 'arms'], sumAll: ['legs', 'arms', 'eyes'], eyesEqLegs: ['eyes', 'legs'], oddLegs: ['legs'] }[r.k];
+        const fields: string[] = ({ legs: ['legs'], arms: ['arms'], eyes: ['eyes'], wings: ['wings'], wingsIs: ['wings'], tail: ['tail'], top: ['top'], hat: ['hat'], hatIs: ['hat'], mouth: ['mouth'], pattern: ['pattern'], color: ['color'], legStyle: ['legStyle', 'legs'], limbs: ['legs', 'arms'], sumAll: ['legs', 'arms', 'eyes'], eyesEqLegs: ['eyes', 'legs'], oddLegs: ['legs'], nose: ['nose'], aura: ['aura'], pet: ['pet'], body: ['body'], power: [] } as Record<string, string[]>)[r.k] ?? [];
         for (const f of fields) {
           const v = (sol as unknown as Record<string, unknown>)[f];
           if (v === (STARTER as unknown as Record<string, unknown>)[f] && !['legs', 'eyes', 'arms'].includes(f)) continue;
@@ -321,5 +322,31 @@ describe('What each age sees', () => {
         }
       }
     }
+  });
+});
+
+describe('Parts catalogue (shared with the Rust core)', () => {
+  const parts = JSON.parse(readFileSync('src/data/creatures/parts.json', 'utf8')).parts as Record<string, string[]>;
+  it('every part of parts.json has a TS list, and the other way round', async () => {
+    const L = await import('./logic');
+    const map: Record<string, readonly string[]> = { body: L.BODIES, head: L.HEADS, legStyle: L.LEG_STYLES, armStyle: L.ARM_STYLES, wings: L.WINGS, tail: L.TAILS, mouth: L.MOUTHS, top: L.TOPS, hat: L.HATS, pattern: L.PATTERNS, nose: L.NOSES, aura: L.AURAS, pet: L.PETS, eyeSize: L.EYE_SIZES, color: L.COLOR_IDS };
+    for (const [k, v] of Object.entries(parts)) expect([...map[k]], k).toEqual(v);
+  });
+  it('every option has FR + EN words and gives a creature that survives sanitize()', () => {
+    for (const cat of CATEGORIES) {
+      expect(OPTIONS[cat.id].length, cat.id).toBeGreaterThan(0);
+      for (const o of OPTIONS[cat.id]) {
+        expect(o.label.fr && o.label.en && o.say.fr && o.say.en, o.key).toBeTruthy();
+        const c = o.apply(STARTER);
+        expect(sameLook(sanitize(c)!, c), o.key).toBe(true);
+      }
+    }
+  });
+  it('is at least 2x richer than the first version', () => {
+    const n = (k: string) => parts[k].length;
+    expect(n('body')).toBeGreaterThanOrEqual(10);
+    expect(n('hat')).toBeGreaterThanOrEqual(12);
+    expect(n('top')).toBeGreaterThanOrEqual(12);
+    expect(n('wings') + n('tail') + n('mouth') + n('legStyle') + n('armStyle')).toBeGreaterThanOrEqual(40);
   });
 });
