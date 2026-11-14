@@ -74,7 +74,8 @@ impl World {
         if !(x0.is_finite() && y0.is_finite() && x1.is_finite() && y1.is_finite() && r.is_finite()) {
             return;
         }
-        let (x0, y0, x1, y1) = (x0.clamp(-64.0, 400.0), y0.clamp(-64.0, 400.0), x1.clamp(-64.0, 400.0), y1.clamp(-64.0, 400.0));
+        let (x0, y0, x1, y1) =
+            (x0.clamp(-64.0, 400.0), y0.clamp(-64.0, 400.0), x1.clamp(-64.0, 400.0), y1.clamp(-64.0, 400.0));
         let (dx, dy) = (x1 - x0, y1 - y0);
         let dist = (dx * dx + dy * dy).sqrt();
         let steps = ((dist / (r * 0.75).max(1.0)).ceil() as i32).clamp(1, 600);
@@ -97,6 +98,9 @@ impl World {
         let x1 = ((cx + r).ceil() as i32).min(self.w as i32 - 1);
         let y0 = ((cy - r).floor() as i32).max(0);
         let y1 = ((cy + r).ceil() as i32).min(self.h as i32 - 1);
+        if x0 > x1 || y0 > y1 {
+            return;
+        }
         let w = self.w;
         let space = self.params.radial;
         for y in y0..=y1 {
@@ -140,7 +144,13 @@ impl World {
                 let grain = kind == K_POWDER || t == SNOW || t == STARDUST;
                 let surface = self.get(x, y - 1) == EMPTY;
                 let wave = self.phase[t as usize] == P_LIQUID && surface;
-                let lift = if y > 0 && ((grain && self.chance(if t == REDDUST { 2 } else { 3 })) || (wave && self.chance(3))) { -1 } else { 0 };
+                let lift = if y > 0
+                    && ((grain && self.chance(if t == REDDUST { 2 } else { 3 })) || (wave && self.chance(3)))
+                {
+                    -1
+                } else {
+                    0
+                };
                 let j = (y + lift) as usize * w + nx as usize;
                 if self.cells[j] != 0 {
                     continue;
@@ -229,13 +239,17 @@ impl World {
         if world != self.world || w as usize != self.w || h as usize != self.h {
             return false;
         }
-        let (Some(tick), Some(rng), Some(crng), Some(night), Some(toff), Some(grav), Some(nc)) = (r.u32(), r.u32(), r.u32(), r.u8(), r.u8(), r.u8(), r.u8())
+        let (Some(tick), Some(rng), Some(crng), Some(night), Some(toff), Some(grav), Some(nc)) =
+            (r.u32(), r.u32(), r.u32(), r.u8(), r.u8(), r.u8(), r.u8())
         else {
             return false;
         };
         let mut critters = Vec::with_capacity(crate::critters::MAX_CRITTERS);
         for _ in 0..nc {
-            let (Some(kind), Some(x), Some(y), Some(count), Some(hat)) = (r.u8(), r.u32(), r.u32(), r.u8(), r.u8()) else { return false };
+            let (Some(kind), Some(x), Some(y), Some(count), Some(hat)) = (r.u8(), r.u32(), r.u32(), r.u8(), r.u8())
+            else {
+                return false;
+            };
             if critters.len() < crate::critters::MAX_CRITTERS {
                 let mut c = crate::critters::Critter::new((kind & 0x7f) % WORLD_COUNT, 0, 0);
                 c.baby = kind & 0x80 != 0;
@@ -247,7 +261,12 @@ impl World {
             }
         }
         let (Some(pstate), Some(px), Some(py)) = (r.u8(), r.u32(), r.u32()) else { return false };
-        let mut parcel = crate::parcel::Parcel { state: if pstate <= 2 { pstate } else { 0 }, x: (px as i32).clamp(0, self.w as i32 * 16), y: (py as i32).clamp(0, self.h as i32 * 16), ..Default::default() };
+        let mut parcel = crate::parcel::Parcel {
+            state: if pstate <= 2 { pstate } else { 0 },
+            x: (px as i32).clamp(0, self.w as i32 * 16),
+            y: (py as i32).clamp(0, self.h as i32 * 16),
+            ..Default::default()
+        };
         for k in 0..crate::parcel::EXPOSURES {
             let Some(e) = r.u16() else { return false };
             parcel.exposure[k] = e.min(crate::parcel::OPEN_AT - 1);
@@ -260,12 +279,16 @@ impl World {
             planes.push(bytes);
         }
         self.clear();
+        #[allow(clippy::needless_range_loop)]
         for i in 0..n {
             let s = planes[0][i];
             if (s & 0x3f) as usize >= ELEMENT_COUNT || s & 0x3f == 0 {
                 continue;
             }
-            self.cells[i] = (s & 0x7f) as u32 | (planes[1][i] as u32) << 8 | (planes[2][i] as u32) << 16 | (planes[3][i] as u32) << 24;
+            self.cells[i] = (s & 0x7f) as u32
+                | (planes[1][i] as u32) << 8
+                | (planes[2][i] as u32) << 16
+                | (planes[3][i] as u32) << 24;
             self.aux[i] = planes[4][i];
         }
         self.tick = tick;

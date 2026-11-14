@@ -306,6 +306,7 @@ impl World {
     }
 
     pub(crate) fn spawn(&mut self, i: usize, t: u8) {
+        debug_assert!((t as usize) < ELEMENT_COUNT, "spawn of element {t}");
         let t = if self.params.medium == SEA {
             match t {
                 WATER | SALTWATER | DYED => EMPTY,
@@ -472,6 +473,7 @@ impl World {
     /// Replaces a cell, keeping nothing of the old one.
     #[inline]
     pub(crate) fn put(&mut self, i: usize, c: u32) {
+        debug_assert!((sp(c) as usize) < ELEMENT_COUNT, "put of element {}", sp(c));
         if sp(self.cells[i]) == GRAVITY || sp(c) == GRAVITY {
             self.grav_dirty = true;
         }
@@ -513,13 +515,7 @@ impl World {
         }
         match self.phase[t as usize] {
             P_GAS => 1,
-            P_LIQUID => {
-                if d > ELEMENTS[t as usize].density {
-                    2
-                } else {
-                    0
-                }
-            }
+            P_LIQUID if d > ELEMENTS[t as usize].density => 2,
             _ => 0,
         }
     }
@@ -926,9 +922,12 @@ impl World {
                 if !sea || dens > 50 {
                     target = Some(j);
                 }
-            } else if t == STEAM || t == CLOUD || t == FOG || t == GAS {
-                target = Some(j);
-            } else if self.phase[t as usize] == P_LIQUID && ELEMENTS[t as usize].density < dens && self.rand() & 1 == 0 {
+            } else if t == STEAM
+                || t == CLOUD
+                || t == FOG
+                || t == GAS
+                || (self.phase[t as usize] == P_LIQUID && ELEMENTS[t as usize].density < dens && self.rand() & 1 == 0)
+            {
                 target = Some(j);
             }
         }
@@ -973,7 +972,11 @@ impl World {
             }
         }
         let Some(j) = target else { return false };
-        let rate = (e.rate as u32 * self.grav.max(128)) >> 8;
+        let mut rate = (e.rate as u32 * self.grav.max(128)) >> 8;
+        if sideways == 0 {
+            // Thick liquids spread slowly but still fall (gently).
+            rate = rate.max(150);
+        }
         if rate < 250 && (self.rand() & 255) >= rate {
             self.keep(i);
             return false;

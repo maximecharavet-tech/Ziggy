@@ -35,9 +35,15 @@ fn ramp(stops: &[(f32, u32)], t: f32) -> Rgb {
 }
 
 fn hash(x: i32, y: i32, seed: u32) -> f32 {
-    let mut h = (x as u32).wrapping_mul(374_761_393) ^ (y as u32).wrapping_mul(668_265_263) ^ seed.wrapping_mul(2_246_822_519);
+    let mut h =
+        (x as u32).wrapping_mul(374_761_393) ^ (y as u32).wrapping_mul(668_265_263) ^ seed.wrapping_mul(2_246_822_519);
     h = (h ^ (h >> 13)).wrapping_mul(1_274_126_177);
     ((h ^ (h >> 16)) & 0xffff) as f32 / 65535.0
+}
+
+/// Smooth value noise, 0..1 (also used by the renderer for the ground's blotches).
+pub fn soft_noise(x: f32, y: f32, seed: u32) -> f32 {
+    noise(x, y, seed)
 }
 
 /// Smooth value noise, 0..1.
@@ -70,17 +76,30 @@ fn stars(px: i32, py: i32, seed: u32, density: f32) -> f32 {
 }
 
 /// The far layer: colour of the pixel at (u, v), u in picture heights from the left, v from 0 (top) to 1.
+#[allow(clippy::too_many_arguments)]
 fn far(world: u8, night: bool, u: f32, v: f32, aspect: f32, px: i32, py: i32, unit: i32) -> Rgb {
     let (sx, sy) = (px / unit.max(1), py / unit.max(1));
     let mut c;
     match world {
         GARDEN => {
-            c = if night { ramp(&[(0.0, 0x141a4a), (0.6, 0x2c3a7a), (1.0, 0x53508a)], v) } else { ramp(&[(0.0, 0x6fb0f0), (0.45, 0xa9d6f8), (0.75, 0xdaf0fb), (1.0, 0xfde6cc)], v) };
+            c = if night {
+                ramp(&[(0.0, 0x141a4a), (0.6, 0x2c3a7a), (1.0, 0x53508a)], v)
+            } else {
+                ramp(&[(0.0, 0x6fb0f0), (0.45, 0xa9d6f8), (0.75, 0xdaf0fb), (1.0, 0xfde6cc)], v)
+            };
             if night {
                 c = add(c, [255.0, 255.0, 240.0], stars(sx, sy, 5, 0.012) * (1.0 - v));
-                c = add(c, [220.0, 230.0, 255.0], halo(u, v, aspect * 0.84, 0.13, 0.055) * 3.0 + halo(u, v, aspect * 0.84, 0.13, 0.3) * 0.25);
+                c = add(
+                    c,
+                    [220.0, 230.0, 255.0],
+                    halo(u, v, aspect * 0.84, 0.13, 0.055) * 3.0 + halo(u, v, aspect * 0.84, 0.13, 0.3) * 0.25,
+                );
             } else {
-                c = add(c, [255.0, 244.0, 200.0], halo(u, v, aspect * 0.84, 0.12, 0.07) * 3.0 + halo(u, v, aspect * 0.84, 0.12, 0.42) * 0.42);
+                c = add(
+                    c,
+                    [255.0, 244.0, 200.0],
+                    halo(u, v, aspect * 0.84, 0.12, 0.07) * 3.0 + halo(u, v, aspect * 0.84, 0.12, 0.42) * 0.42,
+                );
             }
             // Two rows of soft hills.
             let h1 = 0.66 + (u * 2.3).sin() * 0.035 + (u * 5.1 + 1.0).sin() * 0.015;
@@ -93,32 +112,63 @@ fn far(world: u8, night: bool, u: f32, v: f32, aspect: f32, px: i32, py: i32, un
             }
         }
         MOUNTAIN => {
-            c = if night { ramp(&[(0.0, 0x10143c), (0.6, 0x2a2f6a), (1.0, 0x4a3f7a)], v) } else { ramp(&[(0.0, 0x7f8fe0), (0.4, 0xb0b4f0), (0.68, 0xf2c4dc), (1.0, 0xfde0d0)], v) };
+            c = if night {
+                ramp(&[(0.0, 0x10143c), (0.6, 0x2a2f6a), (1.0, 0x4a3f7a)], v)
+            } else {
+                ramp(&[(0.0, 0x7f8fe0), (0.4, 0xb0b4f0), (0.68, 0xf2c4dc), (1.0, 0xfde0d0)], v)
+            };
             if night {
                 c = add(c, [255.0, 255.0, 240.0], stars(sx, sy, 9, 0.014) * (1.0 - v));
             }
             c = add(c, [255.0, 220.0, 200.0], halo(u, v, aspect * 0.2, 0.2, 0.5) * if night { 0.08 } else { 0.25 });
             // Jagged far peaks with pink snow.
             for (k, base) in [(0u32, 0.5f32), (1, 0.62)] {
-                let ridge = base - (noise(u * 3.0 + k as f32 * 9.0, 0.0, 21 + k) - 0.5) * 0.3 - ((u * 2.0 + k as f32).sin().abs()) * 0.08;
+                let ridge = base
+                    - (noise(u * 3.0 + k as f32 * 9.0, 0.0, 21 + k) - 0.5) * 0.3
+                    - ((u * 2.0 + k as f32).sin().abs()) * 0.08;
                 if v > ridge {
                     let snow = v < ridge + 0.05 + noise(u * 14.0, 3.0, 40) * 0.03;
-                    let rock = if night { [0x3a, 0x3f, 0x7a] } else if k == 0 { [0x9a, 0x9c, 0xd8] } else { [0x84, 0x86, 0xc8] };
-                    let col = if snow { if night { hex(0x8a90c8) } else { hex(0xffe4ee) } } else { [rock[0] as f32, rock[1] as f32, rock[2] as f32] };
+                    let rock = if night {
+                        [0x3a, 0x3f, 0x7a]
+                    } else if k == 0 {
+                        [0x9a, 0x9c, 0xd8]
+                    } else {
+                        [0x84, 0x86, 0xc8]
+                    };
+                    let col = if snow {
+                        if night {
+                            hex(0x8a90c8)
+                        } else {
+                            hex(0xffe4ee)
+                        }
+                    } else {
+                        [rock[0] as f32, rock[1] as f32, rock[2] as f32]
+                    };
                     c = lerp(c, col, 0.85);
                 }
             }
         }
         ISLANDS => {
-            c = if night { ramp(&[(0.0, 0x0e1a4a), (0.6, 0x1e4a7a), (1.0, 0x2a6a8a)], v) } else { ramp(&[(0.0, 0x38b8e8), (0.4, 0x7fdcf0), (0.62, 0xd8f8f4), (1.0, 0xbdf0e6)], v) };
+            c = if night {
+                ramp(&[(0.0, 0x0e1a4a), (0.6, 0x1e4a7a), (1.0, 0x2a6a8a)], v)
+            } else {
+                ramp(&[(0.0, 0x38b8e8), (0.4, 0x7fdcf0), (0.62, 0xd8f8f4), (1.0, 0xbdf0e6)], v)
+            };
             if night {
                 c = add(c, [255.0, 255.0, 240.0], stars(sx, sy, 3, 0.012) * (1.0 - v));
             } else {
-                c = add(c, [255.0, 250.0, 215.0], halo(u, v, aspect * 0.5, 0.06, 0.06) * 3.0 + halo(u, v, aspect * 0.5, 0.06, 0.5) * 0.4);
+                c = add(
+                    c,
+                    [255.0, 250.0, 215.0],
+                    halo(u, v, aspect * 0.5, 0.06, 0.06) * 3.0 + halo(u, v, aspect * 0.5, 0.06, 0.5) * 0.4,
+                );
             }
             // The far sea with a bright horizon, and two tiny islands.
             if v > 0.58 {
-                let sea = ramp(&[(0.58, if night { 0x2a5a8a } else { 0x8fe8e8 }), (1.0, if night { 0x163a6a } else { 0x34b8d4 })], v);
+                let sea = ramp(
+                    &[(0.58, if night { 0x2a5a8a } else { 0x8fe8e8 }), (1.0, if night { 0x163a6a } else { 0x34b8d4 })],
+                    v,
+                );
                 let sparkle = if !night && hash(sx, sy, 77) > 0.985 { 0.5 } else { 0.0 };
                 c = add(lerp(c, sea, 0.9), [255.0, 255.0, 255.0], sparkle);
             }
@@ -136,7 +186,8 @@ fn far(world: u8, night: bool, u: f32, v: f32, aspect: f32, px: i32, py: i32, un
             let (vx, top) = (aspect * 0.22, 0.42f32);
             c = add(c, [255.0, 130.0, 40.0], halo(u, v, vx, top, 0.3) * 0.5);
             let smoke = fbm(u * 5.0 + v * 2.0, v * 7.0, 31);
-            let plume = (1.0 - ((u - vx - (top - v) * 0.25).abs() / (0.03 + (top - v).max(0.0) * 0.35))).clamp(0.0, 1.0);
+            let plume =
+                (1.0 - ((u - vx - (top - v) * 0.25).abs() / (0.03 + (top - v).max(0.0) * 0.35))).clamp(0.0, 1.0);
             if v < top {
                 c = lerp(c, hex(0x6a4a6a), plume * smoke * 0.8);
             }
@@ -208,7 +259,11 @@ fn far(world: u8, night: bool, u: f32, v: f32, aspect: f32, px: i32, py: i32, un
             }
         }
         _ => {
-            c = if night { ramp(&[(0.0, 0x1a1030), (0.6, 0x3a2040), (1.0, 0x5a3040)], v) } else { ramp(&[(0.0, 0xd8a060), (0.5, 0xf0c080), (0.8, 0xf8d8a0), (1.0, 0xf0c8a0)], v) };
+            c = if night {
+                ramp(&[(0.0, 0x1a1030), (0.6, 0x3a2040), (1.0, 0x5a3040)], v)
+            } else {
+                ramp(&[(0.0, 0xd8a060), (0.5, 0xf0c080), (0.8, 0xf8d8a0), (1.0, 0xf0c8a0)], v)
+            };
             // A small pale sun with a blue halo (sunsets are blue on Mars).
             c = lerp(c, hex(0x9ac8f0), halo(u, v, aspect * 0.24, 0.3, 0.32) * 0.6);
             c = add(c, [255.0, 255.0, 255.0], halo(u, v, aspect * 0.24, 0.3, 0.035) * 3.0);
@@ -238,14 +293,21 @@ fn near(world: u8, night: bool, u: f32, v: f32, aspect: f32) -> Option<(Rgb, f32
             let band = (1.0 - ((v - 0.26) / 0.2).abs()).clamp(0.0, 1.0);
             let a = ((n - 0.56) * 5.0).clamp(0.0, 1.0) * band;
             if a > 0.02 {
-                let col = if night { hex(0x5a6aa8) } else if world == MOUNTAIN { hex(0xfff0f6) } else { hex(0xffffff) };
+                let col = if night {
+                    hex(0x5a6aa8)
+                } else if world == MOUNTAIN {
+                    hex(0xfff0f6)
+                } else {
+                    hex(0xffffff)
+                };
                 return Some((col, a * if night { 0.35 } else { 0.6 }));
             }
             None
         }
         VOLCANO => {
             // Dark spires at the bottom corners, and embers of light in the haze.
-            let spire = 0.9 - (noise(u * 6.0, 0.0, 111) - 0.4).max(0.0) * 0.5 * ((u / aspect - 0.5).abs() * 2.0).powi(2);
+            let spire =
+                0.9 - (noise(u * 6.0, 0.0, 111) - 0.4).max(0.0) * 0.5 * ((u / aspect - 0.5).abs() * 2.0).powi(2);
             if v > spire {
                 return Some((hex(0x140a20), 0.9));
             }
@@ -278,7 +340,15 @@ fn near(world: u8, night: bool, u: f32, v: f32, aspect: f32) -> Option<(Rgb, f32
 }
 
 /// Bakes both layers for a picture of `fw` × `fh` pixels. `span` receives, per row, the extent of the near layer.
-pub fn bake(world: u8, night: bool, fw: usize, fh: usize, sky: &mut [u32], near_buf: &mut [u32], span: &mut [(u16, u16)]) {
+pub fn bake(
+    world: u8,
+    night: bool,
+    fw: usize,
+    fh: usize,
+    sky: &mut [u32],
+    near_buf: &mut [u32],
+    span: &mut [(u16, u16)],
+) {
     let aspect = fw as f32 / fh as f32;
     let unit = (fh / 192).max(1) as i32;
     for py in 0..fh {

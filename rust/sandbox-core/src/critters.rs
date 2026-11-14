@@ -40,7 +40,22 @@ pub struct Critter {
 
 impl Critter {
     pub fn new(kind: u8, cx: i32, cy: i32) -> Critter {
-        Critter { kind, x: cx * 16 + 8, y: cy * 16, vx: 0, vy: 0, dir: 1, state: C_IDLE, timer: 40, mood: 0, shield: 0, hat: 0, count: 0, bounce: 0, baby: false }
+        Critter {
+            kind,
+            x: cx * 16 + 8,
+            y: cy * 16,
+            vx: 0,
+            vy: 0,
+            dir: 1,
+            state: C_IDLE,
+            timer: 40,
+            mood: 0,
+            shield: 0,
+            hat: 0,
+            count: 0,
+            bounce: 0,
+            baby: false,
+        }
     }
 }
 
@@ -60,7 +75,9 @@ impl World {
             return true;
         }
         let t = sp(self.cells[y as usize * self.w + x as usize]);
-        if t == EMPTY || matches!(t, PLANT | FLOWER | KELP | CORAL | FROST | POLLEN | PLANKTON | RING | COMET | PIPE | ASH) {
+        if t == EMPTY
+            || matches!(t, PLANT | FLOWER | KELP | CORAL | FROST | POLLEN | PLANKTON | RING | COMET | PIPE | ASH)
+        {
             return false;
         }
         self.phase[t as usize] == P_BLOCK

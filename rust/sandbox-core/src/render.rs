@@ -51,12 +51,19 @@ pub struct Renderer {
     near_span: Vec<(u16, u16)>,
     baked: (u8, usize, bool, usize, usize),
     height: Vec<u8>,
+    /// How deep under the open air each cell lies (for the buried, shaded look).
+    bury: Vec<u8>,
+    /// Large soft blotches and strata, baked once per size.
+    tex: Vec<i8>,
+    tex_key: (usize, usize),
+    blooms: Vec<(f32, f32, u32, u8)>,
     corner: Vec<u16>,
     ldepth: Vec<u8>,
     glow: Vec<u16>,
     glow_tmp: Vec<u16>,
     pub particles: Vec<Particle>,
     faces: Vec<Face>,
+    fx_buf: Vec<(u8, u16, u16, u32)>,
     pal: Vec<[u8; 3]>,
     sin: [i8; 256],
     prng: u32,
@@ -122,13 +129,15 @@ fn darken(dst: u32, k: u32) -> u32 {
     0xff00_0000 | rb | g
 }
 
-const FLOWER_HUES: [u32; 11] = [0xff7eb6, 0xffd447, 0xff8a5c, 0xb48cff, 0xffffff, 0x8b3ff0, 0x2f7fe0, 0x35c26a, 0xff8a24, 0xe0348a, 0x8a5a34];
+const FLOWER_HUES: [u32; 11] =
+    [0xff7eb6, 0xffd447, 0xff8a5c, 0xb48cff, 0xffffff, 0x8b3ff0, 0x2f7fe0, 0x35c26a, 0xff8a24, 0xe0348a, 0x8a5a34];
 const INK_HUES: [u32; 5] = [0x8b3ff0, 0x2f6fe8, 0x25b868, 0xff8a24, 0xe0348a];
 const CORAL_HUES: [u32; 5] = [0xff7f9a, 0xffa25c, 0xc98cff, 0xff5c8a, 0xffd86b];
 const GAS_HUES: [u32; 3] = [0xff7ad0, 0x7aa8ff, 0xb48cff];
 
 /// How tall each drawing style stands in the relief.
-const STYLE_HEIGHT: [u8; 22] = [0, 170, 64, 235, 36, 96, 56, 128, 150, 205, 225, 150, 225, 84, 104, 165, 225, 210, 185, 172, 205, 235];
+const STYLE_HEIGHT: [u8; 22] =
+    [0, 170, 64, 235, 36, 96, 56, 128, 150, 205, 225, 150, 225, 84, 104, 165, 225, 210, 185, 172, 205, 235];
 
 impl Renderer {
     pub fn new(w: usize, h: usize) -> Renderer {
@@ -155,12 +164,17 @@ impl Renderer {
             near_span: vec![(0, 0); h * MAX_SCALE],
             baked: (255, 0, false, 0, 0),
             height: vec![0; w * h],
+            bury: vec![0; w * h],
+            tex: vec![0; w * h],
+            tex_key: (0, 0),
+            blooms: Vec::with_capacity(96),
             corner: vec![0; (w + 1) * (h + 1)],
             ldepth: vec![0; w],
             glow: vec![0; gw * gh * 3],
             glow_tmp: vec![0; gw * gh * 3],
             particles: Vec::with_capacity(MAX_PARTICLES),
             faces: Vec::with_capacity(MAX_FACES),
+            fx_buf: Vec::with_capacity(96),
             pal,
             sin,
             prng: 0x1234_5679,
@@ -204,7 +218,16 @@ impl Renderer {
                 _ => rgb,
             };
             let life = 0.7 + self.frand() * 0.6;
-            self.particles.push(Particle { kind: FX_SPARK, x, y, vx: a.cos() * v, vy: a.sin() * v - 0.2, life, span: life, rgb: col });
+            self.particles.push(Particle {
+                kind: FX_SPARK,
+                x,
+                y,
+                vx: a.cos() * v,
+                vy: a.sin() * v - 0.2,
+                life,
+                span: life,
+                rgb: col,
+            });
         }
     }
 
@@ -219,7 +242,11 @@ impl Renderer {
                     }
                     let a = self.frand() * std::f32::consts::PI;
                     let v = 0.15 + self.frand() * 0.4;
-                    let (vx, vy) = if kind == FX_SWIRL { ((k as f32 - 2.5) * 0.12, -0.5 - self.frand() * 0.4) } else { (a.cos() * v, -a.sin() * v * if kind == FX_SPLASH { 1.6 } else { 0.6 }) };
+                    let (vx, vy) = if kind == FX_SWIRL {
+                        ((k as f32 - 2.5) * 0.12, -0.5 - self.frand() * 0.4)
+                    } else {
+                        (a.cos() * v, -a.sin() * v * if kind == FX_SPLASH { 1.6 } else { 0.6 })
+                    };
                     let life = 0.5 + self.frand() * 0.5;
                     self.particles.push(Particle { kind, x, y, vx, vy, life, span: life, rgb: arg });
                 }
@@ -228,13 +255,31 @@ impl Renderer {
                 if self.particles.len() < MAX_PARTICLES {
                     let d = ((arg.max(1) - 1) & 7) as usize;
                     let (jx, jy) = (self.frand() - 0.5, self.frand() - 0.5);
-                    self.particles.push(Particle { kind, x, y, vx: DX[d] as f32 * 0.35 + jx * 0.15, vy: DY[d] as f32 * 0.35 + jy * 0.15, life: 0.9, span: 0.9, rgb: 0xbfe9ff });
+                    self.particles.push(Particle {
+                        kind,
+                        x,
+                        y,
+                        vx: DX[d] as f32 * 0.35 + jx * 0.15,
+                        vy: DY[d] as f32 * 0.35 + jy * 0.15,
+                        life: 0.9,
+                        span: 0.9,
+                        rgb: 0xbfe9ff,
+                    });
                 }
             }
             _ => {
                 if self.particles.len() < MAX_PARTICLES {
                     let life = if kind == FX_SHIELD { 1.0 } else { 1.8 };
-                    self.particles.push(Particle { kind, x, y, vx: 0.0, vy: if kind == FX_SHIELD { 0.0 } else { -0.12 }, life, span: life, rgb: arg });
+                    self.particles.push(Particle {
+                        kind,
+                        x,
+                        y,
+                        vx: 0.0,
+                        vy: if kind == FX_SHIELD { 0.0 } else { -0.12 },
+                        life,
+                        span: life,
+                        rgb: arg,
+                    });
                 }
             }
         }
@@ -250,20 +295,23 @@ impl Renderer {
         let key = (world.world, s, world.night, w, h);
         if self.baked != key {
             self.baked = key;
+            self.world_palette(world.world);
             backdrop::bake(world.world, world.night, fw, fh, &mut self.sky, &mut self.near, &mut self.near_span);
         }
         let dt = if self.last_ms == 0.0 { 0.016 } else { ((t_ms - self.last_ms) / 1000.0).clamp(0.0, 0.1) as f32 };
         self.last_ms = t_ms;
         self.frames = self.frames.wrapping_add(1);
         // Under reduced motion, time stands still for everything that shimmers or sways.
-        let time = if calm { 0u32 } else { (t_ms / 16.0) as u32 };
+        let time = if calm { 0u32 } else { ((t_ms.max(0.0) / 16.0) as u64 % (1 << 24)) as u32 };
 
         self.height_field(world, time);
+        self.bury_field(world);
 
         // Backdrop: the far layer as it is, the near layer sliding a little against the finger.
         let n = fw * fh;
         self.frame[..n].copy_from_slice(&self.sky[..n]);
-        let target = if calm || self.pointer.0 < 0.0 { 0.0 } else { (0.5 - self.pointer.0 / w as f32) * 5.0 * s as f32 };
+        let target =
+            if calm || self.pointer.0 < 0.0 { 0.0 } else { (0.5 - self.pointer.0 / w as f32) * 5.0 * s as f32 };
         self.cam += (target - self.cam) * (dt * 3.0).min(1.0);
         let sway = if calm { 0 } else { (self.sin[((time / 6) & 255) as usize] as i32 * s as i32) / 90 };
         let ox = self.cam.round() as i32 + sway;
@@ -289,6 +337,7 @@ impl Renderer {
 
         self.cells(world, time, calm);
         self.glow_pass(w, h);
+        self.draw_blooms(world.night);
         if self.frames % 16 == 1 {
             self.find_faces(world);
         }
@@ -296,14 +345,89 @@ impl Renderer {
         self.draw_critters(world, time, calm);
 
         // Effects asked for by the simulation, then the particles.
-        let fx: Vec<(u8, u16, u16, u32)> = world.fx.drain(..).collect();
+        // Swap buffers instead of collecting: nothing is allocated per frame.
+        std::mem::swap(&mut self.fx_buf, &mut world.fx);
+        world.fx.clear();
         if !calm {
-            for (kind, x, y, arg) in fx {
+            for k in 0..self.fx_buf.len() {
+                let (kind, x, y, arg) = self.fx_buf[k];
                 self.spawn_fx(kind, x as f32, y as f32, arg);
             }
             self.draw_particles(dt, world.params.medium);
         } else {
             self.particles.clear();
+        }
+    }
+
+
+    /// Rock, sand and earth take the colours of each world (red rock on Mars, grey dust on the Moon…).
+    fn world_palette(&mut self, world: u8) {
+        let set = |pal: &mut Vec<[u8; 3]>, s: u8, a: u32, b: u32| {
+            for k in 0..16 {
+                pal[s as usize * 16 + k] = mix(rgb_of(a), rgb_of(b), (k as u32 * 256) / 15);
+            }
+        };
+        for (s, e) in ELEMENTS.iter().enumerate() {
+            for k in 0..16 {
+                self.pal[s * 16 + k] = mix(rgb_of(e.rgb), rgb_of(e.rgb2), (k as u32 * 256) / 15);
+            }
+        }
+        match world {
+            MOUNTAIN => set(&mut self.pal, STONE, 0x8e8fb8, 0x6f6f9c),
+            VOLCANO => set(&mut self.pal, STONE, 0x6a5470, 0x524058),
+            UNDERSEA => {
+                set(&mut self.pal, STONE, 0x6f86b0, 0x56689a);
+                set(&mut self.pal, SAND, 0xf4dca0, 0xdcc080);
+            }
+            SPACE => set(&mut self.pal, STONE, 0x9a8cc0, 0x76699e),
+            MOON => set(&mut self.pal, STONE, 0x8a8c98, 0x6c6e7c),
+            MARS => {
+                set(&mut self.pal, STONE, 0xb0583a, 0x8a3e2a);
+                set(&mut self.pal, SOIL, 0x7a4a34, 0x5e3626);
+            }
+            _ => {}
+        }
+    }
+
+    /// Distance of every cell to the open air (see-through things count as air), up to 60, by two chamfer passes.
+    fn bury_field(&mut self, world: &World) {
+        let (w, h) = (world.w, world.h);
+        if self.tex_key != (w, h) {
+            self.tex_key = (w, h);
+            for y in 0..h {
+                for x in 0..w {
+                    let n = crate::backdrop::soft_noise(x as f32 / 14.0, y as f32 / 9.0, 3) - 0.5;
+                    let band = ((y as f32 * 0.55 + n * 9.0).sin()) * 0.35;
+                    self.tex[y * w + x] = ((n + band * 0.4) * 24.0) as i8;
+                }
+            }
+        }
+        for y in 0..h {
+            for x in 0..w {
+                let i = y * w + x;
+                let c = world.cells[i];
+                let st = ELEMENTS[sp(c) as usize].style;
+                let open = c == 0 || matches!(st, S_LIQUID | S_GAS | S_GLASS | S_BUBBLE | S_CLOUD | S_PLANT | S_FLOWER | S_CORAL);
+                if open {
+                    self.bury[i] = 0;
+                    continue;
+                }
+                let l = if x > 0 { self.bury[i - 1] } else { 60 };
+                let u = if y > 0 { self.bury[i - w] } else { 0 };
+                self.bury[i] = (l.min(u) + 1).min(60);
+            }
+        }
+        for y in (0..h).rev() {
+            for x in (0..w).rev() {
+                let i = y * w + x;
+                let v = self.bury[i];
+                if v == 0 {
+                    continue;
+                }
+                let r = if x + 1 < w { self.bury[i + 1] } else { 60 };
+                let d = if y + 1 < h { self.bury[i + w] } else { 60 };
+                self.bury[i] = v.min(r.min(d) + 1);
+            }
         }
     }
 
@@ -422,10 +546,13 @@ impl Renderer {
                 let hue = rgb_of(FLOWER_HUES[((i + (time / 8) as usize) % 4) + 5]);
                 (mix(base, hue, lit / 2), 30 + lit * 2 / 3)
             }
-            CORAL => (mix(rgb_of(CORAL_HUES[(cb(c) % 5) as usize]), [255, 255, 255], (sh as u32 & 15) * 5), if ca(c) > 0 { 30 } else { 0 }),
+            CORAL => (
+                mix(rgb_of(CORAL_HUES[(cb(c) % 5) as usize]), [255, 255, 255], (sh as u32 & 15) * 5),
+                if ca(c) > 0 { 30 } else { 0 },
+            ),
             PLANKTON => {
                 let lit = ca(c) as u32;
-                (mix(base, [0xc8, 0xff, 0xff], lit), 30 + lit * 7 / 8)
+                (mix(base, [0x7a, 0xff, 0xf0], lit * 3 / 4), 16 + lit / 2)
             }
             GAS => (rgb_of(GAS_HUES[(ca(c) % 3) as usize]), 50),
             BASALT => {
@@ -470,6 +597,7 @@ impl Renderer {
         let (gw, gh) = (w.div_ceil(2) + 1, h.div_ceil(2) + 1);
         self.glow[..gw * gh * 3].fill(0);
         self.ldepth[..w].fill(0);
+        self.blooms.clear();
         let gen = world.gen;
         for y in 0..h {
             let row = y * w;
@@ -498,7 +626,8 @@ impl Renderer {
                     }
                     // Round the inner corners of liquids and soft things.
                     if x > 0 && y > 0 && x + 1 < w && y + 1 < h {
-                        let (u, dn, l, r) = (world.cells[i - w], world.cells[i + w], world.cells[i - 1], world.cells[i + 1]);
+                        let (u, dn, l, r) =
+                            (world.cells[i - w], world.cells[i + w], world.cells[i - 1], world.cells[i + 1]);
                         if (u | dn) != 0 && (l | r) != 0 {
                             self.fill_corners(world, i, x, y, u, dn, l, r, time);
                         }
@@ -510,7 +639,12 @@ impl Renderer {
                 let style = e.style;
                 let (rgb, mut glow) = self.colour(world, c, i, time);
                 let liquid = style == S_LIQUID;
-                let see_through = liquid || style == S_GAS || style == S_GLASS || style == S_BUBBLE || style == S_ICE || style == S_CLOUD;
+                let see_through = liquid
+                    || style == S_GAS
+                    || style == S_GLASS
+                    || style == S_BUBBLE
+                    || style == S_ICE
+                    || style == S_CLOUD;
                 let up = if y > 0 { world.cells[i - w] } else { 1 };
                 let open_up = up == 0;
                 // Depth of liquid above this cell (for the tint), and of anything (for the buried look).
@@ -527,6 +661,12 @@ impl Renderer {
                 if world.clock[i] == gen && !calm {
                     l0 += 10; // cells on the move catch the light
                 }
+                if !see_through {
+                    // Buried cells sink into a soft shade, with big gentle blotches and strata in the ground.
+                    let b = self.bury[i] as i32;
+                    l0 -= (b - 2).clamp(0, 30);
+                    l0 += self.tex[i] as i32 * if style == S_ROCK { 2 } else { 1 } / 2;
+                }
                 if !liquid && depth > 0 {
                     // Under water: tinted by the depth, with dancing light on the floor.
                     l0 -= depth.min(16) * 2;
@@ -536,7 +676,7 @@ impl Renderer {
                 }
                 if glow > 0 {
                     if !calm && (style == S_LAMP || style == S_STAR) {
-                        glow = glow * (220 + (self.sin[((time * 5) & 255) as usize] as i32 >> 2) as u32) / 256;
+                        glow = glow * (220 + (self.sin[((time * 5) & 255) as usize] as i32 >> 2)) as u32 / 256;
                     }
                     let g = rgb_of(if e.glow != 0 { e.glow } else { e.rgb });
                     let gi = ((y / 2) * gw + x / 2) * 3;
@@ -547,7 +687,12 @@ impl Renderer {
                     l0 = l0.max(-10);
                 }
                 let k = y * cw + x;
-                let (c00, c10, c01, c11) = (self.corner[k] as i32, self.corner[k + 1] as i32, self.corner[k + cw] as i32, self.corner[k + cw + 1] as i32);
+                let (c00, c10, c01, c11) = (
+                    self.corner[k] as i32,
+                    self.corner[k + 1] as i32,
+                    self.corner[k + cw] as i32,
+                    self.corner[k + cw + 1] as i32,
+                );
                 let (gxt, gxb, gyl, gyr) = (c10 - c00, c11 - c01, c01 - c00, c11 - c10);
                 let flat = (gxt | gxb | gyl | gyr) == 0;
                 // Plants sway by a sub-pixel or two.
@@ -555,11 +700,17 @@ impl Renderer {
                 if !calm && (style == S_PLANT || style == S_FLOWER || style == S_CORAL) {
                     let hgt = world.aux[i].min(40) as i32;
                     let amp = if sp_ == KELP || sea { 3 } else { 2 };
-                    off = (self.sin[((time * 2 + y as u32 * 5) & 255) as usize] as i32 * hgt * amp * s as i32) / (127 * 40 * 2);
+                    off = (self.sin[((time * 2 + y as u32 * 5) & 255) as usize] as i32 * hgt * amp * s as i32)
+                        / (127 * 40 * 2);
                 }
                 let px0 = ((x * s) as i32 + off).clamp(0, (fw - s) as i32) as usize;
-                let round = style != S_GRAIN && style != S_ROCK && style != S_WET && style != S_PIPE && style != S_GLASS;
-                let (open_l, open_r, open_d) = (x == 0 || world.cells[i - 1] == 0, x + 1 >= w || world.cells[i + 1] == 0, y + 1 < h && world.cells[i + w] == 0);
+                let round =
+                    style != S_GRAIN && style != S_ROCK && style != S_WET && style != S_PIPE && style != S_GLASS;
+                let (open_l, open_r, open_d) = (
+                    x == 0 || world.cells[i - 1] == 0,
+                    x + 1 >= w || world.cells[i + 1] == 0,
+                    y + 1 < h && world.cells[i + w] == 0,
+                );
                 let lonely = open_up && open_l && open_r && open_d;
                 let alpha = if see_through {
                     let a = e.alpha as u32;
@@ -572,6 +723,14 @@ impl Renderer {
                     256
                 };
                 let grainy = style == S_GRAIN || style == S_SNOW || style == S_PEBBLE || style == S_WET;
+                let green = matches!(world.world, GARDEN | MOUNTAIN | ISLANDS) && sp_ == SOIL;
+                let grass_depth = if green { self.bury[i] } else { 0 };
+                let rgb = if green && grass_depth <= 2 {
+                    let g = if grass_depth <= 1 { [0x6c, 0xc8, 0x4a] } else { [0x4e, 0xa0, 0x3c] };
+                    mix(g, [0x9a, 0xe0, 0x5a], (shade(c) as u32 & 7) * 12)
+                } else {
+                    rgb
+                };
                 let sh = shade(c) as usize;
                 for sy in 0..s {
                     let frow = (y * s + sy) * fw;
@@ -582,7 +741,11 @@ impl Renderer {
                             let bottom = sy == s - 1;
                             let left = sx == 0;
                             let right = sx == s - 1;
-                            if (top && left && open_up && open_l) || (top && right && open_up && open_r) || (bottom && left && open_d && open_l) || (bottom && right && open_d && open_r) {
+                            if (top && left && open_up && open_l)
+                                || (top && right && open_up && open_r)
+                                || (bottom && left && open_d && open_l)
+                                || (bottom && right && open_d && open_r)
+                            {
                                 continue;
                             }
                         }
@@ -595,6 +758,9 @@ impl Renderer {
                         }
                         if grainy && (sh >> 4) & 3 == sy * 2 + sx {
                             l += 9; // one brighter speck per grain
+                        }
+                        if open_up && sy == 0 && !see_through {
+                            l += 16; // the top of everything catches the sky
                         }
                         let idx = frow + px0 + sx;
                         let mut px = light(rgb, l);
@@ -617,9 +783,18 @@ impl Renderer {
                                     px = add_rgb(px, 40, 40, 40); // falling water foams
                                 }
                             } else if style == S_GLASS {
-                                let edge = (open_up && sy == 0) || (open_l && sx == 0) || (open_r && sx == s - 1) || (open_d && sy == s - 1);
+                                let edge = (open_up && sy == 0)
+                                    || (open_l && sx == 0)
+                                    || (open_r && sx == s - 1)
+                                    || (open_d && sy == s - 1);
                                 let streak = (x * s + sx + y * s + sy) % (7 * s) < s;
-                                a = if edge { 200 } else if streak { 120 } else { a };
+                                a = if edge {
+                                    200
+                                } else if streak {
+                                    120
+                                } else {
+                                    a
+                                };
                             } else if style == S_BUBBLE {
                                 a = if sx == 0 && sy == 0 { 235 } else { a };
                             }
@@ -628,13 +803,37 @@ impl Renderer {
                         self.frame[idx] = px;
                     }
                 }
+                if green && grass_depth <= 1 && open_up && s >= 2 && y > 0 {
+                    // Little blades of grass stand up from the lawn.
+                    let blade = mix([0x5c, 0xb8, 0x44], [0x9a, 0xe0, 0x5a], (sh as u32 & 3) * 60);
+                    let bx = x * s + (sh >> 2) % s;
+                    for k in 1..=(1 + (sh & 1) + (s > 2) as usize) {
+                        let idx = (y * s - k) * fw + bx;
+                        self.frame[idx] = blend(self.frame[idx], light(blade, l0), 230);
+                    }
+                }
+                if sp_ == FLOWER && cb(c) == CENTER && ca(c) != 10 && self.blooms.len() < self.blooms.capacity() {
+                    let hue = FLOWER_HUES[(ca(c) as usize).min(10)];
+                    self.blooms.push((((x * s) as i32 + off) as f32 + s as f32 * 0.5, (y * s) as f32 + s as f32 * 0.5, hue, (shade(c) >> 5) & 7));
+                }
             }
         }
     }
 
     /// An empty cell squeezed in the corner of a liquid, a cloud or a petal: fill that corner so blobs look round.
     #[allow(clippy::too_many_arguments)]
-    fn fill_corners(&mut self, world: &World, i: usize, x: usize, y: usize, u: u32, dn: u32, l: u32, r: u32, time: u32) {
+    fn fill_corners(
+        &mut self,
+        world: &World,
+        i: usize,
+        x: usize,
+        y: usize,
+        u: u32,
+        dn: u32,
+        l: u32,
+        r: u32,
+        time: u32,
+    ) {
         let s = self.scale;
         if s < 2 {
             return;
@@ -645,7 +844,9 @@ impl Renderer {
         };
         let fw = self.fw;
         let w = world.w;
-        for (a, b, sx, sy, ai) in [(u, l, 0, 0, i - w), (u, r, s - 1, 0, i - w), (dn, l, 0, s - 1, i + w), (dn, r, s - 1, s - 1, i + w)] {
+        for (a, b, sx, sy, ai) in
+            [(u, l, 0, 0, i - w), (u, r, s - 1, 0, i - w), (dn, l, 0, s - 1, i + w), (dn, r, s - 1, s - 1, i + w)]
+        {
             if soft(a) && soft(b) && sp(a) == sp(b) {
                 let (rgb, _) = self.colour(world, a, ai, time);
                 let idx = (y * s + sy) * fw + x * s + sx;
@@ -681,7 +882,8 @@ impl Renderer {
                     let u = if y > 0 { k - gw * 3 } else { k };
                     let d = if y + 1 < gh { k + gw * 3 } else { k };
                     for ch in 0..3 {
-                        self.glow[k + ch] = (self.glow_tmp[u + ch] + 2 * self.glow_tmp[k + ch] + self.glow_tmp[d + ch]) / 4;
+                        self.glow[k + ch] =
+                            (self.glow_tmp[u + ch] + 2 * self.glow_tmp[k + ch] + self.glow_tmp[d + ch]) / 4;
                     }
                 }
             }
@@ -695,7 +897,18 @@ impl Renderer {
             for gx in 0..gw - 1 {
                 let k = (gy * gw + gx) * 3;
                 let (k10, k01, k11) = (k + 3, k + gw * 3, k + gw * 3 + 3);
-                let any = self.glow[k] | self.glow[k + 1] | self.glow[k + 2] | self.glow[k10] | self.glow[k10 + 1] | self.glow[k10 + 2] | self.glow[k01] | self.glow[k01 + 1] | self.glow[k01 + 2] | self.glow[k11] | self.glow[k11 + 1] | self.glow[k11 + 2];
+                let any = self.glow[k]
+                    | self.glow[k + 1]
+                    | self.glow[k + 2]
+                    | self.glow[k10]
+                    | self.glow[k10 + 1]
+                    | self.glow[k10 + 2]
+                    | self.glow[k01]
+                    | self.glow[k01 + 1]
+                    | self.glow[k01 + 2]
+                    | self.glow[k11]
+                    | self.glow[k11 + 1]
+                    | self.glow[k11 + 2];
                 if any < 6 {
                     continue;
                 }
@@ -759,6 +972,26 @@ impl Renderer {
         }
     }
 
+
+    /// Flower heads drawn bigger than a cell, so a child sees real flowers: five round petals and a golden heart.
+    fn draw_blooms(&mut self, night: bool) {
+        let u = self.scale as f32;
+        for k in 0..self.blooms.len() {
+            let (cx, cy, hue, variant) = self.blooms[k];
+            let big = if variant == crate::sim::V_GIANT || variant == crate::sim::V_RAINBOW { 1.7 } else { 1.0 };
+            let dim = if night { 150 } else { 255 };
+            let petal = |k: usize| if variant == crate::sim::V_RAINBOW { FLOWER_HUES[k % 5] } else { hue };
+            for p in 0..5 {
+                let a = p as f32 / 5.0 * std::f32::consts::TAU - 1.57;
+                let (px, py) = (cx + a.cos() * 1.05 * u * big, cy + a.sin() * 1.05 * u * big);
+                self.disc(px, py, 0.82 * u * big, petal(p), dim);
+                self.disc(px - 0.2 * u, py - 0.25 * u, 0.3 * u * big, 0xffffff, dim / 3);
+            }
+            self.disc(cx, cy, 0.62 * u * big, 0xffc62a, dim);
+            self.disc(cx - 0.18 * u, cy - 0.18 * u, 0.22 * u * big, 0xfff2a0, dim);
+        }
+    }
+
     /* ── Faces on big blobs ── */
 
     fn face_species(world: &World, t: u8) -> bool {
@@ -779,7 +1012,7 @@ impl Renderer {
         if self.faces.len() >= MAX_FACES {
             return;
         }
-        for _ in 0..24 {
+        for _ in 0..64 {
             let x = 6 + (self.rnd() % (world.w as u32 - 12)) as i32;
             let y = 5 + (self.rnd() % (world.h as u32 - 10)) as i32;
             let t = world.get(x, y);
@@ -876,7 +1109,8 @@ impl Renderer {
         if rx <= 0.0 || ry <= 0.0 {
             return;
         }
-        let (x0, x1, y0, y1) = ((cx - rx).floor() as i32, (cx + rx).ceil() as i32, (cy - ry).floor() as i32, (cy + ry).ceil() as i32);
+        let (x0, x1, y0, y1) =
+            ((cx - rx).floor() as i32, (cx + rx).ceil() as i32, (cy - ry).floor() as i32, (cy + ry).ceil() as i32);
         for py in y0..=y1 {
             for px in x0..=x1 {
                 let (dx, dy) = ((px as f32 + 0.5 - cx) / rx, (py as f32 + 0.5 - cy) / ry);
@@ -970,15 +1204,40 @@ impl Renderer {
                     self.ellipse(px, py, s * (0.45 + 0.1 * speed), s * (0.45 + 0.5 * speed), p.rgb, (a * 220.0) as u32);
                 }
                 FX_TRAIL => self.glow_disc(px, py, (0.6 + f * 1.6) * s, p.rgb, 0.5 * a),
-                FX_HEART => self.glyph(px, py, [0b01010, 0b11111, 0b11111, 0b01110, 0b00100], s * (0.5 + 0.2 * (1.0 - f)), 0xff5a8a, (a * 255.0) as u32),
-                FX_NOTE => self.glyph(px + (p.life * 6.0).sin() * s, py, [0b00110, 0b00101, 0b00100, 0b01100, 0b01100], s * 0.55, 0x3a2a70, (a * 255.0) as u32),
-                FX_ZZZ => self.glyph(px + (1.0 - f) * 3.0 * s, py, [0b11110, 0b00010, 0b00100, 0b01000, 0b11110], s * (0.35 + 0.35 * (1.0 - f)), 0xffffff, (a * 230.0) as u32),
+                FX_HEART => self.glyph(
+                    px,
+                    py,
+                    [0b01010, 0b11111, 0b11111, 0b01110, 0b00100],
+                    s * (0.5 + 0.2 * (1.0 - f)),
+                    0xff5a8a,
+                    (a * 255.0) as u32,
+                ),
+                FX_NOTE => self.glyph(
+                    px + (p.life * 6.0).sin() * s,
+                    py,
+                    [0b00110, 0b00101, 0b00100, 0b01100, 0b01100],
+                    s * 0.55,
+                    0x3a2a70,
+                    (a * 255.0) as u32,
+                ),
+                FX_ZZZ => self.glyph(
+                    px + (1.0 - f) * 3.0 * s,
+                    py,
+                    [0b11110, 0b00010, 0b00100, 0b01000, 0b11110],
+                    s * (0.35 + 0.35 * (1.0 - f)),
+                    0xffffff,
+                    (a * 230.0) as u32,
+                ),
                 FX_BIP => {
                     // A little speech bubble: "?" (or a happy "!" when the rover found a pebble).
                     let pop = (1.0 - f) * 6.0;
                     let grow = pop.min(1.0) * (1.0 + 0.25 * (pop * 3.0).sin() * (-pop).exp());
                     self.disc(px, py, 2.6 * s * grow, 0xffffff, (a * 240.0) as u32);
-                    let rows = if p.rgb == 1 { [0b00100, 0b00100, 0b00100, 0b00000, 0b00100] } else { [0b01110, 0b00010, 0b00100, 0b00000, 0b00100] };
+                    let rows = if p.rgb == 1 {
+                        [0b00100, 0b00100, 0b00100, 0b00000, 0b00100]
+                    } else {
+                        [0b01110, 0b00010, 0b00100, 0b00000, 0b00100]
+                    };
                     self.glyph(px, py, rows, s * 0.6 * grow, 0x3a2a70, (a * 255.0) as u32);
                 }
                 FX_SHIELD => {
@@ -1010,14 +1269,23 @@ impl Renderer {
             // Squash and stretch: a soft landing bounce, a stretch in the air, a breathing idle.
             let b = c.bounce as f32;
             let land = if calm { 0.0 } else { (-(b / 5.0)).exp() * (b / 2.2).cos() * 0.28 };
-            let breathe = if calm { 0.0 } else { self.sin[((time * 3 + c.x as u32) & 255) as usize] as f32 / 127.0 * 0.04 };
-            let air = if !calm && c.state == crate::critters::C_AIR { (c.vy.abs() as f32 / 14.0).min(1.0) * 0.18 } else { 0.0 };
+            let breathe =
+                if calm { 0.0 } else { self.sin[((time * 3 + c.x as u32) & 255) as usize] as f32 / 127.0 * 0.04 };
+            let air = if !calm && c.state == crate::critters::C_AIR {
+                (c.vy.abs() as f32 / 14.0).min(1.0) * 0.18
+            } else {
+                0.0
+            };
             let sy = 1.0 - land + breathe + air;
             let sx = 1.0 + land - breathe - air * 0.7;
-            let step = if !calm && c.state == crate::critters::C_WALK { self.sin[((c.x * 14) & 255) as usize] as f32 / 127.0 } else { 0.0 };
+            let step = if !calm && c.state == crate::critters::C_WALK {
+                self.sin[((c.x * 14) & 255) as usize] as f32 / 127.0
+            } else {
+                0.0
+            };
             let blink = !calm && (time + c.x as u32 / 16 * 7) % 190 < 6;
             let d = c.dir as f32;
-            let u = s; // one cell
+            let u = s * 1.45; // one cell, critters drawn a little larger than life
             let happy = c.mood > 0;
             let ink = 0x2a2848;
             let mut eyes: [(f32, f32, f32); 2] = [(0.0, 0.0, 0.0); 2];
@@ -1042,17 +1310,40 @@ impl Renderer {
                     self.disc(fx + 1.6 * u, cy - 2.5 * u * sy, 0.9 * u, 0x8a5a34, 255);
                     self.ellipse(fx, cy, 3.2 * u * sx, 3.0 * u * sy, 0xa9713f, 255);
                     self.ellipse(fx + d * 0.6 * u, cy + 0.9 * u, 1.9 * u, 1.6 * u * sy, 0xe8c9a0, 255);
-                    self.fill_rect(fx + d * 0.6 * u - 0.55 * u, cy + 0.9 * u, fx + d * 0.6 * u + 0.55 * u, cy + 1.9 * u, 0xffffff, 255);
+                    self.fill_rect(
+                        fx + d * 0.6 * u - 0.55 * u,
+                        cy + 0.9 * u,
+                        fx + d * 0.6 * u + 0.55 * u,
+                        cy + 1.9 * u,
+                        0xffffff,
+                        255,
+                    );
                     self.disc(fx + d * 0.6 * u, cy + 0.3 * u, 0.42 * u, ink, 255);
-                    eyes = [(fx + d * 0.6 * u - 1.2 * u, cy - 0.8 * u, 0.7), (fx + d * 0.6 * u + 1.2 * u, cy - 0.8 * u, 0.7)];
+                    eyes = [
+                        (fx + d * 0.6 * u - 1.2 * u, cy - 0.8 * u, 0.7),
+                        (fx + d * 0.6 * u + 1.2 * u, cy - 0.8 * u, 0.7),
+                    ];
                 }
                 ISLANDS => {
                     // Crab: a wide red shell, two claws that wave, and whatever fell on it as a hat.
                     let cy = fy - 1.8 * u * sy;
                     let wave = if happy { step.abs() + 0.6 } else { step * 0.4 };
                     for side in [-1.0f32, 1.0] {
-                        self.disc(fx + side * 4.0 * u * sx, cy - (1.4 + wave * side.max(0.0) + wave * (-side).max(0.0) * 0.6) * u, 1.25 * u, 0xff6a4a, 255);
-                        self.fill_rect(fx + side * 2.2 * u - 0.3 * u, fy - 0.9 * u, fx + side * 2.2 * u + 0.3 * u, fy, 0xe04a34, 255);
+                        self.disc(
+                            fx + side * 4.0 * u * sx,
+                            cy - (1.4 + wave * side.max(0.0) + wave * (-side).max(0.0) * 0.6) * u,
+                            1.25 * u,
+                            0xff6a4a,
+                            255,
+                        );
+                        self.fill_rect(
+                            fx + side * 2.2 * u - 0.3 * u,
+                            fy - 0.9 * u,
+                            fx + side * 2.2 * u + 0.3 * u,
+                            fy,
+                            0xe04a34,
+                            255,
+                        );
                     }
                     self.ellipse(fx, cy, 3.4 * u * sx, 1.9 * u * sy, 0xff6a4a, 255);
                     self.ellipse(fx, cy + 0.5 * u, 2.6 * u * sx, 1.0 * u * sy, 0xff8a6a, 255);
@@ -1070,7 +1361,10 @@ impl Renderer {
                     self.ellipse(fx, cy, 3.1 * u * sx, 2.7 * u * sy, 0xff8a24, 255);
                     self.disc(fx, cy - 2.6 * u * sy, 1.1 * u, 0xff8a24, 255);
                     self.ellipse(fx - 0.9 * u, cy - 1.0 * u, 1.2 * u, 0.8 * u, 0xffd84a, 200);
-                    eyes = [(fx - 1.2 * u + d * 0.3 * u, cy - 0.2 * u, 0.75), (fx + 1.2 * u + d * 0.3 * u, cy - 0.2 * u, 0.75)];
+                    eyes = [
+                        (fx - 1.2 * u + d * 0.3 * u, cy - 0.2 * u, 0.75),
+                        (fx + 1.2 * u + d * 0.3 * u, cy - 0.2 * u, 0.75),
+                    ];
                 }
                 UNDERSEA => {
                     // Pufferfish: round, spiky when puffed up, with a wiggling tail.
@@ -1080,14 +1374,23 @@ impl Renderer {
                     if happy {
                         for k in 0..10 {
                             let a = k as f32 / 10.0 * std::f32::consts::TAU;
-                            self.disc(fx + a.cos() * (r + 0.5 * u), cy + a.sin() * (r + 0.5 * u), 0.5 * u, 0xe8a030, 255);
+                            self.disc(
+                                fx + a.cos() * (r + 0.5 * u),
+                                cy + a.sin() * (r + 0.5 * u),
+                                0.5 * u,
+                                0xe8a030,
+                                255,
+                            );
                         }
                     }
                     self.ellipse(fx - d * (r + 0.6 * u), cy + step * 0.5 * u, 1.0 * u, 1.3 * u, 0xf2b040, 255);
                     self.ellipse(fx, cy, r * sx, r * sy, 0xffd24a, 255);
                     self.ellipse(fx, cy + 0.9 * u * puff, r * 0.7, r * 0.45, 0xfff3c4, 255);
                     self.disc(fx + d * 1.2 * u, cy + 1.2 * u * puff, 0.45 * u, 0xff7a8a, 255);
-                    eyes = [(fx + d * 0.9 * u - 0.95 * u, cy - 0.5 * u, 0.7), (fx + d * 0.9 * u + 0.95 * u, cy - 0.5 * u, 0.7)];
+                    eyes = [
+                        (fx + d * 0.9 * u - 0.95 * u, cy - 0.5 * u, 0.7),
+                        (fx + d * 0.9 * u + 0.95 * u, cy - 0.5 * u, 0.7),
+                    ];
                 }
                 SPACE => {
                     // A tiny alien in a saucer.
@@ -1108,13 +1411,30 @@ impl Renderer {
                     let cy = fy - 2.4 * u * sy;
                     let flop = if c.state == crate::critters::C_AIR { -0.5 } else { 0.0 };
                     for side in [-1.0f32, 1.0] {
-                        self.ellipse(fx + side * (0.9 + flop * side * 0.4) * u, cy - 3.6 * u * sy, 0.7 * u, 2.3 * u * sy, 0xffffff, 255);
-                        self.ellipse(fx + side * (0.9 + flop * side * 0.4) * u, cy - 3.6 * u * sy, 0.3 * u, 1.6 * u * sy, 0xffc0d0, 255);
+                        self.ellipse(
+                            fx + side * (0.9 + flop * side * 0.4) * u,
+                            cy - 3.6 * u * sy,
+                            0.7 * u,
+                            2.3 * u * sy,
+                            0xffffff,
+                            255,
+                        );
+                        self.ellipse(
+                            fx + side * (0.9 + flop * side * 0.4) * u,
+                            cy - 3.6 * u * sy,
+                            0.3 * u,
+                            1.6 * u * sy,
+                            0xffc0d0,
+                            255,
+                        );
                     }
                     self.ellipse(fx, cy, 2.7 * u * sx, 2.4 * u * sy, 0xffffff, 255);
                     self.disc(fx - d * 2.5 * u, cy + 1.0 * u, 0.9 * u, 0xf0f0ff, 255);
                     self.disc(fx + d * 0.5 * u, cy + 0.6 * u, 0.35 * u, 0xff8aa8, 255);
-                    eyes = [(fx + d * 0.5 * u - 1.0 * u, cy - 0.5 * u, 0.6), (fx + d * 0.5 * u + 1.0 * u, cy - 0.5 * u, 0.6)];
+                    eyes = [
+                        (fx + d * 0.5 * u - 1.0 * u, cy - 0.5 * u, 0.6),
+                        (fx + d * 0.5 * u + 1.0 * u, cy - 0.5 * u, 0.6),
+                    ];
                 }
                 _ => {
                     // Rover: a box on three wheels with googly eyes on a mast.
@@ -1123,7 +1443,14 @@ impl Renderer {
                         self.disc(fx + k * 2.4 * u, fy - 0.9 * u, 1.0 * u, 0x3a3848, 255);
                         self.disc(fx + k * 2.4 * u, fy - 0.9 * u, 0.4 * u, 0xb9bcd6, 255);
                     }
-                    self.fill_rect(fx - 3.2 * u * sx, cy - 1.0 * u * sy, fx + 3.2 * u * sx, cy + 0.9 * u, 0xe9edf5, 255);
+                    self.fill_rect(
+                        fx - 3.2 * u * sx,
+                        cy - 1.0 * u * sy,
+                        fx + 3.2 * u * sx,
+                        cy + 0.9 * u,
+                        0xe9edf5,
+                        255,
+                    );
                     self.fill_rect(fx - 3.2 * u * sx, cy + 0.3 * u, fx + 3.2 * u * sx, cy + 0.9 * u, 0xffb340, 255);
                     for p in 0..c.count.min(3) {
                         self.disc(fx - d * (2.0 - p as f32 * 1.3) * u, cy - 1.5 * u, 0.6 * u, 0x8a827a, 255);

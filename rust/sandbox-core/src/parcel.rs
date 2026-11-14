@@ -60,7 +60,12 @@ impl World {
             return true;
         }
         let t = sp(self.cells[y as usize * self.w + x as usize]);
-        t != EMPTY && self.phase[t as usize] == P_BLOCK && !matches!(t, PLANT | FLOWER | KELP | CORAL | FROST | POLLEN | PLANKTON | RING | COMET | ASH | SNOW | STARDUST)
+        t != EMPTY
+            && self.phase[t as usize] == P_BLOCK
+            && !matches!(
+                t,
+                PLANT | FLOWER | KELP | CORAL | FROST | POLLEN | PLANKTON | RING | COMET | ASH | SNOW | STARDUST
+            )
     }
 
     pub(crate) fn step_parcel(&mut self) {
@@ -108,7 +113,11 @@ impl World {
                     HEAT | LAVA | STAR => warm += 1,
                     _ => {}
                 }
-                if dy <= -1 && dx.abs() <= 2 && self.parcel_firm(cx + dx, cy + dy) && !matches!(t, STONE | BASALT | GLASS | DOME | PIPE | ICE) {
+                if dy <= -1
+                    && dx.abs() <= 2
+                    && self.parcel_firm(cx + dx, cy + dy)
+                    && !matches!(t, STONE | BASALT | GLASS | DOME | PIPE | ICE)
+                {
                     over += 1;
                 }
             }
@@ -118,7 +127,15 @@ impl World {
         }
         let low_gravity = self.params.radial || self.grav < 110;
         let airborne = p.state == P_FALLING && !liquid_here;
-        let adds = [wet >= 2, warm >= 1, cold >= 2, over >= 9, bubbles >= 1, false, low_gravity && airborne && !sea && self.tick % 3 == 0];
+        let adds = [
+            wet >= 2,
+            warm >= 1,
+            cold >= 2,
+            over >= 9,
+            bubbles >= 1,
+            false,
+            low_gravity && airborne && !sea && self.tick % 3 == 0,
+        ];
         for (k, &on) in adds.iter().enumerate() {
             if on {
                 p.exposure[k] = p.exposure[k].saturating_add(if k == X_BUBBLE { 6 } else { 1 });
@@ -160,7 +177,13 @@ impl World {
             let d = self.gdir[i];
             if d != NOG {
                 let gd = self.gdist[i] as i32;
-                let turn = if gd > 22 { 1 } else if gd < 16 { 3 } else { 2 };
+                let turn = if gd > 22 {
+                    1
+                } else if gd < 16 {
+                    3
+                } else {
+                    2
+                };
                 let dir = ((d + turn) & 7) as usize;
                 if self.tick & 1 == 0 && !self.parcel_firm(cx + DX[dir] * 2, cy + DY[dir] * 2) {
                     p.x += DX[dir] * 5;
@@ -220,7 +243,11 @@ impl World {
         // On a slope it rolls down.
         if p.vx == 0 {
             for dir in [-1, 1] {
-                if !self.parcel_firm(cx + dir * 2, cy) && !self.parcel_firm(cx + dir * 2, cy + 1) && !self.parcel_firm(cx + dir * 3, cy + 2) && self.parcel_firm(cx - dir * 2, cy + 1) {
+                if !self.parcel_firm(cx + dir * 2, cy)
+                    && !self.parcel_firm(cx + dir * 2, cy + 1)
+                    && !self.parcel_firm(cx + dir * 3, cy + 2)
+                    && self.parcel_firm(cx - dir * 2, cy + 1)
+                {
                     p.vx = dir * 4;
                 }
             }
@@ -264,7 +291,13 @@ impl World {
         let movable = |world: &World, c: u32| {
             let t = sp(c);
             let k = ELEMENTS[t as usize].kind;
-            c != 0 && c & FIXED == 0 && (k == K_POWDER || k == K_LIQUID || ELEMENTS[t as usize].flags & F_LOOSE != 0 || matches!(t, COCONUT | SHELL | METEORITE | LAVA | PLANKTON)) && world.phase[t as usize] != P_GAS
+            c != 0
+                && c & FIXED == 0
+                && (k == K_POWDER
+                    || k == K_LIQUID
+                    || ELEMENTS[t as usize].flags & F_LOOSE != 0
+                    || matches!(t, COCONUT | SHELL | METEORITE | LAVA | PLANKTON))
+                && world.phase[t as usize] != P_GAS
         };
         // Carry what is in the disc (walk against the motion so each cell moves once).
         if dx != 0 || dy != 0 {
@@ -315,7 +348,10 @@ impl World {
             }
         }
         let p = &mut self.parcel;
-        if (p.state == P_FALLING || p.state == P_LANDED) && (p.x - bx * 16).abs() < grab && (p.y - by * 16 - 48).abs() < grab + 64 {
+        if (p.state == P_FALLING || p.state == P_LANDED)
+            && (p.x - bx * 16).abs() < grab
+            && (p.y - by * 16 - 48).abs() < grab + 64
+        {
             p.x += (bx * 16 - p.x) / 6 + dx * 16;
             p.y += ((by + 2) * 16 - p.y) / 6 + dy * 16;
             p.vy = 0;
@@ -337,6 +373,13 @@ impl World {
                 world.set(x, y, t);
             }
         };
+        // Places an element with its state, only in an empty cell (a gift never overwrites the child's build).
+        let put_state = |world: &mut World, x: i32, y: i32, t: u8, a: u8, b: u8| {
+            if world.inside(x, y) && world.get(x, y) == EMPTY {
+                world.set(x, y, t);
+                world.set_state(x, y, a, b, false);
+            }
+        };
         match kind {
             0 => {
                 // A giant sunflower.
@@ -353,8 +396,7 @@ impl World {
                 // An echo crystal: a cluster already full of light.
                 for (dx, hgt) in [(-2, 3), (-1, 5), (0, 8), (1, 6), (2, 3)] {
                     for k in 0..hgt {
-                        put(self, cx + dx, g - k, CRYSTAL);
-                        self.set_state(cx + dx, g - k, 255, 0, false);
+                        put_state(self, cx + dx, g - k, CRYSTAL, 255, 0);
                     }
                 }
             }
@@ -375,16 +417,30 @@ impl World {
                 // A friendly mini volcano with a spoonful of warm jam.
                 for dx in -6..=6i32 {
                     for k in 0..(7 - dx.abs()).min(5) {
-                        put(self, cx + dx, g - k, if dx.abs() <= 1 && k >= 3 { LAVA } else { BASALT });
                         if dx.abs() <= 1 && k >= 3 {
-                            self.set_state(cx + dx, g - k, 255, 1, false);
+                            put_state(self, cx + dx, g - k, LAVA, 255, 1);
+                        } else {
+                            put(self, cx + dx, g - k, BASALT);
                         }
                     }
                 }
             }
             4 => {
                 // A pearl lantern.
-                for (dx, dy) in [(-2, 0), (2, 0), (-2, -1), (2, -1), (-2, -2), (2, -2), (-1, -3), (0, -3), (1, -3), (-1, 1), (0, 1), (1, 1)] {
+                for (dx, dy) in [
+                    (-2, 0),
+                    (2, 0),
+                    (-2, -1),
+                    (2, -1),
+                    (-2, -2),
+                    (2, -2),
+                    (-1, -3),
+                    (0, -3),
+                    (1, -3),
+                    (-1, 1),
+                    (0, 1),
+                    (1, 1),
+                ] {
                     put(self, cx + dx, g + dy - 1, GLASS);
                 }
                 for (dx, dy) in [(0, 0), (-1, 0), (1, 0), (0, -1)] {
@@ -396,9 +452,9 @@ impl World {
                 if let Some(&(sx, sy, _)) = self.sources.first() {
                     for k in 0..40 {
                         let a = k * 1024 / 40;
-                        let (x, y) = (sx + crate::scenes::isin(a + 256) * 18 / 1024, sy + crate::scenes::isin(a) * 18 / 1024);
-                        put(self, x, y, RING);
-                        self.set_state(x, y, 18, 1, false);
+                        let (x, y) =
+                            (sx + crate::scenes::isin(a + 256) * 18 / 1024, sy + crate::scenes::isin(a) * 18 / 1024);
+                        put_state(self, x, y, RING, 18, 1);
                     }
                 }
             }
@@ -407,7 +463,9 @@ impl World {
                 for k in 0..12 {
                     put(self, cx, g - k, PIPE);
                 }
-                for (dx, dy) in [(1, -11), (2, -11), (3, -11), (1, -10), (2, -10), (3, -10), (4, -10), (1, -9), (2, -9), (3, -9)] {
+                for (dx, dy) in
+                    [(1, -11), (2, -11), (3, -11), (1, -10), (2, -10), (3, -10), (4, -10), (1, -9), (2, -9), (3, -9)]
+                {
                     put(self, cx + dx, g + dy, GLASS);
                 }
             }

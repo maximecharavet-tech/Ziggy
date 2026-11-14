@@ -67,8 +67,8 @@ impl World {
             self.aux[i] = k as u8;
             self.cells[i] = (self.cells[i] & 0x1fff_ffff) | ((variant as u32) << 29);
             top = y;
-            if variant == V_PLAIN && k > 1 && k < height - 2 && k % 3 == 1 {
-                let lx = x + if k % 2 == 1 { 1 } else { -1 };
+            if (variant == V_PLAIN || variant == V_GIANT) && k > 1 && k < height - 2 && k % 2 == 1 {
+                let lx = x + if k % 4 == 1 { 1 } else { -1 };
                 if self.get(lx, y) == EMPTY && self.inside(lx, y) {
                     self.set(lx, y, PLANT);
                     self.fix(lx, y, 0, LEAF);
@@ -81,7 +81,21 @@ impl World {
         }
         let h = (ground - top) as u8;
         if variant == V_PALM {
-            for (dx, dy) in [(-1, 0), (1, 0), (-2, 1), (2, 1), (-1, -1), (1, -1), (-3, 2), (3, 2), (0, -1), (-2, 0), (2, 0), (-4, 3), (4, 3)] {
+            for (dx, dy) in [
+                (-1, 0),
+                (1, 0),
+                (-2, 1),
+                (2, 1),
+                (-1, -1),
+                (1, -1),
+                (-3, 2),
+                (3, 2),
+                (0, -1),
+                (-2, 0),
+                (2, 0),
+                (-4, 3),
+                (4, 3),
+            ] {
                 if self.get(x + dx, top + dy) == EMPTY && self.inside(x + dx, top + dy) {
                     self.set(x + dx, top + dy, PLANT);
                     self.fix(x + dx, top + dy, 0, LEAF);
@@ -111,8 +125,8 @@ impl World {
     fn scene_clouds(&mut self, clouds: &[(i32, i32, i32)]) {
         let (w, h) = (self.w as i32, self.h as i32);
         for &(cx, cy, rx0) in clouds {
-            let rx = rx0.min(w * 9 / 100).max(5);
-            let ry = 3 + rx / 8;
+            let rx = rx0.min(w * 12 / 100).max(6);
+            let ry = 4 + rx / 5;
             for y in -ry..=ry {
                 for x in -rx..=rx {
                     // A flat bottom and a bumpy top.
@@ -170,7 +184,17 @@ impl World {
             let pit = x >= pit0 && x <= pit1;
             for y in g..h {
                 let sandy = pit && y < g + 5 + isin((x - pit0) * 512 / (pit1 - pit0).max(1)) * 5 / 1024;
-                self.fill(x, y, if y > h - 3 { STONE } else if sandy { SAND } else { SOIL });
+                self.fill(
+                    x,
+                    y,
+                    if y > h - 3 {
+                        STONE
+                    } else if sandy {
+                        SAND
+                    } else {
+                        SOIL
+                    },
+                );
             }
         }
         // A little pond in a stone basin.
@@ -202,9 +226,9 @@ impl World {
                 continue;
             }
             let g = self.surface(x);
-            self.grown_plant(x, g, h * (8 + (n as i32 * 37) % 9) / 100, n as u8, V_PLAIN);
+            self.grown_plant(x, g, h * (12 + (n as i32 * 37) % 9) / 100, n as u8, V_PLAIN);
         }
-        self.scene_clouds(&[(200, 130, 12), (720, 90, 15)]);
+        self.scene_clouds(&[(200, 130, 18), (720, 90, 22)]);
         // A stone wall to build on.
         let wx = w * 26 / 100 + if tall { 8 } else { 0 };
         let g = ground(wx);
@@ -220,16 +244,19 @@ impl World {
         for x in 0..w {
             let g = valley + isin(x * 11) * 3 / 2048;
             for y in g..h {
-                self.fill(x, y, if y > h - 4 { STONE } else { SAND });
+                self.fill(x, y, if y > h - 4 { STONE } else { SOIL });
             }
         }
         // Two rocky peaks with thick snow caps. Slopes stay under 45°, so the snow stays on.
-        let peaks = [(w * 30 / 100, h * if tall { 44 } else { 22 } / 100), (w * 66 / 100, h * if tall { 57 } else { 42 } / 100)];
+        let peaks = [
+            (w * 30 / 100, h * if tall { 44 } else { 22 } / 100),
+            (w * 66 / 100, h * if tall { 57 } else { 42 } / 100),
+        ];
         let snow_line = h * if tall { 66 } else { 58 } / 100;
         for x in 0..w {
             let mut top = h;
             for (px, pt) in peaks {
-                top = top.min(pt + (x - px).abs() * 80 / 100 + isin(x * 21) * 3 / 2048);
+                top = top.min(pt + (x - px).abs() + isin(x * 21) / 2048);
             }
             if top >= valley {
                 continue;
@@ -251,7 +278,7 @@ impl World {
             }
         }
         // Crystals in the rock face and pebbles at its foot.
-        let cx = peaks[0].0 - (valley - peaks[0].1) * 100 / 80 + 6;
+        let cx = peaks[0].0 - (valley - peaks[0].1) + 6;
         for k in 0..5 {
             let x = (cx + k * 2).clamp(1, w - 2);
             let g = self.surface(x);
@@ -273,14 +300,14 @@ impl World {
                 break;
             }
             let g = self.surface(x);
-            if self.get(x, g) != SAND || x - last < w * 12 / 100 || self.get(x, g - 1) != EMPTY {
+            if self.get(x, g) != SOIL || x - last < w * 12 / 100 || self.get(x, g - 1) != EMPTY {
                 continue;
             }
-            self.grown_plant(x, g, h * 6 / 100, planted * 2 + 1, V_PLAIN);
+            self.grown_plant(x, g, h * 8 / 100, planted * 2 + 1, V_PLAIN);
             last = x;
             planted += 1;
         }
-        self.scene_clouds(&[(560, 120, 12)]);
+        self.scene_clouds(&[(560, 110, 18)]);
         self.resident(w * 50 / 100);
     }
 
@@ -293,7 +320,19 @@ impl World {
         for x in 0..w {
             let floor = sea + depth + isin(x * 14) * 2 / 1024;
             for y in sea..h {
-                self.fill(x, y, if y >= floor { if y > h - 4 { STONE } else { SAND } } else { WATER });
+                self.fill(
+                    x,
+                    y,
+                    if y >= floor {
+                        if y > h - 4 {
+                            STONE
+                        } else {
+                            SAND
+                        }
+                    } else {
+                        WATER
+                    },
+                );
             }
         }
         let isles = [(w * 26 / 100, w * 13 / 100), (w * 74 / 100, w * 10 / 100)];
@@ -326,7 +365,7 @@ impl World {
             let g = self.surface(sx);
             self.fill(sx, g - 1, SHELL);
         }
-        self.scene_clouds(&[(180, 110, 10), (620, 70, 13)]);
+        self.scene_clouds(&[(180, 110, 15), (620, 70, 20)]);
         self.resident(isles[0].0 + 3);
     }
 
@@ -390,6 +429,32 @@ impl World {
         self.resident(vx);
     }
 
+
+    /// A coral fan: a short trunk that splits into branches curving up.
+    fn coral_fan(&mut self, x: i32, ground: i32, tall: i32, hue: u8) {
+        let mut put = |world: &mut World, cx: i32, cy: i32| {
+            if world.inside(cx, cy) && world.get(cx, cy) == EMPTY {
+                world.set(cx, cy, CORAL);
+                world.set_state(cx, cy, 0, hue, true);
+            }
+        };
+        for k in 0..tall / 3 {
+            put(self, x, ground - 1 - k);
+            put(self, x + 1, ground - 1 - k);
+        }
+        let fork = ground - tall / 3;
+        for (dir, len) in [(-1, tall * 2 / 3), (1, tall * 3 / 4), (0, tall * 2 / 3)] {
+            for k in 0..len {
+                let bx = x + dir * (k * 2 / 3).min(tall / 2) + if dir == 0 { (k / 4) % 2 } else { 0 };
+                put(self, bx, fork - k);
+                if k > 2 && k % 3 == 0 {
+                    put(self, bx - 1, fork - k - 1);
+                    put(self, bx + 1, fork - k - 1);
+                }
+            }
+        }
+    }
+
     fn undersea(&mut self) {
         let (w, h) = (self.w as i32, self.h as i32);
         let tall = h > w;
@@ -414,28 +479,31 @@ impl World {
         }
         self.disc(w * 82 / 100, floor(w * 82 / 100), 5, STONE);
         self.disc(w * 60 / 100, floor(w * 60 / 100) + 2, 3, STONE);
-        // Coral on the rocks, kelp and shells on the sand: all asleep until the child plays.
-        for (n, f) in [78, 84, 88, 58, 62].iter().enumerate() {
+        // Coral fans on the sand, kelp forests and shells: all asleep until the child plays.
+        for (n, f) in [76, 83, 89, 57, 63].iter().enumerate() {
             let x = w * f / 100;
             let g = self.surface(x);
-            let tall_c = 3 + (n as i32 * 5) % 5;
-            for k in 0..tall_c {
-                for dx in [0, if k > 1 && k % 2 == 0 { 1 } else { 0 }, if k > 2 && k % 2 == 1 { -1 } else { 0 }] {
-                    let (cx, cy) = (x + dx * (1 + k / 3), g - 1 - k);
-                    if self.get(cx, cy) == EMPTY && self.inside(cx, cy) {
-                        self.fill(cx, cy, CORAL);
-                        self.fix(cx, cy, 0, n as u8 % 5);
+            let tall = h * (9 + (n as i32 * 5) % 6) / 100;
+            self.coral_fan(x, g, tall, n as u8 % 5);
+        }
+        for (n, f) in [6, 9, 13, 42, 46, 49, 95].iter().enumerate() {
+            let x = w * f / 100;
+            let g = self.surface(x);
+            let tall = h * (18 + (n as i32 * 7) % 14) / 100;
+            for k in 0..tall {
+                let y = g - 1 - k;
+                let kx = x + if (k / 7) % 2 == 1 { 1 } else { 0 };
+                self.fill(kx, y, KELP);
+                self.fix(kx, y, 0, 0);
+                self.aux[y as usize * self.w + kx as usize] = k.min(255) as u8;
+                if k > 3 && k % 4 == 2 {
+                    let lx = kx + if k % 8 == 2 { 1 } else { -1 };
+                    if self.get(lx, y) == EMPTY {
+                        self.fill(lx, y, KELP);
+                        self.fix(lx, y, 0, 0);
+                        self.aux[y as usize * self.w + lx as usize] = k.min(255) as u8;
                     }
                 }
-            }
-        }
-        for (n, f) in [8, 12, 44, 48, 95].iter().enumerate() {
-            let x = w * f / 100;
-            let g = self.surface(x);
-            for k in 0..(h * (10 + (n as i32 * 7) % 9) / 100) {
-                self.fill(x, g - 1 - k, KELP);
-                self.fix(x, g - 1 - k, 0, 0);
-                self.aux[(g - 1 - k) as usize * self.w + x as usize] = k as u8;
             }
         }
         for f in [36, 52, 70] {
@@ -455,6 +523,11 @@ impl World {
         let (mx, my) = if h > w { (w * 28 / 100, h * 18 / 100) } else { (w * 14 / 100, h * 26 / 100) };
         self.disc(mx, my, 4, STONE);
         self.disc(mx, my, 1, GRAVITY);
+        // A few lonely space pebbles floating far from any pull.
+        for (fx, fy, r) in [(6, 8, 2), (93, 10, 1), (90, 88, 2), (8, 90, 1), (60, 6, 1)] {
+            let (x, y) = (w * fx / 100, h * fy / 100);
+            self.disc(x, y, r, if r > 1 { STONE } else { METEORITE });
+        }
         self.resident(w * 76 / 100);
     }
 

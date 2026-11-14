@@ -389,7 +389,9 @@ impl World {
         let height = self.aux[i];
         if variant == V_PALM {
             // A palm opens a crown of fronds instead of a flower.
-            for (dx, dy) in [(-1, 0), (1, 0), (-2, 1), (2, 1), (-1, -1), (1, -1), (-3, 2), (3, 2), (0, -1), (-2, 0), (2, 0)] {
+            for (dx, dy) in
+                [(-1, 0), (1, 0), (-2, 1), (2, 1), (-1, -1), (1, -1), (-3, 2), (3, 2), (0, -1), (-2, 0), (2, 0)]
+            {
                 if self.get(x + dx, y + dy) == EMPTY {
                     let j = (y + dy) as usize * w + (x + dx) as usize;
                     let sh = (self.fresh_shade() & 31) | (V_PALM << 5);
@@ -410,7 +412,9 @@ impl World {
         self.aux[i] = height;
         let petals: &[(i32, i32)] = match variant {
             V_REED => &[(0, 1), (0, -1)],
-            V_GIANT | V_RAINBOW => &[(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (-2, 0), (2, 0), (0, -2)],
+            V_GIANT | V_RAINBOW => {
+                &[(-1, 0), (1, 0), (0, -1), (0, 1), (-1, -1), (1, -1), (-1, 1), (1, 1), (-2, 0), (2, 0), (0, -2)]
+            }
             _ => &[(-1, 0), (1, 0), (0, -1), (0, 1)],
         };
         for &(dx, dy) in petals {
@@ -683,7 +687,10 @@ impl World {
             }
             return;
         }
-        let in_water = sea || liquid(self.get(x, y + 1)) && (y as usize) < self.h - 1 || self.get(x - 1, y) == WATER || self.get(x + 1, y) == WATER;
+        let in_water = sea
+            || liquid(self.get(x, y + 1)) && (y as usize) < self.h - 1
+            || self.get(x - 1, y) == WATER
+            || self.get(x + 1, y) == WATER;
         if !in_water && (a > 80 || self.chance(40)) {
             self.kill(i); // pop!
             return;
@@ -1282,7 +1289,9 @@ impl World {
     pub(crate) fn star(&mut self, x: i32, y: i32, i: usize) {
         self.keep(i);
         self.warm(x, y, ELEMENTS[STAR as usize].heat as i16, 250);
-        if self.stars_next.len() < 8 && !self.stars_next.iter().any(|&(sx, sy)| (sx - x).abs() < 6 && (sy - y).abs() < 6) {
+        if self.stars_next.len() < 8
+            && !self.stars_next.iter().any(|&(sx, sy)| (sx - x).abs() < 6 && (sy - y).abs() < 6)
+        {
             self.stars_next.push((x, y));
         }
     }
@@ -1405,6 +1414,10 @@ impl World {
     pub(crate) fn pipe(&mut self, x: i32, y: i32, i: usize) {
         let c = self.cells[i];
         let load = ca(c);
+        if load as usize >= ELEMENT_COUNT {
+            self.cells[i] = with_b(with_a(c, 0), 0);
+            return;
+        }
         if load == 0 {
             let start = self.rand() & 3;
             for k in 0..4u32 {

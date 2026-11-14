@@ -240,7 +240,20 @@ fn scenario(r: u8) -> (World, Act, u32) {
             s = arena(VOLCANO, 40, 30);
             basin(&mut s, 10, 20, 4);
             rect(&mut s, 10, 27, 14, f, LAVA);
-            rect(&mut s, 15, 27, 20, f, if r == R_NEW_ROCK { WATER } else if r == R_GLASS { SAND } else { SNOW });
+            rect(
+                &mut s,
+                15,
+                27,
+                20,
+                f,
+                if r == R_NEW_ROCK {
+                    WATER
+                } else if r == R_GLASS {
+                    SAND
+                } else {
+                    SNOW
+                },
+            );
         }
         R_PUMICE => {
             s = arena(VOLCANO, 40, 30);

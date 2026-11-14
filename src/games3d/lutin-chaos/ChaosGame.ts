@@ -230,16 +230,25 @@ class ChaosRuntime {
   }
 }
 
-function capture(host: Host, scene: THREE.Scene, camera: THREE.Camera): string | null {
+function capture(host: Host, scene: THREE.Scene, camera: THREE.Camera, focus?: THREE.Vector3): string | null {
   try {
     host.renderer.render(scene, camera);
     const src = host.renderer.domElement;
+    // portrait screens: keep a 5:4 band around the group instead of a tall, mostly empty frame
+    let sy = 0;
+    let sh = src.height;
+    if (focus && src.height > src.width * 1.05) {
+      sh = Math.round(src.width * 0.8);
+      const v = focus.clone().project(camera);
+      const py = (1 - (v.y + 1) / 2) * src.height;
+      sy = Math.round(Math.min(src.height - sh, Math.max(0, py - sh * 0.55)));
+    }
     const w = 360;
-    const h = Math.round((w * src.height) / Math.max(1, src.width));
+    const h = Math.round((w * sh) / Math.max(1, src.width));
     const c = document.createElement('canvas');
     c.width = w;
     c.height = h;
-    c.getContext('2d')!.drawImage(src, 0, 0, w, h);
+    c.getContext('2d')!.drawImage(src, 0, sy, src.width, sh, 0, 0, w, h);
     return c.toDataURL('image/jpeg', 0.72);
   } catch {
     return null;
@@ -969,7 +978,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
               q.elf.snapPose(q.pose, q.side);
               this.freezeNow(q.elf);
             }
-            const photo = capture(this.host, this.view.scene, this.view.camera);
+            const photo = capture(this.host, this.view.scene, this.view.camera, this.set.stage.clone().setY(0.9));
             this.host.emit('roomDone', { result, seed: this.session!.seed, photo });
             tw.after(1.6, () => this.napEnding());
           });
@@ -1426,7 +1435,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
 
   private snap() {
     this.rt.sfx('flash');
-    const photo = capture(this.host, this.view.scene, this.view.camera);
+    const photo = capture(this.host, this.view.scene, this.view.camera, this.set.stage.clone().setY(0.9));
     if (photo) this.host.emit('snapshot', { roomId: this.o.room.id, photo });
     this.rt.sayText(RT.snapDone, 'ziggy', 'snap');
   }
