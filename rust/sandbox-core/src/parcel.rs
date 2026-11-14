@@ -40,7 +40,7 @@ pub struct Parcel {
     pub opened: u8,
     /// Ticks since it landed, opened or was last bumped (for the squash and the pop).
     pub age: u16,
-    stuck: u16,
+    pub(crate) stuck: u16,
 }
 
 impl World {
