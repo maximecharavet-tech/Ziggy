@@ -63,6 +63,24 @@ pages from this session, so a few facts come from search-result summaries; these
    [Qwen3-ForcedAligner](https://huggingface.co/Qwen/Qwen3-ForcedAligner-0.6B),
    [Audio2Face-3D card](https://huggingface.co/nvidia/Audio2Face-3D-v3.0)).
 
+Added after the scope extension (sections 11–12):
+
+6. **The best Rust TTS stack to learn from is Gradium's `xn-ptts`** (MIT/Apache). It runs in
+   WASM SIMD + WebGPU, Core ML and QNN, and streams frame by frame. Its own benchmark: 7 ms to the
+   first audio vs 776 ms for Kokoro on the same core. Its **English Phonon 31m model is
+   Apache-2.0**; the French Phonon 40m model is CC-BY-NC
+   ([README](https://github.com/gradium-ai/xn-ptts)).
+7. **Pure-Rust ONNX runtimes are not ready for Kokoro as published.** In our test, tract 0.23.10
+   and rten 0.28 both loaded the Kokoro int8 graph and both failed to run it. The kokoro-onnx
+   "fp16" file is really a statically quantized graph that needs ONNX Runtime's own extra ops.
+   Keep `ort` / onnxruntime-web for Kokoro; burn-onnx (ONNX → Rust code, wgpu/WebGPU) is the
+   long-term pure-Rust path. **`symphonia` is MPL-2.0 and `mp3lame-encoder` is LGPL-3.0**, so
+   neither can ship.
+8. **French needs about ten front-end components that no permissive tool provides**: liaison by
+   register, the h-aspiré list, schwa policy, *six/dix/huit* context pronunciations, roman
+   numerals, *-ent* homographs, sigle vs acronyme, dialogue dashes, and a rising contour for
+   wh-in-situ questions. Verbalis (MIT) covers dates, times, money and units (section 12).
+
 Also notable: the site's live voice today is **Gemini TTS via `/api/tts`**
 (`src/lib/tts-gemini.ts`). That sends the text Ziggy speaks to Google; the browser's
 `speechSynthesis` is the fallback (`src/lib/voice.ts`). No child voice is sent, but the lines
@@ -108,7 +126,7 @@ storyteller prosody (`intonation.rs` / `contour.rs`) can run live too.
 | **ort** (Rust) 2.0-rc.13+ | Native; `ort-web` (WASM/WebNN EPs); alternative backends `ort-tract`, `ort-candle` | Any ONNX | — | MIT/Apache-2.0 ([rc.10 notes](https://newreleases.io/project/github/pykeio/ort/release/v2.0.0-rc.10), [rc.11 notes](https://newreleases.io/project/github/pykeio/ort/release/v2.0.0-rc.11)) | **Already used.** The same Rust engine could compile into the Tauri app. `ort-tract` (pure Rust) is an option where shipping libonnxruntime is awkward |
 | **Kokoros** (Rust) | Native; WASM is "a goal" | Kokoro | Streaming HTTP with "1–2 s time-to-first-audio" (README, 2025-07) | Apache-2.0 **but** its phonemizer is espeak-ng based (README changelog 2025-01) ([README](https://github.com/lucasjinreal/Kokoros)) | Inspiration (chunking, style mixing) |
 | **candle** (HF, Rust) | Native, WASM, Metal/CUDA | Pocket TTS port (`babybirdprd/pocket-tts`), `any-tts` (Kokoro on candle, pure-Rust phonemizer, "parity tuning ongoing") | — | MIT/Apache-2.0 ([any-tts](https://github.com/TM9657/any-tts)) | Watch. A NobodyWho post (Aug 2026) says candle's accelerator coverage "isn't yet where they need it" ([post](https://nobodywho.ooo/posts/announcing-stt-tts/)) |
-| **xn / xn-ptts** (Kyutai/Gradium, Rust) | Native, **WASM** (`ptts-wasm`) | Pocket TTS (official Rust binary) | Pocket TTS: "~6× real time on a MacBook Air M4", 2 cores, ~200 ms first chunk ([README](https://github.com/kyutai-labs/pocket-tts)) | MIT (code) | Inspiration for streaming design; model licence is the blocker (section 3) |
+| **xn / xn-ptts** (Gradium, Rust; the Pocket TTS official binary) | Native, **WASM SIMD + WebGPU** (npm `phonon-tts`), Swift/Core ML, Android CPU + Snapdragon QNN, C FFI, Python | Pocket TTS and Gradium's **Phonon** models | Phonon 40m: 20× real time on one MacBook Air M5 core with 7 ms time-to-first-byte, versus Kokoro (PyTorch, same core) at 7.3× with 776 ms. Raspberry Pi 5, 1 core: 2.2–2.3× ([README](https://github.com/gradium-ai/xn-ptts)) | Code MIT OR Apache-2.0. Weights: **Phonon 31m (English) Apache-2.0**; Phonon 40m fr/de/es/pt and multilingual **CC-BY-NC-4.0** (same README) | **Best-in-class Rust streaming reference** (section 11). Phonon 31m is a clean **English** live option. French Phonon is NC: inspiration only |
 | **burn** (Rust) | Native, WASM, WebGPU | Voxtral TTS port with Q4 GGUF in WASM (search summary) | — | MIT/Apache-2.0 | Watch |
 | **ggml / llama.cpp** family | CPU, Metal, Vulkan | llama.cpp `tools/tts` (OuteTTS + WavTokenizer); **TTS.cpp** (Kokoro, Parler, Dia, Orpheus); NeuTTS GGUF; Kitten-TTS-2 llama.cpp fork | TTS.cpp: best RTF 1.11 on M1 Max (Parler, Q5_0); "only currently supported on OS X"; optional espeak-ng phonemization ([TTS.cpp](https://github.com/mmwillet/TTS.cpp)) | MIT | Fits LLM-style TTS (codec-token models); not needed for Kokoro |
 | **MLX / mlx-audio** | Apple Silicon only | Kokoro, Pocket (`pocket-tts-mlx`) and others | Core ML port claims 30 s of speech in 379 ms on a Mac Studio, "2× faster than MLX" (vendor claim) ([kokoro-coreml](https://huggingface.co/mattmireles/kokoro-coreml)) | MIT | Only useful if we bake on a Mac |
@@ -172,6 +190,7 @@ What this shows:
 | **Kitten TTS 2 nano / pico / mini** (released 2026-11-13) | 17M (17.4 MB int8 per language) / 7.2M (8 MB) / 82M | nano/pico: en de es it pt ru hi **fr**; mini: 16 languages incl. **fr** (no ar) | int8 ONNX on CPU | Apache-2.0 / **Apache-2.0** (HF tags, [nano](https://huggingface.co/KittenML/kitten-tts-2-nano), [mini](https://huggingface.co/KittenML/kitten-tts-2-mini)) | **Test candidate** for tiny on-device FR. Its French G2P is espeak-ng at runtime ([docs](https://github.com/KittenML/KittenTTS/blob/main/docs/kitten-tts-2-tiny.md)), so we would feed our own phonemes. Too new to judge quality |
 | Kitten TTS 2 (1.7B, 1-bit) | 492–954 MB | 20 languages incl. fr, ar | llama.cpp fork | Apache-2.0 / **Stellon Labs Community License** ([README](https://github.com/KittenML/KittenTTS)) | Inspiration only |
 | **Pocket TTS** (Kyutai, Jan 2026; updates to Oct 2026) | 100M; English variants down to 1.9M | en fr de pt it es nl | Rust/WASM (xn), ONNX (sherpa-onnx, ORT-web), candle, MLX, LiteRT, C++ | MIT / **CC-BY-4.0, gated** ([card](https://huggingface.co/kyutai/pocket-tts)). sherpa's ONNX export README says "for non-commercial" (conflicting). Voices have per-voice licences (some come from NC sets like Expresso/EARS, [prior audit](../huggingface/REPORT.md)) | Inspiration / owner decision. Voice comes from **cloning a reference clip**, which needs a cleared voice. CC-BY is not on the allowed list |
+| **Phonon 31m / 40m** (Gradium, 2026) | 31M / 40M | 31m: **en** only; 40m: en, fr, de, es, pt | xn Rust stack (WASM+WebGPU, Core ML, QNN), frame streaming | Code MIT/Apache / **31m Apache-2.0**; 40m **CC-BY-NC-4.0** ([README](https://github.com/gradium-ai/xn-ptts)) | 31m: **test candidate for English live** (needs a voice that fits Ziggy; voices are designed or cloned). 40m fr: not allowed |
 | Supertonic 3 (Apr 2026) | ~99M ONNX | 31 languages incl. fr, **ar** | ORT native/web, WebGPU | MIT? (code) / **OpenRAIL** ([card](https://huggingface.co/supertone-oss-archive/supertonic-3)); repo **archived** 2026 ([README](https://github.com/supertone-oss-archive/supertonic)) | Inspiration only (the speed recipe, expression tags) |
 | NeuTTS Air / Nano | 748M / 229M (GGUF Q4/Q8) | Air: en; Nano: en, **fr**, de, es | llama.cpp + NeuCodec ONNX decoder | Air: Apache-2.0; Nano family: **NeuTTS Open License 1.0** ([README](https://github.com/neuphonic/neutts-air)) | Air: English only. Nano-French: not allowed |
 | Chatterbox Nano / Turbo / Multilingual V3 | 110M / 350M / 500M | Nano, Turbo: en; ML V3: 23+ incl. **fr, ar** | PyTorch; Nano "3× real time on 8 CPU cores" | MIT / MIT ([README](https://github.com/resemble-ai/chatterbox), [card](https://huggingface.co/ResembleAI/chatterbox)); repo now an unsupported archive | Offline-bake candidate (zero-shot from our *own synthetic* Ziggy reference). Output carries the Perth watermark |
@@ -360,6 +379,15 @@ offline experiments only.
 
 ## 10. Recommended architecture for the Ziggy voice app
 
+> **Update (owner, via the coordinator):** the voice app will be built in the owner's other repo,
+> **hyper-engine** (TanStack Start site hyper-engine.ai). That repo already has a `rust/hv-voice`
+> DSP crate compiled to WASM and a "MAX9000 VOICE" router. It has a Rust core and zero running
+> cost: inference runs in the owner's browser through WebGPU/WASM, plus offline Rust batch jobs.
+> I have not read that repo. The plan below still holds; read "Tauri plugin" as one more consumer
+> of the same core. The **browser path (B2) becomes the primary live path**, served by the core
+> compiled to WASM next to `hv-voice`. The MAX9000 VOICE router plays the `router.ts` role in
+> 10.6. Section 11 gives the Rust stack for that core.
+
 ### 10.1 Principles
 
 1. **One voice core, written once, in Rust**: the existing `voice-engine` crate split into a
@@ -408,7 +436,9 @@ Hyper Engine job "voice.bake" (build machine / owner's computer, never Vercel)
   `phoneme_codepoints`. Prefer our own `ort` runner. It keeps the patched graph (durations,
   F0 and energy control), so live lines get the same storyteller prosody and exact
   timings/visemes as baked ones.
-- Model: Kokoro fp16 (about half the 325 MB fp32 file) or int8-MatMul/fp32-conv. Downloaded once after install with a
+- Model: an fp16 conversion of the plain fp32 graph that we make ourselves (about half the 325 MB
+  fp32 file), or int8-MatMul/fp32-conv. Do not use the `kokoro-v1.0.fp16.onnx` file published by
+  kokoro-onnx: it contains no fp16 tensors and only runs on ONNX Runtime (section 11.2). Downloaded once after install with a
   parent's consent, not bundled. Only the two voice tables needed (Ziggy's blends), not 54.
 - Expect RTF around 0.7–1.5 on mid-range phones (section 2.2). So use sentence streaming,
   pre-fetch, and the cache. Fall back to phrase-bank or OS TTS if the device is too slow (measure
@@ -480,6 +510,176 @@ voice-engine/ (Rust workspace)
    fallback.
 5. Browser Path B2 behind a feature flag (WebGPU first).
 6. Optional: retrain HeadAudio's viseme model on our French bakes for audio-only lip-sync.
+
+---
+
+## 11. Best-in-class Rust for voice
+
+Target: one Rust core that runs (a) as an offline batch CLI on the owner's machine and (b) as
+`wasm32-unknown-unknown` in the owner's browser (WebGPU when present, WASM SIMD otherwise),
+next to hyper-engine's existing `rust/hv-voice` DSP crate. Versions and licences below come
+from the crates.io API on 2026-11-14 unless another source is given.
+
+### 11.1 Inference: which engine for which job
+
+| Crate | Version (date) | Formats | CPU | GPU | wasm32 | Licence | Verdict |
+|---|---|---|---|---|---|---|---|
+| **ort** (pykeio) | 2.0.0-rc.15 (2026-10-19) | ONNX (full ORT op set, incl. `com.microsoft` contrib ops) | ORT MLAS kernels | CUDA, TensorRT, CoreML, DirectML, … via ORT | through **ort-web** 0.5 (wraps onnxruntime-web 1.30; WebGPU/WebNN/WASM EPs, [rc.11 notes](https://newreleases.io/project/github/pykeio/ort/release/v2.0.0-rc.11)) | MIT OR Apache-2.0 (+ ORT MIT) | **Default for Kokoro**: already in `voice-engine`. Batch: native. Browser: ort-web, or onnxruntime-web called from JS |
+| **ort-tract / ort-candle** | 0.5.0 (2026-10-12) | ort API over tract / candle | pure Rust | — | yes | MIT OR Apache-2.0 | Lets one `ort` codebase switch backends with `ort::set_api(...)` ([rc.10 notes](https://newreleases.io/project/github/pykeio/ort/release/v2.0.0-rc.10)) |
+| **tract** (Sonos) | 0.23.10 (2026-11-05) | ONNX, NNEF | hand-written SIMD kernels (x86, ARMv6–8, SVE) | NVIDIA / Apple GPU paths | yes (wasm-model-bench example) | MIT OR Apache-2.0 ([README](https://github.com/sonos/tract)) | Production-grade pure Rust. **Our test:** it parsed the Kokoro int8 graph in 0.18 s but failed type analysis at `/bert/embeddings/word_embeddings/Gather_output_0_DequantizeLinear` |
+| **rten** | 0.28.0 (2026-11-08) | ONNX (most standard ops, some ORT contrib) | AVX2, AVX-512, NEON, **WASM SIMD** | none (CPU only) | yes, built-in JS API | MIT OR Apache-2.0 ([README](https://github.com/robertknight/rten)) | Cleanest pure-Rust ONNX CPU runtime. **Our test:** loaded Kokoro int8 (86.7M params) but failed at run time (`/text_encoder_1/Expand` broadcast error). It rejects the kokoro-onnx "fp16" file (`QLinearConv` unsupported) |
+| **candle** (HF) | 0.11.1 (2026-10-31) | safetensors, GGUF; `candle-onnx` (needs `protoc`) | MKL/Accelerate | CUDA, Metal | yes (Whisper, T5, SAM wasm demos) | MIT OR Apache-2.0 ([README](https://github.com/huggingface/candle)) | Best for re-implementing a model in Rust from safetensors (Whisper, EnCodec, Parler-TTS, MetaVoice examples; `any-tts` runs Kokoro on candle). No WebGPU backend in its README |
+| **burn** + **burn-onnx** + **cubecl** | 0.22.1 (2026-11-09) | ONNX → **generated Rust code** (opsets 1–24); burn-store weights | ndarray / candle backends | **wgpu** (Vulkan/Metal/DX12/**WebGPU**), CUDA, ROCm | yes | MIT OR Apache-2.0 ([burn-onnx](https://github.com/tracel-ai/burn-onnx)) | **Long-term pure-Rust WebGPU path**: the ONNX graph becomes readable Rust, compiled to WGSL through cubecl/wgpu. Kokoro import is untested |
+| **wgpu** | 30.0.2 (2026-11-12) | — | — | Vulkan, Metal, D3D12, GL; **WebGPU and WebGL2 on wasm** ([README](https://github.com/gfx-rs/wgpu)) | yes | MIT OR Apache-2.0 | Foundation for any hand-written GPU kernels (e.g. iSTFT, WORLD-like DSP on GPU) |
+| **xn / ptts** (Gradium) | see [README](https://github.com/gradium-ai/xn-ptts) | own format (Pocket TTS / Phonon) | KleidiAI, WASM SIMD | WebGPU, Core ML, QNN | yes | MIT OR Apache-2.0 | **Reference design** for a streaming Rust TTS stack: 7 ms TTFB, npm/PyPI/Swift/Android/C packaging from one workspace |
+| **sherpa-onnx** (Rust crate) | 2.0.1 (2026-10-27) | ONNX (wraps the C++ lib) | ORT | — | separate npm WASM build | Apache-2.0 | Turnkey, espeak-free (section 2) |
+
+**What our quick tests show** (scratchpad, 2026-11-14; models deleted afterwards):
+- The `kokoro-v1.0.fp16.onnx` file (177 MB) from kokoro-onnx's `model-files-v1.0` release has
+  **no fp16 tensors** (initializer types: float32, uint8, int8, int32, int64). It is a statically
+  quantized, ORT-optimized graph using `QLinearConv`/`QLinearAdd`/`QLinearMatMul`,
+  `FastGelu` and `SkipLayerNormalization` (ORT contrib ops), so only ONNX Runtime can run it.
+- The k2-fsa Kokoro int8 graph (dynamic quantization: `ConvInteger`, `MatMulInteger`,
+  `DynamicQuantizeLinear`, plus the contrib op `DynamicQuantizeLSTM`) loads in tract and rten
+  but runs in neither.
+- **Conclusion:** keep ONNX Runtime (native `ort`, and onnxruntime-web / ort-web in the
+  browser) for Kokoro. A pure-Rust runtime (tract, rten, burn-onnx) would need the **plain fp32
+  graph** and op-by-op validation against ORT. Not tested here: the fp32 file is 325 MB, above
+  this session's download limit. It is a good first spike in hyper-engine.
+
+### 11.2 Audio and text crates (licence-checked)
+
+| Job | Use | Licence | Avoid (and why) |
+|---|---|---|---|
+| Resampling | **rubato** 5.1 (async sinc + fast FFT resamplers; "real-time safe", no allocation while processing, [README](https://github.com/HEnquist/rubato)) | MIT OR Apache-2.0 | `soxr` (LGPL-2.1); `samplerate` (BSD-2, C libsamplerate) is fine but unnecessary |
+| FFT / STFT | **realfft** 3.5 over **rustfft** 6.4 (auto AVX/SSE4.1/NEON; WASM SIMD only with the `wasm_simd` feature, because WASM has no runtime feature detection, [README](https://github.com/ejmahler/RustFFT)) | MIT / MIT OR Apache-2.0 | — |
+| WAV I/O | **hound** 3.5 | Apache-2.0 | — |
+| Decoding MP3/OGG/FLAC | **minimp3** 0.6 (MIT, C minimp3 inside), **lewton** (Vorbis), **claxon** (FLAC, Apache-2.0), **ogg** (BSD-3) | permissive | **symphonia 0.6.1 is MPL-2.0**: forbidden by the repo rule, although it is the best pure-Rust decoder |
+| Encoding | Batch: keep `ffmpeg`+LAME as an external build tool (not linked). Browser: **WebCodecs `AudioEncoder`** (Opus) ([MDN](https://developer.mozilla.org/en-US/docs/Web/API/AudioEncoder)); `opus` crate (MIT/Apache over BSD libopus) if needed natively | — | `mp3lame-encoder` crate (**LGPL-3.0**) |
+| Loudness | **ebur128** 0.1.11 (already used) | MIT | — |
+| DSP building blocks | **biquad** 0.6, **fft-convolver** 0.4, **fundsp** 0.23 (already used for Santa) | MIT / MIT OR Apache-2.0 | — |
+| Pitch / formant | **rsworld** 0.1 (WORLD, already used; unmaintained since 2019, with the two known bugs worked around in `world.rs`); **pyin** 1.2 (MIT) for F0 checks | MIT (WORLD modified BSD) | `rubberband` crate (**GPL-2.0-or-later**) |
+| Denoise | **nnnoiseless** 0.5 (RNNoise port) | BSD-3-Clause | — |
+| Real-time plumbing | **rtrb** 0.4 / **ringbuf** 0.6 (lock-free SPSC ring buffers between the synthesis thread and the audio callback/AudioWorklet); **cpal** 0.18 for native output; **web-audio-api** 1.8 (pure-Rust Web Audio for native tests) | MIT/Apache, Apache-2.0, MIT | — |
+| Text | **unicode-segmentation** (sentences/words), **unicode-normalization**, **regex**; **num2words** 1.2 (French cardinal/ordinal/year/currency, [README](https://github.com/Ballasi/num2words)); **misaki-rs** 0.9.0 (2026-11-12: MIT, embeds misaki data, POS-aware heteronyms; build with `default-features = false` to drop its espeak fallback, [README](https://github.com/MicheleYin/misaki-rs)) | MIT/Apache, MIT | `icu_segmenter` is **Unicode-3.0**: the owner accepted that licence only for `unicode-ident`, so ask before adding it |
+| Tensors / memory | **ndarray**, **half** (f16), **bytemuck** (zero-copy casts), **memmap2** (mmap weights natively), **safetensors**, **aligned-vec** | MIT/Apache, Apache-2.0 | — |
+| SIMD | `std::arch` intrinsics + runtime detection, or the stable crates **pulp** (MIT) / **wide**. Build the WASM core twice (with and without `+simd128`), as RustFFT explains | — | Nightly-only portable SIMD in production code |
+| Threads in WASM | **wasm-bindgen-rayon** (needs `SharedArrayBuffer`, i.e. COOP/COEP cross-origin isolation, [README](https://github.com/RReverser/wasm-bindgen-rayon)) | Apache-2.0 | Assuming threads exist: TanStack Start must send COOP/COEP headers on the voice route, and must still work single-threaded |
+| Errors | **thiserror** 2 in libraries, **anyhow** in binaries; `miette` for CLI diagnostics | MIT/Apache, Apache-2.0 | Panics across the WASM boundary; use `console_error_panic_hook` in dev |
+
+### 11.3 Patterns that make a voice core "best in class"
+
+1. **Pure, I/O-free core.** Text in, `&[f32]` / `Vec<f32>` plus timings out. No file system,
+   threads or clocks in `core`. The CLI, Tauri plugin and WASM shim are thin adapters. Keep the
+   model runner behind a trait (`trait Acoustic { fn predict(..); fn vocode(..); }`) with impls
+   for native `ort`, `ort-web` and, later, burn/tract. This is the pattern `ort`'s
+   alternative backends and `any-tts` use.
+2. **Two-stage graph, as today.** Predictor (durations, F0, energy) then decoder. It allows
+   prosody control, exact word timings and visemes, and **streaming by sentence**: render
+   sentence *n+1* while *n* plays.
+3. **Zero-copy streaming in the browser.** Synthesis runs in a Worker and writes into a
+   `SharedArrayBuffer` SPSC ring (the rtrb design). An AudioWorklet reads it on the audio
+   clock. Without cross-origin isolation, fall back to transferring `ArrayBuffer` chunks (moved,
+   not copied). Use `Float32Array::view` only for short-lived views into WASM memory, because
+   they are invalidated when memory grows.
+4. **`no_std` + `alloc` only where it pays.** Use it for DSP kernels (biquads, envelopes, limiter,
+   viseme mapping) that could also run in an AudioWorklet WASM module with a tiny binary. The
+   text front-end and model runner stay `std`.
+5. **Determinism.** Same text + voice + recipe gives the same bytes on the batch path. Key the
+   cache by a hash of all three, as the Santa manifest does. Float neural outputs are not
+   bit-identical across CPUs and GPUs, so cross-device tests use tolerances.
+6. **Licence gate in CI:** **cargo-deny** (`[licenses] allow = ["MIT","Apache-2.0",
+   "BSD-2-Clause","BSD-3-Clause","Zlib"]`, ISC and Unicode-3.0 as per-crate exceptions) plus
+   **cargo-about** to generate `THIRD_PARTY_LICENSES`. This mirrors `scripts/licence-audit.mjs`
+   and the app's `licenses.mjs`. It would have caught `symphonia` (MPL) and `mp3lame-encoder`
+   (LGPL).
+7. **Testing stack:**
+   - **insta** snapshots of the phoneme strings for every story sentence and test sentence. This
+     is the regression net for G2P, liaisons and numbers; review diffs by ear.
+   - **proptest** properties: the limiter never exceeds the ceiling; loudness lands within
+     ±0.1 LU of target; the sum of durations equals the audio length; timings are monotonic; the
+     normaliser never drops a digit.
+   - **cargo-fuzz** (libFuzzer; the `libfuzzer` directory is NCSA-licensed, dev-only,
+     [README](https://github.com/rust-fuzz/libfuzzer)) on the text front-end and markup parser:
+     no panic on any UTF-8, emoji, RTL or control characters.
+   - **criterion** / **divan** for wall-clock benchmarks; **iai-callgrind** for CI-stable
+     instruction counts; **dhat** for heap profiling.
+   - Golden-audio tests with tolerances (the engine's `tests/engine.rs` already does this).
+
+### 11.4 Rust voice repos worth studying
+
+| Repo | Why |
+|---|---|
+| [gradium-ai/xn-ptts](https://github.com/gradium-ai/xn-ptts) | Streaming TTS in Rust with WASM+WebGPU, Core ML, QNN; one workspace publishes npm, PyPI, Swift, Android and C; 7 ms TTFB |
+| [kyutai-labs/moshi](https://github.com/kyutai-labs/moshi) (`rust/`) | Production Rust streaming audio: Mimi codec (80 ms frames, 12.5 Hz) on candle, Python bindings (`rustymimi`) |
+| [sonos/tract](https://github.com/sonos/tract) | Embedded-grade pure-Rust inference, hand-written SIMD kernels, WASM bench |
+| [robertknight/rten](https://github.com/robertknight/rten) | Pure-Rust ONNX runtime with WASM SIMD and a JS API |
+| [huggingface/candle](https://github.com/huggingface/candle) | Whisper/EnCodec/Parler-TTS/MetaVoice in Rust; WASM demos |
+| [tracel-ai/burn-onnx](https://github.com/tracel-ai/burn-onnx) | ONNX → readable Rust code for a WebGPU-capable framework |
+| [MicheleYin/misaki-rs](https://github.com/MicheleYin/misaki-rs) | G2P port with output parity against Python misaki 0.9.4 |
+| [TM9657/any-tts](https://github.com/TM9657/any-tts) | Trait-based multi-model TTS API (Kokoro, Qwen3-TTS, …) on candle |
+| [altunenes/parakeet-rs](https://github.com/altunenes/parakeet-rs) | Clean `ort`-based streaming ASR crate (Parakeet/Nemotron) |
+| [k2-fsa/sherpa-onnx](https://github.com/k2-fsa/sherpa-onnx) | Espeak-free multi-model TTS runtime with a Rust binding |
+| [HEnquist/rubato](https://github.com/HEnquist/rubato) | Real-time-safe DSP API design (no allocation in the hot path) |
+| Ziggy `voice-engine/` | Protobuf ONNX graph editor without protoc (`onnx_patch.rs`), EBU R128 + true-peak mastering with tests, resumable atomic batch output |
+
+---
+
+## 12. French and English specifics
+
+What each language needs from the front-end. For each phenomenon: who handles it today, which
+permissive tools or data help, and **what we must write ourselves**. "Engine" means the current
+Rust `voice-engine`. Remember that espeak-ng may run only on the build machine.
+
+### 12.1 French
+
+| Phenomenon | What must happen (examples) | Handled today by | Permissive help | Gap: write ourselves |
+|---|---|---|---|---|
+| **Liaison obligatoire** | Determiner + noun *les‿enfants*, *des‿amis* ([Académie](https://dictionnaire-academie.fr/article/QDL046)); pronoun + verb *ils‿ont*, *on‿a*; inversion *vont‿ils*, *dit‿il*; prenominal adjective + noun *petit‿ami*; short prepositions and adverbs *chez‿eux*, *très‿utile*; set phrases *tout‿à coup*. Sounds change in liaison: s/x→[z], d→[t] (*grand‿homme*), f→[v] (*neuf‿ans*), denasalisation (*bon‿ami*) ([UT Austin FI](https://laits.utexas.edu/fi/html/pho/12.html)) | espeak-ng on word runs (`g2p_fr.rs`, build only) | Closed-class word lists (determiners, pronouns, prepositions) are facts we can write; no permissive rule set found | **Liaison engine in Rust**: a closed-class lexicon + a small POS-lite tagger + latent-consonant table per word (lexicon field) |
+| **Liaison interdite** | After *et*; before aspirated h (*les | héros*, *le hibou*, no elision); singular noun + adjective; subject noun + verb ([LibreTexts](https://human.libretexts.org/Courses/University_of_Houston/Improvisations_-_3/01%3A_Unite_4_-_Qui_est_a_lappareil/1.05%3A_Phonetique), [live-french](https://live-french.net/blog/grammar/french-liaisons/)); also before *onze*, *oui* | espeak (build) | An h-aspiré list (≈80 frequent words, per the sources) is factual. Wiktionary categories are CC-BY-SA (do not copy) | Curated h-aspiré list + blocking rules |
+| **Liaison facultative** | After *pas*, *trop*, *plus* ([LibreTexts](https://human.libretexts.org/Courses/University_of_Houston/Improvisations_-_3/01%3A_Unite_4_-_Qui_est_a_lappareil/1.05%3A_Phonetique)); auxiliary + participle *je suis‿allé*; plural noun + adjective *des enfants‿heureux* | espeak's default choices | — | A **register setting**: storyteller = more optional liaisons than casual speech, never the pedantic ones. Expose per role in markup |
+| **Élision** | *le/la/je/me/te/se/de/ne/que* + vowel or mute h → *l'*, *j'*; blocked by aspirated h (*le héros*) | Text (apostrophes), tokeniser keeps *l'* with the next word (as Phonemis' `KEEP_WITH_RIGHT`) | — | Handle missing elisions in AI text (*si il* → *s'il*), typographic ’ vs '; unify with the h-aspiré list |
+| **E muet / schwa** | Final *e* silent; internal schwa drops when one consonant precedes (*samedi* [samdi], *la s'maine*). The "three-consonant law" (Grammont) is descriptive and contested (Fouché) ([Picard 1991](https://www.erudit.org/fr/revue/rql/1991/v20/n2/602703ar.pdf)); kept after two consonants (*mercredi*, *gouvernement*) | espeak (build) | MFA French dictionary (CC-BY-4.0) gives citation forms | **Schwa policy**: for children, keep more schwas than casual speech (clearer, slower), with drop rules applied only in fast or character speech |
+| **Enchaînement** | A pronounced final consonant links to the next vowel (*il‿arrive*, *avec‿elle*, *une‿amie*) | Kokoro does it if no pause is inserted | — | Never insert pauses or boundary tokens inside a rhythmic group |
+| **Nombres** | *soixante-dix*, *soixante et onze*, *quatre-vingts* / *quatre-vingt-un*, *quatre-vingt-dix*; *et un* for 21–71 but not 81/91; *cent(s)*, *mille* invariable; Belgian/Swiss *septante/nonante* (*huitante* in Swiss) as locale variants | **Engine `numbers.rs`** (cardinals, ordinals 1er/1re/2e, decimals, %) | num2words crate (MIT/Apache: fr cardinal, ordinal, year, currency); Verbalis (MIT) | Context pronunciation belongs to G2P, not normalisation: *six/dix* [sis]/[si]/[siz] (*six enfants* [siz‿ɑ̃fɑ̃], *six garçons* [si], *j'en ai six* [sis]); *huit* [ɥi(t)]; *neuf ans* [nœv‿ɑ̃]; *vingt* [vɛ̃] vs *vingt-deux* [vɛ̃t]; *cent ans* [sɑ̃t‿ɑ̃] |
+| **Ordinaux, siècles** | *1er* premier, *1re* première, *2e/2d* deuxième/second, *21e* vingt et unième; *XIXe siècle* dix-neuvième; *Louis XIV* quatorze | Engine: arabic ordinals | Verbalis | **Roman numerals** (century vs regnal number vs chapter) |
+| **Dates, heures** | *le 14 juillet* (cardinal) but *le 1er mai* (premier); *14/07* → *quatorze juillet*; *20h30* → *vingt heures trente*; *12 h* / *midi* (style choice) | — | **Verbalis** (its own example: "Rendez-vous le 14/07 à 20h30." → "… le quatorze juillet à vingt heures trente", [README](https://github.com/software-mansion-labs/Verbalis)) | French parity tests; a style choice for *et quart* / *et demie* in children's speech |
+| **Monnaies, unités** | *3,50 €* → *trois euros cinquante*; decimal comma *3,5* → *trois virgule cinq*; *10 000* with a (narrow) no-break space; *5 km*, *°C*, *1,5 L* | Engine: decimals, % | Verbalis (money, units); num2words currency | Unit list for children's content (cm, kg, km/h, °C, min) |
+| **Abréviations** | *M.* Monsieur, *Mme*, *Mlle*, *MM.*, *Dr*, *Pr*, *St/Ste*, *etc.*, *p. ex.*, *c.-à-d.*, *n°*, *av. J.-C.*, *chap.* | — | Verbalis `terms` + custom `abbreviations` | Disambiguate *M.* (Monsieur) vs an initial (*M. Dupont* vs *Jean M.*); children's list |
+| **Sigles vs acronymes** | Spelled: *SNCF*, *TGV*, *CE1* (cé-eu-un). Read as words: *OTAN*, *UNESCO* ([Académie QDL079](https://dictionnaire-academie.fr/article/QDL079)). Sources note there is **no precise rule** ([OQLF](https://vitrinelinguistique.oqlf.gouv.qc.ca/21385/les-abreviations-et-les-symboles/les-sigles-et-les-acronymes/generalites-sur-les-sigles-et-acronymes)) | lexicon.json for a few | — | Curated list + heuristic (pronounceable CV pattern → read, else spell) + **French letter names** in Kokoro phonemes |
+| **Homographes** | *les fils* [fis] (sons) / [fil] (threads); *le couvent* [kuvɑ̃] / *elles couvent* [kuv]; *le président* [pʁezidɑ̃] / *ils président* [pʁezid]; also *content*, *violent*, *excellent* (adjective vs 3rd-person-plural verb); *est* [ɛ] verb / [ɛst] east; *plus* [ply]/[plys]/[plyz]; *tous* [tu]/[tus]; *os* sg [ɔs] / pl [o]; *fier* [fjɛʁ] / *se fier* [fje]; *portions* noun [pɔʁsjɔ̃] / verb [pɔʁtjɔ̃] | espeak's built-in rules + engine review of *tous, ours, gentil, fier* (`voice-engine/README.md` §5) | ipa-dict lists both readings of *est* (repo MIT, but its fr_FR source is uncredited, [README](https://github.com/open-dict-data/ipa-dict)); Lexique 3.83 / 4.00 has POS and homograph counts but is **CC-BY-SA 4.0** ([README](https://lexique.org/databases/Lexique400/README-Lexique.txt)), so use it as a checklist only, not as copied data | **Rules**: *-ent* after *ils/elles* or a plural subject → verb ending [∅]; *-tions* after *nous* → [tjɔ̃]; *est* = verb unless *l'est*, *à l'est*, *nord-est*; *fils* = [fis] by default, [fil] after *les fils électriques/de fer*; *plus* by polarity and liaison context |
+| **Ponctuation française** | No-break space before *; : ! ?* and inside « » ([Imprimerie nationale rules, via CNRS guide](https://www.pharmacie.universite-paris-saclay.fr/sites/default/files/media/2020-09/regles-typographie_cnrs.pdf)); nested « “ ” »; ellipsis …; **dialogue dashes** (— at the start of a line marks a change of speaker inside « ») | **Engine `text.rs`** handles « » ’ … and no-break spaces; `prosody.rs` attributes quotes and incises | — | **Dialogue-dash parsing** (line-initial —/– as a turn change) for character voices; Québec spacing variant ([OQLF](https://vitrinelinguistique.oqlf.gouv.qc.ca/22039/la-typographie/espacement/espacement-avant-et-apres-les-signes-de-ponctuation-et-les-symboles)) |
+| **Intonation des questions** | Yes/no questions rise; wh-questions fall but vary (Delattre 1966); **wh-in-situ** (*Tu vas où ?*) tends to rise, less steeply ([Déprez et al.](https://hal.archives-ouvertes.fr/hal-00927013)); with *est-ce que* or inversion, non-rising tunes are possible ([Santiago et al. 2014](https://halshs.archives-ouvertes.fr/halshs-01428563v1/file/Santiago%20et%20al%20%282014%29SpeechProsody.pdf.pdf)) | **Engine v3**: closed question ≥ +4 st rise; open question starts high and falls; *est-ce que* treated as closed | — | **Wh-word at the end → rising contour** (today any wh-word makes it "open" and falling); allow a gentler rise after *est-ce que* |
+| **Lecture de dialogues** | Incises (*dit-il*, *demanda Lili*) lower, faster and softer; euphonic *-t-* (*a-t-il* [atil]); inversion liaison (*dit‿il*) | **Engine** (`prosody.rs`: incises, speaker attribution, whispering verbs) | — | Pronoun incises (*dit-elle*) → resolve the speaker; dash dialogues (above) |
+
+### 12.2 English
+
+| Phenomenon | What must happen (examples) | Handled today by | Permissive help | Gap: write ourselves |
+|---|---|---|---|---|
+| **Heteronyms** | *read* (present/past), *lead*, *live* (verb/adjective), *wind*, *tear*, *bow*, *close*, *record*, *object*, *present*, *use*, *wound*, *minute*, *content*, *desert*; same-POS cases like *bass* need meaning, not POS ([Wikipedia: heteronyms](https://en.wikipedia.org/wiki/Heteronym_(linguistics)); POS-based resolution, [NVIDIA 2023](https://arxiv.org/pdf/2302.14523)) | **Engine `g2p_en.rs`**: misaki port with a small tagger (*close/live*…) | misaki gold/silver (Apache) carry POS-specific pronunciations; misaki-rs shows *"Please read the report I read yesterday"* → [ɹˈid] … [ɹˈɛd] ([README](https://github.com/MicheleYin/misaki-rs)) | Tense cues for *read* (*had/has read*, *yesterday*); a same-POS list resolved by story context; lexicon overrides |
+| **Stress and schwa reduction** | Lexical stress from the dictionary; function words weak (*to* [tə], *for* [fəɹ], *and* [ən(d)], *can* [kən]) but **strong** at sentence end, in negatives, or under emphasis ([Saarland notes](https://www.coli.uni-saarland.de/~wbarry/Teaching/EnglPron/Engl-Pron08/Phon-Engl-Pron08.pdf)) | misaki dictionaries + *the/to* by the next vowel (engine) | CMUdict (BSD, used by HeadTTS) | **Weak/strong selection** wired to the emphasis planner (emphasised → strong) and to sentence-final prepositions (*What are you looking at?*) |
+| **Contractions** | *can't, won't, let's, n't*; *'s* = is/has/possessive, with [s]/[z]/[ɪz] allomorphy (*cat's, dog's, horse's*); *'d* = had/would; *'ll* | **Engine** (spaCy-style tokenizer exceptions, -s/-ed/-ing rules) | misaki | Child-speak and dialogue forms (*gonna*, *wanna*, *'cause*) in lexicon.json |
+| **Numbers, dates (US vs UK)** | *02/03* = 2 March (UK) or February 3 (US) ([W17-4414](https://preview.aclanthology.org/fix_video/W17-4414.pdf)); *May third* vs *the third of May*; *one hundred (and) five*; years *nineteen ninety*, *two thousand five* / *twenty twenty-six*; times *7:30* = *seven thirty* / *half past seven*; *$3.50* | **Engine `numbers.rs`** (cardinals, ordinals, English years, decimals) | Verbalis en-us/en-gb; num2words | **Locale policy**: Ziggy's English voice is American (`af_heart`), so use US readings and write unambiguous dates in content; for en-gb voices (`bf_*`), use misaki's British lexicon |
+| **Acronyms** | Spelled *FBI, TV, DIY*; read *NASA, NATO*; mixed *JPEG*; *US* vs *us* by case | lexicon.json; misaki | — | **Spell-out fallback** for all-caps tokens: without espeak, misaki-rs leaves an unknown letter string as ❓ ([README](https://github.com/MicheleYin/misaki-rs)); curated read-as-word list |
+| **Compound stress** | Noun compounds stress the first element (*GREENhouse* vs *green HOUSE*, *WHITE House*), but English is inconsistent and spelling varies, so use a default rule plus an exception lexicon ([MMU paper](https://e-space.mmu.ac.uk/576736/1/Shilling%20Birmingham.pdf), search summary) | One-word compounds via dictionary stress only | — | **N+N stress rule** in the prosody planner (demote the second noun) + exceptions (*apple PIE*, *Christmas DAY*) |
+| **Question intonation** | Yes/no: rising, low-rise most common (410-question corpus, [Hedberg et al. 2014](https://www.sfu.ca/~hedberg/Hedberg_Sosa_Gorgulu_2014.pdf)); wh: falling; declarative questions rise; echo questions rise; tags fall when confirming and rise when asking ([Venditti et al. 2006](https://www.cs.columbia.edu/~julia/papers/icslp06_venditti_finalINDEX.pdf)) | **Engine v3** (closed ↗, open ↘) | — | **Tag-question detector** (*isn't it?*, *right?*) → falling by default; echo-question rise (*You went where?*); declarative question = "?" without inversion → rise (likely already covered by the closed-question rule; verify) |
+
+### 12.3 Summary: build or reuse
+
+- **Reuse:** the engine's Rust front-end (numbers, sentences, quotes, misaki port, v3
+  intonation); misaki data (Apache) via the existing port or misaki-rs; Verbalis for dates,
+  times, money and units; the num2words crate for cross-checks; CMUdict.
+- **Owner decisions:** MFA French dictionary (CC-BY-4.0) as the base French lexicon; Phonemis'
+  espeak-distilled `fr` model as an out-of-vocabulary fallback.
+- **Write ourselves (all French unless noted):** liaison engine (obligatory / forbidden /
+  optional by register); h-aspiré list; schwa policy; context pronunciations of
+  *six/dix/huit/neuf/vingt/cent*; roman numerals; homograph rules (*-ent*, *-tions*, *est*,
+  *fils*, *plus*, *tous*); sigle/acronyme list with letter names; dialogue-dash parsing;
+  wh-in-situ rise. English: weak/strong forms tied to emphasis; compound stress; tag and echo
+  questions; all-caps spell-out.
+- **How to know it is right:** insta snapshots of phonemes for every sentence; diff against
+  espeak-ng **on the build machine only** (as an oracle, never shipped); listening review of
+  every diff; `check-prosody` for the intonation rules.
 
 ---
 
@@ -558,3 +758,32 @@ https://github.com/RVC-Project/Retrieval-based-Voice-Conversion-WebUI ·
 https://huggingface.co/lengyue233/content-vec-best · https://huggingface.co/Plachta/Seed-VC ·
 https://huggingface.co/amphion/Vevo · https://github.com/xiph/rnnoise ·
 https://github.com/Rikorose/DeepFilterNet
+
+Sections 11–12 (Rust and language specifics): crates.io API (versions, licences, 2026-11-14) ·
+https://github.com/gradium-ai/xn-ptts · https://github.com/sonos/tract ·
+https://github.com/robertknight/rten · https://github.com/huggingface/candle ·
+https://github.com/tracel-ai/burn-onnx · https://github.com/gfx-rs/wgpu ·
+https://github.com/kyutai-labs/moshi · https://github.com/MicheleYin/misaki-rs ·
+https://github.com/TM9657/any-tts · https://github.com/altunenes/parakeet-rs ·
+https://github.com/Ballasi/num2words · https://github.com/HEnquist/rubato ·
+https://github.com/ejmahler/RustFFT · https://github.com/RReverser/wasm-bindgen-rayon ·
+https://github.com/rust-fuzz/libfuzzer · https://github.com/pdeljanov/Symphonia ·
+https://developer.mozilla.org/en-US/docs/Web/API/AudioEncoder ·
+https://dictionnaire-academie.fr/article/QDL046 · https://dictionnaire-academie.fr/article/QDL079 ·
+https://laits.utexas.edu/fi/html/pho/12.html ·
+https://human.libretexts.org/Courses/University_of_Houston/Improvisations_-_3/01%3A_Unite_4_-_Qui_est_a_lappareil/1.05%3A_Phonetique ·
+https://live-french.net/blog/grammar/french-liaisons/ ·
+https://www.erudit.org/fr/revue/rql/1991/v20/n2/602703ar.pdf ·
+https://lexique.org/databases/Lexique400/README-Lexique.txt ·
+https://github.com/open-dict-data/ipa-dict · https://github.com/CUNY-CL/wikipron ·
+https://www.pharmacie.universite-paris-saclay.fr/sites/default/files/media/2020-09/regles-typographie_cnrs.pdf ·
+https://vitrinelinguistique.oqlf.gouv.qc.ca/22039/la-typographie/espacement/espacement-avant-et-apres-les-signes-de-ponctuation-et-les-symboles ·
+https://vitrinelinguistique.oqlf.gouv.qc.ca/21385/les-abreviations-et-les-symboles/les-sigles-et-les-acronymes/generalites-sur-les-sigles-et-acronymes ·
+https://hal.archives-ouvertes.fr/hal-00927013 ·
+https://halshs.archives-ouvertes.fr/halshs-01428563v1/file/Santiago%20et%20al%20%282014%29SpeechProsody.pdf.pdf ·
+https://en.wikipedia.org/wiki/Heteronym_(linguistics) · https://arxiv.org/pdf/2302.14523 ·
+https://www.coli.uni-saarland.de/~wbarry/Teaching/EnglPron/Engl-Pron08/Phon-Engl-Pron08.pdf ·
+https://preview.aclanthology.org/fix_video/W17-4414.pdf ·
+https://e-space.mmu.ac.uk/576736/1/Shilling%20Birmingham.pdf ·
+https://www.sfu.ca/~hedberg/Hedberg_Sosa_Gorgulu_2014.pdf ·
+https://www.cs.columbia.edu/~julia/papers/icslp06_venditti_finalINDEX.pdf
