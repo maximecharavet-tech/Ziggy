@@ -1,35 +1,81 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Bot, ShieldCheck, Brain, Globe, Trophy, BookOpen, Heart, type LucideIcon } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { MascotCutout } from '@/components/ziggy/Mascot';
-import { Spotlight } from '@/components/ui/motion-primitives';
+import { ZiggyStage } from '@/components/ziggy/ZiggyStage';
+import type { CutoutPose } from '@/lib/mascot';
 
 interface Feature {
   icon: LucideIcon;
   title: string;
   desc: string;
   color: string;
-  span: string;
+  pose: CutoutPose;
 }
 
+/**
+ * "Why parents love Ziggy", as a quiet story: one living Ziggy on a 3D stage,
+ * and the six reasons beside him. On a phone the reasons are a swipeable
+ * rail (native scroll-snap, so it scrolls at the display's own frame rate);
+ * on a large screen Ziggy stays put while the list scrolls past. Whichever
+ * reason is in focus sets Ziggy's pose and the colour of his halo.
+ */
 export function FeaturesSection() {
   const t = useTranslations('features');
+  const [active, setActive] = useState(0);
+  const railRef = useRef<HTMLOListElement>(null);
 
   const features: Feature[] = [
-    { icon: Bot, title: t('ai_companion'), desc: t('ai_companion_desc'), color: '#7FC85C', span: 'lg:col-span-2' },
-    { icon: ShieldCheck, title: t('safe_space'), desc: t('safe_space_desc'), color: '#5FB6EA', span: '' },
-    { icon: Brain, title: t('cognitive_tracking'), desc: t('cognitive_tracking_desc'), color: '#A78BFA', span: '' },
-    { icon: Globe, title: t('multilingual'), desc: t('multilingual_desc'), color: '#4FC9C0', span: '' },
-    { icon: Trophy, title: t('gamified'), desc: t('gamified_desc'), color: '#F9BE7C', span: '' },
-    { icon: BookOpen, title: t('curriculum'), desc: t('curriculum_desc'), color: '#F2647B', span: 'lg:col-span-3' },
+    { icon: Bot, title: t('ai_companion'), desc: t('ai_companion_desc'), color: '#7FC85C', pose: 'wave' },
+    { icon: ShieldCheck, title: t('safe_space'), desc: t('safe_space_desc'), color: '#5FB6EA', pose: 'heart' },
+    { icon: Brain, title: t('cognitive_tracking'), desc: t('cognitive_tracking_desc'), color: '#A78BFA', pose: 'stand' },
+    { icon: Globe, title: t('multilingual'), desc: t('multilingual_desc'), color: '#4FC9C0', pose: 'wave' },
+    { icon: Trophy, title: t('gamified'), desc: t('gamified_desc'), color: '#F9BE7C', pose: 'heart' },
+    { icon: BookOpen, title: t('curriculum'), desc: t('curriculum_desc'), color: '#F2647B', pose: 'stand' },
   ];
 
+  // Which reason is in focus: the centred card of the rail on a phone, the
+  // row crossing the middle of the screen on a large one.
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail || typeof IntersectionObserver === 'undefined') return;
+    const wide = window.matchMedia('(min-width: 1024px)');
+    let io: IntersectionObserver | null = null;
+    const watch = () => {
+      io?.disconnect();
+      io = new IntersectionObserver(
+        (entries) => {
+          for (const e of entries) {
+            if (e.isIntersecting) setActive(Number((e.target as HTMLElement).dataset.i));
+          }
+        },
+        wide.matches
+          ? { root: null, rootMargin: '-45% 0px -45% 0px', threshold: 0 }
+          : { root: rail, rootMargin: '0px -45% 0px -45%', threshold: 0 }
+      );
+      rail.querySelectorAll('[data-i]').forEach((el) => io!.observe(el));
+    };
+    watch();
+    wide.addEventListener('change', watch);
+    return () => {
+      io?.disconnect();
+      wide.removeEventListener('change', watch);
+    };
+  }, []);
+
+  const go = (i: number) => {
+    const el = railRef.current?.querySelector<HTMLElement>(`[data-i="${i}"]`);
+    el?.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  };
+
+  const current = features[active];
+
   return (
-    <section id="features" className="py-24 sm:py-28 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <section id="features" className="relative overflow-clip py-24 sm:py-32">
+      <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
         <ScrollReveal>
           <SectionHeading
             eyebrow={<><Heart size={14} className="fill-current" /> {t('eyebrow')}</>}
@@ -37,46 +83,66 @@ export function FeaturesSection() {
             subtitle={t('subtitle')}
           />
         </ScrollReveal>
+      </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
-          {features.map((f, i) => {
-            const hero = i === 0;
-            const wide = i === features.length - 1;
-            return (
-              <ScrollReveal key={f.title} delay={i * 70} variant="fade-up" className={`${f.span} ${hero || wide ? 'sm:col-span-2' : ''}`}>
-                <Spotlight
-                  color={f.color}
-                  className={`group h-full overflow-hidden rounded-3xl border p-7 sm:p-8 lift hover:shadow-[0_24px_50px_-24px_rgba(26,26,46,0.25)] ${
-                    wide ? 'flex flex-col sm:flex-row sm:items-center gap-6' : ''
+      <div className="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] gap-6 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.05fr)] lg:gap-16 lg:px-8">
+        <div className="px-5 lg:sticky lg:top-24 lg:h-fit lg:px-0 lg:py-10">
+          <ZiggyStage pose={current.pose} color={current.color} />
+        </div>
+
+        <div>
+          <ol
+            ref={railRef}
+            className="snap-rail flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain px-[9%] pb-2 lg:snap-none lg:flex-col lg:gap-0 lg:overflow-visible lg:px-0 lg:py-[18vh]"
+          >
+            {features.map((f, i) => {
+              const on = i === active;
+              return (
+                <li
+                  key={f.title}
+                  data-i={i}
+                  className={`relative w-[82%] shrink-0 snap-center rounded-[1.75rem] border p-6 transition-[opacity,transform,border-color,background-color] duration-500 ease-[var(--ease-out)] sm:w-[60%] lg:w-auto lg:rounded-none lg:border-0 lg:border-s-2 lg:bg-transparent lg:py-8 lg:ps-8 ${
+                    on ? 'opacity-100 scale-100' : 'opacity-55 scale-[0.94] lg:scale-100 lg:opacity-40'
                   }`}
                   style={{
-                    backgroundColor: `color-mix(in srgb, ${f.color} 7%, var(--color-bg-card))`,
-                    borderColor: `color-mix(in srgb, ${f.color} 22%, transparent)`,
+                    borderColor: on ? `color-mix(in srgb, ${f.color} 45%, transparent)` : 'color-mix(in srgb, var(--color-text-body) 8%, transparent)',
+                    backgroundColor: `color-mix(in srgb, ${f.color} ${on ? 9 : 4}%, var(--color-bg-card))`,
                   }}
                 >
-                  <div
-                    className="w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
-                    style={{ backgroundColor: f.color, boxShadow: `0 10px 24px -8px ${f.color}` }}
-                  >
-                    <f.icon size={26} className="text-white" strokeWidth={2.2} />
-                  </div>
-                  <div className={hero ? 'max-w-md' : ''}>
-                    <h3 className={`${hero ? 'text-2xl sm:text-3xl' : 'text-xl'} font-bold text-text-body mb-2`}>{f.title}</h3>
-                    <p className="text-text-muted leading-relaxed">{f.desc}</p>
-                  </div>
-
-                  {hero && (
-                    <div
-                      className="pointer-events-none absolute -bottom-16 end-4 w-40 sm:w-48 lg:w-52 transition-transform duration-500 group-hover:-translate-y-3 group-hover:-rotate-3 hidden sm:block"
-                      aria-hidden="true"
+                  <div className="mb-4 flex items-center gap-3">
+                    <span
+                      className="flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-500"
+                      style={{ backgroundColor: `color-mix(in srgb, ${f.color} 18%, transparent)`, color: f.color, transform: on ? 'scale(1)' : 'scale(0.9)' }}
                     >
-                      <MascotCutout pose="wave" width={208} />
-                    </div>
-                  )}
-                </Spotlight>
-              </ScrollReveal>
-            );
-          })}
+                      <f.icon size={20} strokeWidth={2.2} />
+                    </span>
+                    <span className="font-display text-sm font-bold tabular-nums text-text-dim">{String(i + 1).padStart(2, '0')}</span>
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-text-body sm:text-2xl">{f.title}</h3>
+                  <p className="leading-relaxed text-text-muted">{f.desc}</p>
+                </li>
+              );
+            })}
+          </ol>
+
+          {/* Rail position, phone and tablet only */}
+          <div className="mt-6 flex justify-center gap-1 lg:hidden">
+            {features.map((f, i) => (
+              <button
+                key={f.title}
+                type="button"
+                onClick={() => go(i)}
+                aria-label={f.title}
+                aria-current={i === active ? 'true' : undefined}
+                className="flex items-center justify-center"
+              >
+                <span
+                  className="block h-2 rounded-full transition-[width,background-color] duration-300"
+                  style={{ width: i === active ? 22 : 8, backgroundColor: i === active ? f.color : 'color-mix(in srgb, var(--color-text-body) 18%, transparent)' }}
+                />
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>
