@@ -456,7 +456,7 @@ html[data-intro='1'] .ziggy-intro {
   border-radius: 999px;
   object-fit: cover;
   box-shadow: 0 24px 50px -16px rgb(47 107 28 / 0.55), 0 0 0 4px rgb(255 255 255 / 0.85);
-  animation: intro-pop 900ms var(--ease-squish) 80ms backwards;
+  animation: intro-pop 600ms var(--ease-squish) 40ms backwards;
 }
 .ziggy-intro__ring { position: absolute; inset: -6px; width: 180px; height: 180px; transform: rotate(-90deg); }
 .ziggy-intro__ring circle {
@@ -466,7 +466,7 @@ html[data-intro='1'] .ziggy-intro {
   stroke-linecap: round;
   stroke-dasharray: 578;
   stroke-dashoffset: 578;
-  animation: intro-trace 1200ms var(--ease-out) 260ms forwards;
+  animation: intro-trace 800ms var(--ease-out) 180ms forwards;
 }
 .ziggy-intro__ripple {
   position: absolute;
@@ -474,15 +474,15 @@ html[data-intro='1'] .ziggy-intro {
   border-radius: 999px;
   border: 2px solid rgb(127 200 92 / 0.55);
   opacity: 0;
-  animation: intro-ripple 1600ms ease-out 0.45s;
+  animation: intro-ripple 1100ms ease-out 0.3s;
 }
-.ziggy-intro__word { animation: intro-rise 600ms var(--ease-out) 520ms backwards; }
+.ziggy-intro__word { animation: intro-rise 450ms var(--ease-out) 350ms backwards; }
 .ziggy-intro__sig {
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   color: #8a5a2b;
-  animation: intro-rise 600ms var(--ease-out) 900ms backwards;
+  animation: intro-rise 450ms var(--ease-out) 600ms backwards;
 }
 .ziggy-intro__sig span { color: #B7862C; }
 .dark .ziggy-intro__sig { color: #E8D6A0; }

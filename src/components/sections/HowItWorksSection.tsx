@@ -25,7 +25,7 @@ export function HowItWorksSection() {
           />
         </ScrollReveal>
 
-        <ol className="grid md:grid-cols-3 gap-5 relative">
+        <div className="grid md:grid-cols-3 gap-5 relative">
           {/* Dotted path joining the steps */}
           <div
             className="hidden md:block absolute top-[4.25rem] inset-x-[18%] border-t-[3px] border-dashed border-border"
@@ -34,7 +34,7 @@ export function HowItWorksSection() {
 
           {STEPS.map(({ icon: Icon, color }, i) => (
             <ScrollReveal key={i} delay={i * 140} variant="fade-up">
-              <li className="relative h-full rounded-3xl border border-border/60 bg-bg-card p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(26,26,46,0.25)]">
+              <div className="relative h-full rounded-3xl border border-border/60 bg-bg-card p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(26,26,46,0.25)]">
                 <div className="relative mx-auto mb-6 w-[5.5rem] h-[5.5rem]">
                   <div className="absolute inset-0 rounded-[1.75rem] rotate-6" style={{ backgroundColor: `${color}33` }} />
                   <div
@@ -52,10 +52,10 @@ export function HowItWorksSection() {
                 </div>
                 <h3 className="text-xl font-bold text-text-body mb-3">{t(`step${i + 1}_title`)}</h3>
                 <p className="text-text-muted leading-relaxed">{t(`step${i + 1}_desc`)}</p>
-              </li>
+              </div>
             </ScrollReveal>
           ))}
-        </ol>
+        </div>
       </div>
     </section>
   );

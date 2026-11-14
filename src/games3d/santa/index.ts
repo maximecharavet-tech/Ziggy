@@ -123,7 +123,10 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
   const clock = new FrameClock();
   let raf = 0;
   let time = 0;
-  let hidden = typeof document !== 'undefined' && document.hidden;
+  // Paused while the tab is hidden or the canvas is off screen.
+  let tabHidden = typeof document !== 'undefined' && document.hidden;
+  let offscreen = false;
+  let hidden = tabHidden;
   const tmp = new THREE.Vector3();
   const slow = { t: 0, n: 0 };
   const loop = () => {
@@ -158,10 +161,19 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
     }
   };
   const onVisibility = () => {
-    hidden = document.hidden;
+    tabHidden = document.hidden;
+    hidden = tabHidden || offscreen;
     clock.getDelta();
   };
   document.addEventListener('visibilitychange', onVisibility);
+  const io = typeof IntersectionObserver !== 'undefined'
+    ? new IntersectionObserver(([e]) => {
+        offscreen = !e?.isIntersecting;
+        hidden = tabHidden || offscreen;
+        clock.getDelta();
+      })
+    : null;
+  io?.observe(canvas);
   // Follow the canvas box on our own too (the page may forget to call resize()).
   const ro = typeof ResizeObserver !== 'undefined' ? new ResizeObserver(() => resize()) : null;
   ro?.observe(canvas);
@@ -221,6 +233,7 @@ export function mountSantaScene(canvas: HTMLCanvasElement, opts: SantaSceneOptio
       cancelAnimationFrame(raf);
       document.removeEventListener('visibilitychange', onVisibility);
       ro?.disconnect();
+      io?.disconnect();
       disposeStage(stage);
       post?.dispose();
       disposeEnv();

@@ -8,9 +8,9 @@ import { ZiggyAvatar, Sparkle } from '@/components/ziggy/Mascot';
 export function TaglineRibbon() {
   const t = useTranslations('ribbon');
   const words = [
-    { text: t('learn'), color: 'text-coral' },
-    { text: t('understand'), color: 'text-leaf' },
-    { text: t('create'), color: 'text-sky' },
+    { text: t('learn'), color: 'text-[#D93F5C] dark:text-coral' },
+    { text: t('understand'), color: 'text-[#3E7F24] dark:text-leaf' },
+    { text: t('create'), color: 'text-[#1F7FB8] dark:text-sky' },
   ];
 
   const run = (hidden: boolean) => (

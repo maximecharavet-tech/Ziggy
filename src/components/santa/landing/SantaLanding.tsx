@@ -5,6 +5,7 @@ import { AnimatePresence, animate, motion, useMotionValue, useScroll, useSpring,
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
+import { SANTA_AGE_MIN } from '@/lib/ages';
 import { SANTA_FREE_FEATURES, SANTA_NEW_PRICING, SANTA_OFFERS, SANTA_VALID_UNTIL_TEXT } from '@/lib/santa/offer';
 import { useSantaPass } from '@/lib/santa/pass-client';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
@@ -15,7 +16,7 @@ import { santaArt } from '@/data/santa/art';
 
 const T = {
   title: { fr: 'Le Père Noël va t’appeler !', en: 'Santa is going to call you!' },
-  subtitle: { fr: 'Un moment magique à partager en famille, imaginé pour les enfants de 3 à 9 ans.', en: 'A magical moment to share as a family, made for children aged 3 to 9.' },
+  subtitle: { fr: `Un moment magique à partager en famille, dès ${SANTA_AGE_MIN} ans, avec un parent.`, en: `A magical moment to share as a family, from age ${SANTA_AGE_MIN}, with a parent.` },
   call: { fr: 'Recevoir l’appel du Père Noël', en: 'Get a call from Santa' }, letter: { fr: 'Écrire ma lettre (gratuit)', en: 'Write my letter (free)' }, village: { fr: 'Entrer au village', en: 'Enter the village' },
   how: { fr: 'La magie, en trois petits pas', en: 'Three little steps to Christmas magic' }, moments: { fr: 'Les moments magiques', en: 'Magical moments' }, privacy: { fr: 'La magie reste chez vous', en: 'The magic stays with you' }, offers: { fr: 'Choisissez votre moment', en: 'Choose your Christmas moment' }, faq: { fr: 'Les questions des parents', en: 'Parents often ask' }, advent: { fr: 'Ouvrir le calendrier de l’Avent', en: 'Open the Advent calendar' }, certificate: { fr: 'Créer mon certificat', en: 'Make my certificate' },
   pole: { fr: 'Au Pôle Nord, en ce moment', en: 'At the North Pole right now' },
@@ -93,9 +94,9 @@ export function SantaLanding() {
   const heroVideo = santaArt('hero-loop');
   return <div className="overflow-hidden bg-[#0e1032] text-white">
     <section className="relative isolate flex min-h-[690px] items-end overflow-hidden px-5 pb-20 pt-28 sm:min-h-[760px] sm:items-center sm:px-10">
-      <ArtSlot asset={heroVideo} priority />
+      <ArtSlot asset={heroVideo} priority posterOnSmall />
       <div aria-hidden className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,12,38,.9),rgba(8,12,38,.52)_55%,rgba(8,12,38,.12)),linear-gradient(0deg,rgba(8,12,38,.55),transparent_55%)]" />
-      <Snow count={reduced ? 0 : 34} />
+      <Snow count={reduced ? 0 : 18} />
       <motion.div aria-hidden="true" style={{ y: auroraY }} className="pointer-events-none absolute -right-10 top-5 h-64 w-[55vw] rounded-full bg-cyan-300/20 blur-[90px]" />
       <div className="relative mx-auto grid w-full max-w-7xl items-end gap-12 sm:grid-cols-[1.1fr_.9fr]">
         <motion.div initial={{ opacity: 0, y: reduced ? 0 : 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .65 }}>
