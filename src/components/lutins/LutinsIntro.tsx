@@ -1,12 +1,18 @@
 'use client';
 
-import { useCallback, useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { useLocale } from 'next-intl';
 import { tr, type L } from '@/lib/i18n-text';
 import { BodyPortal } from '@/components/lutins/BodyPortal';
 
 /** localStorage key: the local calendar day (YYYY-MM-DD) the intro was last dismissed. */
 export const LUTINS_INTRO_KEY = 'ziggy:lutins-intro';
+
+const POSTER = '/lutins/intro/intro-lutins-poster.webp';
+const SOURCES = [
+  { src: '/lutins/intro/intro-lutins.webm', type: 'video/webm' },
+  { src: '/lutins/intro/intro-lutins.mp4', type: 'video/mp4' },
+] as const;
 
 const T = {
   label: { fr: 'Introduction des Lutins Farceurs', en: 'The Prankster Elves introduction' },
@@ -30,6 +36,34 @@ export function lutinsIntroMode(seenDay: string | null, today: string, reducedMo
 }
 
 type Phase = 'off' | 'video' | 'poster' | 'leaving';
+
+function VideoSources() {
+  return SOURCES.map((s) => <source key={s.type} src={s.src} type={s.type} />);
+}
+
+/**
+ * A 2:3 intro sits in a taller phone or a wider desktop: the frame itself is
+ * always fully visible (`object-contain`). The leftover bars are filled with
+ * a muted, covered, blurred copy of the same picture — no flat green bands.
+ */
+function IntroStage({ poster, children }: { poster: boolean; children: ReactNode }) {
+  return (
+    <>
+      <div aria-hidden="true" className="pointer-events-none absolute inset-0 overflow-hidden">
+        {poster ? (
+          // eslint-disable-next-line @next/next/no-img-element -- pre-encoded WebP poster
+          <img src={POSTER} alt="" className="h-full w-full scale-110 object-cover blur-[24px]" />
+        ) : (
+          <video className="h-full w-full scale-110 object-cover blur-[24px]" muted playsInline autoPlay preload="metadata" poster={POSTER} disablePictureInPicture>
+            <VideoSources />
+          </video>
+        )}
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
+      {children}
+    </>
+  );
+}
 
 /**
  * A short fullscreen intro played the first time the Lutins Farceurs app is
@@ -104,6 +138,7 @@ export function LutinsIntro() {
 
   const leaving = phase === 'leaving';
   const showPoster = kindRef.current === 'poster';
+  const frame = 'relative z-[1] h-full w-full object-contain';
 
   return (
     <BodyPortal>
@@ -116,30 +151,27 @@ export function LutinsIntro() {
         <h2 id={titleId} className="sr-only">
           {tr(T.label, locale)}
         </h2>
-        {showPoster ? (
-          // eslint-disable-next-line @next/next/no-img-element -- pre-encoded WebP poster
-          <img
-            src="/lutins/intro/intro-lutins-poster.webp"
-            alt=""
-            className="h-full w-full object-cover md:h-full md:w-auto md:max-h-full md:object-contain"
-          />
-        ) : (
-          <video
-            ref={videoRef}
-            className="h-full w-full object-cover md:h-full md:w-auto md:max-h-full md:object-contain"
-            autoPlay
-            muted={!sound}
-            playsInline
-            preload="metadata"
-            poster="/lutins/intro/intro-lutins-poster.webp"
-            onEnded={close}
-          >
-            <source src="/lutins/intro/intro-lutins.webm" type="video/webm" />
-            <source src="/lutins/intro/intro-lutins.mp4" type="video/mp4" />
-          </video>
-        )}
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/45 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5 pb-[max(1.25rem,env(safe-area-inset-bottom,0px))] sm:p-8">
+        <IntroStage poster={showPoster}>
+          {showPoster ? (
+            // eslint-disable-next-line @next/next/no-img-element -- pre-encoded WebP poster
+            <img src={POSTER} alt="" className={frame} />
+          ) : (
+            <video
+              ref={videoRef}
+              className={frame}
+              autoPlay
+              muted={!sound}
+              playsInline
+              preload="metadata"
+              poster={POSTER}
+              disablePictureInPicture
+              onEnded={close}
+            >
+              <VideoSources />
+            </video>
+          )}
+        </IntroStage>
+        <div className="absolute inset-x-0 bottom-0 z-[2] flex items-center justify-between gap-4 px-5 pb-[max(1.5rem,calc(env(safe-area-inset-bottom,0px)+1rem))] pt-3 sm:px-10 sm:pb-8">
           {showPoster ? (
             <span />
           ) : (
