@@ -985,8 +985,9 @@ impl World {
             if self.get(jx, jy + 1) == SAND {
                 let nx = jx + DX[sideways as usize];
                 let below = (jy + 1) as usize * self.w + jx as usize;
-                if self.inside(nx, jy + 1) && self.cells[below] & FIXED == 0 {
-                    let next = (jy + 1) as usize * self.w + nx as usize;
+                if self.inside(nx, jy) && self.cells[below] & FIXED == 0 {
+                    // The grain is lifted into the flow just ahead, and settles further down the stream.
+                    let next = jy as usize * self.w + nx as usize;
                     let t = sp(self.cells[next]);
                     if t == EMPTY || t == WATER {
                         self.swap(below, next);

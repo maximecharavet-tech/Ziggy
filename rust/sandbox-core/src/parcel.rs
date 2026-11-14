@@ -102,8 +102,8 @@ impl World {
                 }
                 let t = self.get(cx + dx, cy + dy);
                 match t {
-                    WATER | DYED | SALTWATER if dy <= 0 => wet += 1,
-                    SNOW | ICE | DRYICE | FROST if dy <= 0 => cold += 1,
+                    WATER | DYED | SALTWATER if dy < 0 => wet += 1,
+                    SNOW | ICE | DRYICE | FROST if dy < 0 => cold += 1,
                     BUBBLE => bubbles += 1,
                     HEAT | LAVA | STAR => warm += 1,
                     _ => {}

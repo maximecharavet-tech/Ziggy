@@ -8,16 +8,15 @@ fn show(s: &World) {
     }
 }
 fn main() {
-    let mut s = World::new(60, 30, 7, MOUNTAIN);
-    for x in 0..60 { s.set(x, 29, STONE); s.set(x, 28, SAND); s.set(x, 27, SAND); }
-    for t in 0..400 { s.set(30, 20, WATER); s.step(); if t % 50 == 0 { println!("t{t} water {} tick {}", s.count(WATER), s.tick); } }
+    let mut s = World::new(40, 40, 7, GARDEN);
+    for x in 0..40 { s.set(x, 39, STONE); }
+    for y in 35..=38 { s.set(13, y, STONE); s.set(27, y, STONE); }
+    for y in 36..=38 { for x in 14..=26 { s.set(x, y, WATER); } }
+    s.set(20, 30, SEED);
+    for t in 0..3000 { s.step(); if t % 500 == 0 {
+        let mut v = vec![];
+        for y in 0..40 { for x in 0..40 { let i = y*40+x; if sp(s.cells[i]) == PLANT { v.push((x, y, ca(s.cells[i]), cb(s.cells[i]))); } } }
+        println!("t{t} {:?} awake {}", v, s.awake_chunks());
+    } }
     show(&s);
-    let mut s = World::new(40, 30, 7, MOON);
-    for x in 0..40 { s.set(x, 29, STONE); }
-    s.set(20, 20, BUBBLE);
-    for t in 0..30 { s.step(); println!("t{t} bubble {} pops {}", s.count(BUBBLE), s.counts[R_SILENT_POP as usize]); if s.count(BUBBLE)==0 {break;} }
-    let mut s = World::new(40, 40, 7, MOON);
-    for x in 0..40 { s.set(x, 39, STONE); for y in 32..39 { s.set(x, y, MOONDUST); } }
-    s.set(20, 8, METEORITE);
-    for t in 0..400 { s.step(); for y in 0..40 { for x in 0..40 { if s.get(x,y)==METEORITE && t % 10 == 0 { println!("t{t} met at {x},{y} aux {}", s.aux[y as usize*40+x as usize]); } } } }
 }

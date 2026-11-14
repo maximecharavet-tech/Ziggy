@@ -251,12 +251,37 @@ impl World {
         let variant = shade(c) >> 5;
         if a > 0 || b & TIP != 0 {
             self.keep(i);
+        } else if a < 24 && c & FIXED == 0 {
+            // A thirsty root next to water stays awake to drink.
+            for d in [4u8, 2, 6] {
+                if let Some(j) = self.nb(x, y, d) {
+                    let t = sp(self.cells[j]);
+                    if t == WATER || t == DYED {
+                        self.keep(i);
+                        break;
+                    }
+                }
+            }
         }
         // Drink from one random neighbour, and pass water up the stem (never down: sap rises).
         let r = self.rand() & 3;
         let d = [0u8, 4, 6, 2][r as usize];
         let mut n = self.nb(x, y, d);
-        let nt = n.map(|j| sp(self.cells[j]));
+        let mut nt = n.map(|j| sp(self.cells[j]));
+        if r == 1 && nt == Some(EMPTY) && a < 24 {
+            // A root reaches down a little for the water that sank away from it.
+            for k in 2..=4 {
+                let t = self.get(x, y + k);
+                if t == WATER || t == DYED {
+                    n = Some((y + k) as usize * w + x as usize);
+                    nt = Some(t);
+                    break;
+                }
+                if t != EMPTY {
+                    break;
+                }
+            }
+        }
         if nt == Some(WATER) || nt == Some(DYED) {
             if a < 24 {
                 self.keep(i);
@@ -700,7 +725,12 @@ impl World {
         }
         let air = self.params.medium == AIR;
         let drift = if air && self.chance(3) { self.side() } else { 0 };
+        // A pile that is too steep lets go: a soft little snow slide.
+        let steep = !open(tb) && self.get(x, y - 1) == SNOW && self.get(x, y - 2) == SNOW && self.get(x, y - 3) == SNOW;
         if drift != 0 && open(self.get(x + drift, y + 1)) && self.inside(x + drift, y + 1) {
+            if steep {
+                self.emit(R_AVALANCHE, x, y);
+            }
             return self.swap(i, (j as i32 + drift) as usize);
         }
         if open(tb) {
@@ -709,8 +739,7 @@ impl World {
         if self.chance(3) {
             let d = self.side();
             if self.get(x + d, y + 1) == EMPTY {
-                // A pile that is too steep lets go: a soft little snow slide.
-                if self.get(x, y - 1) == SNOW && self.get(x, y - 2) == SNOW && self.get(x, y - 3) == SNOW {
+                if steep {
                     self.emit(R_AVALANCHE, x, y);
                 }
                 self.swap(i, (j as i32 + d) as usize);
@@ -774,7 +803,7 @@ impl World {
         // A river rolls and grinds pebbles into sand.
         for d in [0u8, 2, 6] {
             if let Some(j) = self.nb(x, y, d) {
-                if sp(self.cells[j]) == WATER && self.clock[j] == self.gen && self.chance(40) {
+                if sp(self.cells[j]) == WATER && self.clock[j] == self.gen && self.chance(10) {
                     let sh = self.fresh_shade();
                     self.put(i, mk(SAND, 0, 0, sh));
                     self.emit(R_GRIND, x, y);
@@ -849,7 +878,8 @@ impl World {
                         self.put(i, mk(BASALT, 0, 0, sh));
                         self.put(j, mk(BUBBLE, 0, 0, sh));
                         self.emit(R_NEW_ROCK, x, y);
-                        if y > 1 && self.get(x, y - 1) == EMPTY && self.chance(2) {
+                        let up = sp(self.cells[i - self.w.min(i)]);
+                        if y > 1 && (up == EMPTY || (d == 0 && up == BUBBLE)) && self.chance(2) {
                             let k = i - self.w;
                             let r = self.rand();
                             self.put(k, mk(CORAL, 4 + (r % 4) as u8, ((r >> 8) % 5) as u8, (r >> 16) as u8));
