@@ -4,16 +4,14 @@ import { useTranslations } from 'next-intl';
 import { Cpu, MessageSquare, Calculator, Palette, Sun } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { Badge } from '@/components/ui/Badge';
 
-const moduleColors = [
-  { bg: 'from-green/10 to-green/5', icon: 'bg-green/15 text-green' },
-  { bg: 'from-blue/10 to-blue/5', icon: 'bg-blue/15 text-blue' },
-  { bg: 'from-yellow/10 to-yellow/5', icon: 'bg-yellow/15 text-yellow' },
-  { bg: 'from-purple/10 to-purple/5', icon: 'bg-purple/15 text-purple' },
-  { bg: 'from-pink/10 to-pink/5', icon: 'bg-pink/15 text-pink' },
-];
+const COLORS = ['#7FC85C', '#5FB6EA', '#F9BE7C', '#A78BFA', '#F2647B'];
 
+/**
+ * The five learning modules as quiet cards that stand up in 3D as they
+ * scroll in (CSS scroll-driven animation, no JavaScript; static where the
+ * browser lacks it or the visitor prefers reduced motion).
+ */
 export function ModulesSection() {
   const t = useTranslations('modules');
 
@@ -26,27 +24,53 @@ export function ModulesSection() {
   ];
 
   return (
-    <section id="modules" className="py-24 px-4 sm:px-6 lg:px-8 gradient-mesh relative overflow-hidden">
-      <div className="max-w-7xl mx-auto relative z-10">
+    <section id="modules" className="relative overflow-clip px-5 py-24 sm:px-6 sm:py-32 lg:px-8">
+      <div className="mx-auto max-w-6xl">
         <ScrollReveal>
           <SectionHeading title={t('title')} subtitle={t('subtitle')} />
         </ScrollReveal>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {modules.map((m, i) => (
-            <ScrollReveal key={m.title} delay={i * 100} variant="zoom">
-              <div className={`group relative bg-gradient-to-br ${moduleColors[i].bg} rounded-2xl border border-border/50 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300`}>
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-14 h-14 rounded-2xl ${moduleColors[i].icon} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <m.icon size={26} />
-                  </div>
-                  <Badge className="text-xs">{m.ages}</Badge>
+        <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-6 lg:gap-5">
+          {modules.map((m, i) => {
+            const c = COLORS[i];
+            return (
+              <li
+                key={m.title}
+                className={`depth-in group relative overflow-hidden rounded-[1.75rem] border p-6 sm:p-7 transition-[transform,box-shadow] duration-300 ease-[var(--ease-out)] [@media(hover:hover)]:hover:-translate-y-1 [@media(hover:hover)]:hover:shadow-[0_28px_50px_-30px_rgba(26,26,46,0.35)] ${
+                  i < 2 ? 'lg:col-span-3' : 'lg:col-span-2'
+                } ${i === 4 ? 'sm:col-span-2 lg:col-span-2' : ''}`}
+                style={{
+                  backgroundColor: `color-mix(in srgb, ${c} 6%, var(--color-bg-card))`,
+                  borderColor: `color-mix(in srgb, ${c} 20%, transparent)`,
+                }}
+              >
+                {/* Big quiet numeral, for rhythm */}
+                <span
+                  className="pointer-events-none absolute -end-2 -top-5 font-display text-[6.5rem] font-bold leading-none tabular-nums opacity-[0.09]"
+                  style={{ color: c }}
+                  aria-hidden="true"
+                >
+                  {i + 1}
+                </span>
+                <div className="relative flex items-center justify-between gap-3">
+                  <span
+                    className="flex h-11 w-11 items-center justify-center rounded-2xl transition-transform duration-300 [@media(hover:hover)]:group-hover:-rotate-6 [@media(hover:hover)]:group-hover:scale-110"
+                    style={{ backgroundColor: `color-mix(in srgb, ${c} 18%, transparent)`, color: c }}
+                  >
+                    <m.icon size={22} strokeWidth={2.2} />
+                  </span>
+                  <span
+                    className="rounded-full px-3 py-1 text-xs font-bold"
+                    style={{ backgroundColor: `color-mix(in srgb, ${c} 14%, transparent)`, color: `color-mix(in srgb, ${c} 70%, var(--color-text-body))` }}
+                  >
+                    {m.ages}
+                  </span>
                 </div>
-                <h3 className="text-lg font-bold text-text-body mb-2">{m.title}</h3>
-                <p className="text-sm text-text-muted leading-relaxed">{m.desc}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
+                <h3 className="relative mt-5 text-xl font-bold text-text-body">{m.title}</h3>
+                <p className="relative mt-1.5 text-text-muted leading-relaxed">{m.desc}</p>
+              </li>
+            );
+          })}
+        </ul>
       </div>
     </section>
   );
