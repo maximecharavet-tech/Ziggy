@@ -8,6 +8,7 @@ import { tr, type L } from '@/lib/i18n-text';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { LutinsScene } from '@/components/lutins/LutinsScene';
+import { LutinsIntro } from '@/components/lutins/LutinsIntro';
 import bible from '@/data/lutins/bible.json';
 import { PRANKS } from '@/data/lutins/pranks';
 import { buildLetter } from '@/data/lutins/letters';
@@ -150,6 +151,7 @@ export function LutinsHome() {
   ];
   return (
     <div className="pb-24 text-white">
+      <LutinsIntro />
       <section className="relative w-full">
         <div className="relative h-[66svh] min-h-[420px] w-full overflow-hidden sm:h-[72svh]">
           <LutinsScene mode="hero" className="absolute inset-0" />

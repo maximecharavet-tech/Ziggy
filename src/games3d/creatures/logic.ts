@@ -11,27 +11,31 @@
  * hint, there is no timer, no streak, nothing to unlock.
  */
 import type { L } from '@/lib/i18n-text';
+import parts from '@/data/creatures/parts.json';
 import { rng } from '../kit/rng';
 
 export type Band = 'little' | 'middle' | 'big';
 
 /* ───────────────────────── Parts ───────────────────────── */
 
-export const BODIES = ['blob', 'egg', 'bean', 'box', 'drop'] as const;
-export const HEADS = ['none', 'ball', 'box', 'bean'] as const;
-export const LEG_STYLES = ['stubby', 'long', 'tentacle'] as const;
-export const ARM_STYLES = ['noodle', 'pincer', 'mitten'] as const;
-export const WINGS = ['none', 'bird', 'bat', 'butterfly', 'tiny'] as const;
-export const TAILS = ['none', 'fish', 'curly', 'pompom', 'dragon'] as const;
-export const MOUTHS = ['smile', 'fangs', 'beak', 'tongue', 'oh', 'teeth'] as const;
-export const TOPS = ['none', 'horns', 'antennae', 'bunny', 'cat', 'crest'] as const;
-export const HATS = ['none', 'top', 'party', 'crown', 'propeller', 'bow'] as const;
-export const PATTERNS = ['plain', 'dots', 'stripes', 'stars'] as const;
+export const BODIES = ['blob', 'egg', 'bean', 'box', 'drop', 'pear', 'cloud', 'tall', 'barrel', 'bell', 'pillow'] as const;
+export const HEADS = ['none', 'ball', 'box', 'bean', 'wide', 'tall', 'drop', 'cone'] as const;
+export const LEG_STYLES = ['stubby', 'long', 'tentacle', 'spring', 'wheel', 'paddle'] as const;
+export const ARM_STYLES = ['noodle', 'pincer', 'mitten', 'glove', 'fin', 'feather'] as const;
+export const WINGS = ['none', 'bird', 'bat', 'butterfly', 'tiny', 'angel', 'fairy', 'leaf', 'rainbow'] as const;
+export const TAILS = ['none', 'fish', 'curly', 'pompom', 'dragon', 'lightning', 'plume', 'balloon', 'ribbon'] as const;
+export const MOUTHS = ['smile', 'fangs', 'beak', 'tongue', 'oh', 'teeth', 'cat', 'grin', 'moustache', 'gap'] as const;
+export const TOPS = ['none', 'horns', 'antennae', 'bunny', 'cat', 'crest', 'eyestalks', 'elf', 'floppy', 'bear', 'unicorn', 'flower'] as const;
+export const HATS = ['none', 'top', 'party', 'crown', 'propeller', 'bow', 'wizard', 'chef', 'cap', 'beanie', 'halo', 'captain'] as const;
+export const PATTERNS = ['plain', 'dots', 'stripes', 'stars', 'zigzag', 'hearts', 'checks', 'waves'] as const;
 export const EYE_SIZES = ['small', 'big'] as const;
 export const LEG_COUNTS = [0, 1, 2, 3, 4, 5, 6, 7, 8] as const;
 export const ARM_COUNTS = [0, 2, 4] as const;
 export const EYE_COUNTS = [1, 2, 3, 4, 5] as const;
 export const SIZES = [1, 2, 3] as const;
+export const NOSES = ['none', 'button', 'clown', 'snout', 'carrot', 'heart'] as const;
+export const AURAS = ['none', 'sparkles', 'hearts', 'bubbles', 'stars', 'notes'] as const;
+export const PETS = ['none', 'ladybug', 'chick', 'cloud', 'snail', 'balloon'] as const;
 
 export type BodyShape = (typeof BODIES)[number];
 export type HeadShape = (typeof HEADS)[number];
@@ -45,6 +49,9 @@ export type HatKind = (typeof HATS)[number];
 export type PatternKind = (typeof PATTERNS)[number];
 export type EyeSize = (typeof EYE_SIZES)[number];
 export type SizeKind = (typeof SIZES)[number];
+export type NoseKind = (typeof NOSES)[number];
+export type AuraKind = (typeof AURAS)[number];
+export type PetKind = (typeof PETS)[number];
 
 export const COLORS = {
   red: { hex: '#ff4d5e', label: { fr: 'rouge', en: 'red' } },
@@ -84,10 +91,13 @@ export interface Creature {
   color: ColorId;
   accent: ColorId;
   size: SizeKind;
+  nose: NoseKind;
+  aura: AuraKind;
+  pet: PetKind;
 }
 
 /** Everything that changes the look (not the id or the name). */
-export const LOOK_KEYS = ['body', 'head', 'legs', 'legStyle', 'arms', 'armStyle', 'wings', 'tail', 'eyes', 'eyeSize', 'mouth', 'top', 'hat', 'pattern', 'color', 'accent', 'size'] as const;
+export const LOOK_KEYS = ['body', 'head', 'legs', 'legStyle', 'arms', 'armStyle', 'wings', 'tail', 'eyes', 'eyeSize', 'mouth', 'top', 'hat', 'pattern', 'color', 'accent', 'size', 'nose', 'aura', 'pet'] as const;
 export type LookKey = (typeof LOOK_KEYS)[number];
 
 /** The friendly first creature waiting on the turntable. */
@@ -111,11 +121,14 @@ export const STARTER: Creature = {
   color: 'teal',
   accent: 'yellow',
   size: 2,
+  nose: 'none',
+  aura: 'none',
+  pet: 'none',
 };
 
 /* ───────────────────────── Categories (the HUD tabs) ───────────────────────── */
 
-export type CategoryId = 'color' | 'accent' | 'wingtail' | 'body' | 'head' | 'eyes' | 'mouth' | 'legs' | 'arms' | 'wings' | 'tail' | 'top' | 'hat' | 'pattern' | 'size';
+export type CategoryId = 'color' | 'accent' | 'wingtail' | 'body' | 'head' | 'eyes' | 'mouth' | 'legs' | 'arms' | 'wings' | 'tail' | 'top' | 'hat' | 'pattern' | 'size' | 'nose' | 'aura' | 'pet';
 
 export interface Category {
   id: CategoryId;
@@ -137,7 +150,10 @@ export const CATEGORIES: Category[] = [
   { id: 'tail', icon: '🐟', label: { fr: 'Queue', en: 'Tail' } },
   { id: 'top', icon: '🦄', label: { fr: 'Cornes & oreilles', en: 'Horns & ears' } },
   { id: 'hat', icon: '🎩', label: { fr: 'Chapeau', en: 'Hat' } },
-  { id: 'pattern', icon: '✨', label: { fr: 'Motif', en: 'Pattern' } },
+  { id: 'pattern', icon: '🌈', label: { fr: 'Motif', en: 'Pattern' } },
+  { id: 'nose', icon: '👃', label: { fr: 'Nez', en: 'Nose' } },
+  { id: 'aura', icon: '✨', label: { fr: 'Magie', en: 'Magic' } },
+  { id: 'pet', icon: '🐞', label: { fr: 'Copain', en: 'Buddy' } },
   { id: 'size', icon: '📏', label: { fr: 'Taille', en: 'Size' } },
 ];
 
@@ -192,13 +208,23 @@ export const OPTIONS: Record<CategoryId, PartOption[]> = {
     opt('body', 'egg', 'egg', { fr: 'Œuf', en: 'Egg' }, { fr: 'Un corps en œuf !', en: 'An egg body!' }),
     opt('body', 'bean', 'bean', { fr: 'Haricot', en: 'Bean' }, { fr: 'Un corps en haricot !', en: 'A bean body!' }),
     opt('body', 'box', 'box', { fr: 'Cube', en: 'Cube' }, { fr: 'Un corps carré !', en: 'A square body!' }),
-    opt('body', 'drop', 'drop', { fr: 'Poire', en: 'Pear' }, { fr: 'Un corps en poire !', en: 'A pear body!' }),
+    opt('body', 'drop', 'drop', { fr: 'Goutte', en: 'Drop' }, { fr: 'Un corps en goutte !', en: 'A drop-shaped body!' }),
+    opt('body', 'pear', 'pear', { fr: 'Poire', en: 'Pear' }, { fr: 'Un corps en poire !', en: 'A pear body!' }),
+    opt('body', 'cloud', 'cloud', { fr: 'Nuage', en: 'Cloud' }, { fr: 'Un corps doux comme un nuage !', en: 'A body soft as a cloud!' }),
+    opt('body', 'tall', 'tall', { fr: 'Grand', en: 'Tall' }, { fr: 'Un grand corps tout en hauteur !', en: 'A tall, tall body!' }),
+    opt('body', 'barrel', 'barrel', { fr: 'Tonneau', en: 'Barrel' }, { fr: 'Un corps en tonneau !', en: 'A barrel body!' }),
+    opt('body', 'bell', 'bell', { fr: 'Cloche', en: 'Bell' }, { fr: 'Un corps en cloche !', en: 'A bell body!' }),
+    opt('body', 'pillow', 'pillow', { fr: 'Coussin', en: 'Pillow' }, { fr: 'Un corps coussin tout moelleux !', en: 'A squishy pillow body!' }),
   ],
   head: [
     opt('head', 'none', 'none', { fr: 'Pas de tête', en: 'No head' }, { fr: 'Pas de tête : les yeux sur le ventre !', en: 'No head: eyes on the tummy!' }),
     opt('head', 'ball', 'ball', { fr: 'Ronde', en: 'Round' }, { fr: 'Une tête ronde !', en: 'A round head!' }),
     opt('head', 'box', 'box', { fr: 'Carrée', en: 'Square' }, { fr: 'Une tête carrée !', en: 'A square head!' }),
     opt('head', 'bean', 'bean', { fr: 'Allongée', en: 'Wide' }, { fr: 'Une grosse tête allongée !', en: 'A big wide head!' }),
+    opt('head', 'wide', 'wide', { fr: 'Large', en: 'Wide' }, { fr: 'Une tête toute large !', en: 'A very wide head!' }),
+    opt('head', 'tall', 'tall', { fr: 'Haute', en: 'Tall' }, { fr: 'Une tête toute haute !', en: 'A tall head!' }),
+    opt('head', 'drop', 'drop', { fr: 'Goutte', en: 'Drop' }, { fr: 'Une tête en goutte !', en: 'A drop-shaped head!' }),
+    opt('head', 'cone', 'cone', { fr: 'Pointue', en: 'Pointy' }, { fr: 'Une tête pointue !', en: 'A pointy head!' }),
   ],
   eyes: [
     ...EYE_COUNTS.map((n) => opt('eyes', n, String(n), { fr: n === 1 ? '1 œil' : `${n} yeux`, en: n === 1 ? '1 eye' : `${n} eyes` }, eyeWord(n))),
@@ -212,18 +238,28 @@ export const OPTIONS: Record<CategoryId, PartOption[]> = {
     opt('mouth', 'tongue', '😛', { fr: 'Langue', en: 'Tongue' }, { fr: 'Elle tire la langue !', en: 'It sticks its tongue out!' }),
     opt('mouth', 'oh', '😮', { fr: 'Oh !', en: 'Oh!' }, { fr: 'Oh ! Une bouche toute ronde !', en: 'Oh! A round mouth!' }),
     opt('mouth', 'teeth', '🐹', { fr: 'Dents', en: 'Teeth' }, { fr: 'Deux grandes dents !', en: 'Two big teeth!' }),
+    opt('mouth', 'cat', '🐱', { fr: 'Moustaches', en: 'Cat mouth' }, { fr: 'Une bouche de chat !', en: 'A cat mouth!' }),
+    opt('mouth', 'grin', '😁', { fr: 'Grand rire', en: 'Big grin' }, { fr: 'Un énorme sourire !', en: 'A huge grin!' }),
+    opt('mouth', 'moustache', '🥸', { fr: 'Moustache', en: 'Moustache' }, { fr: 'Une moustache de monsieur !', en: 'A fancy moustache!' }),
+    opt('mouth', 'gap', '😬', { fr: 'Dent en moins', en: 'Gap tooth' }, { fr: 'Un sourire avec une dent en moins !', en: 'A smile with a gap tooth!' }),
   ],
   legs: [
     ...LEG_COUNTS.map((n) => opt('legs', n, String(n), { fr: n === 1 ? '1 patte' : `${n} pattes`, en: n === 1 ? '1 leg' : `${n} legs` }, legWord(n))),
     opt('legStyle', 'stubby', '🐘', { fr: 'Courtes', en: 'Stubby' }, { fr: 'Des pattes toutes courtes !', en: 'Stubby little legs!' }, 1),
     opt('legStyle', 'long', '🦩', { fr: 'Longues', en: 'Long' }, { fr: 'De longues pattes, comme un flamant !', en: 'Long legs, like a flamingo!' }, 1),
     opt('legStyle', 'tentacle', '🐙', { fr: 'Tentacules', en: 'Tentacles' }, { fr: 'Des tentacules, comme une pieuvre !', en: 'Tentacles, like an octopus!' }, 1),
+    opt('legStyle', 'spring', '🌀', { fr: 'Ressorts', en: 'Springs' }, { fr: 'Des pattes à ressort : boing !', en: 'Spring legs: boing!' }, 1),
+    opt('legStyle', 'wheel', '🛞', { fr: 'Roues', en: 'Wheels' }, { fr: 'Des roulettes !', en: 'Little wheels!' }, 1),
+    opt('legStyle', 'paddle', '🦆', { fr: 'Palmes', en: 'Flippers' }, { fr: 'Des palmes, comme un canard !', en: 'Flippers, like a duck!' }, 1),
   ],
   arms: [
     ...ARM_COUNTS.map((n) => opt('arms', n, String(n), { fr: `${n} bras`, en: `${n} arms` }, armWord(n))),
     opt('armStyle', 'noodle', '🍝', { fr: 'Spaghetti', en: 'Noodle' }, { fr: 'Des bras spaghetti !', en: 'Noodle arms!' }, 1),
     opt('armStyle', 'pincer', '🦀', { fr: 'Pinces', en: 'Pincers' }, { fr: 'Des pinces, comme un crabe !', en: 'Pincers, like a crab!' }, 1),
     opt('armStyle', 'mitten', '🧤', { fr: 'Moufles', en: 'Mittens' }, { fr: 'Des grosses mains toutes douces !', en: 'Big soft mitten hands!' }, 1),
+    opt('armStyle', 'glove', '🖐️', { fr: 'Gants', en: 'Gloves' }, { fr: 'Des gants de dessin animé !', en: 'Cartoon gloves!' }, 1),
+    opt('armStyle', 'fin', '🐬', { fr: 'Nageoires', en: 'Flippers' }, { fr: 'Des nageoires de dauphin !', en: 'Dolphin flippers!' }, 1),
+    opt('armStyle', 'feather', '🪶', { fr: 'Plumes', en: 'Feathers' }, { fr: 'Des bras en plumes !', en: 'Feathery arms!' }, 1),
   ],
   wings: [
     opt('wings', 'none', '✖', NONE, { fr: 'Pas d’ailes !', en: 'No wings!' }),
@@ -231,6 +267,10 @@ export const OPTIONS: Record<CategoryId, PartOption[]> = {
     opt('wings', 'bat', '🦇', { fr: 'Chauve-souris', en: 'Bat' }, { fr: 'Des ailes de chauve-souris !', en: 'Bat wings!' }),
     opt('wings', 'butterfly', '🦋', { fr: 'Papillon', en: 'Butterfly' }, { fr: 'Des ailes de papillon !', en: 'Butterfly wings!' }),
     opt('wings', 'tiny', '🐝', { fr: 'Mini', en: 'Tiny' }, { fr: 'Des toutes petites ailes, comme une abeille !', en: 'Teeny tiny wings, like a bee!' }),
+    opt('wings', 'angel', '😇', { fr: 'Ange', en: 'Angel' }, { fr: 'Des ailes d’ange toutes blanches !', en: 'Fluffy angel wings!' }),
+    opt('wings', 'fairy', '🧚', { fr: 'Fée', en: 'Fairy' }, { fr: 'Des ailes de fée brillantes !', en: 'Shiny fairy wings!' }),
+    opt('wings', 'leaf', '🍃', { fr: 'Feuilles', en: 'Leaves' }, { fr: 'Des ailes en feuilles !', en: 'Leafy wings!' }),
+    opt('wings', 'rainbow', '🌈', { fr: 'Arc-en-ciel', en: 'Rainbow' }, { fr: 'Des ailes arc-en-ciel !', en: 'Rainbow wings!' }),
   ],
   tail: [
     opt('tail', 'none', '✖', NONE, { fr: 'Pas de queue !', en: 'No tail!' }),
@@ -238,6 +278,10 @@ export const OPTIONS: Record<CategoryId, PartOption[]> = {
     opt('tail', 'curly', '🐷', { fr: 'Tire-bouchon', en: 'Curly' }, { fr: 'Une queue en tire-bouchon, comme un cochon !', en: 'A curly tail, like a pig!' }),
     opt('tail', 'pompom', '☁️', { fr: 'Pompon', en: 'Pompom' }, { fr: 'Une queue pompon, comme un lapin !', en: 'A pompom tail, like a bunny!' }),
     opt('tail', 'dragon', '🐉', { fr: 'Dragon', en: 'Dragon' }, { fr: 'Une queue de dragon !', en: 'A dragon tail!' }),
+    opt('tail', 'lightning', '⚡', { fr: 'Éclair', en: 'Lightning' }, { fr: 'Une queue en éclair !', en: 'A lightning tail!' }),
+    opt('tail', 'plume', '🦚', { fr: 'Plumes', en: 'Plume' }, { fr: 'Une queue de plumes de paon !', en: 'A peacock plume tail!' }),
+    opt('tail', 'balloon', '🎈', { fr: 'Ballon', en: 'Balloon' }, { fr: 'Un ballon au bout de la queue !', en: 'A balloon on the tail!' }),
+    opt('tail', 'ribbon', '🎀', { fr: 'Ruban', en: 'Ribbon' }, { fr: 'Une queue en ruban !', en: 'A ribbon tail!' }),
   ],
   top: [
     opt('top', 'none', '✖', NONE, { fr: 'Rien sur la tête !', en: 'Nothing on top!' }),
@@ -246,6 +290,12 @@ export const OPTIONS: Record<CategoryId, PartOption[]> = {
     opt('top', 'bunny', '🐰', { fr: 'Lapin', en: 'Bunny' }, { fr: 'Des oreilles de lapin !', en: 'Bunny ears!' }),
     opt('top', 'cat', '🐱', { fr: 'Chat', en: 'Cat' }, { fr: 'Des oreilles de chat !', en: 'Cat ears!' }),
     opt('top', 'crest', '🦖', { fr: 'Crête', en: 'Spikes' }, { fr: 'Une crête de dinosaure !', en: 'Dinosaur spikes!' }),
+    opt('top', 'eyestalks', '🐌', { fr: 'Yeux d’escargot', en: 'Eye stalks' }, { fr: 'Des yeux au bout de tiges, comme un escargot !', en: 'Eyes on stalks, like a snail!' }),
+    opt('top', 'elf', '🧝', { fr: 'Elfe', en: 'Elf' }, { fr: 'Des oreilles d’elfe !', en: 'Elf ears!' }),
+    opt('top', 'floppy', '🐶', { fr: 'Chien', en: 'Floppy' }, { fr: 'Des oreilles tombantes de chien !', en: 'Floppy dog ears!' }),
+    opt('top', 'bear', '🐻', { fr: 'Ours', en: 'Bear' }, { fr: 'Des petites oreilles d’ours !', en: 'Little bear ears!' }),
+    opt('top', 'unicorn', '🦄', { fr: 'Licorne', en: 'Unicorn' }, { fr: 'Une corne de licorne !', en: 'A unicorn horn!' }),
+    opt('top', 'flower', '🌸', { fr: 'Fleur', en: 'Flower' }, { fr: 'Une fleur sur la tête !', en: 'A flower on top!' }),
   ],
   hat: [
     opt('hat', 'none', '✖', NONE, { fr: 'Pas de chapeau !', en: 'No hat!' }),
@@ -254,12 +304,46 @@ export const OPTIONS: Record<CategoryId, PartOption[]> = {
     opt('hat', 'crown', '👑', { fr: 'Couronne', en: 'Crown' }, { fr: 'Une couronne de roi !', en: 'A royal crown!' }),
     opt('hat', 'propeller', '🚁', { fr: 'Hélice', en: 'Propeller' }, { fr: 'Une casquette à hélice !', en: 'A propeller cap!' }),
     opt('hat', 'bow', '🎀', { fr: 'Nœud', en: 'Bow' }, { fr: 'Un joli nœud !', en: 'A pretty bow!' }),
+    opt('hat', 'wizard', '🧙', { fr: 'Magicien', en: 'Wizard' }, { fr: 'Un chapeau de magicien !', en: 'A wizard hat!' }),
+    opt('hat', 'chef', '👨‍🍳', { fr: 'Cuisinier', en: 'Chef' }, { fr: 'Une toque de cuisinier !', en: 'A chef’s hat!' }),
+    opt('hat', 'cap', '🧢', { fr: 'Casquette', en: 'Cap' }, { fr: 'Une casquette !', en: 'A cap!' }),
+    opt('hat', 'beanie', '🧶', { fr: 'Bonnet', en: 'Beanie' }, { fr: 'Un bonnet tout chaud !', en: 'A warm beanie!' }),
+    opt('hat', 'halo', '😇', { fr: 'Auréole', en: 'Halo' }, { fr: 'Une auréole qui brille !', en: 'A shiny halo!' }),
+    opt('hat', 'captain', '⚓', { fr: 'Capitaine', en: 'Captain' }, { fr: 'Un chapeau de capitaine !', en: 'A captain’s hat!' }),
   ],
   pattern: [
     opt('pattern', 'plain', 'plain', { fr: 'Uni', en: 'Plain' }, { fr: 'Tout uni !', en: 'Plain colour!' }),
     opt('pattern', 'dots', 'dots', { fr: 'Pois', en: 'Dots' }, { fr: 'Des pois !', en: 'Polka dots!' }),
     opt('pattern', 'stripes', 'stripes', { fr: 'Rayures', en: 'Stripes' }, { fr: 'Des rayures !', en: 'Stripes!' }),
     opt('pattern', 'stars', 'stars', { fr: 'Étoiles', en: 'Stars' }, { fr: 'Des étoiles !', en: 'Stars!' }),
+    opt('pattern', 'zigzag', 'zigzag', { fr: 'Zigzag', en: 'Zigzag' }, { fr: 'Des zigzags !', en: 'Zigzags!' }),
+    opt('pattern', 'hearts', 'hearts', { fr: 'Cœurs', en: 'Hearts' }, { fr: 'Des petits cœurs !', en: 'Little hearts!' }),
+    opt('pattern', 'checks', 'checks', { fr: 'Carreaux', en: 'Checks' }, { fr: 'Des carreaux !', en: 'Checks!' }),
+    opt('pattern', 'waves', 'waves', { fr: 'Vagues', en: 'Waves' }, { fr: 'Des vagues !', en: 'Waves!' }),
+  ],
+  nose: [
+    opt('nose', 'none', '✖', NONE, { fr: 'Pas de nez !', en: 'No nose!' }),
+    opt('nose', 'button', '🔘', { fr: 'Bouton', en: 'Button' }, { fr: 'Un petit nez bouton !', en: 'A little button nose!' }),
+    opt('nose', 'clown', '🤡', { fr: 'Clown', en: 'Clown' }, { fr: 'Un gros nez rouge de clown !', en: 'A big red clown nose!' }),
+    opt('nose', 'snout', '🐽', { fr: 'Groin', en: 'Snout' }, { fr: 'Un groin tout rigolo !', en: 'A funny snout!' }),
+    opt('nose', 'carrot', '🥕', { fr: 'Carotte', en: 'Carrot' }, { fr: 'Un nez en carotte, comme un bonhomme de neige !', en: 'A carrot nose, like a snowman!' }),
+    opt('nose', 'heart', '💗', { fr: 'Cœur', en: 'Heart' }, { fr: 'Un nez en cœur !', en: 'A heart nose!' }),
+  ],
+  aura: [
+    opt('aura', 'none', '✖', NONE, { fr: 'Pas de magie !', en: 'No magic!' }),
+    opt('aura', 'sparkles', '✨', { fr: 'Étincelles', en: 'Sparkles' }, { fr: 'Des étincelles partout !', en: 'Sparkles everywhere!' }),
+    opt('aura', 'hearts', '💖', { fr: 'Cœurs', en: 'Hearts' }, { fr: 'Des petits cœurs qui flottent !', en: 'Floating little hearts!' }),
+    opt('aura', 'bubbles', '🫧', { fr: 'Bulles', en: 'Bubbles' }, { fr: 'Des bulles de savon !', en: 'Soap bubbles!' }),
+    opt('aura', 'stars', '⭐', { fr: 'Étoiles', en: 'Stars' }, { fr: 'Des étoiles qui tournent !', en: 'Spinning stars!' }),
+    opt('aura', 'notes', '🎵', { fr: 'Musique', en: 'Music' }, { fr: 'De la musique autour d’elle !', en: 'Music all around it!' }),
+  ],
+  pet: [
+    opt('pet', 'none', '✖', NONE, { fr: 'Pas de copain !', en: 'No buddy!' }),
+    opt('pet', 'ladybug', '🐞', { fr: 'Coccinelle', en: 'Ladybug' }, { fr: 'Une coccinelle pour copine !', en: 'A ladybug friend!' }),
+    opt('pet', 'chick', '🐥', { fr: 'Poussin', en: 'Chick' }, { fr: 'Un poussin pour copain !', en: 'A chick friend!' }),
+    opt('pet', 'cloud', '☁️', { fr: 'Petit nuage', en: 'Little cloud' }, { fr: 'Un petit nuage qui la suit !', en: 'A little cloud follows it!' }),
+    opt('pet', 'snail', '🐌', { fr: 'Escargot', en: 'Snail' }, { fr: 'Un escargot tout lent !', en: 'A very slow snail!' }),
+    opt('pet', 'balloon', '🎈', { fr: 'Ballon', en: 'Balloon' }, { fr: 'Un ballon qui flotte !', en: 'A floating balloon!' }),
   ],
   size: [
     opt('size', 1, 's1', { fr: 'Petite', en: 'Small' }, { fr: 'Toute petite !', en: 'Teeny tiny!' }),
@@ -292,9 +376,9 @@ export function categoryOf(key: LookKey): CategoryId {
  * big pictures, older kids more tabs, more choices and exact counters.
  */
 export const BAND_CATEGORIES: Record<Band, CategoryId[]> = {
-  little: ['color', 'eyes', 'legs', 'wingtail', 'hat', 'mouth'],
-  middle: ['color', 'body', 'eyes', 'mouth', 'legs', 'arms', 'wings', 'tail', 'top', 'hat'],
-  big: ['color', 'accent', 'body', 'head', 'eyes', 'mouth', 'legs', 'arms', 'wings', 'tail', 'top', 'hat', 'pattern', 'size'],
+  little: ['color', 'eyes', 'legs', 'wingtail', 'hat', 'mouth', 'aura'],
+  middle: ['color', 'body', 'eyes', 'mouth', 'nose', 'legs', 'arms', 'wings', 'tail', 'top', 'hat', 'aura', 'pet'],
+  big: ['color', 'accent', 'body', 'head', 'eyes', 'mouth', 'legs', 'arms', 'wings', 'tail', 'top', 'hat', 'nose', 'pattern', 'aura', 'pet', 'size'],
 };
 
 /** "− 6 +" for the exact number of legs or eyes. */
@@ -378,6 +462,9 @@ export function sanitize(x: unknown): Creature | null {
     color: pick(COLOR_IDS, o.color, STARTER.color),
     accent: pick(COLOR_IDS, o.accent, STARTER.accent),
     size: pick(SIZES, o.size, STARTER.size),
+    nose: pick(NOSES, o.nose, STARTER.nose),
+    aura: pick(AURAS, o.aura, STARTER.aura),
+    pet: pick(PETS, o.pet, STARTER.pet),
   };
   return c;
 }
@@ -413,22 +500,25 @@ export function randomCreature(seed: number): Creature {
     id: '',
     name: makeName(Math.floor(r() * 1e9)),
     body: pickOf(r, BODIES),
-    head: pickOf(r, ['none', 'ball', 'ball', 'box', 'bean'] as const),
+    head: pickOf(r, ['none', 'ball', 'ball', 'box', 'bean', 'wide', 'tall', 'drop', 'cone'] as const),
     legs: pickOf(r, [0, 1, 2, 2, 3, 4, 4, 5, 6, 8] as const),
     legStyle: pickOf(r, LEG_STYLES),
     arms: pickOf(r, [0, 2, 2, 4] as const),
     armStyle: pickOf(r, ARM_STYLES),
-    wings: pickOf(r, ['none', 'none', 'bird', 'bat', 'butterfly', 'tiny'] as const),
-    tail: pickOf(r, ['none', 'fish', 'curly', 'pompom', 'dragon'] as const),
+    wings: pickOf(r, ['none', 'none', 'none', ...WINGS.slice(1)] as const),
+    tail: pickOf(r, ['none', 'none', ...TAILS.slice(1)] as const),
     eyes: pickOf(r, [1, 2, 2, 3, 3, 4, 5] as const),
     eyeSize: pickOf(r, EYE_SIZES),
     mouth: pickOf(r, MOUTHS),
     top: pickOf(r, TOPS),
-    hat: pickOf(r, ['none', 'none', 'top', 'party', 'crown', 'propeller', 'bow'] as const),
+    hat: pickOf(r, ['none', 'none', ...HATS.slice(1)] as const),
     pattern: pickOf(r, PATTERNS),
     color,
     accent,
     size: pickOf(r, SIZES),
+    nose: pickOf(r, ['none', 'none', ...NOSES.slice(1)] as const),
+    aura: pickOf(r, ['none', 'none', 'none', ...AURAS.slice(1)] as const),
+    pet: pickOf(r, ['none', 'none', 'none', ...PETS.slice(1)] as const),
   };
 }
 
@@ -468,7 +558,7 @@ export function movesOf(c: Creature): MoveKind[] {
   const moves: MoveKind[] = [];
   const canFly = c.wings !== 'none' && c.wings !== 'tiny';
   if (canFly) moves.push('fly');
-  if (c.tail === 'fish') moves.push('swim');
+  if (c.tail === 'fish' || (c.legStyle === 'paddle' && c.legs > 0)) moves.push('swim');
   if (!canFly || c.legs > 1 || moves.length < 2) moves.unshift(ground);
   if (c.wings === 'tiny') moves.push('flutter');
   return moves.slice(0, 3);
@@ -476,7 +566,7 @@ export function movesOf(c: Creature): MoveKind[] {
 
 /** What it can do (the words for "it flies AND swims"). */
 export function abilities(c: Creature) {
-  return { fly: c.wings !== 'none' && c.wings !== 'tiny', swim: c.tail === 'fish', walk: c.legs > 0 };
+  return { fly: c.wings !== 'none' && c.wings !== 'tiny', swim: c.tail === 'fish' || (c.legStyle === 'paddle' && c.legs > 0), walk: c.legs > 0 };
 }
 
 export type VoiceKind = 'squeak' | 'honk' | 'boing' | 'blub' | 'buzz' | 'purr' | 'roar';
@@ -507,6 +597,15 @@ export function limbs(c: Creature) {
 
 export type ChallengeSkill = 'vocabulary' | 'counting' | 'addition' | 'colors' | 'logic';
 
+export type PowerKey = 'bounce' | 'fly' | 'swim' | 'sparkle' | 'dance' | 'camo' | 'laugh' | 'rainbow' | 'roll' | 'float' | 'zap' | 'hearts' | 'music';
+
+/** The powers a creature has (rules shared with the Rust core through parts.json). Never empty. */
+export function powerKeys(c: Creature): PowerKey[] {
+  const rec = c as unknown as Record<string, string | number>;
+  const out = parts.powers.filter((rule) => (rule.any as [string, string | number][]).some(([f, v]) => String(rec[f]) === String(v))).map((rule) => rule.id as PowerKey);
+  return out.length ? out : ['dance'];
+}
+
 export type Req =
   | { k: 'legs'; n: number }
   | { k: 'arms'; n: number }
@@ -524,7 +623,12 @@ export type Req =
   | { k: 'limbs'; n: number }
   | { k: 'sumAll'; n: number }
   | { k: 'eyesEqLegs' }
-  | { k: 'oddLegs' };
+  | { k: 'oddLegs' }
+  | { k: 'power'; is: PowerKey }
+  | { k: 'nose'; is: NoseKind }
+  | { k: 'aura'; is: AuraKind }
+  | { k: 'pet'; is: PetKind }
+  | { k: 'body'; is: BodyShape };
 
 export interface Challenge {
   id: string;
@@ -597,6 +701,16 @@ export function reqMet(r: Req, c: Creature): boolean {
       return c.eyes === c.legs;
     case 'oddLegs':
       return c.legs % 2 === 1;
+    case 'power':
+      return powerKeys(c).includes(r.is);
+    case 'nose':
+      return c.nose === r.is;
+    case 'aura':
+      return c.aura === r.is;
+    case 'pet':
+      return c.pet === r.is;
+    case 'body':
+      return c.body === r.is;
   }
 }
 
@@ -620,15 +734,37 @@ export function solveChallenge(ch: Challenge): Creature | null {
     if (r.k === 'pattern') base = { ...base, pattern: r.is };
     if (r.k === 'color') base = { ...base, color: r.is };
     if (r.k === 'legStyle') base = { ...base, legStyle: r.is };
+    if (r.k === 'nose') base = { ...base, nose: r.is };
+    if (r.k === 'aura') base = { ...base, aura: r.is };
+    if (r.k === 'pet') base = { ...base, pet: r.is };
+    if (r.k === 'body') base = { ...base, body: r.is };
   }
-  for (const legs of LEG_COUNTS)
-    for (const arms of ARM_COUNTS)
-      for (const eyes of EYE_COUNTS) {
-        const c = { ...base, legs, arms, eyes };
-        if (checkChallenge(ch, c).ok) return c;
-      }
+  // Powers: try each way of getting one that leaves the other requirements' fields alone.
+  const fixed = new Set<string>(ch.reqs.flatMap((r) => (r.k === 'power' ? [] : [r.k === 'wings' || r.k === 'wingsIs' ? 'wings' : r.k === 'tail' ? 'tail' : r.k === 'top' ? 'top' : r.k === 'hat' || r.k === 'hatIs' ? 'hat' : r.k === 'legStyle' ? 'legStyle' : r.k])));
+  let variants: Creature[] = [base];
+  for (const r of ch.reqs) {
+    if (r.k !== 'power') continue;
+    const rule = parts.powers.find((x) => x.id === r.is);
+    if (!rule) return null;
+    const next: Creature[] = [];
+    for (const v of variants) {
+      next.push(v);
+      for (const [f, val] of rule.any as [string, string | number][])
+        if (typeof val === 'string' && !fixed.has(f)) next.push({ ...v, [f]: val });
+    }
+    variants = next;
+  }
+  for (const b of variants)
+    for (const legs of LEG_COUNTS)
+      for (const arms of ARM_COUNTS)
+        for (const eyes of EYE_COUNTS) {
+          const c = { ...b, legs, arms, eyes };
+          if (checkChallenge(ch, c).ok) return c;
+        }
   return null;
 }
+
+const POWER_ICON: Record<PowerKey, string> = { bounce: '🦘', fly: '🕊️', swim: '🐟', sparkle: '✨', dance: '💃', camo: '🍃', laugh: '😂', rainbow: '🌈', roll: '🛞', float: '🎈', zap: '⚡', hearts: '💖', music: '🎵' };
 
 /** Little pictures for each requirement (the challenge card, for those who can't read yet). */
 export function reqChip(r: Req, c: Creature): { icon: string; n?: string; have?: string } {
@@ -667,6 +803,16 @@ export function reqChip(r: Req, c: Creature): { icon: string; n?: string; have?:
       return { icon: '👁️ = 🦵' };
     case 'oddLegs':
       return { icon: '🦵', n: '1·3·5·7' };
+    case 'power':
+      return { icon: POWER_ICON[r.is] };
+    case 'nose':
+      return { icon: OPTIONS.nose.find((o) => o.key === `nose:${r.is}`)!.icon };
+    case 'aura':
+      return { icon: OPTIONS.aura.find((o) => o.key === `aura:${r.is}`)!.icon };
+    case 'pet':
+      return { icon: OPTIONS.pet.find((o) => o.key === `pet:${r.is}`)!.icon };
+    case 'body':
+      return { icon: '🥚' };
   }
 }
 
@@ -700,6 +846,15 @@ export function reqCategory(r: Req): CategoryId {
       return 'pattern';
     case 'color':
       return 'color';
+    case 'nose':
+      return 'nose';
+    case 'aura':
+    case 'power':
+      return 'aura';
+    case 'pet':
+      return 'pet';
+    case 'body':
+      return 'body';
   }
 }
 
@@ -774,6 +929,16 @@ export function hintFor(ch: Challenge, c: Creature, locale: string): string {
       return fr
         ? `Elle a ${num(c.eyes, EYE[0], EYE[1], locale)} et ${num(c.legs, LEG[0], LEG[1], locale)} : il faut le même nombre.`
         : `It has ${num(c.eyes, EYE[0], EYE[1], locale)} and ${num(c.legs, LEG[0], LEG[1], locale)}: they must be the same number.`;
+    case 'power':
+      return fr ? 'Il lui manque un pouvoir : essaie les ailes, la magie, les chapeaux, la bouche…' : 'It still needs a power: try wings, magic, hats, the mouth…';
+    case 'nose':
+      return fr ? `Il faut le nez « ${label('nose', `nose:${r.is}`)} ».` : `It needs the “${label('nose', `nose:${r.is}`)}” nose.`;
+    case 'aura':
+      return fr ? `Il faut la magie « ${label('aura', `aura:${r.is}`)} ».` : `It needs the “${label('aura', `aura:${r.is}`)}” magic.`;
+    case 'pet':
+      return fr ? `Il faut le copain « ${label('pet', `pet:${r.is}`)} ».` : `It needs the “${label('pet', `pet:${r.is}`)}” buddy.`;
+    case 'body':
+      return fr ? `Il faut le corps « ${label('body', `body:${r.is}`)} ».` : `It needs the “${label('body', `body:${r.is}`)}” body.`;
     case 'oddLegs':
       return fr ? `${c.legs} est un nombre pair. Essaie 1, 3, 5 ou 7 pattes !` : `${c.legs} is an even number. Try 1, 3, 5 or 7 legs!`;
   }

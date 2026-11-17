@@ -162,6 +162,282 @@ export const MORNING_NOTES: Record<string, L> = {
     fr: 'Pouet ! Boum ! Debout, c’est le matin ! Notre fanfare te souhaite une journée magique.',
     en: 'Toot! Boom! Rise and shine! Our little band wishes you a magical day.',
   },
+  'echarpe-geante': {
+    fr: 'On s’est tous glissés dans une écharpe géante. Une chenille de lutins, ça tient chaud !',
+    en: 'We all squeezed into one giant scarf. A caterpillar of elves is super cosy!',
+  },
+  'theatre-ombres': {
+    fr: 'Cette nuit, spectacle d’ombres sur ton mur ! Tu as reconnu le lapin ? C’était un dragon.',
+    en: 'Shadow show on your wall last night! Did you spot the rabbit? It was a dragon.',
+  },
+  'chasse-tresor': {
+    fr: 'On a suivi une carte au trésor toute la nuit. Le trésor est tout près… bonne chasse !',
+    en: 'We followed a treasure map all night. The treasure is very close… happy hunting!',
+  },
+  ballons: {
+    fr: 'Règle du jeu : le ballon ne doit jamais toucher le sol. On a tenu jusqu’à… presque dix !',
+    en: 'Rule of the game: the balloon must never touch the floor. We lasted until… almost ten!',
+  },
+  'yoga-lutins': {
+    fr: 'Cette nuit, yoga des lutins ! Notre posture préférée : le flocon qui s’étire.',
+    en: 'Elf yoga last night! Our favourite pose: the stretching snowflake.',
+  },
+  'bateau-fruit': {
+    fr: 'Ohé ! On a navigué sur un bateau d’orange. Ça sentait bon, et personne n’est tombé à l’eau.',
+    en: 'Ahoy! We sailed an orange-peel boat. It smelled lovely, and nobody fell overboard.',
+  },
+  'colliers-pates': {
+    fr: 'On t’a fabriqué des colliers de pâtes. Très chic… mais pas à manger !',
+    en: 'We made you pasta necklaces. Very fancy… but not for eating!',
+  },
+  'petits-chefs': {
+    fr: 'Les petits chefs ont cuisiné toute la nuit ! Recette secrète : un gâteau imaginaire.',
+    en: 'The little chefs cooked all night! Secret recipe: a pretend cake.',
+  },
+  'pique-nique-table': {
+    fr: 'Pique-nique de minuit sur la table ! Une miette chacun, c’était un vrai festin.',
+    en: 'Midnight picnic on the table! One crumb each, it was a real feast.',
+  },
+  'course-cuilleres': {
+    fr: 'Grande course de cuillères ! La guimauve est tombée trois fois. On rejoue ce soir ?',
+    en: 'Big spoon race! The marshmallow fell off three times. Rematch tonight?',
+  },
+  chorale: {
+    fr: 'La chorale des lutins a chanté pour toi cette nuit. Tout bas, pour ne pas te réveiller !',
+    en: 'The elf choir sang for you last night. Very softly, so we didn’t wake you!',
+  },
+  'trampoline-coussins': {
+    fr: 'Boing ! Boing ! Les coussins font des trampolines géniaux. On a presque touché la lune.',
+    en: 'Boing! Boing! Cushions make great trampolines. We nearly touched the moon.',
+  },
+  'jeu-societe': {
+    fr: 'Soirée jeux de société ! On a lancé le dé si fort qu’on le cherche encore.',
+    en: 'Board game night! We rolled the dice so hard we’re still looking for it.',
+  },
+  puzzle: {
+    fr: 'On a fait un puzzle géant. Il manque une pièce… à toi de poser la dernière !',
+    en: 'We did a giant puzzle. One piece is missing… you get to place the last one!',
+  },
+  'jungle-plantes': {
+    fr: 'Expédition dans la jungle des plantes ! On a vu une feuille géante. Brrr, quelle aventure.',
+    en: 'Expedition into the houseplant jungle! We saw a giant leaf. Phew, what an adventure.',
+  },
+  'pyjama-party': {
+    fr: 'Soirée pyjama sur ton lit ! On a gardé un peu de pop-corn… enfin, une miette.',
+    en: 'Pyjama party on your bed! We saved you some popcorn… well, one crumb.',
+  },
+  'dodo-doudou': {
+    fr: 'On a fait un gros dodo dans une pantoufle. Super confortable, on te la conseille !',
+    en: 'We had a big snooze in a slipper. Super comfy, we recommend it!',
+  },
+  'etoiles-papier': {
+    fr: 'On t’a fait un ciel plein d’étoiles en papier. Fais un vœu en les regardant !',
+    en: 'We made you a sky full of paper stars. Make a wish when you look at them!',
+  },
+  'collection-boutons': {
+    fr: 'On a rangé tous les boutons en arc-en-ciel. On a compté jusqu’à… beaucoup !',
+    en: 'We sorted all the buttons into a rainbow. We counted up to… loads!',
+  },
+  'navire-oreiller': {
+    fr: 'À l’abordage ! Ton oreiller est devenu un bateau pirate. Le trésor : un câlin.',
+    en: 'Ahoy, pirates! Your pillow became a pirate ship. The treasure: a cuddle.',
+  },
+  'grimaces-miroir': {
+    fr: 'Concours de grimaces devant le miroir ! On a tous gagné. Tu nous montres la tienne ?',
+    en: 'Funny-face contest in the mirror! We all won. Will you show us yours?',
+  },
+  'turbans-serviette': {
+    fr: 'Spa des lutins cette nuit ! Turban, concombre et grosse détente. Ahhh…',
+    en: 'Elf spa night! Turbans, cucumber and lots of relaxing. Ahhh…',
+  },
+  'regate-baignoire': {
+    fr: 'Régate dans la baignoire (toute sèche) ! Le vainqueur a eu une bulle imaginaire.',
+    en: 'Regatta in the (dry) bathtub! The winner got a pretend bubble.',
+  },
+  'traineau-carton': {
+    fr: 'On a essayé notre traîneau en carton. Le renne en peluche était très rapide !',
+    en: 'We tried out our cardboard sleigh. The cuddly reindeer was very fast!',
+  },
+  'chorale-noel': {
+    fr: 'On a chanté des chants de Noël autour du sapin. Les guirlandes clignotaient en rythme !',
+    en: 'We sang carols around the tree. The fairy lights twinkled in time!',
+  },
+  'cartes-voeux': {
+    fr: 'On a fabriqué des cartes de vœux pleines de flocons. Il y en a peut-être une pour toi !',
+    en: 'We made Christmas cards full of snowflakes. There might be one for you!',
+  },
+  'biscuits-pere-noel': {
+    fr: 'On a préparé des biscuits pour le Père Noël. On en a goûté un tout petit bout… pour vérifier !',
+    en: 'We set out cookies for Santa. We tasted a teeny bit… just to check!',
+  },
+  'manteaux-cachette': {
+    fr: 'Coucou ! On s’est cachés dans les poches des manteaux. C’est tout doux là-dedans.',
+    en: 'Peekaboo! We hid in the coat pockets. It’s so soft in there.',
+  },
+  'parapluie-bateau': {
+    fr: 'Un parapluie à l’envers, ça fait un super bateau ! On a ramé toute la nuit.',
+    en: 'An upside-down umbrella makes a great boat! We paddled all night.',
+  },
+  'concours-bonnets': {
+    fr: 'Concours du plus grand bonnet ! On n’y voyait plus rien, on s’est cognés en rigolant.',
+    en: 'Biggest-hat contest! We couldn’t see a thing and bumped into each other, giggling.',
+  },
+  'comite-accueil': {
+    fr: 'Bienvenue ! On t’a préparé un comité d’accueil avec des petits drapeaux. Bonne journée !',
+    en: 'Welcome! We set up a welcome committee with little flags. Have a great day!',
+  },
+  'defile-mode': {
+    fr: 'Grand défilé de mode cette nuit ! Les gants font de très jolies capes.',
+    en: 'Big fashion show last night! Gloves make very fine capes.',
+  },
+  'spectacle-gants': {
+    fr: 'Spectacle de marionnettes en gants ! Le public était ravi : c’était nous.',
+    en: 'Glove puppet show! The audience loved it: it was us.',
+  },
+  'bottes-fleurs': {
+    fr: 'On a planté un jardin dans tes bottes ! Ne t’inquiète pas, les fleurs sont en papier.',
+    en: 'We planted a garden in your boots! Don’t worry, the flowers are paper.',
+  },
+  'chaine-trombones': {
+    fr: 'On a fait une chaîne de trombones longue comme… très très longue !',
+    en: 'We made a paperclip chain as long as… really, really long!',
+  },
+  'patinoire-gommes': {
+    fr: 'Patinoire sur le bureau ! Avec des gommes comme patins, on a fait des pirouettes.',
+    en: 'Ice rink on the desk! With erasers as skates, we did twirls.',
+  },
+  'tipi-crayons': {
+    fr: 'On a construit un tipi en crayons de couleur. On y a raconté des histoires !',
+    en: 'We built a tipi out of coloured pencils. We told stories inside!',
+  },
+  'avions-papier': {
+    fr: 'L’aéroport des lutins était ouvert cette nuit ! Tous les avions en papier sont bien arrivés.',
+    en: 'The elf airport was open last night! Every paper plane landed safely.',
+  },
+  'calendrier-avent': {
+    fr: 'On a fabriqué un calendrier de l’Avent géant ! Une petite porte à ouvrir chaque jour.',
+    en: 'We made a giant Advent calendar! One little door to open every day.',
+  },
+  'tour-du-monde': {
+    fr: 'On a fait le tour du monde sur ton globe cette nuit ! Où veux-tu aller, toi ?',
+    en: 'We travelled round the world on your globe last night! Where would you like to go?',
+  },
+  'bascule-regle': {
+    fr: 'Une règle, un crayon, et hop : une balançoire ! Haut, bas, haut, bas… quel fou rire.',
+    en: 'A ruler, a pencil, and hop: a seesaw! Up, down, up, down… what giggles.',
+  },
+  'chateau-briques': {
+    fr: 'On a construit un château fort en briques ! Le pont-levis s’ouvre pour toi.',
+    en: 'We built a brick castle! The drawbridge opens for you.',
+  },
+  'gare-train': {
+    fr: 'Tchou tchou ! La gare des lutins a ouvert. Prochain départ : ce soir.',
+    en: 'Choo choo! The elf station is open. Next departure: tonight.',
+  },
+  dinette: {
+    fr: 'Thé des lutins avec le petit doigt levé ! Ta peluche était notre invitée d’honneur.',
+    en: 'Elf tea party, little fingers up! Your cuddly toy was our guest of honour.',
+  },
+  'piscine-balles': {
+    fr: 'Plouf ! On a nagé dans la piscine à balles. On a perdu un bonnet quelque part dedans !',
+    en: 'Splash! We swam in the ball pool. We lost a hat somewhere in there!',
+  },
+  'tour-cubes': {
+    fr: 'On a construit une tour de cubes très haute. Elle tient encore ? Chut, souffle doucement !',
+    en: 'We built a very tall block tower. Is it still standing? Shh, breathe gently!',
+  },
+  'bal-poupees': {
+    fr: 'Grand bal cette nuit ! On a dansé la valse avec tes poupées. Un, deux, trois…',
+    en: 'Grand ball last night! We waltzed with your dolls. One, two, three…',
+  },
+  'quilles-peluches': {
+    fr: 'Partie de quilles avec tes peluches ! Strike ! Elles ont adoré rouler par terre.',
+    en: 'Skittles with your cuddly toys! Strike! They loved tumbling over.',
+  },
+  'cirque-peluches': {
+    fr: 'Mesdames et messieurs, le cirque des lutins ! Ta peluche a sauté dans le cerceau. Bravo !',
+    en: 'Ladies and gentlemen, the elf circus! Your cuddly toy jumped through the hoop. Bravo!',
+  },
+  jardiniers: {
+    fr: 'Les lutins jardiniers ont planté des fleurs en papier. Elles ne fanent jamais !',
+    en: 'The gardener elves planted paper flowers. They never wilt!',
+  },
+  coccinelle: {
+    fr: 'Balade à dos de coccinelle cette nuit ! Elle est en bois, mais elle va très vite.',
+    en: 'A ladybird ride last night! She’s made of wood, but she’s very fast.',
+  },
+  'cabane-pot': {
+    fr: 'On a transformé un pot de fleurs en petite maison. Tu viens nous rendre visite ?',
+    en: 'We turned a flowerpot into a little house. Will you come and visit?',
+  },
+  'feuilles-bateaux': {
+    fr: 'Régate de feuilles ! Nos casques en glands nous allaient à merveille.',
+    en: 'Leaf-boat regatta! Our acorn-cap helmets looked marvellous.',
+  },
+  'cailloux-visage': {
+    fr: 'On t’a fait un grand sourire en cailloux. Il te dit bonjour !',
+    en: 'We made you a big pebble smile. It says good morning!',
+  },
+  'lanterne-jardin': {
+    fr: 'Veillée autour de la lanterne du jardin. On s’est raconté nos plus belles histoires.',
+    en: 'Story time around the garden lantern. We told our best tales.',
+  },
+  epouvantail: {
+    fr: 'On s’est fait un nouveau copain épouvantail. Il est très gentil et adore les câlins !',
+    en: 'We made a new scarecrow friend. He’s very friendly and loves cuddles!',
+  },
+  'labyrinthe-livres': {
+    fr: 'On a construit un labyrinthe de livres. On a mis longtemps à trouver la sortie !',
+    en: 'We built a maze of books. It took us ages to find the way out!',
+  },
+  'tente-livre': {
+    fr: 'On a dormi sous un livre ouvert, comme sous une tente. Une histoire, ça protège bien !',
+    en: 'We slept under an open book like a tent. A story makes a great shelter!',
+  },
+  'pont-livres': {
+    fr: 'On a construit un pont en livres. Ta peluche l’a traversé sans peur !',
+    en: 'We built a bridge of books. Your cuddly toy crossed it bravely!',
+  },
+  bibliothecaires: {
+    fr: 'Les lutins bibliothécaires ont rangé les livres par couleur. Chut, c’est très sérieux !',
+    en: 'The librarian elves sorted the books by colour. Shh, it’s very serious!',
+  },
+  'livre-popup': {
+    fr: 'Cette nuit, on est entrés dans un livre animé ! Tu nous as vus entre les pages ?',
+    en: 'Last night we stepped into a pop-up book! Did you spot us between the pages?',
+  },
+  chut: {
+    fr: 'Chuuut ! On est passés sur la pointe des pieds… mais on a un peu rigolé.',
+    en: 'Shhh! We tiptoed past… but we giggled a little.',
+  },
+  'arc-en-ciel-livres': {
+    fr: 'On a fait un arc-en-ciel avec tes livres. Lequel est ta couleur préférée ?',
+    en: 'We made a rainbow out of your books. Which is your favourite colour?',
+  },
+  'radeau-linge': {
+    fr: 'On a navigué sur une mer de serviettes, dans un panier-radeau. Quelle traversée !',
+    en: 'We sailed a sea of towels on a laundry-basket raft. What a voyage!',
+  },
+  'marionnettes-chaussettes': {
+    fr: 'Spectacle de chaussettes ! Elles ont chanté, dansé… et l’une a perdu sa jumelle.',
+    en: 'Sock puppet show! They sang, they danced… and one lost its twin.',
+  },
+  'montagne-serviettes': {
+    fr: 'On a glissé sur la montagne de serviettes ! Toute douce, on a recommencé cent fois.',
+    en: 'We slid down the towel mountain! So soft, we did it a hundred times.',
+  },
+  pliage: {
+    fr: 'Grand concours de pliage ! Nos carrés étaient presque parfaits… presque.',
+    en: 'Big folding contest! Our squares were nearly perfect… nearly.',
+  },
+  'guirlande-chaussettes': {
+    fr: 'Une guirlande de chaussettes dépareillées, c’est très festif, non ?',
+    en: 'A bunting of odd socks is very festive, don’t you think?',
+  },
+  'enquete-chaussette': {
+    fr: 'Enquête de la nuit : où est passée la chaussette ? On a un indice… à toi de trouver !',
+    en: 'Tonight’s case: where did the sock go? We have a clue… your turn to find it!',
+  },
 };
 
 /** The note for the parents' own prank ideas (and any unknown id). */

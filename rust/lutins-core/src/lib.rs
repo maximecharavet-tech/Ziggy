@@ -7,6 +7,7 @@
 //! | module | what |
 //! |---|---|
 //! | [`analysis`] | scene analysis of the room photo: brightness, contrast, colour temperature, light direction, palette, sharpness, stages for the elves |
+//! | [`pranks`] | the prank catalogue (shared JSON), idea check, deterministic "prank of the night" |
 //! | [`prompt`] | image-model prompt from the bible + scene + prank, seed, child's caption |
 //! | [`verify`] | does the generated picture keep the room and show the requested elves? |
 //! | [`card`] | on-device animated "magic card" (Ken Burns, snow, sparkles, glow) |
@@ -34,6 +35,7 @@ pub mod decode;
 pub mod filters;
 pub mod image;
 pub mod prepare;
+pub mod pranks;
 pub mod prompt;
 pub mod resize;
 pub mod rng;
@@ -44,6 +46,7 @@ pub use analysis::{analyze_scene, SceneAnalysis};
 pub use card::{render_card_frame, CardRenderer, CardStyle};
 pub use cctv::{focus_elves, render_cctv_frame, CctvLook, CctvRenderer, CctvStyle};
 pub use image::{EngineError, RgbaImage, RgbaView};
+pub use pranks::{check_idea, plan, IdeaCheck, Plan, PlanRequest};
 pub use prepare::prepare_photo;
 pub use prompt::{build_prompt, build_prompt_json, PromptInput, PromptOut};
 pub use verify::{verify, Verification, VerifyRequest};

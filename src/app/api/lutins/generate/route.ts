@@ -8,7 +8,7 @@ import { prankById } from '@/data/lutins/pranks';
 import { cleanParentText } from '@/lib/lutins/text';
 import { clientIp, DEVICE_RE, refundUse, takeUse } from '@/lib/lutins/limits';
 import { signSource } from '@/lib/lutins/sign';
-import { serverBuildPrompt } from '@/lib/lutins/server-engine';
+import { serverBuildPrompt, serverCheckIdea } from '@/lib/lutins/server-engine';
 import { canonicalPath, lutinsPublicUrl } from '@/lib/lutins/portraits';
 
 /**
@@ -76,6 +76,9 @@ export async function POST(request: NextRequest) {
 
   // The parent's own words: ChildShield before anything else (the picture is for a child).
   if (text) {
+    // First the engine's gentle-words gate (nothing a child could copy to get hurt), then ChildShield.
+    const idea = await serverCheckIdea(text).catch(() => null);
+    if (idea && !idea.ok) return NextResponse.json({ error: 'text' }, { status: 422 });
     const verdict = await shield(text, 'lutins_text');
     if (!verdict.ok) return NextResponse.json({ error: 'text' }, { status: 422 });
   }
