@@ -25,6 +25,14 @@ export interface EngineEvent {
   y: number;
 }
 
+/** A note of the snow-globe: something fell near it. */
+export interface GlobeNote {
+  element: number;
+  degree: number;
+  x: number;
+  y: number;
+}
+
 export interface SandEngine {
   readonly raw: RawSandbox;
   readonly w: number;
@@ -36,6 +44,8 @@ export interface SandEngine {
   takeEvents(): EngineEvent[];
   /** Exact number of times each reaction happened in this world. */
   counts(): Uint32Array;
+  /** Notes of the music snow-globe since the last call (element, pentatonic degree 0–7, cell), then forgets them. */
+  takeNotes(): GlobeNote[];
   /** The world as bytes (a copy, safe to keep). */
   save(): Uint8Array;
   /** Restores bytes from `save`; false if they are not a save of this world (nothing changes then). */
@@ -113,6 +123,18 @@ export function createSandbox(w: number, h: number, seed: number, world: number)
       return out;
     },
     counts: () => u32(raw.counts_ptr(), raw.counts_len()).slice(),
+    takeNotes() {
+      const n = raw.notes_len();
+      if (!n) return [];
+      const view = u32(raw.notes_ptr(), n);
+      const out: GlobeNote[] = [];
+      for (let k = 0; k < n; k++) {
+        const v = view[k];
+        out.push({ element: v & 63, degree: (v >>> 6) & 7, x: (v >>> 9) & 511, y: (v >>> 18) & 511 });
+      }
+      raw.take_notes();
+      return out;
+    },
     save() {
       const n = raw.save();
       return new Uint8Array(mem.buffer, raw.io_ptr(), n).slice();

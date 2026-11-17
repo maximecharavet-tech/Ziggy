@@ -23,9 +23,11 @@ export interface SandboxSave {
   saucer: WorldId[];
   /** Discoveries already turned into a World Memory round (first per world + every 5th). */
   rounds: number;
+  /** Treasure maps not dug up yet: world → where the X is, across the world (0 left … 1 right). */
+  maps: Partial<Record<WorldId, number>>;
 }
 
-export const emptySave = (): SandboxSave => ({ v: 2, discoveries: {}, challenges: {}, totals: {}, world: 'garden', saucer: [], rounds: 0 });
+export const emptySave = (): SandboxSave => ({ v: 2, discoveries: {}, challenges: {}, totals: {}, world: 'garden', saucer: [], rounds: 0, maps: {} });
 
 const isReaction = (k: string): k is Reaction => (REACTIONS as readonly string[]).includes(k);
 const isChallenge = (k: string): k is ChallengeId => CHALLENGES.some((c) => c.id === k);
@@ -52,6 +54,7 @@ export function parseSave(raw: unknown): SandboxSave {
     saucer: Array.isArray(data.saucer) ? [...new Set(data.saucer.filter(isWorld))] : [],
     // A version 1 notebook already earned one round per discovery: nothing more is owed.
     rounds: typeof data.rounds === 'number' && Number.isFinite(data.rounds) ? Math.max(0, Math.floor(data.rounds)) : Object.keys(discoveries).length,
+    maps: Object.fromEntries(Object.entries(pickNumbers(data.maps, isWorld)).map(([w, f]) => [w, Math.min(1, Math.max(0, f as number))])),
   };
 }
 

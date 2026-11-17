@@ -52,7 +52,7 @@ pub const PIPE: u8 = 46;
 pub const RING: u8 = 47;
 pub const FROST: u8 = 48;
 
-pub const REACTION_COUNT: usize = 81;
+pub const REACTION_COUNT: usize = 82;
 pub const R_SPROUT: u8 = 0;
 pub const R_MELT_ICE: u8 = 1;
 pub const R_MELT_SNOW: u8 = 2;
@@ -134,6 +134,7 @@ pub const R_GIFT_UNDERSEA: u8 = 77;
 pub const R_GIFT_SPACE: u8 = 78;
 pub const R_GIFT_MOON: u8 = 79;
 pub const R_GIFT_MARS: u8 = 80;
+pub const R_GIFT_TREASURE: u8 = 81;
 
 pub const K_SOLID: u8 = 0;
 pub const K_POWDER: u8 = 1;

@@ -76,3 +76,22 @@ export function saucerHum(): void {
   osc.start(t);
   osc.stop(t + 0.75);
 }
+
+const PENTATONIC = [1, 9 / 8, 5 / 4, 3 / 2, 5 / 3, 2, 9 / 4, 5 / 2];
+let lastNote = 0;
+
+/** A music-box note of the snow-globe: the element's pitch family, on a pentatonic step (left low, right high). */
+export function globeNote(element: number, degree: number): void {
+  const now = performance.now();
+  if (now - lastNote < 70) return;
+  const a = audio();
+  if (!a) return;
+  lastNote = now;
+  let base = elementPitch(element);
+  while (base > 700) base /= 2;
+  while (base < 260) base *= 2;
+  const f = base * PENTATONIC[Math.max(0, Math.min(7, degree | 0))];
+  const t = a.currentTime;
+  tone(a, f, t, 0.7, 0.05, 'sine');
+  tone(a, f * 2, t, 0.35, 0.015, 'triangle');
+}

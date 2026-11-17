@@ -116,7 +116,7 @@ fn blend(dst: u32, src: u32, a: u32) -> u32 {
 }
 
 #[inline]
-fn add_rgb(dst: u32, r: u32, g: u32, b: u32) -> u32 {
+pub(crate) fn add_rgb(dst: u32, r: u32, g: u32, b: u32) -> u32 {
     let nr = ((dst & 255) + r).min(255);
     let ng = (((dst >> 8) & 255) + g).min(255);
     let nb = (((dst >> 16) & 255) + b).min(255);
@@ -347,6 +347,7 @@ impl Renderer {
         self.draw_faces(world, time, calm);
         self.draw_critters(world, time, calm);
         self.draw_parcel(world, time, calm);
+        self.draw_toys(world, time, calm);
         if let Some((bx, by, br)) = self.beam {
             self.draw_beam(bx, by, br, time, calm);
         }
@@ -1104,8 +1105,14 @@ impl Renderer {
 
     /* ── Small drawing tools (frame pixels) ── */
 
+    /// The sine table: 0-255 is a full turn, -127..127.
     #[inline]
-    fn plot(&mut self, x: i32, y: i32, rgb: u32, a: u32) {
+    pub(crate) fn sin_of(&self, a: u32) -> i8 {
+        self.sin[(a & 255) as usize]
+    }
+
+    #[inline]
+    pub(crate) fn plot(&mut self, x: i32, y: i32, rgb: u32, a: u32) {
         if x < 0 || y < 0 || x >= self.fw as i32 || y >= self.fh as i32 {
             return;
         }
@@ -1114,11 +1121,11 @@ impl Renderer {
         self.frame[idx] = if a >= 255 { src } else { blend(self.frame[idx], src, a) };
     }
 
-    fn disc(&mut self, cx: f32, cy: f32, r: f32, rgb: u32, a: u32) {
+    pub(crate) fn disc(&mut self, cx: f32, cy: f32, r: f32, rgb: u32, a: u32) {
         self.ellipse(cx, cy, r, r, rgb, a);
     }
 
-    fn ellipse(&mut self, cx: f32, cy: f32, rx: f32, ry: f32, rgb: u32, a: u32) {
+    pub(crate) fn ellipse(&mut self, cx: f32, cy: f32, rx: f32, ry: f32, rgb: u32, a: u32) {
         if rx <= 0.0 || ry <= 0.0 {
             return;
         }
@@ -1137,7 +1144,7 @@ impl Renderer {
         }
     }
 
-    fn fill_rect(&mut self, x0: f32, y0: f32, x1: f32, y1: f32, rgb: u32, a: u32) {
+    pub(crate) fn fill_rect(&mut self, x0: f32, y0: f32, x1: f32, y1: f32, rgb: u32, a: u32) {
         for py in y0.round() as i32..y1.round() as i32 {
             for px in x0.round() as i32..x1.round() as i32 {
                 self.plot(px, py, rgb, a);
@@ -1145,7 +1152,7 @@ impl Renderer {
         }
     }
 
-    fn glow_disc(&mut self, cx: f32, cy: f32, r: f32, rgb: u32, strength: f32) {
+    pub(crate) fn glow_disc(&mut self, cx: f32, cy: f32, r: f32, rgb: u32, strength: f32) {
         let (x0, x1, y0, y1) = ((cx - r) as i32, (cx + r) as i32 + 1, (cy - r) as i32, (cy + r) as i32 + 1);
         let (cr, cg, cb_) = ((rgb >> 16) as f32, ((rgb >> 8) & 255) as f32, (rgb & 255) as f32);
         for py in y0.max(0)..y1.min(self.fh as i32) {

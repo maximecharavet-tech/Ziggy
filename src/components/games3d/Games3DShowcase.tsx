@@ -126,6 +126,33 @@ export const GAMES_3D: {
     to: '#4cc9b7',
     skill: { fr: 'Compter · additions · fractions · monnaie', en: 'Counting · sums · fractions · change' },
   },
+  {
+    href: '/lutins/jeux/atelier',
+    emoji: '🏭',
+    // The two elf covers are captures of the games' own code-built scenes (no outside art).
+    cover: '/covers/lutins-atelier.webp',
+    title: { fr: 'L’Atelier des Lutins', en: 'Elf Workshop' },
+    teaser: {
+      fr: 'Construis la chaîne de machines avec Pépin, Grelotte et Noisette et fabrique les jouets des lettres d’enfants.',
+      en: 'Build the machine line with Pip, Jingle and Hazel and make the toys from the children’s letters.',
+    },
+    from: '#5a2e1a',
+    to: '#e0913c',
+    skill: { fr: 'Logique · formes · couleurs · premiers pas en programmation', en: 'Logic · shapes · colours · first steps in coding' },
+  },
+  {
+    href: '/lutins/jeux/chahut',
+    emoji: '🧦',
+    cover: '/covers/lutins-chahut.webp',
+    title: { fr: 'Le Grand Chahut des Lutins', en: 'Elf Chaos' },
+    teaser: {
+      fr: 'Les lutins ont tout mélangé dans la maison : trouve les farces, range tout et découvre qui se cache !',
+      en: 'The elves mixed everything up in the house: spot the pranks, tidy up and find who is hiding!',
+    },
+    from: '#2b2140',
+    to: '#7950f2',
+    skill: { fr: 'Observation · logique · vocabulaire · compter', en: 'Observation · logic · vocabulary · counting' },
+  },
 ];
 
 /** The 3D games, as big posters. */

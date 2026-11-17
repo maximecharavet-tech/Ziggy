@@ -128,7 +128,7 @@ export const CATEGORY_INFO: Record<ToolCategory, { emoji: string; name: L }> = {
   magic: { emoji: '🪄', name: { fr: 'Outils magiques', en: 'Magic tools' } },
 };
 
-export type ToolId = ElementKey | 'eraser' | 'windLeft' | 'windRight' | 'critter' | 'beam' | 'rainbowSeed' | 'baby' | 'pocketStar' | 'toy';
+export type ToolId = ElementKey | 'eraser' | 'windLeft' | 'windRight' | 'critter' | 'beam' | 'rainbowSeed' | 'baby' | 'pocketStar' | 'toy' | 'globe' | 'kite';
 
 export interface Tool {
   id: ToolId;
@@ -205,12 +205,17 @@ export const TOOLS: Tool[] = [
   T('baby', 'magic', '🐣', '#ffd447', 'Bébé', 'Baby', 'Un bébé qui suit ton doigt.', 'A baby that follows your finger.'),
   T('pocketStar', 'magic', '⭐', '#fff2a0', 'Étoile de poche', 'Pocket star', 'Une petite étoile à poser où tu veux.', 'A tiny star to put wherever you like.'),
   T('toy', 'magic', '🎁', '#ffb340', 'Jouet du colis', 'Parcel toy', 'Le jouet trouvé dans le colis.', 'The toy found in the parcel.'),
+  T('globe', 'magic', '🔮', '#a9e3fa', 'Boule à neige', 'Snow globe', 'La boule à neige musicale : tout ce qui tombe près d’elle chante une note.', 'The musical snow globe: everything that falls near it sings a note.'),
+  T('kite', 'magic', '🪁', '#a78bfa', 'Cerf-volant', 'Kite', 'Le cerf-volant aurore : glisse ton doigt pour le guider et peindre le ciel.', 'The aurora kite: slide your finger to steer it and paint the sky.'),
 ];
 
 export const toolById = (id: ToolId): Tool => TOOLS.find((t) => t.id === id) ?? TOOLS[0];
 
 /** Tools only available after Ziggy's parcel gave them. */
-export const GIFT_TOOLS: Partial<Record<ToolId, Reaction>> = { rainbowSeed: 'gift_water', baby: 'gift_warm', pocketStar: 'gift_lowg' };
+export const GIFT_TOOLS: Partial<Record<ToolId, Reaction>> = { rainbowSeed: 'gift_water', baby: 'gift_warm', pocketStar: 'gift_lowg', globe: 'gift_cold', kite: 'gift_wind' };
+
+/** Tools that must be earned (the saucer's beam, the parcel's gifts): hidden until then. */
+export const EARNED_TOOLS: ToolId[] = ['beam', 'rainbowSeed', 'baby', 'pocketStar', 'toy', 'globe', 'kite'];
 
 /** The tools of the drawer for a world: its own first, then the rest, by category. */
 export function drawerTools(world: WorldId): Tool[] {
@@ -351,6 +356,7 @@ export const DISCOVERIES: Discovery[] = [
   D('gift_undersea', 'undersea', ['📦', '🐠'], '🏮', '#fff6fb', { fr: 'Une lanterne de perles !', en: 'A pearl lantern!' }, { fr: 'Au fond de la mer il fait sombre : la lumière n’arrive pas jusqu’en bas.', en: 'It is dark deep in the sea: light does not reach all the way down.' }, { fr: 'Un colis ouvert sous la mer…', en: 'A parcel opened under the sea…' }, true),
   D('gift_space', 'space', ['📦', '🪐'], '💫', '#ffe2a0', { fr: 'Des anneaux de planète !', en: 'Planet rings!' }, { fr: 'Les anneaux de Saturne sont faits de milliards de petits morceaux de glace.', en: 'Saturn’s rings are made of billions of little pieces of ice.' }, { fr: 'Un colis ouvert dans l’espace…', en: 'A parcel opened in space…' }, true),
   D('gift_moon', 'moon', ['📦', '🌙'], '🚩', '#ff7a8a', { fr: 'Un drapeau à dessiner !', en: 'A flag to draw!' }, { fr: 'Sur la Lune, rien n’efface les traces : ton drapeau restera.', en: 'On the Moon nothing wipes prints away: your flag will stay.' }, { fr: 'Un colis ouvert sur la Lune…', en: 'A parcel opened on the Moon…' }, true),
+  D('gift_treasure', 'islands', ['🗺️', '🧽'], '🦴', '#ffd447', { fr: 'Un trésor sous le X !', en: 'A treasure under the X!' }, { fr: 'Fossiles, coquillages et météorites gardent sous la terre la mémoire de la Terre et du ciel.', en: 'Fossils, shells and meteorites keep the memory of the Earth and the sky under the ground.' }, { fr: 'Et si on creusait sous le X de la carte ?', en: 'What if you dug under the X of the map?' }, true),
   D('gift_mars', 'mars', ['📦', '🔴'], '🏡', '#b4f2dc', { fr: 'Une mini serre !', en: 'A tiny greenhouse!' }, { fr: 'Une serre garde la chaleur du soleil pour les plantes.', en: 'A greenhouse keeps the sun’s warmth for the plants.' }, { fr: 'Un colis ouvert sur Mars…', en: 'A parcel opened on Mars…' }, true),
 ];
 

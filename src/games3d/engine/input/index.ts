@@ -10,6 +10,7 @@ export * from './hotspot-rects';
 export { HotspotLayer, type HotspotDef, type CameraLike, type Vec3Like } from './hotspots';
 export { KeyboardInput, DEFAULT_KEYMAP, createKeyMap, keyToAction, type KeyMap, type KeyLike } from './keyboard';
 export { PointerInput, isTap, toNdc, TAP_SLOP_PX, TAP_MAX_MS } from './pointer';
+export { DragGesture, ClickSwallow, DRAG_SLOP_PX, type PanDelta, type PressEnd } from './drag';
 export { GamepadInput, gamepadActions, snapshot, type PadSnapshot } from './gamepad';
 
 export interface InputRouterOptions {
@@ -46,6 +47,9 @@ export class InputRouter {
       label: opts.hotspots?.label,
       onSelect: (id, source) => this.push({ type: 'select', target: id }, source),
       onFocus: (id) => this.push({ type: 'focus', target: id }, 'hotspot'),
+      // A drag that starts on a hotspot button pans like one on the canvas.
+      onPan: (d) => this.push({ type: 'pan', dx: d.dx, dy: d.dy }, 'pointer'),
+      pan: opts.pan ?? true,
     });
     this.keyboard = new KeyboardInput((e) => this.route(e), opts.keymap ?? createKeyMap(), () => this.hotspots.root);
     this.pointer = new PointerInput(opts.canvas, (e) => this.route(e), opts.pick, opts.pan ?? true);
@@ -68,6 +72,16 @@ export class InputRouter {
 
   setPick(pick: (ndc: { x: number; y: number }) => string | null): void {
     this.pointer.setPick(pick);
+  }
+
+  /** Turn drag-to-pan on or off (canvas and hotspot buttons), e.g. only when the view is larger than the screen. */
+  setPan(on: boolean): void {
+    this.pointer.panEnabled = on;
+    this.hotspots.pan = on;
+  }
+
+  get pan(): boolean {
+    return this.pointer.panEnabled;
   }
 
   setLocale(locale: string): void {

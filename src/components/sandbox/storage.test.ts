@@ -25,8 +25,13 @@ describe('sandbox notebook save', () => {
   });
 
   it('round-trips a version 2 notebook', () => {
-    const s = { ...emptySave(), world: 'mars' as const, saucer: ['mars' as const], discoveries: { sublimate: 9 }, rounds: 1 };
+    const s = { ...emptySave(), world: 'mars' as const, saucer: ['mars' as const], discoveries: { sublimate: 9 }, rounds: 1, maps: { islands: 0.25 } };
     expect(parseSave(JSON.parse(JSON.stringify(s)))).toEqual(s);
+  });
+
+  it('keeps the treasure maps not dug up yet (and only sensible ones)', () => {
+    expect(parseSave({}).maps).toEqual({});
+    expect(parseSave({ maps: { garden: 0.4, moon: 7, nowhere: 0.5, mars: 'x' } }).maps).toEqual({ garden: 0.4, moon: 1 });
   });
 
   it('awards a World Memory round for the first discovery of each world, then every 5th', () => {

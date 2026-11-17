@@ -34,7 +34,9 @@ import type { MagicMoment } from '@/lib/world/engine';
 import { getMemory } from '@/lib/world/store';
 import { SandCanvas, type EventBatch, type SandApi, type Speed } from './SandCanvas';
 import { Celebration, type Celebrate } from './Celebration';
-import { NOTEBOOK_TEXT, Notebook } from './Notebook';
+import { NOTEBOOK_TEXT, Notebook, TreasureMap } from './Notebook';
+import { ScienceLab } from './ScienceLab';
+import { GRAVITY_LEVELS, NORMAL, TEMPERATURE_LEVELS, scienceLine } from '@/games2d/sandbox/science';
 import { Toolbar } from './Toolbar';
 import { WorldPicker } from './WorldPicker';
 import { Saucer, SAUCER_TEXT } from './Saucer';
@@ -53,8 +55,8 @@ const T = {
   loading: { fr: 'Le bac à sable se prépare…', en: 'The sandbox is getting ready…' },
   failed: { fr: 'Le bac à sable n’a pas pu s’ouvrir. Réessaie plus tard !', en: 'The sandbox could not open. Try again later!' },
   help: {
-    fr: 'Dessine avec le doigt ou la souris, avec plusieurs doigts si tu veux. Au clavier : les flèches déplacent le pinceau, Espace verse l’élément, les chiffres 1 à 6 choisissent un élément, P met en pause.',
-    en: 'Draw with your finger or the mouse, with several fingers if you like. With a keyboard: arrows move the brush, Space pours the element, digits 1 to 6 pick an element, P pauses.',
+    fr: 'Dessine avec le doigt ou la souris, avec plusieurs doigts si tu veux. Au clavier ou avec la télécommande : les flèches déplacent le pinceau, Espace ou OK verse l’élément, une flèche au bord du bac va vers les outils, les chiffres 1 à 6 choisissent un élément, P met en pause.',
+    en: 'Draw with your finger or the mouse, with several fingers if you like. With a keyboard or a TV remote: arrows move the brush, Space or OK pours the element, an arrow at the edge of the sandbox goes to the tools, digits 1 to 6 pick an element, P pauses.',
   },
   challengeDone: { fr: 'Défi réussi !', en: 'Challenge done!' },
   paused: { fr: 'En pause : dessine, puis appuie sur ▶', en: 'Paused: draw, then press ▶' },
@@ -66,14 +68,23 @@ const T = {
   parcelWait: { fr: 'Un colis ! Il ne s’ouvre pas avec le doigt… que va-t-il aimer ?', en: 'A parcel! It does not open with a tap… what will it like?' },
 } satisfies Record<string, L>;
 
-/** What each way of opening the parcel gives, as a message. */
+/** What each way of opening the parcel gives, as a message (shown, and read aloud after the discovery). */
 const GIFT_LINES: Partial<Record<Reaction, L>> = {
-  gift_cold: { fr: 'Écoute : maintenant, tout ce qui tombe fait de la musique !', en: 'Listen: now everything that falls makes music!' },
-  gift_buried: { fr: 'Une carte au trésor ! Cherche le X brillant et creuse avec la gomme.', en: 'A treasure map! Find the shiny X and dig with the eraser.' },
-  gift_wind: { fr: 'Un cerf-volant ! Souffle avec le vent pour le faire danser.', en: 'A kite! Blow with the wind to make it dance.' },
+  gift_cold: { fr: 'Une boule à neige musicale ! Fais tomber du sable, de l’eau ou de la neige tout près : chaque chute chante une note.', en: 'A musical snow globe! Let sand, water or snow fall close to it: everything that falls sings a note.' },
+  gift_buried: { fr: 'Une carte au trésor ! Un X brille quelque part dans ce monde : creuse dessous avec la gomme.', en: 'A treasure map! An X shines somewhere in this world: dig under it with the eraser.' },
+  gift_wind: { fr: 'Un cerf-volant aurore ! Prends l’outil cerf-volant et guide-le du doigt pour peindre le ciel.', en: 'An aurora kite! Take the kite tool and steer it with your finger to paint the sky.' },
 };
 
-type Toast = { kind: 'challenge'; id: ChallengeId } | { kind: 'line'; text: L; emoji: string; visit?: WorldId };
+/** What was under the X: a fossil in rock and earth, a shell by the sea, a meteorite in the sky worlds. */
+const TREASURE_LINES: { emoji: string; text: L }[] = [
+  { emoji: '🦴', text: { fr: 'Un fossile tout brillant ! Il dormait sous la terre depuis très, très longtemps.', en: 'A shiny fossil! It slept under the ground for a very, very long time.' } },
+  { emoji: '🐚', text: { fr: 'Un coquillage tout brillant, caché sous le sable depuis longtemps !', en: 'A shiny shell, hidden under the sand for a long time!' } },
+  { emoji: '☄️', text: { fr: 'Une météorite toute brillante, tombée du ciel il y a très longtemps !', en: 'A shiny meteorite that fell from the sky a very long time ago!' } },
+];
+
+const WORLD_TREASURE: Record<WorldId, number> = { garden: 0, mountain: 0, islands: 1, volcano: 0, undersea: 1, space: 2, moon: 2, mars: 2 };
+
+type Toast = { kind: 'challenge'; id: ChallengeId } | { kind: 'line'; text: L; emoji: string; visit?: WorldId; map?: number };
 
 export function SandboxGame() {
   const raw = useLocale();
@@ -101,6 +112,13 @@ export function SandboxGame() {
   const [saucer, setSaucer] = useState(0);
   const [idea, setIdea] = useState(false);
   const [little, setLittle] = useState(false);
+  // The big kids' lab (10–12): gravity and temperature, and what changed.
+  const [big, setBig] = useState(false);
+  const [lab, setLab] = useState(false);
+  const [gravityK, setGravityK] = useState(NORMAL);
+  const [tempK, setTempK] = useState(NORMAL);
+  const [changed, setChanged] = useState<('gravity' | 'temperature')[]>([]);
+  const lastGift = useRef<L | null>(null);
   const lastWin = useRef(0);
   const dirty = useRef(false);
   const lastTotals = useRef(0);
@@ -114,6 +132,7 @@ export function SandboxGame() {
     setWorld(s.world);
     setTool(WORLD_INFO[s.world].big[0]);
     setLittle(getMemory().age === 'little');
+    setBig(getMemory().age === 'big');
     lastWin.current = performance.now();
   }, []);
 
@@ -169,13 +188,21 @@ export function SandboxGame() {
   const openParcel = (next: SandboxSave, kind: Reaction, cell: { x: number; y: number }, from: { x: number; y: number }, fresh: Celebrate[]): SandboxSave => {
     const a = api.current;
     // What came out depends on how it was opened.
-    if (kind === 'gift_water') a?.placeGift(9, cell.x, cell.y);
+    if (kind === 'gift_buried') {
+      // The engine hid the treasure; the map is kept on the device until it is dug up.
+      const t = a?.treasure();
+      if (t) {
+        next = { ...next, maps: { ...next.maps, [world]: t.across } };
+        setToast({ kind: 'line', emoji: '🗺️', text: GIFT_LINES.gift_buried!, map: t.across });
+      }
+    } else if (kind === 'gift_water') a?.placeGift(9, cell.x, cell.y);
     else if (kind === 'gift_warm') a?.hatchBaby(cell.x, cell.y - 2);
     else if (kind === 'gift_lowg') a?.placeGift(8, cell.x, cell.y - 6);
     else if (kind === 'gift_bubble') {
       const other = WORLDS[(worldIndex(world) + 3) % WORLDS.length];
       setToast({ kind: 'line', emoji: '🍾', text: { fr: `Une carte postale : « Bonjour de ${WORLD_INFO[other].name.fr} ! »`, en: `A postcard: “Hello from ${WORLD_INFO[other].name.en}!”` }, visit: other });
     } else if (GIFT_LINES[kind]) setToast({ kind: 'line', emoji: discoveryById(kind)?.output ?? '🎁', text: GIFT_LINES[kind]! });
+    if (GIFT_LINES[kind]) lastGift.current = GIFT_LINES[kind]!;
     next = discover(next, kind, from, cell, fresh);
     // The first parcel opened in a world also gives that world's signature toy.
     const sig = SIGNATURE_GIFT[world];
@@ -200,7 +227,16 @@ export function SandboxGame() {
       for (const e of events) {
         const from = { x: e.clientX, y: e.clientY };
         if (OPENINGS.includes(e.kind)) next = openParcel(next, e.kind, { x: e.x, y: e.y }, from, fresh);
-        else next = discover(next, e.kind, from, { x: e.x, y: e.y }, fresh);
+        else if (e.kind === 'gift_treasure') {
+          // Dug up under the X: the map is done, the treasure glows on in the world.
+          const found = TREASURE_LINES[WORLD_TREASURE[world]];
+          const maps = { ...next.maps };
+          delete maps[world];
+          next = discover({ ...next, maps }, e.kind, from, { x: e.x, y: e.y }, fresh);
+          setToast({ kind: 'line', emoji: found.emoji, text: found.text });
+          lastGift.current = found.text;
+          playSound('star');
+        } else next = discover(next, e.kind, from, { x: e.x, y: e.y }, fresh);
       }
       if (fresh.length) important = true;
       for (const c of CHALLENGES) {
@@ -237,7 +273,10 @@ export function SandboxGame() {
   useEffect(() => {
     if (!current) return;
     const d = discoveryById(current.id);
-    if (d) say(`sandbox-discovery-${d.id}`, [tr(d.title, locale), tr(d.science, locale)]);
+    // A parcel surprise also says what to do with it.
+    const gift = d?.gift ? lastGift.current : null;
+    if (gift) lastGift.current = null;
+    if (d) say(`sandbox-discovery-${d.id}`, [tr(d.title, locale), tr(d.science, locale), ...(gift ? [tr(gift, locale)] : [])]);
   }, [current, locale, say]);
 
   useEffect(() => {
@@ -279,6 +318,9 @@ export function SandboxGame() {
       setTool(WORLD_INFO[w].big[0]);
       setNight(false);
       setSaucer(0);
+      setGravityK(NORMAL);
+      setTempK(NORMAL);
+      setChanged([]);
       commit({ ...saveRef.current, world: w }, true);
       playSound('pop');
       say(`sandbox-world-${w}`, [tr(WORLD_INFO[w].name, locale), tr(WORLD_INFO[w].hello, locale)]);
@@ -312,6 +354,8 @@ export function SandboxGame() {
     if (save.discoveries.gift_warm) u.add('baby');
     if (save.discoveries.gift_lowg) u.add('pocketStar');
     if (save.discoveries[SIGNATURE_GIFT[world]]) u.add('toy');
+    if (save.discoveries.gift_cold) u.add('globe');
+    if (save.discoveries.gift_wind) u.add('kite');
     return u;
   }, [save, world]);
 
@@ -321,6 +365,18 @@ export function SandboxGame() {
   const idea$ = invitation(world, save.discoveries);
   const challenge$ = toast?.kind === 'challenge' ? CHALLENGES.find((c) => c.id === toast.id) : null;
   const info = WORLD_INFO[world];
+
+  // The lab: one rule of the world changes, the notebook says what changed, Ziggy reads it.
+  const changeLab = (kind: 'gravity' | 'temperature', k: number) => {
+    const levels = kind === 'gravity' ? GRAVITY_LEVELS : TEMPERATURE_LEVELS;
+    const v = Math.max(0, Math.min(levels.length - 1, k));
+    if (kind === 'gravity') setGravityK(v);
+    else setTempK(v);
+    setChanged((c) => [kind, ...c.filter((x) => x !== kind)]);
+    playSound('tap');
+    say(`sandbox-lab-${kind}`, [tr(scienceLine(kind, v), locale)]);
+  };
+  const science = changed.map((kind) => scienceLine(kind, kind === 'gravity' ? gravityK : tempK));
 
   const keepWorld = async () => {
     const snap = api.current?.snapshot();
@@ -396,12 +452,17 @@ export function SandboxGame() {
             loadingLabel={tr(T.loading, locale)}
             failLabel={tr(T.failed, locale)}
             reduceMotion={reduceMotion}
+            gravity={GRAVITY_LEVELS[gravityK].value}
+            temperature={TEMPERATURE_LEVELS[tempK].value}
             onEvents={onEvents}
             onPaint={() => {
               unlockAudio();
               if (!painted) setPainted(true);
             }}
             onReady={() => {
+              // A treasure map from an earlier visit: the X is back in its place.
+              const across = saveRef.current.maps[world];
+              if (across !== undefined) window.setTimeout(() => api.current?.setTreasure(across), 0);
               const s = pendingRestore.current;
               if (!s) return;
               pendingRestore.current = null;
@@ -417,6 +478,7 @@ export function SandboxGame() {
               locale={locale}
               reduceMotion={reduceMotion}
               canDrop={(api.current?.parcel()?.state ?? 0) === 0 || (api.current?.parcel()?.state ?? 0) === 3}
+              probeSky={(box) => api.current?.probeSky(box) ?? 0}
               onDrop={(x, y) => {
                 if (api.current?.dropParcel(x, y)) {
                   playSound('pop');
@@ -460,12 +522,26 @@ export function SandboxGame() {
           </AnimatePresence>
         </div>
         <aside aria-label={tr(NOTEBOOK_TEXT.title, locale)} className="hidden w-[320px] shrink-0 overflow-hidden rounded-[26px] bg-[#2a2470]/85 shadow-[inset_0_2px_0_rgba(255,255,255,0.12),0_8px_0_#1a1550,0_30px_50px_-20px_rgba(0,0,0,0.6)] ring-1 ring-white/15 lg:flex">
-          <Notebook key={world} ref={notebookPanel} save={save} world={world} locale={locale} className="w-full" />
+          <Notebook key={world} ref={notebookPanel} save={save} world={world} locale={locale} labLines={science} className="w-full" />
         </aside>
       </div>
 
       {/* Tools. */}
       <footer className="relative z-10 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1 sm:px-5">
+        <AnimatePresence>
+          {big && lab ? (
+            <ScienceLab
+              key="lab"
+              locale={locale}
+              gravity={gravityK}
+              temperature={tempK}
+              reduceMotion={reduceMotion}
+              onGravity={(k) => changeLab('gravity', k)}
+              onTemperature={(k) => changeLab('temperature', k)}
+              onClose={() => setLab(false)}
+            />
+          ) : null}
+        </AnimatePresence>
         <Toolbar
           locale={locale}
           world={world}
@@ -494,6 +570,15 @@ export function SandboxGame() {
           onWorlds={() => setPicker(true)}
           onAlbum={() => setAlbum(true)}
           onPhoto={photo}
+          lab={lab}
+          onLab={
+            big
+              ? () => {
+                  setLab((v) => !v);
+                  playSound('tap');
+                }
+              : undefined
+          }
         />
       </footer>
 
@@ -514,7 +599,7 @@ export function SandboxGame() {
               onKeyDown={(e) => e.key === 'Escape' && setDrawer(false)}
             >
               <div className="mx-auto mt-2.5 h-1.5 w-12 rounded-full bg-white/30" aria-hidden="true" />
-              <Notebook save={save} world={world} locale={locale} onClose={() => setDrawer(false)} className="min-h-0 flex-1" />
+              <Notebook save={save} world={world} locale={locale} labLines={science} onClose={() => setDrawer(false)} className="min-h-0 flex-1" />
             </motion.div>
           </motion.div>
         ) : null}
@@ -539,7 +624,9 @@ export function SandboxGame() {
             <span className="text-2xl" aria-hidden="true">
               {challenge$ ? challenge$.emoji : toast.kind === 'line' ? toast.emoji : ''}
             </span>
+            {toast.kind === 'line' && toast.map !== undefined ? <TreasureMap across={toast.map} emoji={info.emoji} /> : null}
             <span className="min-w-0">{challenge$ ? `${tr(T.challengeDone, locale)} ${tr(challenge$.title, locale)}` : toast.kind === 'line' ? tr(toast.text, locale) : ''}</span>
+            {toast.kind === 'line' ? <SayButton size="sm" texts={[tr(toast.text, locale)]} locale={locale} className="!bg-white/20 !text-white !ring-white/30" /> : null}
             {toast.kind === 'line' && toast.visit ? (
               <button type="button" onClick={() => goWorld(toast.visit!)} className="h-11 shrink-0 rounded-full bg-white px-4 text-sm font-black text-[#24935f]">
                 {tr(T.visit, locale)} {WORLD_INFO[toast.visit].emoji}

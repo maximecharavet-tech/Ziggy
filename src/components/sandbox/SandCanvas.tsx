@@ -3,7 +3,8 @@
 import { useEffect, useImperativeHandle, useRef, useState, type Ref } from 'react';
 import { createSandbox, loadSandboxEngine, type EngineEvent, type SandEngine } from '@/games2d/sandbox/engine';
 import { REACTIONS, WORLDS, type Reaction, type Tool, type WorldId } from '@/games2d/sandbox/content';
-import { pourNote } from './sounds';
+import { TIER_SCALE, createTierGovernor, type Tier } from '@/games2d/sandbox/tier';
+import { globeNote, pourNote } from './sounds';
 
 const STEP_MS = 1000 / 60;
 /** The grid is the same on every device (saves are portable): landscape or portrait. */
@@ -30,7 +31,18 @@ export interface SandApi {
   hatchBaby(x: number, y: number): void;
   /** Cell size on screen, in CSS pixels. */
   cellPx(): number;
+  /** What floats in the sky behind a screen box: bit 0 a cloud, bit 1 a geyser's mist (for the saucer). */
+  probeSky(box: { left: number; top: number; right: number; bottom: number }): number;
+  /** The buried treasure of the map: where its X is across the world (0 left … 1 right), or null. */
+  treasure(): { across: number; kind: number } | null;
+  /** Hides the map's treasure again under the ground at `across` (a map kept from an earlier visit). */
+  setTreasure(across: number): void;
+  /** Toys out in the world: bit 0 snow-globe, bit 1 kite, bit 2 treasure buried. */
+  toys(): number;
 }
+
+/** One-tap tools: they place something where the finger (or the remote's OK) lands. */
+const ONE_TAP = new Set(['critter', 'baby', 'rainbowSeed', 'pocketStar', 'toy', 'globe']);
 
 export interface ClientEvent extends EngineEvent {
   clientX: number;
@@ -56,6 +68,8 @@ export function SandCanvas({
   loadingLabel,
   failLabel,
   reduceMotion,
+  gravity = 100,
+  temperature = 0,
   onEvents,
   onPaint,
   onReady,
@@ -71,6 +85,9 @@ export function SandCanvas({
   loadingLabel: string;
   failLabel: string;
   reduceMotion: boolean;
+  /** Big kids' science controls: gravity in percent of the world's own, temperature offset. */
+  gravity?: number;
+  temperature?: number;
   onEvents: (batch: EventBatch) => void;
   onPaint: () => void;
   onReady?: () => void;
@@ -82,10 +99,13 @@ export function SandCanvas({
   const [status, setStatus] = useState<'loading' | 'ready' | 'failed'>('loading');
   const [shape, setShape] = useState<'land' | 'port' | null>(null);
   // Everything the animation loop reads, kept in one ref so the loop never restarts.
-  const live = useRef({ tool, radius, speed, night, reduceMotion, onEvents, onPaint, world });
-  live.current = { tool, radius, speed, night, reduceMotion, onEvents, onPaint, world };
+  const live = useRef({ tool, radius, speed, night, reduceMotion, onEvents, onPaint, world, gravity, temperature });
+  live.current = { tool, radius, speed, night, reduceMotion, onEvents, onPaint, world, gravity, temperature };
   const strokes = useRef(new Map<number, Stroke>());
-  const keyboard = useRef({ on: false, x: -1, y: -1, down: false, focused: false });
+  const keyboard = useRef({ on: false, x: -1, y: -1, down: false, focused: false, since: 0, release: 0 });
+  const cursor = useRef<HTMLDivElement>(null);
+  // The quality tier survives a rebuild of the world (a new world, a turned screen).
+  const tierRef = useRef<Tier | null>(null);
 
   // Load the engine once.
   useEffect(() => {
@@ -167,6 +187,23 @@ export function SandCanvas({
       const r = canvas.current?.getBoundingClientRect();
       return e && r ? r.width / e.w : 4;
     },
+    probeSky(box) {
+      const e = engine.current;
+      if (!e) return 0;
+      const a = toCell(box.left, box.top);
+      const b = toCell(box.right, box.bottom);
+      return e.raw.probe_sky(Math.floor(a.x), Math.floor(a.y), Math.ceil(b.x), Math.ceil(b.y));
+    },
+    treasure() {
+      const e = engine.current;
+      if (!e || !(e.raw.toys() & 4)) return null;
+      return { across: e.raw.treasure_x() / Math.max(1, e.w - 1), kind: e.raw.treasure_kind() };
+    },
+    setTreasure(across) {
+      const e = engine.current;
+      if (e) e.raw.set_treasure(Math.round(Math.min(1, Math.max(0, across)) * (e.w - 1)), -1);
+    },
+    toys: () => engine.current?.raw.toys() ?? 0,
   }));
 
   // Build the world (again when the world or the shape changes), and run it.
@@ -181,11 +218,21 @@ export function SandCanvas({
     engine.current = e;
     e.raw.load_scene();
     e.raw.set_night(live.current.night);
-    // Quality tier: 3× on capable devices, 2× on small ones; drops to 1× if the frames get slow.
+    // Quality tier: 3× on capable devices, 2× on small ones. It adapts to what the frames really cost:
+    // one tier down when the median stays above the 8 ms budget, back up (with hysteresis) when calm.
     const cores = navigator.hardwareConcurrency || 4;
-    let scale = cores > 4 ? 3 : 2;
-    e.raw.set_quality(scale, scale === 3);
-    el.dataset.tier = scale === 3 ? 'high' : 'low';
+    const governor = createTierGovernor(cores > 4 ? 'high' : 'low', { at: tierRef.current ?? undefined });
+    let tierNow: Tier = governor.tier;
+    const applyTier = (t: Tier) => {
+      tierNow = t;
+      tierRef.current = t;
+      e.raw.set_quality(TIER_SCALE[t].scale, TIER_SCALE[t].high);
+      el.dataset.tier = t;
+      el.dataset.tierChanges = String(Number(el.dataset.tierChanges ?? 0) + 1);
+    };
+    applyTier(tierNow);
+    let gravityNow = 100;
+    let temperatureNow = 0;
 
     const fit = () => {
       const r = box.getBoundingClientRect();
@@ -215,12 +262,19 @@ export function SandCanvas({
       const { tool: t, radius: r } = live.current;
       const list = [...strokes.current.values()];
       const k = keyboard.current;
-      if (k.down && k.on) list.push({ x: k.x, y: k.y, px: k.x, py: k.y, down: true });
+      if (k.release && performance.now() >= k.release) {
+        k.down = false;
+        k.release = 0;
+      }
+      // The kite follows the remote's cursor without holding OK.
+      if (t.id === 'kite' && k.on && k.focused) e.raw.steer_kite(k.x, k.y);
+      if (k.down && k.on && !ONE_TAP.has(t.id)) list.push({ x: k.x, y: k.y, px: k.x, py: k.y, down: true });
       for (const s of list) {
         if (!s.down || s.x < 0) continue;
         const px = s.px < 0 ? s.x : s.px;
         const py = s.py < 0 ? s.y : s.py;
-        if (t.wind) e.raw.wind(s.x, s.y, r + 2, t.wind);
+        if (t.id === 'kite') e.raw.steer_kite(s.x, s.y);
+        else if (t.wind) e.raw.wind(s.x, s.y, r + 2, t.wind);
         else if (t.id === 'beam') e.raw.beam(px, py, s.x, s.y, r + 3);
         else if (t.element !== undefined) {
           e.raw.paint_line(px, py, s.x, s.y, r, t.element, t.id === 'cloud' ? 1 : 0);
@@ -250,10 +304,18 @@ export function SandCanvas({
       const dt = Math.min(100, now - last);
       last = now;
       const t0 = performance.now();
-      const { speed: sp, night: nt, reduceMotion: rm } = live.current;
+      const { speed: sp, night: nt, reduceMotion: rm, gravity: gv, temperature: tp } = live.current;
       if (nt !== nightNow) {
         nightNow = nt;
         e.raw.set_night(nt);
+      }
+      if (gv !== gravityNow) {
+        gravityNow = gv;
+        e.raw.set_gravity(gv);
+      }
+      if (tp !== temperatureNow) {
+        temperatureNow = tp;
+        e.raw.set_temperature(tp);
       }
       brush();
       if (sp === 'normal') {
@@ -283,21 +345,46 @@ export function SandCanvas({
         el.height = img.height;
       }
       ctx.putImageData(img as ImageData, 0, 0);
+      // The snow-globe sings what fell near it.
+      for (const n of e.takeNotes()) globeNote(n.element, n.degree);
       flush(now);
+      placeCursor();
       // Frame time, measured in the page (read by the tests); the tier steps down when it stays high.
       const spent = performance.now() - t0;
       busy += spent;
+      // Paused frames cost almost nothing: they say nothing about the scene.
+      const changed = sp === 'pause' ? null : governor.push(spent);
+      if (changed) applyTier(changed);
       if (++frames % 60 === 0) {
         const avg = busy / 60;
         el.dataset.frameMs = avg.toFixed(2);
+        el.dataset.frameMedian = governor.median.toFixed(2);
         el.dataset.parcel = `${e.raw.parcel_state()},${e.raw.parcel_x().toFixed(1)},${e.raw.parcel_y().toFixed(1)}`;
+        el.dataset.toys = String(e.raw.toys());
+        el.dataset.kite = `${e.raw.kite_x().toFixed(1)},${e.raw.kite_y().toFixed(1)}`;
+        el.dataset.treasure = `${e.raw.treasure_x()},${e.raw.treasure_y()}`;
         busy = 0;
-        if (avg > 12 && scale > 1) {
-          scale -= 1;
-          e.raw.set_quality(scale, false);
-          el.dataset.tier = scale === 1 ? 'rescue' : 'low';
-        }
       }
+    };
+
+    // The remote's (or the keyboard's) brush, drawn as a ring over the canvas.
+    const placeCursor = () => {
+      const c = cursor.current;
+      const k = keyboard.current;
+      if (!c) return;
+      if (!k.on || !k.focused) {
+        if (c.style.display !== 'none') c.style.display = 'none';
+        return;
+      }
+      const r = el.getBoundingClientRect();
+      const b = box.getBoundingClientRect();
+      const cell = r.width / w;
+      const d = Math.max(18, (live.current.radius * 2 + 1) * cell);
+      c.style.display = 'block';
+      c.style.width = `${d}px`;
+      c.style.height = `${d}px`;
+      c.style.transform = `translate(${r.left - b.left + (k.x + 0.5) * cell - d / 2}px, ${r.top - b.top + (k.y + 0.5) * cell - d / 2}px)`;
+      c.dataset.down = k.down ? '1' : '0';
     };
 
     const start = () => {
@@ -331,14 +418,25 @@ export function SandCanvas({
     const e = engine.current;
     live.current.onPaint();
     keyboard.current.on = false;
-    // One-tap tools.
-    if (e && (t.id === 'critter' || t.id === 'baby' || t.id === 'rainbowSeed' || t.id === 'pocketStar' || t.id === 'toy')) {
-      if (t.id === 'critter') e.raw.stamp_critter(Math.round(c.x), Math.round(c.y));
-      else if (t.id === 'baby') e.raw.hatch_baby(Math.round(c.x), Math.round(c.y));
-      else e.raw.place_gift(t.id === 'rainbowSeed' ? 9 : t.id === 'pocketStar' ? 8 : WORLDS.indexOf(live.current.world), Math.round(c.x), Math.round(c.y));
-      return;
-    }
+    if (e && oneTap(e, t, c.x, c.y)) return;
     strokes.current.set(ev.pointerId, { x: c.x, y: c.y, px: -1, py: -1, down: true });
+  };
+
+  /** One-tap tools act once where the finger lands; true if it was one. The kite tool launches the kite if there is none. */
+  const oneTap = (e: SandEngine, t: Tool, x: number, y: number): boolean => {
+    const cx = Math.round(x);
+    const cy = Math.round(y);
+    if (t.id === 'kite') {
+      if (e.raw.toys() & 2) return false;
+      e.raw.place_kite(cx, cy);
+      return true;
+    }
+    if (!ONE_TAP.has(t.id)) return false;
+    if (t.id === 'critter') e.raw.stamp_critter(cx, cy);
+    else if (t.id === 'baby') e.raw.hatch_baby(cx, cy);
+    else if (t.id === 'globe') e.raw.place_globe(cx, cy);
+    else e.raw.place_gift(t.id === 'rainbowSeed' ? 9 : t.id === 'pocketStar' ? 8 : WORLDS.indexOf(live.current.world), cx, cy);
+    return true;
   };
   const move = (ev: React.PointerEvent<HTMLCanvasElement>) => {
     const s = strokes.current.get(ev.pointerId);
@@ -359,6 +457,29 @@ export function SandCanvas({
     const k = keyboard.current;
     const step = ev.shiftKey ? 8 : 2;
     const go = (dx: number, dy: number) => {
+      // Already at the edge and pushing out: let the key go, so a TV remote's focus can leave the canvas.
+      if (k.on && ((dx < 0 && k.x <= 0) || (dx > 0 && k.x >= e.w - 1) || (dy < 0 && k.y <= 0) || (dy > 0 && k.y >= e.h - 1))) {
+        k.down = false;
+        // Down from the bottom edge: straight onto the tool under the brush.
+        if (dy > 0) {
+          const x = toClient(k.x, k.y).x;
+          let best: HTMLElement | null = null;
+          let bd = Infinity;
+          for (const b of document.querySelectorAll<HTMLElement>('[role=toolbar] button')) {
+            const r = b.getBoundingClientRect();
+            const d = Math.abs(r.left + r.width / 2 - x);
+            if (r.width && d < bd) {
+              bd = d;
+              best = b;
+            }
+          }
+          if (best) {
+            ev.preventDefault();
+            best.focus({ preventScroll: true });
+          }
+        }
+        return;
+      }
       ev.preventDefault();
       if (!k.on || k.x < 0) {
         k.x = e.w >> 1;
@@ -375,12 +496,21 @@ export function SandCanvas({
     else if (ev.key === ' ' || ev.key === 'Enter') {
       ev.preventDefault();
       if (!k.on) go(0, 0);
-      if (!k.down) live.current.onPaint();
+      if (ev.repeat && k.down) return;
+      live.current.onPaint();
+      if (!ev.repeat && oneTap(e, live.current.tool, k.x, k.y)) return;
+      if (!k.down) k.since = performance.now();
       k.down = true;
+      k.release = 0;
     }
   };
   const onKeyUp = (ev: React.KeyboardEvent) => {
-    if (ev.key === ' ' || ev.key === 'Enter') keyboard.current.down = false;
+    if (ev.key !== ' ' && ev.key !== 'Enter') return;
+    const k = keyboard.current;
+    // A quick press of a remote's OK still pours a little blob.
+    const until = k.since + 260;
+    if (performance.now() < until) k.release = until;
+    else k.down = false;
   };
 
   return (
@@ -392,6 +522,7 @@ export function SandCanvas({
         aria-label={label}
         aria-describedby="sandbox-help"
         data-sandbox-canvas=""
+        data-tv-autofocus=""
         className="sandbox-canvas touch-none select-none rounded-[22px] outline-none focus-visible:outline focus-visible:outline-4 focus-visible:outline-offset-[14px] focus-visible:outline-white/80"
         style={{
           width: 320,
@@ -412,6 +543,7 @@ export function SandCanvas({
         onKeyDown={onKeyDown}
         onKeyUp={onKeyUp}
       />
+      <div ref={cursor} aria-hidden="true" data-sandbox-cursor="" className="pointer-events-none absolute left-0 top-0 rounded-full border-[3px] border-white shadow-[0_0_0_3px_rgba(44,36,112,0.85),0_0_18px_rgba(255,255,255,0.8)] data-[down='1']:bg-white/25" style={{ display: 'none' }} />
       {status !== 'ready' ? (
         <p role="status" className="pointer-events-none absolute rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-[#2c2470] shadow-lg">
           {status === 'loading' ? loadingLabel : failLabel}

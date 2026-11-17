@@ -20,6 +20,8 @@ import { findDynamic, mergeStill } from './rig-merge';
  */
 
 export const ZIGGY_SCALE = 0.8;
+/** Heart glow on the bloom path (1 = the low-power look without post). */
+export const CAPABLE_HEART_GAIN = 0.42;
 export const ELF_SCALE = 1.05;
 
 const UP = new THREE.Vector3(0, 1, 0);
@@ -409,6 +411,14 @@ export class ZiggyCtl {
   ) {
     this.actor = makeZiggy({ accessory, lowPower: low });
     optimizeZiggy(this.actor);
+    if (!low) {
+      // Capable path (bloom on): the heart light and a full-strength glow flare into a white blob.
+      // Same soft heart as the low-power look: no heart light, a gentler glow under the bloom threshold.
+      const model = this.actor.userData.model;
+      model.heartLight?.removeFromParent();
+      model.heartLight = null;
+      this.actor.userData.rig.heartGain = CAPABLE_HEART_GAIN;
+    }
     this.actor.scale.setScalar(ZIGGY_SCALE);
     this.actor.traverse((o) => (o.castShadow = false));
     this.shadow = blob(0.55);

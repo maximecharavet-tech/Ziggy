@@ -8,11 +8,13 @@ pub mod critters;
 pub mod gen;
 pub mod parcel;
 pub mod render;
+mod render_toys;
 pub mod scenes;
 pub mod sim;
 pub mod species;
 pub mod table;
 pub mod tools;
+pub mod toys;
 pub mod wasm;
 
 pub use sim::World;

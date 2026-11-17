@@ -2,7 +2,8 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { BRUSHES, CATEGORY_INFO, WORLD_INFO, drawerTools, toolById, type BrushId, type Tool, type ToolCategory, type ToolId, type WorldId } from '@/games2d/sandbox/content';
+import { BRUSHES, CATEGORY_INFO, EARNED_TOOLS, WORLD_INFO, drawerTools, toolById, type BrushId, type Tool, type ToolCategory, type ToolId, type WorldId } from '@/games2d/sandbox/content';
+import { LAB_TEXT } from '@/games2d/sandbox/science';
 import { tr, type L } from '@/lib/i18n-text';
 import { fx, shade, toy } from '@/components/create/fx/toy';
 import type { Speed } from './SandCanvas';
@@ -81,6 +82,8 @@ export function Toolbar({
   onWorlds,
   onAlbum,
   onPhoto,
+  lab,
+  onLab,
 }: {
   locale: string;
   world: WorldId;
@@ -98,12 +101,15 @@ export function Toolbar({
   onWorlds: () => void;
   onAlbum: () => void;
   onPhoto: () => void;
+  /** The big kids' lab (10–12 only): open or not; no button without `onLab`. */
+  lab?: boolean;
+  onLab?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const [armed, setArmed] = useState(false);
   const drawer = useRef<HTMLDivElement>(null);
   const big = WORLD_INFO[world].big.map(toolById);
-  const earned = (t: Tool) => !['beam', 'rainbowSeed', 'baby', 'pocketStar', 'toy'].includes(t.id) || unlocked.has(t.id);
+  const earned = (t: Tool) => !EARNED_TOOLS.includes(t.id) || unlocked.has(t.id);
   const all = drawerTools(world).filter(earned);
   const byCat = (Object.keys(CATEGORY_INFO) as ToolCategory[]).map((c) => [c, all.filter((t) => t.category === c)] as const).filter(([, list]) => list.length);
   // The tool in hand is shown in the bar even when it came from the drawer.
@@ -179,6 +185,13 @@ export function Toolbar({
         <button type="button" onClick={onPhoto} aria-label={tr(TEXT.photo, locale)} title={tr(TEXT.photo, locale)} className={`${ctrl} w-12 px-0 text-lg`} style={night$} data-photo="">
           <span aria-hidden="true">📷</span>
         </button>
+        {onLab ? (
+          <button type="button" onClick={onLab} aria-pressed={Boolean(lab)} className={ctrl} style={lab ? toy('#7c6cf0', { depth: 4 }) : night$} data-lab-button="">
+            <span aria-hidden="true">🔬</span>
+            <span className="hidden sm:inline">{tr(LAB_TEXT.open, locale)}</span>
+            <span className="sr-only sm:hidden">{tr(LAB_TEXT.title, locale)}</span>
+          </button>
+        ) : null}
         <button type="button" onClick={onAlbum} className={ctrl} style={night$} data-album="">
           <span aria-hidden="true">🖼️</span>
           <span className="hidden sm:inline">{tr(TEXT.album, locale)}</span>

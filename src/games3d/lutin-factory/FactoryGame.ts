@@ -186,6 +186,8 @@ const CAMERA_PITCH = (62 * Math.PI) / 180;
 const FOV = 32;
 /** Smallest spacing between two tiles on screen (px): the hotspot buttons stay ≥ 64 px and never overlap. */
 const MIN_TILE_PX = 70;
+/** Mouse-only screens (no touch): still a comfortable click target. */
+const MIN_TILE_PX_FINE = 56;
 
 class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
   readonly id = 'factory.workshop';
@@ -275,64 +277,8 @@ class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
 
   enter(host: Host) {
     host.input.setPick((ndc) => this.pick(ndc));
-    this.dragOnButtons(host);
     this.registerHotspots();
     this.emitHud();
-  }
-
-  /**
-   * The tile buttons cover the canvas, so a finger drag starts on a button: turn
-   * such drags into camera pans too (and swallow the click that ends them), or
-   * a phone could never reach the tiles out of view. (Engine note: the hotspot
-   * layer could do this itself.)
-   */
-  private dragOnButtons(host: Host) {
-    const root = host.input.hotspots.root;
-    // Fingers must reach us as pointer moves, not as a browser scroll gesture.
-    root.classList.add('zg-factory-hotspots');
-    if (!document.getElementById('zg-factory-style')) {
-      const st = document.createElement('style');
-      st.id = 'zg-factory-style';
-      st.textContent = '.zg-factory-hotspots .zg-hotspot{touch-action:none}';
-      document.head.appendChild(st);
-    }
-    let down: { id: number; x: number; y: number; lx: number; ly: number; drag: boolean } | null = null;
-    let swallow = false;
-    const onDown = (e: PointerEvent) => {
-      if (e.pointerType === 'mouse' && e.button !== 0) return;
-      down = { id: e.pointerId, x: e.clientX, y: e.clientY, lx: e.clientX, ly: e.clientY, drag: false };
-    };
-    const onMove = (e: PointerEvent) => {
-      if (!down || e.pointerId !== down.id || !this.canPan) return;
-      if (!down.drag && Math.hypot(e.clientX - down.x, e.clientY - down.y) > 14) down.drag = true;
-      if (down.drag) {
-        this.input({ action: { type: 'pan', dx: e.clientX - down.lx, dy: e.clientY - down.ly }, source: 'pointer' });
-        down.lx = e.clientX;
-        down.ly = e.clientY;
-      }
-    };
-    const onUp = (e: PointerEvent) => {
-      if (down && e.pointerId === down.id && down.drag) swallow = true;
-      down = null;
-    };
-    const onClick = (e: MouseEvent) => {
-      if (!swallow) return;
-      swallow = false;
-      e.stopPropagation();
-      e.preventDefault();
-    };
-    root.addEventListener('pointerdown', onDown);
-    root.addEventListener('pointermove', onMove);
-    root.addEventListener('pointerup', onUp);
-    root.addEventListener('pointercancel', onUp);
-    root.addEventListener('click', onClick, true);
-    host.onDispose(() => {
-      root.removeEventListener('pointerdown', onDown);
-      root.removeEventListener('pointermove', onMove);
-      root.removeEventListener('pointerup', onUp);
-      root.removeEventListener('pointercancel', onUp);
-      root.removeEventListener('click', onClick, true);
-    });
   }
 
   resume() {
@@ -346,6 +292,25 @@ class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
     this.board.setCameraUp(new THREE.Vector3(0, 0, -1));
   }
 
+  /**
+   * Smallest tile spacing on screen. Touch: 70 px (the hotspot buttons stay
+   * ≥ 64 px and never overlap). A mouse-only screen (pointer: fine, no touch)
+   * takes 56 px tiles, so a whole workshop with its crew fits a laptop screen.
+   */
+  private minTilePx(): number {
+    if (typeof window === 'undefined' || !window.matchMedia) return MIN_TILE_PX;
+    const fine = window.matchMedia('(pointer: fine)').matches && !window.matchMedia('(any-pointer: coarse)').matches;
+    return fine ? MIN_TILE_PX_FINE : MIN_TILE_PX;
+  }
+
+  /**
+   * Frame the workshop in the part of the screen the HUD leaves free: the
+   * front of the board, the crew's heads behind it and Ziggy at the side,
+   * centred with margins. When that makes the tiles too small for fingers,
+   * come closer and pan (drag): the crew's heads and the front row are then
+   * both in view when they fit, else the crew first, and every tile and
+   * every head stays reachable within the pan limits.
+   */
   private fitCamera(cut: boolean) {
     const cam = this.view.camera;
     const W = this.host.size.w;
@@ -357,101 +322,149 @@ class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
     cam.setViewOffset(W, H, -left / 2, -(top - bottom) / 2, W, H);
     cam.updateProjectionMatrix();
     const l = this.ctrl.layout;
-    const bw = this.ctrl.mode === 'idle' ? 5 : l.w;
-    const bh = this.ctrl.mode === 'idle' ? 3 : l.h;
-    // What must show: the board, the crew behind it, Ziggy at the side, a bit of the surprise shelf.
+    const idle = this.ctrl.mode === 'idle';
+    const bw = idle ? 5 : l.w;
+    const bh = idle ? 3 : l.h;
+    // What must show: the front corners of the board (with its rug), the crew's heads, Ziggy at the side.
     const x0 = -bw / 2 - 0.7;
     const x1 = bw / 2 + 1.6;
-    const wallZ = this.hall?.wallZ ?? -bh / 2 - 1.75;
     const z1 = bh / 2 + 0.35;
-    // Front corners of the board; the shelf on the wall and the crew's heads at the back.
-    const corners: [number, number, number][] = [
+    const front: [number, number, number][] = [
       [x0, 0, z1],
       [x1, 0, z1],
-      [x0 + 0.4, 3.15, wallZ + 0.4],
-      [x1 - 1.0, 3.15, wallZ + 0.4],
     ];
-    const c: [number, number, number] = [(x0 + x1) / 2, 0, (wallZ + z1) / 2 + 0.6];
+    const heads = this.crew.framePoints();
+    const pts = [...front, ...heads];
+    const margin = Math.round(Math.max(12, Math.min(W, H) * 0.025));
+    const free = { x0: left + margin, x1: W - margin, y0: top + margin, y1: H - bottom - margin };
     const probe = cam.clone();
     const v = new THREE.Vector3();
-    const margin = 10;
-    const fits = (r: number) => {
+    const place = (c: [number, number, number], r: number) => {
       const p = viewPosition({ c, r, pitch: CAMERA_PITCH, yaw: 0 });
       probe.position.set(p[0], p[1], p[2]);
       probe.lookAt(c[0], c[1], c[2]);
       probe.updateMatrixWorld();
-      for (const k of corners) {
-        v.set(k[0], k[1], k[2]).project(probe);
-        const sx = (v.x + 1) * 0.5 * W;
-        const sy = (1 - v.y) * 0.5 * H;
-        if (sx < left + margin || sx > W - margin || sy < top + margin || sy > H - bottom - margin) return false;
-      }
-      return true;
     };
+    const screen = (k: readonly number[]) => {
+      v.set(k[0], k[1], k[2]).project(probe);
+      return [(v.x + 1) * 0.5 * W, (1 - v.y) * 0.5 * H] as const;
+    };
+    /** Screen box of a set of points with the probe where it is. */
+    const boxOf = (list: readonly (readonly number[])[]) => {
+      let ax = Infinity;
+      let bx = -Infinity;
+      let ay = Infinity;
+      let by = -Infinity;
+      for (const k of list) {
+        const [sx, sy] = screen(k);
+        ax = Math.min(ax, sx);
+        bx = Math.max(bx, sx);
+        ay = Math.min(ay, sy);
+        by = Math.max(by, sy);
+      }
+      return { ax, bx, ay, by };
+    };
+    /** World units per pixel at the look-at point. */
+    const wpp = (r: number) => (2 * r * Math.tan((FOV * Math.PI) / 360)) / Math.max(1, H);
+    /** The look-at point that centres `list` in the free area at distance r (a few Newton steps). */
+    const centreFor = (r: number, list: readonly (readonly number[])[], start: [number, number, number]) => {
+      const c: [number, number, number] = [...start];
+      for (let i = 0; i < 4; i++) {
+        place(c, r);
+        const b = boxOf(list);
+        c[0] += (((free.x0 + free.x1) / 2 - (b.ax + b.bx) / 2) * -wpp(r));
+        c[2] += (((free.y0 + free.y1) / 2 - (b.ay + b.by) / 2) * -wpp(r)) / Math.sin(CAMERA_PITCH);
+      }
+      place(c, r);
+      return c;
+    };
+    const start: [number, number, number] = [(x0 + x1) / 2, 0, 0];
+    const fits = (r: number) => {
+      centreFor(r, pts, start);
+      const b = boxOf(pts);
+      return b.ax >= free.x0 - 0.5 && b.bx <= free.x1 + 0.5 && b.ay >= free.y0 - 0.5 && b.by <= free.y1 + 0.5;
+    };
+    /** Spacing of the far row of tiles on screen (the smallest). */
     const spacing = (r: number) => {
-      const p = viewPosition({ c, r, pitch: CAMERA_PITCH, yaw: 0 });
-      probe.position.set(p[0], p[1], p[2]);
-      probe.lookAt(c[0], c[1], c[2]);
-      probe.updateMatrixWorld();
-      // The far row is the smallest on screen.
-      const a = new THREE.Vector3(0, TILE_Y, -bh / 2 + 0.5).project(probe);
-      const b = new THREE.Vector3(1, TILE_Y, -bh / 2 + 0.5).project(probe);
-      const d = new THREE.Vector3(0, TILE_Y, -bh / 2 + 1.5).project(probe);
-      return Math.min(Math.abs(b.x - a.x) * 0.5 * W, Math.abs(d.y - a.y) * 0.5 * H);
+      place([0, 0, 0], r);
+      const a = screen([0, TILE_Y, -bh / 2 + 0.5]);
+      const b = screen([1, TILE_Y, -bh / 2 + 0.5]);
+      const d = screen([0, TILE_Y, -bh / 2 + 1.5]);
+      return Math.min(Math.abs(b[0] - a[0]), Math.abs(d[1] - a[1]));
     };
     let lo = 3;
-    let hi = 80;
-    for (let i = 0; i < 30; i++) {
+    let hi = 120;
+    for (let i = 0; i < 28; i++) {
       const mid = (lo + hi) / 2;
       if (fits(mid)) hi = mid;
       else lo = mid;
     }
     let r = hi;
+    let focus = centreFor(r, pts, start);
     this.canPan = false;
-    if (this.ctrl.mode !== 'idle' && spacing(r) < MIN_TILE_PX) {
+    this.rig.limits = null;
+    const minTile = this.minTilePx();
+    // The tile buttons fit inside a tile (never overlapping their neighbours).
+    this.host.input.hotspots.setMinSize(Math.min(64, minTile - 4));
+    if (!idle && spacing(r) < minTile) {
       // Too small for fingers: come closer and let the child pan (drag) around the board.
       let a = 2.5;
       let b = r;
-      for (let i = 0; i < 30; i++) {
+      for (let i = 0; i < 28; i++) {
         const mid = (a + b) / 2;
-        if (spacing(mid) >= MIN_TILE_PX) a = mid;
+        if (spacing(mid) >= minTile) a = mid;
         else b = mid;
       }
       r = a;
       this.canPan = true;
-    }
-    // Panning stays around the framing centre: enough to reach every tile, never lost in the hall.
-    this.rig.limits = this.canPan ? { min: [-bw / 2, 0, Math.min(c[2], -bh / 2)], max: [bw / 2, 0, bh / 2] } : null;
-    // Panning: the board comes first (its centre in the middle of the free area).
-    let focus: [number, number, number] = this.canPan ? [0, 0, Math.max(c[2], -0.2)] : c;
-    if (this.canPan) {
-      // As far north as possible (the crew in view) while the front row stays on screen.
-      const frontOk = (z: number) => {
-        const p = viewPosition({ c: [0, 0, z], r, pitch: CAMERA_PITCH, yaw: 0 });
-        probe.position.set(p[0], p[1], p[2]);
-        probe.lookAt(0, 0, z);
-        probe.updateMatrixWorld();
-        v.set(0, 0, bh / 2 + 0.1).project(probe);
-        return (1 - v.y) * 0.5 * H <= H - bottom - margin;
-      };
-      let zs = Math.min(c[2], focus[2]);
-      let ze = Math.max(bh / 2, focus[2]);
-      if (frontOk(zs)) focus = [0, 0, zs];
-      else {
-        for (let i = 0; i < 24; i++) {
-          const m = (zs + ze) / 2;
-          if (frontOk(m)) ze = m;
-          else zs = m;
+      const k = wpp(r);
+      const sinP = Math.sin(CAMERA_PITCH);
+      type Pts = readonly (readonly number[])[];
+      // Moving the focus south (+z) moves the scene up the screen; east (+x) moves it left.
+      const solveZ = (list: Pts, edge: 'ay' | 'by', target: number, x = 0) => {
+        let z = 0;
+        for (let i = 0; i < 5; i++) {
+          place([x, 0, z], r);
+          z += ((boxOf(list)[edge] - target) * k) / sinP;
         }
-        focus = [0, 0, ze];
+        return z;
+      };
+      const solveX = (list: Pts, edge: 'ax' | 'bx' | 'mid', target: number, z: number) => {
+        let x = 0;
+        for (let i = 0; i < 5; i++) {
+          place([x, 0, z], r);
+          const b = boxOf(list);
+          x += ((edge === 'mid' ? (b.ax + b.bx) / 2 : b[edge]) - target) * k;
+        }
+        return x;
+      };
+      // Vertical: the focus where the heads touch the top of the free area, and where the front row touches the bottom.
+      const zHeads = solveZ(heads, 'ay', free.y0);
+      const zFront = solveZ(front, 'by', free.y1);
+      let zMin = Math.min(zHeads, zFront);
+      let zMax = Math.max(zHeads, zFront);
+      const slot = this.ctrl.slots()[0];
+      const slotW = slot ? this.board.cellCenter(slot.at) : null;
+      let z: number;
+      if (zFront <= zHeads) z = (zFront + zHeads) / 2; // both fit: centre them
+      else {
+        z = zHeads; // the crew first…
+        // …unless the glowing tile would be out of view: little ones start with it on screen.
+        if (slotW) z = Math.min(zFront, Math.max(z, solveZ([[slotW.x, TILE_Y, slotW.z + 0.5]], 'by', free.y1)));
       }
+      // Horizontal: centre the workshop, or pan between its two sides when it is wider than the screen.
+      let xMin = solveX(pts, 'ax', free.x0, z);
+      let xMax = solveX(pts, 'bx', free.x1, z);
+      if (xMin >= xMax) xMin = xMax = solveX(pts, 'mid', (free.x0 + free.x1) / 2, z);
+      let x = (xMin + xMax) / 2;
+      if (slotW) x = Math.min(xMax, Math.max(xMin, slotW.x));
+      // Pan limits a little wider than the extremes (whole tiles, never lost in the hall).
+      zMin -= 0.2;
+      zMax += 0.2;
+      this.rig.limits = { min: [xMin - 0.3, 0, zMin], max: [xMax + 0.3, 0, zMax] };
+      focus = [x, 0, z];
     }
-    const slot = this.ctrl.slots()[0];
-    if (this.canPan && slot) {
-      // Little ones: start with the glowing tile in view.
-      const wc = this.board.cellCenter(slot.at);
-      focus = [focus[0] + (wc.x - focus[0]) * 0.7, 0, focus[2]];
-    }
+    this.host.input.setPan(this.canPan);
     this.rig.goTo({ c: focus, r, pitch: CAMERA_PITCH, yaw: 0 }, { cut });
     this.rig.update(0);
     this.rig.applyTo(cam);
@@ -868,7 +881,8 @@ class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
     this.board.setHint(c);
     if (c) {
       const w = this.board.cellCenter(c);
-      this.rig.follow([w.x, 0, w.z], this.canPan ? 0.9 : 0.15);
+      // Panning: bring the hint into view. Whole workshop on screen: stay put (a lean would cut the crew).
+      this.rig.follow(this.canPan ? [w.x, 0, w.z] : null, 0.9);
     } else this.rig.follow(null);
   }
 
@@ -930,7 +944,8 @@ class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
         break;
       case 'pan':
         if (this.canPan) {
-          const unit = Math.abs(a.dx) <= 1 && Math.abs(a.dy) <= 1;
+          // Keys / gamepad send unit steps; a drag (canvas or tile button) sends pixels.
+          const unit = e.source !== 'pointer';
           const wpp = (2 * this.rig.current.r * Math.tan((FOV * Math.PI) / 360)) / Math.max(1, this.host.size.h);
           if (unit) this.rig.pan(a.dx * 0.25, a.dy * 0.25);
           else this.rig.pan(-a.dx * wpp, -a.dy * wpp / Math.sin(CAMERA_PITCH));

@@ -78,6 +78,11 @@ export class ZiggyRig {
   seated = false;
   /** Amplitude of all motion (reduced motion: about 0.35). */
   energy = 1;
+  /**
+   * Heart glow strength (emissive, halo, heart light). 1 = the photo look
+   * without post; a game with bloom lowers it so the heart does not flare.
+   */
+  heartGain = 1;
   /** Called when a cue starts (for sparkles, sounds…). */
   onCue: ((cue: ZiggyCue) => void) | null = null;
 
@@ -410,10 +415,11 @@ export class ZiggyRig {
     const pulse = Math.exp(-((beat - 0.08) ** 2) / 0.002) + 0.6 * Math.exp(-((beat - 0.28) ** 2) / 0.002);
     const glow = Math.max(0, 1 + P.heart * 0.5 + pulse * 0.35);
     m.heart.scale.setScalar(1 + pulse * 0.035 + Math.max(0, P.heart) * 0.03);
-    m.heartMat.emissiveIntensity = 0.62 * glow;
-    (m.heartGlow.material as THREE.SpriteMaterial).opacity = Math.min(0.8, 0.3 * glow);
+    const hg = this.heartGain;
+    m.heartMat.emissiveIntensity = 0.62 * glow * hg;
+    (m.heartGlow.material as THREE.SpriteMaterial).opacity = Math.min(0.8, 0.3 * glow) * hg;
     m.heartGlow.scale.setScalar(0.75 + 0.15 * glow);
-    if (m.heartLight) m.heartLight.intensity = 0.35 * glow;
+    if (m.heartLight) m.heartLight.intensity = 0.35 * glow * hg;
 
     // Antenna springs: they lag behind hops, nods and tilts, then wobble.
     const prev = this.prev;

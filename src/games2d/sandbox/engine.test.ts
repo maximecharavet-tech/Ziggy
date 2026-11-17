@@ -60,6 +60,37 @@ describe('sandbox engine (WebAssembly in Node)', () => {
     for (const s of [a, b, c]) s.free();
   });
 
+  it('passes the parcel toys to the page: snow-globe notes, the treasure, the kite', () => {
+    const s = createSandbox(320, 192, 5, 0);
+    s.raw.load_scene();
+    s.raw.place_globe(160, 40);
+    const gx = s.raw.globe_x();
+    const notes = [];
+    for (let k = 0; k < 120; k++) {
+      s.raw.paint_line(gx - 6, 20, gx - 4, 20, 2, EL.sand, 0);
+      s.raw.step(1);
+      notes.push(...s.takeNotes());
+    }
+    expect(notes.length).toBeGreaterThan(3);
+    expect(notes.every((n) => n.element === EL.sand && n.degree >= 0 && n.degree <= 7)).toBe(true);
+    expect(s.takeNotes()).toEqual([]);
+    // A kept map: the treasure goes back under the ground of that column.
+    s.raw.set_treasure(250, -1);
+    expect(s.raw.toys() & 4).toBe(4);
+    expect(s.raw.treasure_x()).toBe(250);
+    let top = 0;
+    while (s.raw.get(250, top) === EL.empty) top++;
+    expect(s.raw.treasure_y()).toBeGreaterThan(top);
+    s.raw.place_kite(60, 150);
+    for (let k = 0; k < 200; k++) {
+      s.raw.steer_kite(100, 30);
+      s.raw.step(1);
+    }
+    expect(Math.abs(s.raw.kite_x() - 100)).toBeLessThan(3);
+    expect(Math.abs(s.raw.kite_y() - 30)).toBeLessThan(3);
+    s.free();
+  });
+
   it('draws every world at both tiers without throwing', () => {
     for (let w = 0; w < 8; w++) {
       const s = createSandbox(320, 192, 3, w);

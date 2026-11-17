@@ -13,7 +13,7 @@ import { voiceBase } from '@/lib/dodo/voice';
 import { storyOfTheNight, useDodoSettings, useManifest } from '@/lib/dodo/client';
 import { useHydrated } from '@/lib/world/store';
 import { getGame } from '@/lib/arcade/registry';
-import { TV_GAMES } from '@/lib/tv/catalog';
+import { TV_EXTRAS, TV_GAMES } from '@/lib/tv/catalog';
 import { FACE, FILMS } from '@/lib/mascot';
 import { isMuted } from '@/lib/sound';
 import { useBackLayer, useFocusReturn } from '@/lib/back-layer';
@@ -285,6 +285,29 @@ export function TvHome({ voices }: { voices?: VoiceSummary }) {
           const base = strong(g.color);
           return (
             <Link key={id} href={`/monde/arcade/${id}`} className={`${css.tile} ${css.game}`} data-tv-id={`game-${id}`} data-tv-autofocus={spot(`game-${id}`)} onClick={() => rememberTile(`game-${id}`)} aria-label={tr(g.name, locale)}>
+              <span className={css.art} style={{ background: `radial-gradient(circle at 50% 35%, ${lighten(base, 0.55)} 0%, ${lighten(base, 0.15)} 55%, ${darken(base, 0.2)} 100%)` }}>
+                <span
+                  className={css.token}
+                  style={{ background: `radial-gradient(circle at 34% 28%, ${lighten(base, 0.7)} 0%, ${lighten(base, 0.25)} 38%, ${base} 72%, ${darken(base, 0.18)} 100%)` }}
+                  aria-hidden="true"
+                >
+                  {g.emoji}
+                </span>
+                <span className={css.play} aria-hidden="true">
+                  ▶
+                </span>
+              </span>
+              <span className={css.caption}>
+                <strong>{tr(g.name, locale)}</strong>
+                <span>{tr(T.play, locale)}</span>
+              </span>
+            </Link>
+          );
+        })}
+        {TV_EXTRAS.map((g) => {
+          const base = strong(g.color);
+          return (
+            <Link key={g.id} href={g.href} className={`${css.tile} ${css.game}`} data-tv-id={`game-${g.id}`} data-tv-autofocus={spot(`game-${g.id}`)} onClick={() => rememberTile(`game-${g.id}`)} aria-label={tr(g.name, locale)}>
               <span className={css.art} style={{ background: `radial-gradient(circle at 50% 35%, ${lighten(base, 0.55)} 0%, ${lighten(base, 0.15)} 55%, ${darken(base, 0.2)} 100%)` }}>
                 <span
                   className={css.token}

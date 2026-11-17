@@ -1,4 +1,5 @@
 import type { InputEvent } from './actions';
+import { DRAG_SLOP_PX, DragGesture } from './drag';
 
 /**
  * Pointer (touch / mouse / pen) → actions. Tap = released within 14 px and
@@ -10,7 +11,7 @@ import type { InputEvent } from './actions';
  * the DOM hotspot buttons resolve to the same ids.
  */
 
-export const TAP_SLOP_PX = 14;
+export const TAP_SLOP_PX = DRAG_SLOP_PX;
 export const TAP_MAX_MS = 450;
 
 export interface PointerSample {
@@ -32,7 +33,8 @@ export function toNdc(clientX: number, clientY: number, rect: { left: number; to
 }
 
 export class PointerInput {
-  private down: (PointerSample & { id: number; lastX: number; lastY: number; dragging: boolean }) | null = null;
+  private gesture = new DragGesture(TAP_SLOP_PX);
+  private downT = 0;
 
   constructor(
     private el: HTMLElement,
@@ -53,39 +55,34 @@ export class PointerInput {
   }
 
   private onDown = (e: PointerEvent) => {
-    if (this.down || (e.pointerType === 'mouse' && e.button !== 0)) return;
-    this.down = { id: e.pointerId, x: e.clientX, y: e.clientY, t: performance.now(), lastX: e.clientX, lastY: e.clientY, dragging: false };
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (this.gesture.down(e.pointerId, e.clientX, e.clientY)) this.downT = performance.now();
   };
 
   private onMove = (e: PointerEvent) => {
-    const d = this.down;
-    if (!d || e.pointerId !== d.id || !this.panEnabled) return;
-    if (!d.dragging && Math.hypot(e.clientX - d.x, e.clientY - d.y) > TAP_SLOP_PX) {
-      d.dragging = true;
+    const wasDragging = this.gesture.dragging;
+    const d = this.gesture.move(e.pointerId, e.clientX, e.clientY, this.panEnabled);
+    if (!d) return;
+    if (!wasDragging) {
       try {
         this.el.setPointerCapture(e.pointerId);
       } catch {
         /* capture is optional */
       }
     }
-    if (d.dragging) {
-      this.emit({ action: { type: 'pan', dx: e.clientX - d.lastX, dy: e.clientY - d.lastY }, source: 'pointer' });
-      d.lastX = e.clientX;
-      d.lastY = e.clientY;
-    }
+    this.emit({ action: { type: 'pan', dx: d.dx, dy: d.dy }, source: 'pointer' });
   };
 
   private onUp = (e: PointerEvent) => {
-    const d = this.down;
-    if (!d || e.pointerId !== d.id) return;
-    this.down = null;
-    if (d.dragging || !isTap(d, { x: e.clientX, y: e.clientY, t: performance.now() })) return;
+    const start = this.gesture.start;
+    const end = this.gesture.up(e.pointerId);
+    if (end !== 'tap' || !start || !isTap({ ...start, t: this.downT }, { x: e.clientX, y: e.clientY, t: performance.now() })) return;
     const ndc = toNdc(e.clientX, e.clientY, this.el.getBoundingClientRect());
     this.emit({ action: { type: 'select', target: this.pick(ndc), ndc }, source: 'pointer' });
   };
 
   private onCancel = () => {
-    this.down = null;
+    this.gesture.cancel();
   };
 
   dispose(): void {
