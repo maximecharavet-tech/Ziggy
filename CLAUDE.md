@@ -60,3 +60,4 @@ device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.
 - Next `route.ts` files may only export HTTP handlers and Next config fields (a helper exported from one fails `next build` with "not a valid Route export field", though tsc and vitest pass): put helpers in `src/lib/`.
 - Only `FULLY_TRANSLATED_LOCALES` (`src/i18n/config.ts`) are announced to search engines (hreflang, sitemap, indexable); the other locales are `noindex` + canonical EN. Add a locale there only once its `tr()` content is really translated.
 - The audience is `AGE_MIN`–`AGE_MAX` in `src/lib/ages.ts` (4–12); `ages.test.ts` fails if `messages/*.json` drift. Before writing a test file, check it does not already exist (`downloads.test.ts` did).
+- Start a test server with `node node_modules/next/dist/bin/next start` and record that PID: killing the PID of `npx next start` leaves an orphaned next-server holding the port.

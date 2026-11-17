@@ -273,6 +273,16 @@ function pennant(w: number, h: number): THREE.Shape {
   return s;
 }
 
+/** A crescent moon outline. */
+function crescent(r: number): THREE.Shape {
+  const s = new THREE.Shape();
+  const cx = r * 0.5;
+  const ri = Math.hypot(cx, r);
+  s.absarc(0, 0, r, Math.PI / 2, (3 * Math.PI) / 2, false);
+  s.absarc(cx, 0, ri, Math.atan2(-r, -cx) + Math.PI * 2, Math.atan2(r, -cx), true);
+  return s;
+}
+
 /** Bunting along a wall: `from` → `to`, sagging a little. */
 function bunting(p: Pieces, from: V3, to: V3, colors: Hex[], n = 9, rotY = 0) {
   for (let i = 0; i < n; i++) {
@@ -313,8 +323,7 @@ const ROOM_TOUCHES: Record<string, (p: Pieces, t: RoomTheme) => void> = {
   },
   'chaos.bedroom': (p) => {
     // a sleepy moon and twinkling stars on the left wall, a felt cloud on the right
-    p.glow.sphere(0.34, '#fff2b0', { at: [-SIDE + 0.06, 3.3, 1.4], scale: [0.25, 1, 1], seg: 14 });
-    p.felt.sphere(0.3, '#c8b6f2', { at: [-SIDE + 0.12, 3.38, 1.55], scale: [0.25, 1, 1], seg: 14 });
+    p.glow.extrude(crescent(0.36), 0.03, '#fff2b0', { at: [-SIDE + 0.04, 3.3, 1.4], rot: [0, Math.PI / 2, 0.3] });
     for (const [z, y, r] of [[0.4, 3.7, 0.12], [2.3, 3.6, 0.1], [0.75, 3.15, 0.08], [2.6, 3.1, 0.13], [1.9, 3.9, 0.07]])
       p.glow.extrude(starShape(r), 0.02, '#ffd25e', { at: [-SIDE + 0.04, y, z], rot: [0, Math.PI / 2, 0] });
     for (const [dz, dy, r] of [[0, 0, 0.32], [0.35, -0.05, 0.26], [-0.35, -0.06, 0.24], [0.15, 0.18, 0.22]]) p.felt.sphere(r, '#ffffff', { at: [SIDE - 0.08, 3.3 + dy, 1.6 + dz], scale: [0.3, 1, 1], seg: 10 });
@@ -336,7 +345,7 @@ const ROOM_TOUCHES: Record<string, (p: Pieces, t: RoomTheme) => void> = {
     }
   },
   'chaos.library': (p, t) => {
-    // a rolling ladder on the left wall, two warm wall sconces, a banner of book spines up high
+    // a rolling ladder on the left wall, two warm wall sconces under a high shelf of books on the right
     for (const dz of [-0.28, 0.28]) p.wood.box(0.06, 3.4, 0.06, t.colors.woodDark, { at: [-SIDE + 0.35, 1.7, 1.6 + dz], rot: [0, 0, -0.12] });
     for (let i = 0; i < 8; i++) p.wood.box(0.05, 0.05, 0.56, t.colors.wood, { at: [-SIDE + 0.32 - i * 0.05 + 0.2, 0.3 + i * 0.42, 1.6] });
     p.wood.cyl(0.025, 0.025, 2.4, '#c9a227', { at: [-SIDE + 0.12, 3.5, 1.4], rot: [Math.PI / 2, 0, 0], seg: 6 });
@@ -346,7 +355,11 @@ const ROOM_TOUCHES: Record<string, (p: Pieces, t: RoomTheme) => void> = {
       p.wood.cyl(0.07, 0.15, 0.18, '#a83a3a', { at: [SIDE - 0.2, 2.92, z], seg: 10 });
     }
     const spines: Hex[] = ['#a83a3a', '#e9c46a', '#2f5d8a', '#3f7d5c', '#7950f2', '#e2453c'];
-    for (let i = 0; i < 18; i++) p.felt.box(0.12, 0.42 + (i % 3) * 0.06, 0.06, spines[i % spines.length], { at: [-4.4 + i * 0.13, 3.0, BACK + 0.05] });
+    p.wood.box(0.34, 0.06, 2.4, t.colors.wood, { at: [SIDE - 0.17, 3.3, 1.4] });
+    for (let i = 0; i < 16; i++) {
+      const h = 0.36 + (i % 3) * 0.06;
+      p.felt.box(0.26, h, 0.12, spines[i % spines.length], { at: [SIDE - 0.18, 3.33 + h / 2, 0.35 + i * 0.14] });
+    }
   },
   'chaos.music-room': (p) => {
     // music notes dancing on both side walls, a guitar hanging on the right
@@ -435,8 +448,7 @@ const ROOM_TOUCHES: Record<string, (p: Pieces, t: RoomTheme) => void> = {
   },
   'chaos.roof': (p) => {
     // a crescent moon and stars over the chimneys
-    p.glow.sphere(0.42, '#fff6d0', { at: [3.7, 3.85, -3.3], seg: 16 });
-    p.felt.sphere(0.36, '#101a52', { at: [3.86, 3.95, -3.2], seg: 14 });
+    p.glow.extrude(crescent(0.42), 0.03, '#fff6d0', { at: [3.7, 3.8, -3.3], rot: [0, 0, -0.35] });
     for (const [x, y, r] of [[-3.6, 3.9, 0.12], [-2.2, 3.5, 0.08], [-0.8, 4.05, 0.1], [1.0, 3.75, 0.07], [2.3, 4.1, 0.09]])
       p.glow.extrude(starShape(r), 0.02, '#ffe9a0', { at: [x, y, -3.3] });
   },
