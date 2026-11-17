@@ -3,14 +3,14 @@ import { cleanChildText, cleanReply, santaProviders, santaReply, santaReplyStrea
 
 describe('Santa live call', () => {
   it('the persona carries the safety rules', () => {
-    const p = santaSystemPrompt({ locale: 'fr', name: 'Léa', age: 6, wishes: ['velo', 'nope'] });
-    expect(p).toContain('Léa');
+    const p = santaSystemPrompt({ locale: 'fr', age: 6, wishes: ['velo', 'nope'] });
+    expect(p).toMatch(/never ask for it/);
     expect(p).toContain('un vélo');
     expect(p).toMatch(/Never say you are a human/);
     expect(p).toMatch(/Never ask for or repeat personal information/);
     expect(p).toMatch(/never promise a specific gift/);
     expect(p).toMatch(/naughty list/);
-    expect(santaSystemPrompt({ locale: 'en', name: '<x>', age: 99, wishes: [] })).toContain('a 12-year-old');
+    expect(santaSystemPrompt({ locale: 'en', age: 99, wishes: [] })).toContain('a 12-year-old');
   });
 
   it('cleans what the child said and what Santa answers', () => {
@@ -43,6 +43,23 @@ describe('Santa live call', () => {
       expect(body.messages[1].role).toBe('user');
       expect(String(vi.mocked(fetch).mock.calls[0][0])).toContain('deepseek');
       expect(body.max_tokens).toBeLessThanOrEqual(200);
+    });
+
+    it('never sends the first name to the model, even when the child says it', async () => {
+      vi.stubGlobal('fetch', vi.fn(async () => new Response(JSON.stringify({ choices: [{ message: { content: 'Ho ho ho ! Bonjour mon petit lutin.' } }] }))));
+      const r = await santaReply({
+        locale: 'fr',
+        name: 'Léa',
+        age: 6,
+        wishes: [],
+        history: [{ role: 'child', text: 'Coucou c’est LÉA' }, { role: 'santa', text: 'Bonjour Léa !' }],
+        text: "Je m'appelle Léa et ma sœur s'appelle Zoé, mon mail est lea@exemple.fr",
+      });
+      expect(r.ok).toBe(true);
+      const sent = (vi.mocked(fetch).mock.calls[0][1] as RequestInit).body as string;
+      expect(sent).not.toMatch(/l[ée]a/i);
+      expect(sent).not.toContain('exemple.fr');
+      expect(sent).toContain('(prénom)');
     });
 
     it('asks again on silence, and falls back to a fixed line when the model fails', async () => {

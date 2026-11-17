@@ -2,6 +2,7 @@ import 'server-only';
 import { localShield, shield } from '@/lib/safety/child-shield';
 import { giftById } from '@/data/santa/gifts';
 import { cleanName } from './name';
+import { PLACEHOLDER, redactPersonal } from '@/lib/privacy/personal';
 
 /**
  * The live AI call with Santa (Pack magique, switched on by a parent).
@@ -12,6 +13,8 @@ import { cleanName } from './name';
  *   human-written line instead;
  * - one or two short sentences, a strict persona, never asks for personal data, never
  *   claims to be a human, no promises of specific gifts, no other topics;
+ * - the child's first name never reaches the model: it is left out of the persona and
+ *   replaced by a gap in what the child said (on the device, and again here);
  * - nothing is stored or logged (no transcript, no name).
  */
 
@@ -22,8 +25,7 @@ export type SantaAiResult = { ok: true; text: string } | { ok: false; line: 'ai.
 const MAX_INPUT = 300;
 const MAX_REPLY = 260;
 
-export function santaSystemPrompt(input: Pick<SantaAiInput, 'locale' | 'name' | 'age' | 'wishes'>): string {
-  const name = cleanName(input.name) || (input.locale === 'fr' ? 'mon enfant' : 'my friend');
+export function santaSystemPrompt(input: Pick<SantaAiInput, 'locale' | 'age' | 'wishes'>): string {
   const age = Math.min(12, Math.max(2, Math.round(input.age) || 6));
   const wishes = input.wishes
     .map((id) => giftById(id)?.say[input.locale])
@@ -32,7 +34,8 @@ export function santaSystemPrompt(input: Pick<SantaAiInput, 'locale' | 'name' | 
     .join(', ');
   const lang = input.locale === 'fr' ? 'French (tutoie the child, simple words)' : 'English (simple words)';
   return [
-    `You are the voice of Santa Claus in a children's app called Ziggy, talking on a video call with ${name}, a ${age}-year-old child. A parent is nearby.`,
+    `You are the voice of Santa Claus in a children's app called Ziggy, talking on a video call with a ${age}-year-old child. A parent is nearby.`,
+    `You are not told the child's name and must never ask for it: call the child "${input.locale === 'fr' ? 'mon petit lutin' : 'my little elf'}" or simply "${input.locale === 'fr' ? 'toi' : 'you'}". Words in parentheses such as ${PLACEHOLDER[input.locale]} are personal details removed for privacy: never repeat or guess them.`,
     `Speak ${lang}. Answer in ONE or TWO short sentences (under 35 words), warm, jolly and playful, like a kind grandfather. A "Ho ho ho" now and then.`,
     wishes ? `The child's letter asks for: ${wishes}. You may mention them, but never promise a specific gift ("I'll see what my elves can do").` : `You don't have the child's letter yet.`,
     'Talk only about Christmas magic: the North Pole, elves, reindeer, the workshop, Mrs Claus, snow, cookies, kindness, the child\'s wishes, their day, games, animals, stories. Ask the child simple questions back.',
@@ -70,6 +73,18 @@ export function cleanReply(raw: string): string {
 }
 
 type Msg = { role: 'user' | 'assistant'; content: string };
+
+/** What the model may see of the conversation: the first name (and obvious personal data) replaced by a gap. */
+export function withoutName(input: SantaAiInput): SantaAiInput {
+  const extra = [cleanName(input.name)];
+  const gap = PLACEHOLDER[input.locale];
+  return {
+    ...input,
+    name: '',
+    text: redactPersonal(input.text, gap, { extra }),
+    history: input.history.map((t) => ({ ...t, text: redactPersonal(t.text, gap, { extra }) })),
+  };
+}
 
 function toMessages(history: SantaTurn[], text: string): Msg[] {
   const msgs: Msg[] = [];
@@ -182,7 +197,8 @@ export function santaAiReady(): boolean {
   return santaProviders().length > 0;
 }
 
-export async function santaReply(input: SantaAiInput): Promise<SantaAiResult> {
+export async function santaReply(raw: SantaAiInput): Promise<SantaAiResult> {
+  const input = withoutName(raw);
   const text = cleanChildText(input.text);
   if (text.length < 2) return { ok: false, line: 'ai.again' };
   // A flagged sentence from the child is not sent to any model.
@@ -213,7 +229,8 @@ export type SantaStreamEvent = { type: 'sentence'; text: string } | { type: 'lin
  * its first sentence is replaced by the next one; a flagged sentence ends the
  * reply with a fixed line.
  */
-export async function* santaReplyStream(input: SantaAiInput, signal?: AbortSignal): AsyncGenerator<SantaStreamEvent> {
+export async function* santaReplyStream(raw: SantaAiInput, signal?: AbortSignal): AsyncGenerator<SantaStreamEvent> {
+  const input = withoutName(raw);
   const text = cleanChildText(input.text);
   if (text.length < 2) return yield { type: 'line', line: 'ai.again' };
   if (!localShield(text).ok) return yield { type: 'line', line: 'ai.busy' };

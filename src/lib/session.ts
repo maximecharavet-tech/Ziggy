@@ -9,6 +9,7 @@ import type { Session, User } from '@supabase/supabase-js';
 import { loadSupabase } from './supabase';
 import { toProfile, type ZiggyProfile } from './account';
 import { syncGuestProgress } from './progress';
+import { registerPersonal } from './privacy/personal';
 
 export interface SessionState {
   /** False until the first session check finished — avoids a signed-out flash. */
@@ -26,6 +27,8 @@ const listeners = new Set<() => void>();
 
 function setState(patch: Partial<SessionState>) {
   state = { ...state, ...patch };
+  // The child's first name is personal: Ziggy's read-aloud keeps it on the device.
+  if (state.profile?.name) registerPersonal(state.profile.name);
   listeners.forEach((l) => l());
 }
 

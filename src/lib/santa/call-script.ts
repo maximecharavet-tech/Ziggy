@@ -20,6 +20,8 @@ export type CallStep =
 export const CALL_KINDS: CallKind[] = ['liste', 'nouvelles', 'veille'];
 
 const line = (id: string) => `line:${id}`;
+/** The clip that tells the child, before the live AI part, that Santa's live answers are made by an AI. */
+export const LIVE_DISCLOSURE = 'live:ai.disclose';
 const say = (ids: string[], expr?: Expression): CallStep => ({ t: 'say', clips: ids, expr });
 const listen = (ms = 6000): CallStep => ({ t: 'listen', ms });
 
@@ -131,7 +133,8 @@ export function buildCall(kind: CallKind, child: SantaChild, opts: { preview?: b
     return steps;
   }
 
-  if (opts.ai) steps.push(say([line('ai.intro')], 'listen'), { t: 'ai' });
+  // The live part opens with Santa saying his live answers are made by an AI (EU AI Act art. 50).
+  if (opts.ai) steps.push(say([LIVE_DISCLOSURE, line('ai.intro')], 'listen'), { t: 'ai' });
   steps.push(say([line('close.work'), line('close.keep')]));
   steps.push(say([nameClip(child, 'bye'), line('close.hohoho')], 'wave'));
   steps.push({ t: 'end', reason: 'done' });

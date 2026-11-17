@@ -44,7 +44,7 @@ export const WORLD_UI = {
   gotXp: { fr: '+{n} XP', en: '+{n} XP' },
   levelUp: { fr: 'Ton niveau de jeu monte : défis un peu plus grands !', en: 'Your game level goes up: slightly bigger challenges!' },
   levelDown: { fr: 'On s’entraîne en douceur au prochain tour.', en: 'Next round we’ll practise gently.' },
-  aiMade: { fr: 'Contenu créé par Hyper Engine et vérifié par ChildShield', en: 'Made by Hyper Engine, checked by ChildShield' },
+  aiMade: { fr: 'Créé avec l’aide de l’IA (Hyper Engine), vérifié par ChildShield', en: 'Made with the help of AI (Hyper Engine), checked by ChildShield' },
   localMade: { fr: 'Contenu Ziggy', en: 'Ziggy content' },
   guestNote: { fr: 'Tu joues en invité : ton aventure est gardée sur cet appareil.', en: 'Playing as a guest: your adventure is kept on this device.' },
   syncedNote: { fr: 'Aventure sauvegardée dans le compte parent.', en: 'Adventure saved to the parent account.' },

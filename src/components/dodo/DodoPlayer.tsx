@@ -40,6 +40,11 @@ import { useMusic } from './music';
 import { DodoSay } from './DodoSay';
 import { Moon, NightSky, SceneArt, Sparkles } from './Scenery';
 import css from './dodo.module.css';
+import { AiLabel } from '@/components/ui/AiLabel';
+
+const AI_PICS_VOICE = { fr: 'Images et voix créées avec l’aide de l’IA', en: 'Pictures and voice made with the help of AI' };
+const AI_PICS = { fr: 'Images créées avec l’aide de l’IA', en: 'Pictures made with the help of AI' };
+const AI_VOICE = { fr: 'Voix créée avec l’aide de l’IA', en: 'Voice made with the help of AI' };
 
 const T = {
   listen: { fr: 'Écouter l’histoire', en: 'Listen to the story' },
@@ -452,6 +457,8 @@ export function DodoPlayer({ story, timing: known }: { story: DodoStory; timing?
                 ⏱ {minutesOf(musical && m.duration > 0 ? m.duration : total)} {tr(T.minutes, locale)}
               </Pill>
               {musical ? <Pill>🎵 {tr(T.musical, locale)}</Pill> : timingReady ? <Pill>{recorded ? `🎙️ ${tr(T.told, locale)}` : `📖 ${tr(T.quiet, locale)}`}</Pill> : null}
+              {/* EU AI Act art. 50: the pre-generated pictures and the synthetic voice / sung version are AI-made. */}
+              {image || recorded || musical ? <AiLabel tone="dark" text={image && (recorded || musical) ? AI_PICS_VOICE : image ? AI_PICS : AI_VOICE} /> : null}
             </div>
             <div className="mt-3 flex items-start gap-3">
               <h1 className="font-display text-[clamp(1.75rem,1.2rem+2.4vw,3rem)] font-bold leading-tight text-[#fff8ea] [text-wrap:balance] [@media(orientation:landscape)_and_(max-height:520px)]:text-2xl">{tr(story.title, locale)}</h1>

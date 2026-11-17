@@ -9,6 +9,7 @@ import { listenOnce, micSupported, speakSequence, stopSpeaking, unlockAudio } fr
 import { splitSentences, isNoise } from '@/lib/speech-text';
 import { isMuted } from '@/lib/sound';
 import { EASE_OUT } from '@/lib/motion';
+import { PLACEHOLDER, redactPersonal } from '@/lib/privacy/personal';
 
 type Phase = 'ready' | 'listening' | 'thinking' | 'speaking' | 'paused' | 'unsupported';
 type Turn = { role: 'user' | 'assistant'; content: string };
@@ -109,7 +110,13 @@ export function VoiceCall({ open, onClose, name, color, portrait, agentId }: Voi
         const res = await fetch('/api/chat', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: turns.current, locale, agentId, mode: 'voice' }),
+          // Names the device knows (first names, names the child typed) are replaced before sending.
+          body: JSON.stringify({
+            messages: turns.current.map((m) => (m.role === 'user' ? { ...m, content: redactPersonal(m.content, PLACEHOLDER[locale === 'fr' ? 'fr' : 'en']) } : m)),
+            locale,
+            agentId,
+            mode: 'voice',
+          }),
         });
         if (res.ok) reply = ((await res.json()) as { message: string }).message || reply;
       } catch {}

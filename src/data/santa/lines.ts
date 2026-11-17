@@ -91,6 +91,20 @@ export const SANTA_LINES = {
   'ai.timeup': { fr: 'Oh là là, comme le temps passe vite avec toi ! Je dois retourner à l’atelier.', en: 'My my, time flies with you! I must go back to the workshop.' },
 } satisfies Record<string, L>;
 
+/**
+ * Lines of the LIVE AI part of a call, said in the same AI voice as Santa's live
+ * answers (/api/santa/voice, fixed words only, cached by the CDN), not recorded
+ * offline. `ai.disclose` opens the live part: EU AI Act art. 50 — the child is
+ * told, spoken and written, that Santa's live answers are made by an AI.
+ * Key: `live:<id>`.
+ */
+export const SANTA_LIVE_LINES = {
+  'ai.disclose': {
+    fr: 'Un petit secret avant de commencer : quand on parle en direct, mes réponses sont fabriquées par une intelligence artificielle, un programme d’ordinateur. Ce n’est pas une vraie personne qui te répond, mais je suis là rien que pour toi !',
+    en: 'A little secret before we start: when we talk live, my answers are made by an artificial intelligence, a computer program. It’s not a real person answering you, but I’m here just for you!',
+  },
+} satisfies Record<string, L>;
+
 export type SantaLineId = keyof typeof SANTA_LINES;
 export const isLineId = (id: string): id is SantaLineId => Object.prototype.hasOwnProperty.call(SANTA_LINES, id);
 
@@ -98,12 +112,13 @@ const cap = (s: string) => s.charAt(0).toLocaleUpperCase() + s.slice(1);
 
 /**
  * A clip key → the exact words. Keys:
- *  line:<id> · gift:<giftId> · proud:<proudId> · age:<2–12> · advent:<1–24> · name:<hello|bye|plain>:<first name>
+ *  line:<id> · live:<id> · gift:<giftId> · proud:<proudId> · age:<2–12> · advent:<1–24> · name:<hello|bye|plain>:<first name>
  * Returns null for anything else (the voice route speaks nothing it doesn't know).
  */
 export function santaText(key: string, locale: SantaLocale): string | null {
   const [kind, a, ...rest] = key.split(':');
   if (kind === 'line' && a && isLineId(a)) return SANTA_LINES[a][locale];
+  if (kind === 'live' && a && Object.prototype.hasOwnProperty.call(SANTA_LIVE_LINES, a)) return SANTA_LIVE_LINES[a as keyof typeof SANTA_LIVE_LINES][locale];
   if (kind === 'gift' && a) {
     const gift = giftById(a);
     return gift ? (locale === 'fr' ? `${cap(gift.say.fr)} !` : `${cap(gift.say.en)}!`) : null;

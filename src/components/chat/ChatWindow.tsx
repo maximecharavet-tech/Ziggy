@@ -9,6 +9,7 @@ import { StarBurst } from '@/components/ziggy/StarBurst';
 import { SpeakButton, AutoReadToggle, MicButton, TalkingHalo } from '@/components/ziggy/VoiceControls';
 import { speak, unlockAudio, voiceStore } from '@/lib/voice';
 import { EASE_OUT } from '@/lib/motion';
+import { PLACEHOLDER, redactPersonal } from '@/lib/privacy/personal';
 
 interface Message {
   id: string;
@@ -84,7 +85,8 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: history.slice(-12).map(({ role, content }) => ({ role, content })),
+          // Names the device knows (first names, names the child typed) are replaced before sending.
+          messages: history.slice(-12).map(({ role, content }) => ({ role, content: role === 'user' ? redactPersonal(content, PLACEHOLDER[locale === 'fr' ? 'fr' : 'en']) : content })),
           locale,
           agentId,
         }),

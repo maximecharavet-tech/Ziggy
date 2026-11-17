@@ -2,9 +2,9 @@
  * L'appli du Père Noël — shared types (see docs/PERE_NOEL.md).
  *
  * Everything about the child stays on the device (localStorage): first name,
- * age, wish list, chosen "proud moment". Nothing here is sent to a server,
- * except the first name, spoken by Santa's voice (a cached audio clip of the
- * name alone, never linked to anything else).
+ * age, wish list, chosen "proud moment". The first name is never sent to a
+ * voice or AI provider: Santa says it from offline recordings (public/santa/names),
+ * and the live AI call replaces it before any text leaves the device.
  */
 
 /** What a family bought. `null` = the free part only. */

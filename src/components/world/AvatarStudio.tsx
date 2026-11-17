@@ -15,6 +15,7 @@ import { DepthProvider, Layer, usePointerDepth, useTilt } from '@/components/cre
 import { StudioFrame } from '@/components/create/fx/StudioFrame';
 import { fx, loop, shade, toy } from '@/components/create/fx/toy';
 import { AvatarPreview, EYE_HEX, HAIR_HEX, OUTFIT_COLOR, SKIN_HEX } from './AvatarPreview';
+import { AiLabel } from '@/components/ui/AiLabel';
 
 const T = {
   eyebrow: { fr: 'Le studio d’avatar', en: 'The avatar studio' },
@@ -495,9 +496,12 @@ export function AvatarStudio() {
             {avatars.map((a) => (
               <li key={a.id} className={`overflow-hidden rounded-[1.6rem] bg-bg-card shadow-[0_6px_0_rgba(140,90,200,0.16),0_18px_30px_-20px_rgba(90,40,140,0.6)] ${selected === a.id ? 'ring-4 ring-[#A35BD6]' : 'ring-1 ring-black/5'}`}>
                 {a.url ? (
-                  // Signed, short-lived URL from private storage: a plain img is right here.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={a.url} alt={tr(T.preview, locale)} className="aspect-square w-full object-cover" />
+                  <div className="relative">
+                    {/* Signed, short-lived URL from private storage: a plain img is right here. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={a.url} alt={tr(T.preview, locale)} className="aspect-square w-full object-cover" />
+                    <AiLabel className="absolute bottom-2 start-2 !px-2 !text-[11px]" />
+                  </div>
                 ) : (
                   <div className="grid aspect-square place-items-center text-5xl">🧑‍🎨</div>
                 )}

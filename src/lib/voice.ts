@@ -1,12 +1,17 @@
 'use client';
 
 import { isMuted, MUTE_EVENT } from '@/lib/sound';
+import { isPersonalText } from '@/lib/privacy/personal';
 
 /**
  * Ziggy's voice in the browser.
  *
  * - First choice: /api/tts (Gemini voice, the Hyper™ AI Engine voice stack).
  * - Fallback: the browser's own speech synthesis, pitched up a little.
+ * - A sentence with personal data (the child's first name, a name the child
+ *   typed, a line flagged with `markPersonal`, an email or phone number…) is
+ *   NEVER sent to /api/tts: the device's own voice says it
+ *   (src/lib/privacy/personal.ts).
  * - One clip plays at a time; the site-wide mute silences Ziggy too.
  *
  * The state (which line is being spoken, auto-read on/off) lives in a tiny
@@ -105,6 +110,8 @@ function browserVoice(text: string, locale: string, id: string, mine: number, st
 
 async function serverClip(text: string, style: VoiceStyle = 'ziggy'): Promise<string | null> {
   if (serverDown) return null;
+  // Personal words stay on the device: the browser's own voice says this sentence.
+  if (isPersonalText(text)) return null;
   const hit = clips.get(`${style}:${text}`);
   if (hit) return hit;
   try {
@@ -184,6 +191,7 @@ type Recognition = {
   lang: string;
   interimResults: boolean;
   maxAlternatives: number;
+  processLocally?: boolean;
   start(): void;
   stop(): void;
   abort(): void;
@@ -191,13 +199,33 @@ type Recognition = {
   onend: (() => void) | null;
   onerror: ((e: { error: string }) => void) | null;
 };
+type OnDeviceOpts = { langs: string[]; processLocally: true };
+type RecognitionCtor = {
+  new (): Recognition;
+  available?: (o: OnDeviceOpts) => Promise<'available' | 'downloadable' | 'downloading' | 'unavailable'>;
+  install?: (o: OnDeviceOpts) => Promise<boolean>;
+};
+
+/**
+ * Only speech recognition that runs ON THE DEVICE: the standard, un-prefixed
+ * API with `processLocally` (Chrome 139+ on computers). The prefixed
+ * `webkitSpeechRecognition` and Chrome's default mode send the child's voice to
+ * Google's or Apple's servers, so they are never used (CLAUDE.md: no child
+ * voice to third parties). Not on Android, where probing it can crash the tab
+ * (same rule as the Santa call, src/lib/santa/transcribe.ts).
+ */
+function onDeviceRecognition(): RecognitionCtor | null {
+  if (typeof window === 'undefined') return null;
+  if (/Android/i.test(navigator.userAgent)) return null;
+  const w = window as unknown as { SpeechRecognition?: RecognitionCtor };
+  return w.SpeechRecognition && typeof w.SpeechRecognition.available === 'function' ? w.SpeechRecognition : null;
+}
 
 export function micSupported(): boolean {
   if (typeof window === 'undefined') return false;
   // The Ziggy app never listens: no child's voice goes to Google or Apple (the native shell turns speech recognition off).
   if (document.documentElement.hasAttribute('data-app')) return false;
-  const w = window as unknown as { SpeechRecognition?: unknown; webkitSpeechRecognition?: unknown };
-  return Boolean(w.SpeechRecognition ?? w.webkitSpeechRecognition);
+  return onDeviceRecognition() !== null;
 }
 
 /**
@@ -214,35 +242,46 @@ export function listenOnce(locale: string, onText?: (t: string) => void): { resu
 }
 
 export function listen(locale: string, onText: (t: string) => void, onDone: (t: string) => void): () => void {
-  const w = window as unknown as { SpeechRecognition?: new () => Recognition; webkitSpeechRecognition?: new () => Recognition };
-  const Ctor = w.SpeechRecognition ?? w.webkitSpeechRecognition;
+  const Ctor = micSupported() ? onDeviceRecognition() : null;
   if (!Ctor) {
     onDone('');
     return () => {};
   }
   stopSpeaking();
-  const rec = new Ctor();
-  rec.lang = bcp47(locale);
-  rec.interimResults = true;
-  rec.maxAlternatives = 1;
+  let rec: Recognition | null = null;
+  let cancelled = false;
   let text = '';
-  rec.onresult = (e) => {
-    text = Array.from(e.results)
-      .map((r) => r[0]?.transcript ?? '')
-      .join(' ')
-      .trim();
-    onText(text);
-  };
-  rec.onerror = () => {};
-  rec.onend = () => onDone(text);
-  try {
-    rec.start();
-  } catch {
-    onDone('');
-  }
-  return () => {
+  const opts: OnDeviceOpts = { langs: [bcp47(locale)], processLocally: true };
+  void (async () => {
     try {
-      rec.stop();
+      // The language pack must be on the device; download it once if needed.
+      let state = await Ctor.available!(opts);
+      if ((state === 'downloadable' || state === 'downloading') && Ctor.install) state = (await Ctor.install(opts)) ? 'available' : 'unavailable';
+      if (state !== 'available' || cancelled) return onDone('');
+      const r = new Ctor();
+      r.lang = bcp47(locale);
+      r.processLocally = true;
+      r.interimResults = true;
+      r.maxAlternatives = 1;
+      r.onresult = (e) => {
+        text = Array.from(e.results)
+          .map((x) => x[0]?.transcript ?? '')
+          .join(' ')
+          .trim();
+        onText(text);
+      };
+      r.onerror = () => {};
+      r.onend = () => onDone(text);
+      rec = r;
+      r.start();
+    } catch {
+      onDone('');
+    }
+  })();
+  return () => {
+    cancelled = true;
+    try {
+      rec?.stop();
     } catch {}
   };
 }

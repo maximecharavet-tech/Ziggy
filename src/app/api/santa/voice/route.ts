@@ -6,8 +6,8 @@ import { santaText } from '@/data/santa/lines';
 /**
  * Santa's voice (L'appli du Père Noël). GET ?k=<clip key>&l=fr|en[&v=<version>]
  *
- * Speaks only the fixed texts of src/data/santa/lines.ts (plus a validated first
- * name), so every clip is the same for everyone and is cached by the CDN for a
+ * Speaks only the fixed texts of src/data/santa/lines.ts (never a first name:
+ * `name:` keys are refused), so every clip is the same for everyone and is cached by the CDN for a
  * year: each one is generated once, then costs nothing. The version parameter
  * changes when the texts change.
  *
@@ -23,6 +23,9 @@ export async function GET(request: NextRequest) {
   const params = request.nextUrl.searchParams;
   const locale = params.get('l') === 'en' ? 'en' : 'fr';
   const clip = (params.get('k') ?? '').normalize('NFC').slice(0, 80);
+  // Never a child's first name: names are recorded offline (public/santa/names) or
+  // left out ("Bonjour à toi !"); a name must not reach the voice provider or a CDN-cached URL.
+  if (clip.startsWith('name:')) return NextResponse.json({ error: 'unknown-clip' }, { status: 400 });
   const text = santaText(clip, locale);
   if (!text) return NextResponse.json({ error: 'unknown-clip' }, { status: 400 });
 

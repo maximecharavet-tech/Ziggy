@@ -33,6 +33,8 @@ export const clipSources = async (key: string, locale: SantaLocale, fetcher?: ty
     const anon = staticClipUrl(anonNameKey(variant as NameVariant), locale);
     return [named, anon].filter((u): u is string => Boolean(u));
   }
+  // Lines of the live AI part: the same AI voice as Santa's live answers (fixed words, CDN-cached).
+  if (kind === 'live') return [clipUrl(key, locale)];
   const file = staticClipUrl(key, locale);
   return file ? [file] : [];
 };

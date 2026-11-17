@@ -4,10 +4,12 @@ import { SPOKEN_STYLE } from '@/lib/speech-text';
 import { screenChildInput, screenAiOutput, blockedReply } from '@/lib/child-safety';
 import { rateLimit } from '@/lib/rate-limit';
 import { getAgent, getAgentSystemPrompt } from '@/lib/agents';
+import { PLACEHOLDER, redactPersonal } from '@/lib/privacy/personal';
 
 function stripHtml(str: string): string {
   return str.replace(/<[^>]*>/g, '');
 }
+
 
 export async function POST(request: NextRequest) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() || 'unknown';
@@ -28,21 +30,27 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Too many messages' }, { status: 400 });
     }
 
-    const sanitized = messages.map((m: { role: string; content: string }) => ({
+    const lang = typeof locale === 'string' ? locale : 'en';
+    const gap = PLACEHOLDER[lang === 'fr' ? 'fr' : 'en'];
+
+    const received = messages.map((m: { role: string; content: string }) => ({
       role: m.role === 'assistant' ? 'assistant' : 'user',
       content: stripHtml(String(m.content || '').slice(0, 2000).trim()),
     }));
 
-    const lang = typeof locale === 'string' ? locale : 'en';
-
     // The child's latest message is screened before any AI sees it.
-    const lastUser = [...sanitized].reverse().find((m) => m.role === 'user');
+    const lastUser = [...received].reverse().find((m) => m.role === 'user');
     if (lastUser) {
       const screen = screenChildInput(lastUser.content, lang);
       if (screen.verdict !== 'ok') {
         return NextResponse.json({ message: screen.reply, safety: screen.verdict });
       }
     }
+
+    // Personal details never reach the AI provider: a first name the child says about
+    // themselves ("je m'appelle Léa"), and contact data left in older turns (the page
+    // already replaced the names it knows).
+    const sanitized = received.map((m: { role: string; content: string }) => (m.role === 'user' ? { ...m, content: redactPersonal(m.content, gap) } : m));
 
     let systemPrompt: string | undefined;
     if (agentId && getAgent(agentId)) {

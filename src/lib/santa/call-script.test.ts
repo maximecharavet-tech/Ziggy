@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { buildCall, callClips, CALL_KINDS, type CallKind } from './call-script';
+import { buildCall, callClips, CALL_KINDS, LIVE_DISCLOSURE, type CallKind } from './call-script';
 import { santaText, SANTA_LINES } from '@/data/santa/lines';
 import { SANTA_GIFTS } from '@/data/santa/gifts';
 import { SANTA_PROUD } from '@/data/santa/proud';
@@ -34,6 +34,21 @@ describe('guided calls', () => {
     expect(preview.at(-1)).toEqual({ t: 'end', reason: 'preview' });
     expect(preview.length).toBeLessThan(buildCall('liste', child()).length);
     expect(buildCall('liste', child(), { ai: true }).some((s) => s.t === 'ai')).toBe(true);
+  });
+
+  it('opens the live AI part by saying that Santa’s live answers are made by an AI (EU AI Act art. 50)', () => {
+    for (const k of ['liste', 'nouvelles'] as const) {
+      const steps = buildCall(k, child(), { ai: true });
+      const at = steps.findIndex((s) => s.t === 'ai');
+      const before = steps[at - 1];
+      expect(before.t === 'say' && before.clips[0]).toBe(LIVE_DISCLOSURE);
+      expect(callClips(buildCall(k, child())).includes(LIVE_DISCLOSURE)).toBe(false); // guided calls: no AI, no notice
+    }
+    for (const locale of ['fr', 'en'] as const) {
+      const text = santaText(LIVE_DISCLOSURE, locale) ?? '';
+      expect(text).toMatch(locale === 'fr' ? /intelligence artificielle/ : /artificial intelligence/);
+      expect(text).toMatch(locale === 'fr' ? /pas une vraie personne/ : /not a real person/);
+    }
   });
 
   it('reads at most three wishes and mentions the proud moment', () => {
