@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { motion } from 'motion/react';
+import { MotionConfig, motion } from 'motion/react';
 import { MascotCutout } from '@/components/ziggy/Mascot';
 import type { WorldId } from '@/games2d/sandbox/content';
 import { tr, type L } from '@/lib/i18n-text';
@@ -103,90 +103,94 @@ export function Saucer({
 
   const xs = ['-18%', '20%', '48%', '78%', '118%'];
   const ys = reduceMotion ? [0, 0, 0, 0, 0] : sea ? [0, 10, 0, 10, 0] : [0, -14, 6, -10, 0];
+  // The site's MotionConfig drops transform animations under reduced motion, which would park the saucer
+  // off screen: here reduced motion is handled by hand (a slow straight glide, no wobble, loop or shake).
   return (
-    <motion.div
-      className="pointer-events-none absolute left-0 top-[4%] z-20 w-full"
-      initial={{ x: xs[0] }}
-      animate={{ x: xs, y: ys }}
-      transition={{ duration, ease: 'linear', times: [0, 0.25, 0.5, 0.75, 1] }}
-      data-saucer=""
-    >
+    <MotionConfig reducedMotion="never">
       <motion.div
-        className="relative inline-block"
-        animate={loop ? { rotate: [0, 0, 360, 360] } : reduceMotion ? {} : { rotate: space ? [-24, -16, -24] : [-5, 5, -5] }}
-        transition={loop ? { duration: 2.2, delay: duration * 0.45, times: [0, 0.2, 0.8, 1] } : { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        className="pointer-events-none absolute left-0 top-[4%] z-20 w-full"
+        initial={{ x: xs[0] }}
+        animate={{ x: xs, y: ys }}
+        transition={{ duration, ease: 'linear', times: [0, 0.25, 0.5, 0.75, 1] }}
+        data-saucer=""
       >
-        <motion.div animate={{ y: dodge }} transition={reduceMotion ? { duration: 0.8, ease: 'easeInOut' } : { type: 'spring', stiffness: 160, damping: 11 }} data-saucer-dodge={dodge}>
-          {/* The shake starts the other way each time, so it plays again without remounting the button. */}
-          <motion.div
-            animate={misted && !reduceMotion ? { x: [0, -7, 7, -6, 6, -4, 4, 0].map((v) => (misted % 2 ? v : -v)), rotate: [0, -6, 6, -5, 5, -2, 2, 0].map((v) => (misted % 2 ? v : -v)) } : {}}
-            transition={{ duration: 0.9, delay: 0.5 }}
-            data-saucer-misted={misted}
-          >
-            <motion.button
-              key={hic}
-              ref={btn}
-              type="button"
-              aria-label={tr(SAUCER_TEXT.label, locale)}
-              className="pointer-events-auto relative block h-[78px] w-[110px] touch-none select-none rounded-full focus-visible:outline focus-visible:outline-4 focus-visible:outline-white"
-              initial={hic && !reduceMotion ? { scale: 1.25, y: -6 } : false}
-              animate={{ scale: 1, y: 0 }}
-              transition={{ type: 'spring', stiffness: 500, damping: 12 }}
-              onClick={tap}
-              onPointerDown={() => {
-                hold.current = window.setTimeout(() => {
-                  hold.current = null;
-                  setBubble(SAUCER_TEXT.beam);
-                  onHold();
-                }, 550);
-              }}
-              onPointerUp={() => hold.current && window.clearTimeout(hold.current)}
-              onPointerLeave={() => hold.current && window.clearTimeout(hold.current)}
+        <motion.div
+          className="relative inline-block"
+          animate={loop ? { rotate: [0, 0, 360, 360] } : reduceMotion ? {} : { rotate: space ? [-24, -16, -24] : [-5, 5, -5] }}
+          transition={loop ? { duration: 2.2, delay: duration * 0.45, times: [0, 0.2, 0.8, 1] } : { duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+        >
+          <motion.div animate={{ y: dodge }} transition={reduceMotion ? { duration: 0.8, ease: 'easeInOut' } : { type: 'spring', stiffness: 160, damping: 11 }} data-saucer-dodge={dodge}>
+            {/* The shake starts the other way each time, so it plays again without remounting the button. */}
+            <motion.div
+              animate={misted && !reduceMotion ? { x: [0, -7, 7, -6, 6, -4, 4, 0].map((v) => (misted % 2 ? v : -v)), rotate: [0, -6, 6, -5, 5, -2, 2, 0].map((v) => (misted % 2 ? v : -v)) } : {}}
+              transition={{ duration: 0.9, delay: 0.5 }}
+              data-saucer-misted={misted}
             >
-              {/* Ziggy, sitting in the glass bubble. */}
-              <span className="absolute left-1/2 top-0 h-[54px] w-[54px] -translate-x-1/2 overflow-hidden rounded-t-full">
-                <span className="absolute left-1/2 top-[3px] w-[40px] -translate-x-1/2">
-                  <MascotCutout pose="wave" width={40} glow={false} />
+              <motion.button
+                key={hic}
+                ref={btn}
+                type="button"
+                aria-label={tr(SAUCER_TEXT.label, locale)}
+                className="pointer-events-auto relative block h-[78px] w-[110px] touch-none select-none rounded-full focus-visible:outline focus-visible:outline-4 focus-visible:outline-white"
+                initial={hic && !reduceMotion ? { scale: 1.25, y: -6 } : false}
+                animate={{ scale: 1, y: 0 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 12 }}
+                onClick={tap}
+                onPointerDown={() => {
+                  hold.current = window.setTimeout(() => {
+                    hold.current = null;
+                    setBubble(SAUCER_TEXT.beam);
+                    onHold();
+                  }, 550);
+                }}
+                onPointerUp={() => hold.current && window.clearTimeout(hold.current)}
+                onPointerLeave={() => hold.current && window.clearTimeout(hold.current)}
+              >
+                {/* Ziggy, sitting in the glass bubble. */}
+                <span className="absolute left-1/2 top-0 h-[54px] w-[54px] -translate-x-1/2 overflow-hidden rounded-t-full">
+                  <span className="absolute left-1/2 top-[3px] w-[40px] -translate-x-1/2">
+                    <MascotCutout pose="wave" width={40} glow={false} />
+                  </span>
+                  <span className="absolute inset-0 rounded-t-full bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.7),rgba(190,240,255,0.25)_45%,rgba(160,220,255,0.15))] ring-2 ring-white/70" />
+                  {world === 'moon' ? <span className="absolute left-1/2 top-[8px] h-[30px] w-[30px] -translate-x-1/2 rounded-full ring-2 ring-white/90" /> : null}
                 </span>
-                <span className="absolute inset-0 rounded-t-full bg-[radial-gradient(circle_at_35%_30%,rgba(255,255,255,0.7),rgba(190,240,255,0.25)_45%,rgba(160,220,255,0.15))] ring-2 ring-white/70" />
-                {world === 'moon' ? <span className="absolute left-1/2 top-[8px] h-[30px] w-[30px] -translate-x-1/2 rounded-full ring-2 ring-white/90" /> : null}
-              </span>
-              {sea ? <span className="absolute left-[64%] top-[-14px] h-[22px] w-[4px] rounded bg-[#9aa3c0] after:absolute after:-left-[2px] after:-top-[4px] after:h-[6px] after:w-[10px] after:rounded after:bg-[#9aa3c0]" /> : null}
-              {/* The saucer itself. */}
-              <span className="absolute inset-x-0 top-[40px] h-[26px] rounded-[50%] bg-[linear-gradient(180deg,#e9edf8,#9aa0c8)] shadow-[0_6px_10px_rgba(20,10,60,0.35)]" />
-              <span className="absolute inset-x-[18px] top-[58px] h-[12px] rounded-[50%] bg-[#6f6aa8]" />
-              {[0, 1, 2, 3].map((k) => (
-                <span key={k} className={`absolute top-[50px] h-[8px] w-[8px] rounded-full ${reduceMotion ? '' : 'motion-safe:animate-pulse'}`} style={{ left: 18 + k * 22, background: ['#ffe45a', '#ff7a8a', '#7affc8', '#8ab4ff'][k], animationDelay: `${k * 0.25}s` }} />
-              ))}
-            </motion.button>
-            {misted ? (
-              <span key={`drops-${misted}`} aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[60px] -translate-x-1/2">
-                {[-26, 0, 24].map((dx, k) => (
-                  <motion.span
-                    key={k}
-                    className="absolute h-[9px] w-[7px] rounded-[50%_50%_50%_50%/60%_60%_40%_40%] bg-[#8fd8ff] shadow-[0_0_6px_rgba(143,216,255,0.9)]"
-                    style={{ left: dx }}
-                    initial={{ opacity: 0.95, y: 0 }}
-                    animate={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 34, x: dx * 0.4 }}
-                    transition={{ duration: reduceMotion ? 2.4 : 1.1, delay: 0.5 + k * 0.08, ease: 'easeIn' }}
-                  />
+                {sea ? <span className="absolute left-[64%] top-[-14px] h-[22px] w-[4px] rounded bg-[#9aa3c0] after:absolute after:-left-[2px] after:-top-[4px] after:h-[6px] after:w-[10px] after:rounded after:bg-[#9aa3c0]" /> : null}
+                {/* The saucer itself. */}
+                <span className="absolute inset-x-0 top-[40px] h-[26px] rounded-[50%] bg-[linear-gradient(180deg,#e9edf8,#9aa0c8)] shadow-[0_6px_10px_rgba(20,10,60,0.35)]" />
+                <span className="absolute inset-x-[18px] top-[58px] h-[12px] rounded-[50%] bg-[#6f6aa8]" />
+                {[0, 1, 2, 3].map((k) => (
+                  <span key={k} className={`absolute top-[50px] h-[8px] w-[8px] rounded-full ${reduceMotion ? '' : 'motion-safe:animate-pulse'}`} style={{ left: 18 + k * 22, background: ['#ffe45a', '#ff7a8a', '#7affc8', '#8ab4ff'][k], animationDelay: `${k * 0.25}s` }} />
                 ))}
-              </span>
-            ) : null}
+              </motion.button>
+              {misted ? (
+                <span key={`drops-${misted}`} aria-hidden="true" className="pointer-events-none absolute left-1/2 top-[60px] -translate-x-1/2">
+                  {[-26, 0, 24].map((dx, k) => (
+                    <motion.span
+                      key={k}
+                      className="absolute h-[9px] w-[7px] rounded-[50%_50%_50%_50%/60%_60%_40%_40%] bg-[#8fd8ff] shadow-[0_0_6px_rgba(143,216,255,0.9)]"
+                      style={{ left: dx }}
+                      initial={{ opacity: 0.95, y: 0 }}
+                      animate={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 34, x: dx * 0.4 }}
+                      transition={{ duration: reduceMotion ? 2.4 : 1.1, delay: 0.5 + k * 0.08, ease: 'easeIn' }}
+                    />
+                  ))}
+                </span>
+              ) : null}
+            </motion.div>
           </motion.div>
+          {bubble ? (
+            <motion.span
+              role="status"
+              initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4, y: 6 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              transition={{ type: 'spring', stiffness: 420, damping: 16 }}
+              className="absolute left-[96px] top-[-8px] w-max max-w-[60vw] rounded-2xl bg-white px-3 py-1.5 text-sm font-black text-[#2c2470] shadow-lg"
+            >
+              {tr(bubble, locale)}
+            </motion.span>
+          ) : null}
         </motion.div>
-        {bubble ? (
-          <motion.span
-            role="status"
-            initial={reduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.4, y: 6 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ type: 'spring', stiffness: 420, damping: 16 }}
-            className="absolute left-[96px] top-[-8px] w-max max-w-[60vw] rounded-2xl bg-white px-3 py-1.5 text-sm font-black text-[#2c2470] shadow-lg"
-          >
-            {tr(bubble, locale)}
-          </motion.span>
-        ) : null}
       </motion.div>
-    </motion.div>
+    </MotionConfig>
   );
 }

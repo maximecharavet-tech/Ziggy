@@ -747,6 +747,8 @@ html[data-tv] :focus-visible {
 }
 /* Regions that steer with the arrows themselves (runner, puzzle) only get the ring. */
 html[data-tv] [data-tv-own-keys]:focus-visible { scale: none; outline-offset: -0.25rem !important; }
+/* The Magic Sandbox keeps its moulded rim and its size when the remote is drawing in it. */
+html[data-tv] canvas[data-sandbox-canvas]:focus-visible { scale: none; outline-offset: 14px !important; box-shadow: 0 0 0 4px rgb(255 255 255 / 0.95), 0 0 0 11px #ffc94a, 0 0 0 12px #f0a92c, 0 9px 0 12px #d4861c, 0 0 2.5rem rgb(255 170 40 / 0.55) !important; }
 /* Things kept in view with some room around when the remote moves to them. */
 html[data-tv] :is(a, button, input, select, textarea, [tabindex]) { scroll-margin: 16vh 6vw; }
 @media (prefers-reduced-motion: reduce) {
