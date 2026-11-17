@@ -33,7 +33,7 @@ export function ScienceLab({
     <motion.section
       aria-label={tr(LAB_TEXT.title, locale)}
       data-science-lab=""
-      className="absolute inset-x-0 bottom-full z-20 mx-auto mb-2 w-[min(100%,560px)] rounded-[26px] bg-[#2a2366]/95 p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur-sm sm:p-4"
+      className="absolute inset-x-0 bottom-full z-20 mx-auto mb-2 w-[min(100%,680px)] rounded-[26px] bg-[#2a2366]/95 p-3 shadow-2xl ring-1 ring-white/20 backdrop-blur-sm sm:p-4"
       initial={reduceMotion ? { opacity: 0 } : { opacity: 0, y: 16, scale: 0.96 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       exit={{ opacity: 0, y: reduceMotion ? 0 : 10 }}

@@ -440,7 +440,16 @@ export function SandboxGame() {
 
       {/* The sandbox, with the notebook alongside on large screens. */}
       <div className="relative z-0 flex min-h-0 flex-1 gap-4 px-3 pb-1 pt-2 sm:px-5">
-        <div className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
+        {/* Clipped, never scrollable: focusing the saucer as it flies out must not slide the sandbox sideways. */}
+        <div
+          className="relative min-h-0 min-w-0 flex-1 overflow-hidden"
+          style={{ overflow: 'clip' }}
+          data-sandbox-stage=""
+          onScroll={(e) => {
+            const el = e.currentTarget;
+            if (el.scrollLeft || el.scrollTop) el.scrollTo(0, 0);
+          }}
+        >
           <SandCanvas
             world={world}
             tool={toolById(tool)}

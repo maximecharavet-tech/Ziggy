@@ -223,14 +223,15 @@ export function SandCanvas({
     const cores = navigator.hardwareConcurrency || 4;
     const governor = createTierGovernor(cores > 4 ? 'high' : 'low', { at: tierRef.current ?? undefined });
     let tierNow: Tier = governor.tier;
-    const applyTier = (t: Tier) => {
+    const applyTier = (t: Tier, change = true) => {
       tierNow = t;
       tierRef.current = t;
       e.raw.set_quality(TIER_SCALE[t].scale, TIER_SCALE[t].high);
       el.dataset.tier = t;
-      el.dataset.tierChanges = String(Number(el.dataset.tierChanges ?? 0) + 1);
+      // How many times the tier really changed (read by the tests).
+      if (change) el.dataset.tierChanges = `${el.dataset.tierChanges ? `${el.dataset.tierChanges} ` : ''}${t}`;
     };
-    applyTier(tierNow);
+    applyTier(tierNow, false);
     let gravityNow = 100;
     let temperatureNow = 0;
 
