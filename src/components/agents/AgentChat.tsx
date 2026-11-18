@@ -3,6 +3,7 @@
 import { useTranslations } from 'next-intl';
 import { ChatWindow } from '@/components/chat/ChatWindow';
 import { AgentAvatar } from './AgentAvatar';
+import { guidedSet } from '@/data/chat/guided';
 
 interface AgentChatProps {
   agentId: string;
@@ -13,12 +14,13 @@ interface AgentChatProps {
   placeholder: string;
 }
 
-/** One of Ziggy's specialist friends, in the shared chat window. */
+/** One of Ziggy's specialist friends, in the shared chat window (guided questions; free typing behind the grown-up gate). */
 export function AgentChat({ agentId, agentName, color, suggestions, placeholder }: AgentChatProps) {
   const t = useTranslations('chat');
   return (
     <ChatWindow
       agentId={agentId}
+      guided={guidedSet(agentId)}
       identity={{
         name: agentName,
         color,

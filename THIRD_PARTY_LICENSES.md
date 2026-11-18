@@ -157,6 +157,12 @@ the code; no code was copied.
 |---|---|---|---|
 | `public/lutins/mediapipe/efficientdet_lite0.tflite` (int8) | https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/int8/latest/efficientdet_lite0.tflite (MediaPipe Object Detector model card) | Apache-2.0 | Runs in the browser only (blocks room photos with a person before upload); loaded with `@mediapipe/tasks-vision` (Apache-2.0, listed above). |
 
+## Avatar studio — on-device photo reading
+
+| Asset | Source | Licence | Notes |
+|---|---|---|---|
+| `public/avatar/mediapipe/face_landmarker.task` (float16; face detector + 478-point face mesh with irises + blendshapes, sha256 `64184e22…0bc9ff`) | https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task (MediaPipe Face Landmarker model card), downloaded 2026-11-18 | Apache-2.0 (per the model card; owner to confirm) | Runs in the browser only: `src/lib/avatar/photo-analyze.ts` reads the avatar photo on the device (with the selfie multiclass segmenter listed above), so no photo is sent anywhere. |
+
 ## Le Bac à sable magique engine (`rust/sandbox-core/`, Rust → WebAssembly)
 
 The falling-sand simulation, the eight worlds and the software renderer of `/monde/bac-a-sable` are our own

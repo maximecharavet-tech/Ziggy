@@ -1,14 +1,19 @@
 # Ziggy World — Privacy by design
 
-## Photos: zero retention
-- The photo path is optional, parent-initiated and requires an explicit `photo_avatar` consent
-  (`ziggy_consents`), checked server-side before any processing.
-- The browser downscales the photo (≤1024 px JPEG). The server holds it **only in request memory**
-  while NVIDIA's vision model returns a `VisualBlueprint` of enums (hair, skin tone, eyes, glasses,
-  freckles). No identity, age, ethnicity, emotion or health inference is requested or accepted.
-- The photo is never written to disk, database, storage or logs, and **never sent to the image
-  generator**. Agnes receives only a text prompt built from enums (`avatarPrompt`), always describing a
-  young child, modestly dressed, in a cartoon style.
+## Photos: never leave the device (since 2026-11-18)
+- The photo path is optional and parent-initiated: behind the grown-up gate (`SantaGate`), with an explicit
+  consent tick (stored as `photo_avatar` in `ziggy_consents` when signed in; for the visit only otherwise).
+  Reading needs no account (nothing is uploaded); creating the image does.
+- The photo is read **in the browser** by MediaPipe Tasks Vision (Apache-2.0, self-hosted models:
+  `public/avatar/mediapipe/face_landmarker.task` and the booth's `selfie_multiclass_256x256.tflite`):
+  `src/lib/avatar/photo-analyze.ts` → `traitsFromFrame` (`src/lib/avatar/photo-traits.ts`, pure, tested).
+  It returns only enums (hair colour and length, headscarf, skin tone, eye colour, glasses); hairstyle
+  texture and freckles are never guessed and stay for the parent/child to pick. The decoded pixels are
+  wiped afterwards. MediaPipe's usage logger is answered locally (`blockMediapipeLogging`).
+- No photo is sent to Ziggy's server or to any AI provider. `POST /api/ziggy/avatar/analyze` is retired
+  (always 410, body never read). The NVIDIA vision path was removed.
+- Agnes receives only a text prompt built from enums (`avatarPrompt`), always describing a young child,
+  modestly dressed, in a cartoon style. The enum blueprint (including skin tone) is stored with the avatar.
 - `DELETE /api/ziggy/privacy/photo` deletes photo-derived avatars (rows + files) and revokes consent.
 
 ## What is stored

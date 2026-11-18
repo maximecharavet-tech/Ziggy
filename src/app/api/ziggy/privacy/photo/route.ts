@@ -3,8 +3,8 @@ import { authenticate, fail, ok } from '@/lib/hyper-engine/route';
 import { deleteAvatars } from '@/lib/world/privacy';
 
 /**
- * "Delete my child's photo data". Photos are never stored (zero retention:
- * they only exist in memory while the vision model reads them), so this
+ * "Delete my child's photo data". Photos are never sent or stored (they are
+ * read on the device, src/lib/avatar/photo-analyze.ts), so this
  * deletes everything derived from a photo — avatars made from it and their
  * images — and revokes the photo consent.
  */

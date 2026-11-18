@@ -42,7 +42,7 @@ const T = {
   skillsNote: { fr: 'Estimation de maîtrise par compétence (traçage des connaissances) et niveau de jeu 1–5. Il s’agit uniquement d’apprentissage : aucune évaluation psychologique.', en: 'Mastery estimate per skill (knowledge tracing) and game level 1–5. Learning only: no psychological assessment.' },
   content: { fr: 'Histoires et avatars', en: 'Stories and avatars' },
   consents: { fr: 'Consentements', en: 'Consents' },
-  photoConsent: { fr: 'Avatar depuis une photo (lecture en mémoire, jamais stockée)', en: 'Avatar from a photo (read in memory, never stored)' },
+  photoConsent: { fr: 'Avatar depuis une photo (lue sur l’appareil, jamais envoyée ni stockée)', en: 'Avatar from a photo (read on the device, never sent or stored)' },
   aiConsent: { fr: 'Contenus créés par IA (quêtes, histoires, questions), vérifiés par ChildShield', en: 'AI-made content (quests, stories, questions), checked by ChildShield' },
   usage: { fr: 'Usage de l’IA ce mois-ci', en: 'AI usage this month' },
   generations: { fr: 'générations', en: 'generations' },

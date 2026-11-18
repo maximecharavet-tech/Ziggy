@@ -6,11 +6,12 @@ import { MascotCutout, ZiggyAvatar } from './Mascot';
 import { ZiggyVideo } from './ZiggyVideo';
 import { FILMS } from '@/lib/mascot';
 
-/** Ziggy himself: the official mascot, his voice, his colour. */
+/** Ziggy himself: the official mascot, his voice, his colour (guided questions; free typing behind the grown-up gate). */
 export function ZiggyChat() {
   const t = useTranslations('demo');
   return (
     <ChatWindow
+      guided="ziggy"
       identity={{
         name: 'Ziggy',
         color: '#22C55E',

@@ -46,10 +46,17 @@ function setGrace() {
   }
 }
 
+const BACK = 'inline-flex min-h-12 items-center gap-1.5 rounded-full bg-[#3B2410]/[0.06] px-4 text-sm font-bold text-[#6B4A2B] transition active:scale-95 dark:bg-white/10 dark:text-white/80';
+
 const KEYS = ['1', '2', '3', '4', '5', '6', '7', '8', '9', 'erase', '0', 'ok'] as const;
 type Key = (typeof KEYS)[number];
 
-export function SantaGate({ onPass, backHref }: { onPass: () => void; backHref: string }) {
+/**
+ * `forParents` / `forKids` replace the Santa wording when the gate guards something
+ * else (e.g. free typing in the chat); `onBack` replaces the back link with a button
+ * (a gate shown inside a page, not on its own page).
+ */
+export function SantaGate({ onPass, backHref, onBack, forParents = T.forParents, forKids = T.forKids }: { onPass: () => void; backHref?: string; onBack?: () => void; forParents?: L; forKids?: L }) {
   const locale = useLocale();
   // Random question: made after mount only (the server and the first render must match).
   const [question, setQuestion] = useState<GateQuestion | null>(null);
@@ -101,12 +108,21 @@ export function SantaGate({ onPass, backHref }: { onPass: () => void; backHref: 
   return (
     <div role="group" aria-labelledby="santa-gate-title" aria-describedby="santa-gate-question" className="mx-auto w-full max-w-[26rem] rounded-[2.25rem] bg-white/85 p-6 text-center text-[#3B2410] shadow-[0_30px_80px_-30px_rgba(107,74,43,0.55)] ring-1 ring-white/70 dark:bg-white/[0.06] dark:text-[#FFF1DC] dark:ring-white/10 sm:p-7">
       <div className="flex items-center justify-between">
-        <Link href={backHref} className="inline-flex min-h-12 items-center gap-1.5 rounded-full bg-[#3B2410]/[0.06] px-4 text-sm font-bold text-[#6B4A2B] transition active:scale-95 dark:bg-white/10 dark:text-white/80">
-          <span aria-hidden="true" className="rtl:rotate-180">
-            ←
-          </span>
-          {tr(T.back, locale)}
-        </Link>
+        {onBack || !backHref ? (
+          <button type="button" onClick={onBack} className={BACK}>
+            <span aria-hidden="true" className="rtl:rotate-180">
+              ←
+            </span>
+            {tr(T.back, locale)}
+          </button>
+        ) : (
+          <Link href={backHref} className={BACK}>
+            <span aria-hidden="true" className="rtl:rotate-180">
+              ←
+            </span>
+            {tr(T.back, locale)}
+          </Link>
+        )}
         <ZiggyAvatar size={56} />
       </div>
       <div className="mt-4 flex items-center justify-center gap-2">
@@ -114,9 +130,9 @@ export function SantaGate({ onPass, backHref }: { onPass: () => void; backHref: 
           {tr(T.title, locale)}
         </h2>
         {/* Read aloud: who this is for, never the question (a child could type what they hear). */}
-        <SayButton texts={[tr(T.title, locale), tr(T.forParents, locale), tr(T.forKids, locale)]} locale={locale} size="sm" />
+        <SayButton texts={[tr(T.title, locale), tr(forParents, locale), tr(forKids, locale)]} locale={locale} size="sm" />
       </div>
-      <p className="mt-1 text-sm font-semibold opacity-75">{tr(T.forParents, locale)}</p>
+      <p className="mt-1 text-sm font-semibold opacity-75">{tr(forParents, locale)}</p>
 
       <p id="santa-gate-question" className="mt-5 min-h-[3.5rem] rounded-2xl bg-[#FFF3DD] px-4 py-3 font-display text-xl font-bold leading-snug text-[#5A3A1A] dark:bg-white/10 dark:text-[#FFE6B0]" aria-live="polite">
         {question ? tr(question.text, locale) : ' '}
