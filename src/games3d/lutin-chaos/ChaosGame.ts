@@ -417,6 +417,8 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   private insets = { top: 0, bottom: 0 };
   private freezeQueue: { elf: ElfCtl; pose: ElfPose; side?: 1 | -1 }[] = [];
   private lastSize = { w: 1, h: 1 };
+  /** Depth of the room view's centre (set by frameCamera). */
+  private roomZ = 0.5;
 
   constructor(
     private rt: ChaosRuntime,
@@ -524,8 +526,11 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
     this.lastSize = { w, h };
     const aspect = w / Math.max(1, h);
     const portrait = aspect < 0.9;
-    this.rig.aspect = portrait ? Math.max(aspect * 1.75, 0.7) : aspect;
+    // Portrait: the room fills the height between the HUD bars (part of its width, panned with the arrows and
+    // leaning toward whatever matters); tablets held upright keep a wider view.
+    this.rig.aspect = portrait ? Math.min(1.3, Math.max(aspect * 2.3, 0.9)) : aspect;
     const base = portrait ? { c: [0, 0.4, 0.6] as [number, number, number], r: 12.6, pitch: 0.52, yaw: 0 } : { c: [0, 1.45, 0.5] as [number, number, number], r: 11.6, pitch: 0.36, yaw: 0 };
+    this.roomZ = base.c[2];
     // look lower when a panel covers the bottom: the room (and Ziggy at the front) moves up into view
     const free = Math.max(-0.1, Math.min(0.45, (this.insets.bottom - this.insets.top) / Math.max(1, h)));
     const shift = free * base.r * Math.tan((20 * Math.PI) / 180) * (portrait ? 1.1 : 1.25);
@@ -852,8 +857,7 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
               }
               elf.peek(tw, hide.peek, reduce);
               this.peekRing.show(hide.peek, elf.id === 'noisette' ? 1.2 : 1.6);
-              // lean well toward the peeking elf (portrait screens show only part of the room)
-              this.focusPoint(hide.peek, this.lastSize.w < this.lastSize.h ? 0.85 : 0.4);
+              this.focusPeek(hide.peek);
               this.wiggleHide(ev.spot, 0.8);
               this.rt.sfx(SFX_OF[ev.elf]);
               this.refresh();
@@ -1453,7 +1457,29 @@ class RoomScene implements HostScene<ChaosEvents, ChaosCommands> {
   }
 
   private focusPoint(p: THREE.Vector3, strength: number) {
-    this.rig.follow([p.x, p.y, p.z], strength);
+    // portrait screens see a narrower slice of the room: lean further so the point stays in view
+    const k = this.lastSize.w < this.lastSize.h ? Math.min(0.9, strength * 1.8) : strength;
+    this.rig.follow([p.x, p.y, p.z], k);
+  }
+
+  /**
+   * Lean toward a peeking elf. Portrait screens show only part of the room:
+   * centre between the elf and Ziggy when both fit, else keep the elf in view
+   * (as close to Ziggy's side as it can).
+   */
+  private focusPeek(p: THREE.Vector3) {
+    const { w, h } = this.lastSize;
+    if (w >= h) {
+      this.focusPoint(p, 0.4);
+      return;
+    }
+    // half the width seen at the middle of the room, less a margin for the elf's and Ziggy's own width
+    const half = this.rig.wanted().r * Math.tan((this.rig.fov * Math.PI) / 360) * (w / Math.max(1, h)) - 1;
+    const zx = this.set.ziggy.x;
+    let x = (p.x + zx) / 2;
+    if (Math.abs(p.x - x) > half) x = p.x - Math.sign(p.x - zx) * Math.max(0, half);
+    // strength 1 on x (the exact centre), most of the way toward the elf in depth, as before
+    this.rig.follow([x, p.y, this.roomZ + (p.z - this.roomZ) * 0.85], 1);
   }
 
   update(dt: number) {

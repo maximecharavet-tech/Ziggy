@@ -110,6 +110,9 @@ export function SandboxGame() {
   const [toast, setToast] = useState<Toast | null>(null);
   const [magic, setMagic] = useState<MagicMoment[]>([]);
   const [saucer, setSaucer] = useState(0);
+  const [saucerDue, setSaucerDue] = useState(false);
+  /** Calm play left before the saucer comes (ms); counted down, paused by panels. */
+  const saucerLeft = useRef<number | null>(null);
   const [idea, setIdea] = useState(false);
   const [little, setLittle] = useState(false);
   // The big kids' lab (10–12): gravity and temperature, and what changed.
@@ -118,6 +121,16 @@ export function SandboxGame() {
   const [gravityK, setGravityK] = useState(NORMAL);
   const [tempK, setTempK] = useState(NORMAL);
   const [changed, setChanged] = useState<('gravity' | 'temperature')[]>([]);
+  // Phones: the lab stands on the brush / time row (whatever the tool balls wrap to), never over it.
+  const [phoneLab, setPhoneLab] = useState(false);
+  useEffect(() => {
+    if (!lab || typeof window === 'undefined' || !window.matchMedia) return;
+    const mq = window.matchMedia('(max-width: 639px)');
+    const on = () => setPhoneLab(mq.matches);
+    on();
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, [lab]);
   const lastGift = useRef<L | null>(null);
   const lastWin = useRef(0);
   const dirty = useRef(false);
@@ -167,12 +180,12 @@ export function SandboxGame() {
     else dirty.current = true;
   };
 
-  const discover = (next: SandboxSave, id: Reaction, from: { x: number; y: number }, cell: { x: number; y: number } | null, fresh: Celebrate[]): SandboxSave => {
+  const discover = (next: SandboxSave, id: Reaction, from: { x: number; y: number }, cell: { x: number; y: number } | null, fresh: Celebrate[], output?: string): SandboxSave => {
     if (next.discoveries[id]) return next;
     const d = discoveryById(id);
     const round = earnsRound(next, id, world, (r) => discoveryById(r)?.world ?? 'garden');
     next = { ...next, discoveries: { ...next.discoveries, [id]: Date.now() } };
-    fresh.push({ id, from });
+    fresh.push({ id, from, output });
     if (cell) api.current?.burst(cell.x, cell.y, d?.color ?? '#ffd447');
     if (round) {
       // World Memory: the first discovery of each world, then every 5th (decision 5 of the brief).
@@ -232,7 +245,8 @@ export function SandboxGame() {
           const found = TREASURE_LINES[WORLD_TREASURE[world]];
           const maps = { ...next.maps };
           delete maps[world];
-          next = discover({ ...next, maps }, e.kind, from, { x: e.x, y: e.y }, fresh);
+          // The card shows what was really dug up here (fossil, shell or meteorite), like the toast.
+          next = discover({ ...next, maps }, e.kind, from, { x: e.x, y: e.y }, fresh, found.emoji);
           setToast({ kind: 'line', emoji: found.emoji, text: found.text });
           lastGift.current = found.text;
           playSound('star');
@@ -268,8 +282,8 @@ export function SandboxGame() {
     [locale, say, world],
   );
 
-  // Read the discovery aloud when its card shows.
-  const current = queue[0];
+  // Read the discovery aloud when its card shows. Little ones get one thing at a time: cards wait while the saucer visits.
+  const current = little && saucer ? undefined : queue[0];
   useEffect(() => {
     if (!current) return;
     const d = discoveryById(current.id);
@@ -286,12 +300,27 @@ export function SandboxGame() {
   }, [toast]);
 
   // Ziggy's saucer comes by after a calm moment of play; if missed, it simply comes back later.
-  const busy = picker || album || drawer || Boolean(current);
+  // The calm is counted, not restarted: a panel or a discovery card pauses the count. For little ones the
+  // cards do not pause it: when the saucer is due, the card on screen tucks itself into the notebook.
+  const panels = picker || album || drawer;
+  const holdSaucer = panels || (Boolean(current) && !little);
   useEffect(() => {
-    if (!painted || saucer || busy) return;
-    const t = setTimeout(() => setSaucer((n) => n + 1), save.saucer.includes(world) ? 45000 : 15000);
-    return () => clearTimeout(t);
-  }, [painted, saucer, busy, world, save.saucer]);
+    if (!painted || saucer || saucerDue || holdSaucer) return;
+    if (saucerLeft.current === null) saucerLeft.current = save.saucer.includes(world) ? 45000 : 15000;
+    const step = 500;
+    const t = setInterval(() => {
+      saucerLeft.current = (saucerLeft.current ?? 0) - step;
+      if (saucerLeft.current > 0) return;
+      saucerLeft.current = null;
+      setSaucerDue(true);
+    }, step);
+    return () => clearInterval(t);
+  }, [painted, saucer, saucerDue, holdSaucer, world, save.saucer]);
+  useEffect(() => {
+    if (!saucerDue || panels || current) return;
+    setSaucerDue(false);
+    setSaucer((n) => n + 1);
+  }, [saucerDue, panels, current]);
 
   useEffect(() => {
     if (!saucer) return;
@@ -318,6 +347,8 @@ export function SandboxGame() {
       setTool(WORLD_INFO[w].big[0]);
       setNight(false);
       setSaucer(0);
+      setSaucerDue(false);
+      saucerLeft.current = null;
       setGravityK(NORMAL);
       setTempK(NORMAL);
       setChanged([]);
@@ -377,6 +408,19 @@ export function SandboxGame() {
     say(`sandbox-lab-${kind}`, [tr(scienceLine(kind, v), locale)]);
   };
   const science = changed.map((kind) => scienceLine(kind, kind === 'gravity' ? gravityK : tempK));
+  const labPanel = (phone: boolean) => (
+    <ScienceLab
+      key="lab"
+      locale={locale}
+      gravity={gravityK}
+      temperature={tempK}
+      reduceMotion={reduceMotion}
+      phone={phone}
+      onGravity={(k) => changeLab('gravity', k)}
+      onTemperature={(k) => changeLab('temperature', k)}
+      onClose={() => setLab(false)}
+    />
+  );
 
   const keepWorld = async () => {
     const snap = api.current?.snapshot();
@@ -537,21 +581,9 @@ export function SandboxGame() {
 
       {/* Tools. */}
       <footer className="relative z-10 px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-1 sm:px-5">
-        <AnimatePresence>
-          {big && lab ? (
-            <ScienceLab
-              key="lab"
-              locale={locale}
-              gravity={gravityK}
-              temperature={tempK}
-              reduceMotion={reduceMotion}
-              onGravity={(k) => changeLab('gravity', k)}
-              onTemperature={(k) => changeLab('temperature', k)}
-              onClose={() => setLab(false)}
-            />
-          ) : null}
-        </AnimatePresence>
+        <AnimatePresence>{big && lab && !phoneLab ? labPanel(false) : null}</AnimatePresence>
         <Toolbar
+          labPanel={<AnimatePresence>{big && lab && phoneLab ? labPanel(true) : null}</AnimatePresence>}
           locale={locale}
           world={world}
           tool={tool}
@@ -583,6 +615,8 @@ export function SandboxGame() {
           onLab={
             big
               ? () => {
+                  // Placed for this screen from the first frame (no jump from one spot to the other).
+                  setPhoneLab(Boolean(window.matchMedia?.('(max-width: 639px)').matches));
                   setLab((v) => !v);
                   playSound('tap');
                 }
@@ -618,7 +652,27 @@ export function SandboxGame() {
       <AnimatePresence>{album ? <AlbumPanel key="album" locale={locale} version={albumVersion} onSave={() => void keepWorld()} onOpen={openSnapshot} onClose={() => setAlbum(false)} /> : null}</AnimatePresence>
 
       {/* A new discovery flies into the notebook. */}
-      {current ? <Celebration key={current.id} item={current} locale={locale} target={notebookTarget} reduceMotion={reduceMotion} onDone={() => setQueue((q) => q.slice(1))} /> : null}
+      {/* Little ones: the card stays a calm while (time to hear it), then tucks itself gently into the notebook. */}
+      {current ? (
+        <Celebration
+          key={current.id}
+          item={current}
+          locale={locale}
+          target={notebookTarget}
+          reduceMotion={reduceMotion}
+          linger={little ? 7500 : 4200}
+          gentle={little}
+          hurry={little && saucerDue}
+          onDone={() => {
+            setQueue((q) => q.slice(1));
+            // The card made room for the saucer: it comes now, and the next cards wait for it to leave.
+            if (little && saucerDue && !panels) {
+              setSaucerDue(false);
+              setSaucer((n) => n + 1);
+            }
+          }}
+        />
+      ) : null}
 
       <AnimatePresence>
         {toast ? (

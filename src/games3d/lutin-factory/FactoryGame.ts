@@ -182,6 +182,8 @@ function lookIcons(o: { props?: Order['props'] }): string {
   return s;
 }
 
+// A steeper or longer-lens camera does not help the tallest boards: at the same far-row tap size the board is
+// as tall on screen (the far tiles get narrower). The fit below puts the whole board first instead.
 const CAMERA_PITCH = (62 * Math.PI) / 180;
 const FOV = 32;
 /** Smallest spacing between two tiles on screen (px): the hotspot buttons stay ≥ 64 px and never overlap. */
@@ -308,7 +310,8 @@ class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
    * front of the board, the crew's heads behind it and Ziggy at the side,
    * centred with margins. When that makes the tiles too small for fingers,
    * come closer and pan (drag): the crew's heads and the front row are then
-   * both in view when they fit, else the crew first, and every tile and
+   * both in view when they fit; else the whole board when it fits (the crew's
+   * hats may slip under the top bar), else the crew first; every tile and
    * every head stays reachable within the pan limits.
    */
   private fitCamera(cut: boolean) {
@@ -446,7 +449,10 @@ class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
       const slot = this.ctrl.slots()[0];
       const slotW = slot ? this.board.cellCenter(slot.at) : null;
       let z: number;
+      // The board alone (its back edge at the top of the free area): does it fit without panning?
+      const zBack = solveZ([[0, TILE_Y, -bh / 2 - 0.3]], 'ay', free.y0);
       if (zFront <= zHeads) z = (zFront + zHeads) / 2; // both fit: centre them
+      else if (zFront <= zBack) z = zFront; // the whole board, front row on the bottom edge, as much crew as fits
       else {
         z = zHeads; // the crew first…
         // …unless the glowing tile would be out of view: little ones start with it on screen.

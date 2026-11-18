@@ -12,6 +12,8 @@ export interface Celebrate {
   id: Reaction;
   /** Where it happened on screen. */
   from: { x: number; y: number };
+  /** What came out this time, when it depends on the world (the treasure: fossil, shell or meteorite). */
+  output?: string;
 }
 
 const TEXT = {
@@ -30,9 +32,29 @@ const STARS = [
 
 /**
  * A discovery: the card pops out of the spot where it happened, shines for a
- * moment, then flies into the notebook (straight away with its button).
+ * moment (`linger`), then flies into the notebook (straight away with its
+ * button, or when `hurry` turns on). `gentle`: a slow, soft glide without the
+ * spin, for little ones. Reduced motion: it fades out where it is.
  */
-export function Celebration({ item, locale, target, reduceMotion, onDone }: { item: Celebrate; locale: string; target: () => { x: number; y: number } | null; reduceMotion: boolean; onDone: () => void }) {
+export function Celebration({
+  item,
+  locale,
+  target,
+  reduceMotion,
+  onDone,
+  linger = 4200,
+  gentle = false,
+  hurry = false,
+}: {
+  item: Celebrate;
+  locale: string;
+  target: () => { x: number; y: number } | null;
+  reduceMotion: boolean;
+  onDone: () => void;
+  linger?: number;
+  gentle?: boolean;
+  hurry?: boolean;
+}) {
   const d = discoveryById(item.id);
   const [phase, setPhase] = useState<'show' | 'fly'>('show');
   const [to, setTo] = useState({ x: 0, y: 0 });
@@ -46,11 +68,17 @@ export function Celebration({ item, locale, target, reduceMotion, onDone }: { it
   };
 
   useEffect(() => {
-    const t = setTimeout(fly, 4200);
+    const t = setTimeout(fly, linger);
     return () => clearTimeout(t);
     // Starts once per card.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // Ziggy's saucer is coming: the card makes room for it.
+  useEffect(() => {
+    if (hurry) fly();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hurry]);
 
   if (!d) return null;
   const start = { x: item.from.x - origin.x, y: item.from.y - origin.y };
@@ -60,15 +88,26 @@ export function Celebration({ item, locale, target, reduceMotion, onDone }: { it
         role="status"
         aria-live="polite"
         className="absolute w-[min(88vw,22rem)] -translate-x-1/2 -translate-y-1/2"
+        data-card-phase={phase}
         initial={reduceMotion ? { opacity: 0 } : { x: start.x, y: start.y, scale: 0.15, opacity: 0, rotate: -12 }}
         animate={
           phase === 'show'
             ? { x: 0, y: 0, scale: 1, opacity: 1, rotate: 0 }
             : reduceMotion
               ? { opacity: 0 }
-              : { x: to.x, y: to.y, scale: 0.08, opacity: 0.3, rotate: 10 }
+              : gentle
+                ? { x: to.x, y: to.y, scale: 0.1, opacity: 0, rotate: 0 }
+                : { x: to.x, y: to.y, scale: 0.08, opacity: 0.3, rotate: 10 }
         }
-        transition={phase === 'show' ? { type: 'spring', stiffness: 170, damping: 17 } : { duration: 0.75, ease: [0.55, 0, 0.75, 0.25] }}
+        transition={
+          phase === 'show'
+            ? { type: 'spring', stiffness: 170, damping: 17 }
+            : reduceMotion
+              ? { duration: gentle ? 0.9 : 0.4 }
+              : gentle
+                ? { duration: 1.3, ease: [0.45, 0, 0.25, 1] }
+                : { duration: 0.75, ease: [0.55, 0, 0.75, 0.25] }
+        }
         onAnimationComplete={() => phase === 'fly' && onDone()}
       >
         {!reduceMotion && phase === 'show'
@@ -91,7 +130,7 @@ export function Celebration({ item, locale, target, reduceMotion, onDone }: { it
             ✨ {tr(TEXT.eyebrow, locale)}
           </p>
           <div className="relative mt-3">
-            <Equation d={d} size="lg" />
+            <Equation d={item.output ? { ...d, output: item.output } : d} size="lg" />
           </div>
           <h3 className="relative mt-3 font-display text-2xl font-bold">{tr(d.title, locale)}</h3>
           <p className="relative mt-1.5 text-[15px] leading-snug text-[#4b4669]">{tr(d.science, locale)}</p>

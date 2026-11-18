@@ -6,8 +6,15 @@ use crate::render::{add_rgb, Renderer};
 use crate::sim::World;
 use crate::toys::{TRAIL, T_FOSSIL, T_METEORITE, T_SHELL};
 
-/// Aurora colours along the ribbon (green, teal, violet, pink).
+/// Aurora colours along the ribbon (green, teal, violet, pink): light, added at night.
 const AURORA: [u32; 4] = [0x7affb0, 0x6fe8ff, 0xb48cff, 0xff8ad8];
+/// The same hues, deeper, painted by day: the pale ones vanish against a bright sky.
+const AURORA_DAY: [u32; 4] = [0x22c27a, 0x1aa8d4, 0x8458ea, 0xe24c9e];
+
+/// A colour darkened to `k` (0..1) of itself.
+fn shade_rgb(c: u32, k: f32) -> u32 {
+    lerp_rgb(0, c, k)
+}
 
 fn lerp_rgb(a: u32, b: u32, t: f32) -> u32 {
     let ch = |s: u32| {
@@ -91,26 +98,33 @@ impl Renderer {
             let (tx, ty) = k.trail[idx];
             let f = (n + 1) as f32 / k.len.max(1) as f32;
             let phase = (n as f32 * 0.08 + time as f32 * 0.01) % 4.0;
-            let c0 = AURORA[phase as usize % 4];
-            let c1 = AURORA[(phase as usize + 1) % 4];
+            let pal = if night { &AURORA } else { &AURORA_DAY };
+            let c0 = pal[phase as usize % 4];
+            let c1 = pal[(phase as usize + 1) % 4];
             let col = lerp_rgb(c0, c1, phase.fract());
             let (x, y) = (tx as f32 * q + u * 0.5, ty as f32 * q + u * 0.5);
             let wave = if calm { 0.0 } else { self.sin_of(n as u32 * 9 + time) as f32 / 127.0 };
             let len = (5.0 + 2.5 * wave) * u * (0.4 + 0.6 * f);
-            let a = if night { 0.6 * f } else { 0.62 * f };
+            let a = if night { 0.6 * f } else { 0.8 * f };
             let half = (1.0 * u).max(1.0);
-            for py in (y - u) as i32..(y + len) as i32 {
-                let t = (py as f32 - (y - u)) / (len + u);
-                let k_a = (a * (1.0 - t) * 255.0) as u32;
+            let top = y - u;
+            for py in top as i32..(y + len) as i32 {
+                let t = (py as f32 - top) / (len + u);
+                // By day the curtain stays fuller for longer before it fades (still soft at its foot).
+                let fade = if night { 1.0 - t } else { (1.0 - t) * (1.0 - t * 0.35) };
+                let k_a = (a * fade * 255.0) as u32;
                 if k_a == 0 {
                     continue;
                 }
+                // By day a thin deeper hem along the top edge outlines the ribbon against the sky.
+                let hem = !night && (py as f32) < top + (0.45 * u).max(1.0);
+                let c = if hem { shade_rgb(col, 0.72) } else { col };
                 for px in (x - half) as i32..(x + half) as i32 {
                     // Light added at night (a real aurora), painted over the bright day sky.
                     if night {
-                        self.add_px(px, py, col, k_a);
+                        self.add_px(px, py, c, k_a);
                     } else {
-                        self.plot(px, py, col, k_a);
+                        self.plot(px, py, c, k_a);
                     }
                 }
             }

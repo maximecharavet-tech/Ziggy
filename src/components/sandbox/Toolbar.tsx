@@ -84,6 +84,7 @@ export function Toolbar({
   onPhoto,
   lab,
   onLab,
+  labPanel,
 }: {
   locale: string;
   world: WorldId;
@@ -104,6 +105,8 @@ export function Toolbar({
   /** The big kids' lab (10–12 only): open or not; no button without `onLab`. */
   lab?: boolean;
   onLab?: () => void;
+  /** The lab panel on phones: it stands on the brush / time row, over the tool balls. */
+  labPanel?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const [armed, setArmed] = useState(false);
@@ -157,6 +160,7 @@ export function Toolbar({
       </div>
 
       <div className="relative flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
+        {labPanel}
         <button type="button" onClick={onWorlds} className={ctrl} style={night$} data-worlds-button="">
           <span aria-hidden="true">{WORLD_INFO[world].emoji}</span>
           <span className="hidden sm:inline">{tr(TEXT.worlds, locale)}</span>
