@@ -449,10 +449,18 @@ class WorkshopScene implements HostScene<FactoryEvents, FactoryCommands> {
       const slot = this.ctrl.slots()[0];
       const slotW = slot ? this.board.cellCenter(slot.at) : null;
       let z: number;
-      // The board alone (its back edge at the top of the free area): does it fit without panning?
+      // The board alone, from its back edge to the front row of tiles (the rug may tuck under the HUD): does it fit?
       const zBack = solveZ([[0, TILE_Y, -bh / 2 - 0.3]], 'ay', free.y0);
+      const zTiles = solveZ(
+        [
+          [x0, 0, bh / 2],
+          [x1, 0, bh / 2],
+        ],
+        'by',
+        free.y1,
+      );
       if (zFront <= zHeads) z = (zFront + zHeads) / 2; // both fit: centre them
-      else if (zFront <= zBack) z = zFront; // the whole board, front row on the bottom edge, as much crew as fits
+      else if (zTiles <= zBack) z = Math.max(zHeads, zTiles); // every tile in view, and as much of the crew as fits
       else {
         z = zHeads; // the crew first…
         // …unless the glowing tile would be out of view: little ones start with it on screen.

@@ -60,12 +60,24 @@ Brief: `docs/SANDBOX_REBUILD.md` (with Addenda 2 "no GPU" and 3 "saucer + parcel
   `hardwareConcurrency` 8 (high tier): medians 3.2–6.7 ms per world; volcano lava flood 7.8 → 8.9 ms → low
   (5.4–5.7 ms), back to high when calm; 6 tier changes over a 25-minute session (no flicker).
 
+## Polish (2026-11-18)
+- Phones (< 640 px): the big kids' lab stands on the brush / time row (rendered inside it by `Toolbar`'s
+  `labPanel`), so it covers the tool balls whatever they wrap to and never that row; a little more compact
+  (64 px buttons kept). Checked at 390×844 and 360×740: 8 px gap above the row, nothing over the sandbox.
+- The discovery card of the treasure shows what was dug up (🦴 / 🐚 / ☄️, like the toast): `Celebrate.output`.
+- Aurora ribbon by day: deeper hues of the same colours (`AURORA_DAY`), a fuller curtain and a thin deeper hem
+  on its top edge; night / space unchanged (light added).
+- Saucer: the calm before it comes is counted, not restarted after each discovery card (panels and, for 7–12,
+  a card pause it). Little ones (4–6): the card stays 7.5 s (time to hear it) then tucks itself gently into the
+  notebook (slow glide, no spin; reduced motion: a soft fade); when the saucer is due the card on screen tucks
+  away at once, the saucer comes, and the next cards wait until it leaves. Garden, 4 discoveries in a row:
+  saucer at 15–17 s (was 34 s).
+- Portrait space: `water_ball` checked with real touch strokes: water poured in open space (the bottom third or
+  the top right) pulls into a ball; water poured onto the little planet rains on it (its pull reaches ~58 cells),
+  as the notebook hint says ("water far from any gravity"). No engine change.
+
 ## Next / imperfect
 - wasm 297 kB raw / 104 kB gzip (target 150 kB soft; no wasm-opt here).
-- Portrait space: the Playwright water stroke misses the gravity ball (script), not re-checked in portrait.
-- The discovery card shows 🦴 for every treasure (the toast names the right one: fossil, shell, meteorite).
-- The aurora ribbon is faint against bright day skies.
-- A discovery card waiting to be read keeps the saucer away until it is put in the notebook (by design: calm).
 
 ## How to resume
 `cd rust/sandbox-core && cargo test --release`; `npm run sandbox:wasm`; Node renders: `node <scratchpad>/sandbox2/tools/toys.mjs <world>`;
