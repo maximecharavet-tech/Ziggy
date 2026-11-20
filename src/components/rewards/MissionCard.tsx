@@ -93,13 +93,16 @@ export function MissionCard({ compact = false }: { compact?: boolean }) {
           )}
         </div>
         <div className="ms-auto flex items-center gap-3">
-          <span
-            className={`inline-flex items-center gap-1 rounded-full px-3 py-1.5 text-sm font-bold ${streak > 0 ? 'bg-[#FF7A1A]/15 text-[#E8590C]' : 'bg-border/40 text-text-dim'}`}
-            title={t('streak_hint')}
-          >
-            <Flame size={16} className={streak > 0 ? 'fill-[#FF9A3C]' : ''} />
-            {t('streak', { count: streak })}
-          </span>
+          {/* Only celebrates days already played: never a "0 day" chip (no guilt streaks). */}
+          {streak > 0 && (
+            <span
+              className="inline-flex items-center gap-1 rounded-full bg-[#FF7A1A]/15 px-3 py-1.5 text-sm font-bold text-[#E8590C]"
+              title={t('streak_hint')}
+            >
+              <Flame size={16} className="fill-[#FF9A3C]" />
+              {t('streak', { count: streak })}
+            </span>
+          )}
           {!done && (
             <Link
               href={href}
