@@ -61,3 +61,5 @@ device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.
 - Only `FULLY_TRANSLATED_LOCALES` (`src/i18n/config.ts`) are announced to search engines (hreflang, sitemap, indexable); the other locales are `noindex` + canonical EN. Add a locale there only once its `tr()` content is really translated.
 - The audience is `AGE_MIN`–`AGE_MAX` in `src/lib/ages.ts` (4–12); `ages.test.ts` fails if `messages/*.json` drift. Before writing a test file, check it does not already exist (`downloads.test.ts` did).
 - Start a test server with `node node_modules/next/dist/bin/next start` and record that PID: killing the PID of `npx next start` leaves an orphaned next-server holding the port.
+- A CSS mask on an `<img>` clips its drop-shadow to a box: put the shadow on a wrapper.
+- Playwright's `scrollIntoViewIfNeeded` times out on the always-moving mascot: use `el.scrollIntoView()` instead.
