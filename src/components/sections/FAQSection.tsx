@@ -16,7 +16,7 @@ function FAQItem({ question, answer, index }: { question: string; answer: string
           onClick={() => setOpen(!open)}
           className="w-full flex items-center justify-between py-5 text-left group"
         >
-          <span className="font-bold text-text-body pr-4 group-hover:text-green transition-colors">
+          <span className="font-bold text-text-body pe-4 group-hover:text-leaf-ink dark:group-hover:text-green transition-colors">
             {question}
           </span>
           <div className={`w-8 h-8 rounded-full bg-green/10 flex items-center justify-center flex-shrink-0 transition-all duration-300 ${open ? 'bg-green/20 rotate-180' : ''}`}>

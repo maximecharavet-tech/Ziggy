@@ -63,7 +63,6 @@ export function GameCard({ id, name, description, icon, color, index, cta }: Gam
         className="mg-card group flex h-full flex-col p-5 sm:p-6"
         style={{ '--tint': color, '--mg-tilt': index % 2 ? '0.6deg' : '-0.6deg' } as CSSProperties}
       >
-        <span aria-hidden="true" className="pointer-events-none absolute end-2 top-2 h-24 w-24 rounded-full opacity-70" style={{ background: `radial-gradient(closest-side, ${color}33, transparent)` }} />
         <span className="mg-icon h-16 w-16" style={{ '--tint': color } as CSSProperties}>
           <Icon size={30} strokeWidth={2.4} aria-hidden="true" />
         </span>

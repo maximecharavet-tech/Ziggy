@@ -46,8 +46,9 @@ export function LandingShell({ h1, intro, sections, jsonLd, children, theme = 'd
       <header className={`relative isolate overflow-hidden rounded-[2.25rem] px-6 py-10 shadow-lifted sm:rounded-[2.75rem] sm:px-12 sm:py-14 ${th.band}`}>
         <MagicBackdrop variant={th.sky} stars={theme === 'night' ? 16 : 9} clouds={theme === 'night' ? 0 : 2} snow={theme === 'night'} seed={theme === 'night' ? 31 : 3} />
         {theme === 'night' ? <Moon /> : null}
-        <div className="relative max-w-3xl">
-          <h1 className={`mb-6 font-display text-3xl font-bold text-balance sm:text-5xl ${th.h1} ${theme === 'night' ? 'pe-24 sm:pe-32' : ''}`}>{h1}</h1>
+        {/* On the night sky the text keeps clear of the moon. */}
+        <div className={`relative max-w-3xl ${theme === 'night' ? 'pe-24 sm:pe-40 lg:pe-28' : ''}`}>
+          <h1 className={`mb-6 font-display text-3xl font-bold text-balance sm:text-5xl ${th.h1}`}>{h1}</h1>
           {intro.map((p) => (
             <p key={p} className={`mb-4 text-lg leading-relaxed last:mb-0 ${th.intro}`}>{p}</p>
           ))}

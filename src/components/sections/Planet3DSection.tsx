@@ -84,7 +84,7 @@ export function Planet3DSection() {
     <section className="relative overflow-clip px-4 py-16 sm:px-6 lg:px-8" aria-labelledby="planet-title">
       <div className="pointer-events-none absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_center,rgba(150,120,255,0.18),transparent_65%)]" aria-hidden="true" />
       <div className="mx-auto max-w-6xl text-center">
-        <motion.p initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="inline-flex rounded-full border border-purple/40 bg-purple/10 px-4 py-1.5 text-sm font-bold text-purple">
+        <motion.p initial={{ opacity: 0, y: 8 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="inline-flex rounded-full border border-purple/40 bg-purple/10 px-4 py-1.5 text-sm font-bold text-grape-ink dark:text-purple">
           🪐 {tr(T.eyebrow, locale)}
         </motion.p>
         <motion.h2 id="planet-title" initial={{ opacity: 0, y: 12 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="mt-4 font-display text-3xl font-bold text-text-body sm:text-5xl">

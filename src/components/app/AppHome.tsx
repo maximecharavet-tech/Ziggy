@@ -98,7 +98,7 @@ export function AppHome() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_45%_at_15%_0%,rgba(255,217,160,0.55),transparent_70%),radial-gradient(60%_40%_at_95%_20%,rgba(95,182,234,0.22),transparent_70%),radial-gradient(70%_40%_at_50%_100%,rgba(127,200,92,0.18),transparent_70%)] dark:bg-[radial-gradient(70%_45%_at_15%_0%,rgba(255,217,160,0.1),transparent_70%),radial-gradient(60%_40%_at_95%_20%,rgba(95,182,234,0.12),transparent_70%)]"
       />
-      <MagicBackdrop variant={sky} stars={sky === 'dusk' ? 12 : 8} clouds={sky === 'day' ? 3 : 1} blobs={false} parallax={false} seed={17} className="h-[42rem]" />
+      <MagicBackdrop variant={sky} stars={sky === 'dusk' ? 12 : 8} clouds={sky === 'day' ? 3 : 1} blobs={false} parallax={false} seed={17} className="top-16 h-[40rem]" />
       <AnimatePresence mode="wait">
         {!hydrated ? (
           // Before the page wakes up: Ziggy waits with the child (same height, nothing jumps).

@@ -200,7 +200,7 @@ export function spawnCannon(o: CannonOptions, rng: Rng = Math.random): Particle[
     const p = base(kind, o.x, o.y, kind === 'ball' ? '#7DBF5A' : pick(colors, rng), o.group ?? 0);
     p.vx = Math.cos(a) * s;
     p.vy = Math.sin(a) * s;
-    p.size = jitter(rng, o.size ?? (kind === 'rect' ? 11 : kind === 'ribbon' ? 16 : 13), 0.3);
+    p.size = jitter(rng, o.size ?? (kind === 'rect' ? 13 : kind === 'ribbon' ? 20 : 15), 0.3);
     p.rot = rng() * TAU;
     p.vr = (rng() * 2 - 1) * 9;
     p.flip = rng() * TAU;
