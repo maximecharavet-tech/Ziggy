@@ -7,6 +7,7 @@ import { SayButton } from '@/components/arcade/read-aloud';
 import { Snow } from '@/components/santa/Snow';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { motion } from 'motion/react';
+import { Garland } from '@/components/sections/magic/Garland';
 
 const T = {
   badge: { fr: 'Nouveau pour Noël', en: 'New for Christmas' },
@@ -25,8 +26,10 @@ export function SantaTeaser() {
   const reduced = useReducedMotion();
   return (
     <section aria-labelledby="santa-teaser" className="mx-auto max-w-6xl px-4 pt-6 sm:px-6 lg:px-8">
-      <div className="relative overflow-hidden rounded-[2rem] bg-[radial-gradient(120%_120%_at_20%_0%,#3b2385_0%,#17124a_55%,#0b0a26_100%)] p-6 text-white shadow-[0_24px_60px_-24px_rgba(20,10,60,0.8)] ring-1 ring-white/10 sm:p-10">
+      <div className="relative overflow-hidden rounded-[2rem] bg-[radial-gradient(120%_120%_at_20%_0%,#3b2385_0%,#17124a_55%,#0b0a26_100%)] p-6 pt-12 text-white shadow-[0_24px_60px_-24px_rgba(20,10,60,0.8)] ring-1 ring-white/10 sm:p-10 sm:pt-14">
         <Snow count={reduced ? 0 : 28} />
+        {/* A string of Christmas lights along the top edge */}
+        <Garland className="absolute inset-x-6 top-0 sm:inset-x-10" count={14} />
         <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-10 h-64 w-64 rounded-full bg-[radial-gradient(circle,rgba(64,255,190,0.25),transparent_70%)] blur-2xl" />
         <motion.div initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} className="relative grid items-center gap-6 sm:grid-cols-[1fr_auto]">
           <div>

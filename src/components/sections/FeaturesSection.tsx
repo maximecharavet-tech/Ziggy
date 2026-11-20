@@ -1,11 +1,13 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import { Bot, ShieldCheck, Brain, Globe, Trophy, BookOpen, Heart, type LucideIcon } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { MascotCutout } from '@/components/ziggy/Mascot';
-import { Spotlight } from '@/components/ui/motion-primitives';
+import { Stagger } from '@/components/sections/magic/Stagger';
+import { rise } from '@/components/sections/magic/rise';
 
 interface Feature {
   icon: LucideIcon;
@@ -28,56 +30,51 @@ export function FeaturesSection() {
   ];
 
   return (
-    <section id="features" className="py-24 sm:py-28 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <section id="features" className="relative px-4 py-24 sm:px-6 sm:py-28 lg:px-8">
+      <div className="mx-auto max-w-6xl">
         <ScrollReveal>
           <SectionHeading
-            eyebrow={<><Heart size={14} className="fill-current" /> {t('eyebrow')}</>}
+            eyebrow={
+              <span className="inline-flex items-center gap-1.5 text-leaf-ink dark:text-green">
+                <Heart size={14} className="fill-current" /> {t('eyebrow')}
+              </span>
+            }
             title={t('title')}
             subtitle={t('subtitle')}
           />
         </ScrollReveal>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5">
+        <Stagger className="grid gap-x-5 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
           {features.map((f, i) => {
             const hero = i === 0;
             const wide = i === features.length - 1;
             return (
-              <ScrollReveal key={f.title} delay={i * 70} variant="fade-up" className={`${f.span} ${hero || wide ? 'sm:col-span-2' : ''}`}>
-                <Spotlight
-                  color={f.color}
-                  className={`group h-full overflow-hidden rounded-3xl border p-7 sm:p-8 lift hover:shadow-[0_24px_50px_-24px_rgba(26,26,46,0.25)] ${
-                    wide ? 'flex flex-col sm:flex-row sm:items-center gap-6' : ''
-                  }`}
-                  style={{
-                    backgroundColor: `color-mix(in srgb, ${f.color} 7%, var(--color-bg-card))`,
-                    borderColor: `color-mix(in srgb, ${f.color} 22%, transparent)`,
-                  }}
+              <div key={f.title} className={`mg-rise ${f.span} ${hero || wide ? 'sm:col-span-2' : ''}`} style={rise(i)}>
+                <div
+                  className={`mg-card mg-static group h-full p-7 sm:p-8 ${hero ? 'overflow-hidden' : ''} ${wide ? 'flex flex-col gap-6 sm:flex-row sm:items-center' : ''}`}
+                  style={{ '--tint': f.color } as CSSProperties}
                 >
-                  <div
-                    className="w-14 h-14 shrink-0 rounded-2xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-6"
-                    style={{ backgroundColor: f.color, boxShadow: `0 10px 24px -8px ${f.color}` }}
-                  >
-                    <f.icon size={26} className="text-white" strokeWidth={2.2} />
-                  </div>
-                  <div className={hero ? 'max-w-md' : ''}>
-                    <h3 className={`${hero ? 'text-2xl sm:text-3xl' : 'text-xl'} font-bold text-text-body mb-2`}>{f.title}</h3>
-                    <p className="text-text-muted leading-relaxed">{f.desc}</p>
+                  <span className={`mg-icon h-14 w-14 ${wide ? '' : 'mb-5'}`} style={{ '--tint': f.color } as CSSProperties}>
+                    <f.icon size={26} strokeWidth={2.4} aria-hidden="true" />
+                  </span>
+                  <div className={hero ? 'relative max-w-md' : ''}>
+                    <h3 className={`${hero ? 'text-2xl sm:text-3xl' : 'text-xl'} mb-2 font-bold text-text-body`}>{f.title}</h3>
+                    <p className="leading-relaxed text-text-muted">{f.desc}</p>
                   </div>
 
                   {hero && (
                     <div
-                      className="pointer-events-none absolute -bottom-16 end-4 w-40 sm:w-48 lg:w-52 transition-transform duration-500 group-hover:-translate-y-3 group-hover:-rotate-3 hidden sm:block"
+                      className="pointer-events-none absolute -bottom-16 end-4 hidden w-40 transition-transform duration-500 ease-toy group-hover:-translate-y-3 group-hover:-rotate-3 sm:block sm:w-48 lg:w-52"
                       aria-hidden="true"
                     >
                       <MascotCutout pose="wave" width={208} />
                     </div>
                   )}
-                </Spotlight>
-              </ScrollReveal>
+                </div>
+              </div>
             );
           })}
-        </div>
+        </Stagger>
       </div>
     </section>
   );

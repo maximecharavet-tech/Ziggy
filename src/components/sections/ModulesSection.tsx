@@ -1,18 +1,16 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import { Cpu, MessageSquare, Calculator, Palette, Sun } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { Badge } from '@/components/ui/Badge';
+import { MagicBackdrop } from '@/components/sections/magic/MagicBackdrop';
+import { Stagger } from '@/components/sections/magic/Stagger';
+import { rise } from '@/components/sections/magic/rise';
+import { deepFor } from '@/components/sections/magic/color';
 
-const moduleColors = [
-  { bg: 'from-green/10 to-green/5', icon: 'bg-green/15 text-green' },
-  { bg: 'from-blue/10 to-blue/5', icon: 'bg-blue/15 text-blue' },
-  { bg: 'from-yellow/10 to-yellow/5', icon: 'bg-yellow/15 text-yellow' },
-  { bg: 'from-purple/10 to-purple/5', icon: 'bg-purple/15 text-purple' },
-  { bg: 'from-pink/10 to-pink/5', icon: 'bg-pink/15 text-pink' },
-];
+const TINTS = ['#7FC85C', '#5FB6EA', '#F9BE7C', '#A78BFA', '#F472B6'];
 
 export function ModulesSection() {
   const t = useTranslations('modules');
@@ -26,27 +24,34 @@ export function ModulesSection() {
   ];
 
   return (
-    <section id="modules" className="py-24 px-4 sm:px-6 lg:px-8 gradient-mesh relative overflow-hidden">
-      <div className="max-w-7xl mx-auto relative z-10">
+    <section id="modules" className="relative overflow-clip px-4 py-24 sm:px-6 lg:px-8">
+      <MagicBackdrop variant="day" stars={7} clouds={2} seed={5} />
+      <div className="relative z-10 mx-auto max-w-6xl">
         <ScrollReveal>
           <SectionHeading title={t('title')} subtitle={t('subtitle')} />
         </ScrollReveal>
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {modules.map((m, i) => (
-            <ScrollReveal key={m.title} delay={i * 100} variant="zoom">
-              <div className={`group relative bg-gradient-to-br ${moduleColors[i].bg} rounded-2xl border border-border/50 p-6 hover:shadow-lg hover:-translate-y-1 transition-all duration-300`}>
-                <div className="flex items-start justify-between mb-4">
-                  <div className={`w-14 h-14 rounded-2xl ${moduleColors[i].icon} flex items-center justify-center group-hover:scale-110 transition-transform duration-300`}>
-                    <m.icon size={26} />
+        {/* Five modules: the last row is centred, so there is no hole. */}
+        <Stagger as="ul" className="flex flex-wrap justify-center gap-6">
+          {modules.map((m, i) => {
+            const tint = TINTS[i];
+            return (
+              <li key={m.title} className="mg-rise w-full sm:w-[calc(50%-0.75rem)] lg:w-[calc(33.333%-1rem)]" style={rise(i)}>
+                <div className="mg-card mg-static h-full p-6" style={{ '--tint': tint } as CSSProperties}>
+                  <div className="mb-5 flex items-start justify-between gap-3">
+                    <span className="mg-icon h-14 w-14" style={{ '--tint': tint } as CSSProperties}>
+                      <m.icon size={26} strokeWidth={2.4} aria-hidden="true" />
+                    </span>
+                    <span className="rounded-full px-3 py-1 text-sm font-bold" style={{ backgroundColor: `${tint}26`, color: deepFor(tint) }}>
+                      <span className="dark:text-text-body">{m.ages}</span>
+                    </span>
                   </div>
-                  <Badge className="text-xs">{m.ages}</Badge>
+                  <h3 className="mb-2 font-display text-xl font-bold text-text-body">{m.title}</h3>
+                  <p className="leading-relaxed text-text-muted">{m.desc}</p>
                 </div>
-                <h3 className="text-lg font-bold text-text-body mb-2">{m.title}</h3>
-                <p className="text-sm text-text-muted leading-relaxed">{m.desc}</p>
-              </div>
-            </ScrollReveal>
-          ))}
-        </div>
+              </li>
+            );
+          })}
+        </Stagger>
       </div>
     </section>
   );

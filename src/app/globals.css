@@ -1,5 +1,7 @@
 /* Class names are looked for in src/ only (not in the native apps, the voice engine or their build output). */
 @import "tailwindcss" source("../");
+/* Design tokens and toy surfaces of the hub pages (tokens + mg-* classes). */
+@import "./magic.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
