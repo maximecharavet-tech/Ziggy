@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from 'react';
 import { AppChristmas } from './AppChristmas';
+import { JournalShortcuts } from '@/components/journal/JournalShortcuts';
 import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { AnimatePresence, motion } from 'motion/react';
@@ -132,6 +133,7 @@ export function AppHome() {
             </header>
 
             <AppChristmas />
+            <JournalShortcuts locale={locale} />
 
             {/* Phones: one column. Tablets: Ziggy World wide on top, the two others side by side. Wide tablets and computers: three. */}
             <ul className="mt-7 grid gap-x-6 gap-y-8 sm:grid-cols-2 md:mt-10 md:gap-x-8 md:gap-y-10 xl:grid-cols-3">

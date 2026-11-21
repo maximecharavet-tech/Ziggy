@@ -31,6 +31,7 @@ export function Navbar() {
   const locale = useLocale();
   // In the Ziggy app: a slim top bar (Ziggy, sound, parents); the tab bar does the rest.
   const shell = useAppShell();
+  const carnet = locale === 'fr' ? 'Mon carnet de découvertes' : 'My discovery book';
   const menuLabel = locale === 'fr' ? { open: 'Ouvrir le menu', close: 'Fermer le menu' } : { open: 'Open menu', close: 'Close menu' };
 
   // Mobile menu: Escape closes it, the page does not scroll behind it, and it closes on navigation.
@@ -117,6 +118,9 @@ export function Navbar() {
         </div>
 
         <div className="web-only relative z-10 hidden xl:flex items-center gap-2">
+          <Link href="/mon-carnet" aria-label={carnet} title={carnet} className="grid h-10 w-10 place-items-center rounded-xl text-xl hover:bg-border/30 transition-colors">
+            <span aria-hidden="true">📒</span>
+          </Link>
           <SoundToggle />
           <ThemeToggle />
           <LanguageSwitcher />
@@ -162,6 +166,13 @@ export function Navbar() {
                   </Link>
                 </motion.div>
               ))}
+              <Link
+                href="/mon-carnet"
+                onClick={() => setIsOpen(false)}
+                className="block text-base font-semibold text-text-muted hover:text-green transition-colors py-3 px-3 rounded-xl hover:bg-green/5"
+              >
+                📒 {carnet}
+              </Link>
               <div className="flex items-center gap-3 pt-4 px-3">
                 <SoundToggle softSwitch={false} />
                 <ThemeToggle />
