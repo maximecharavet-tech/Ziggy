@@ -54,7 +54,7 @@ Valid until 31 January 2027. Bought by a parent behind the grown-up gate.
   answers are made by an AI (`live:ai.disclose`, voiced by the same AI voice as the live answers,
   not yet recorded offline), a "Santa's answers made by AI" tag stays on screen during the live
   part, the call picker shows "Santa's voice made with the help of AI", and the parents' consent
-  card states it plainly with the providers actually used (DeepSeek → NVIDIA → Mistral, voice by
+  card states it plainly with the providers actually used (Mistral when its key is set → DeepSeek → NVIDIA, voice by
   Google Gemini).
 - No tracking pixel (TikTok ads are measured with the campaign link and Stripe sales).
 
@@ -77,7 +77,7 @@ Valid until 31 January 2027. Bought by a parent behind the grown-up gate.
   parent starts a live call, then cached. The child's voice still never leaves the device.
 - **Live call, streamed**: `/api/santa/chat` with `stream: true` answers in NDJSON, sentence by sentence (each
   sentence checked by ChildShield, then voiced), so Santa starts talking after the first sentence. The child can
-  talk over Santa (barge-in): he stops and listens. Providers: DeepSeek → NVIDIA → Mistral (keys already on the
+  talk over Santa (barge-in): he stops and listens. Providers: Mistral (EU first, when its key is set) → DeepSeek → NVIDIA (keys already on the
   server; **Anthropic is no longer used**).
 - **Landing** (Motion), **Advent calendar** (`/pere-noel/avent`), **"Enfant sage" certificate** (`/pere-noel/certificat`).
 - **Proposed prices** (`SANTA_PROPOSED_OFFERS`) are display-only behind `SANTA_NEW_PRICING = false`; the prices sold

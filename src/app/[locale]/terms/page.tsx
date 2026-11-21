@@ -13,7 +13,7 @@ import { alternatesFor } from '@/lib/seo';
  */
 
 const CONTACT = 'contact@ziggy-ai.fr';
-const UPDATED = { fr: '18 novembre 2026', en: '18 November 2026' };
+const UPDATED = { fr: '20 novembre 2026', en: '20 November 2026' };
 
 type Section = { title: string; body: (string | string[])[]; /** Anchor (e.g. #pere-noel, linked from the Stripe payment page). */ id?: string };
 
@@ -75,7 +75,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '5. Les contenus créés par intelligence artificielle',
         body: [
-          'Une partie des réponses, quêtes, histoires, voix et images de Ziggy est produite par des services d’intelligence artificielle : actuellement Google (Gemini), DeepSeek, NVIDIA et Agnes AI, Mistral en secours pour l’appel en direct du Pack magique, et Groq ou Anthropic en secours du chat s’ils sont activés. La Politique de confidentialité dit ce que chacun reçoit. Dans Ziggy World, chaque contenu créé par IA est signalé comme tel, le chat indique que ses réponses sont créées par une IA, et le Père Noël de l’appel en direct dit lui-même à l’enfant que ses réponses sont créées par une IA.',
+          'Une partie des réponses, quêtes, histoires, voix et images de Ziggy est produite par des services d’intelligence artificielle : actuellement Mistral (France), en premier pour le chat et l’appel en direct du Pack magique quand il est disponible, Google (Gemini), DeepSeek, NVIDIA et Agnes AI, et Groq ou Anthropic en secours du chat s’ils sont activés. La Politique de confidentialité dit ce que chacun reçoit. Dans Ziggy World, chaque contenu créé par IA est signalé comme tel, le chat indique que ses réponses sont créées par une IA, et le Père Noël de l’appel en direct dit lui-même à l’enfant que ses réponses sont créées par une IA.',
           'Une IA peut se tromper : ses réponses peuvent être inexactes ou incomplètes. Elles ne remplacent ni un enseignant, ni un professionnel de santé, ni l’avis d’un adulte. Si un contenu vous semble inapproprié, écrivez-nous : nous le corrigerons.',
         ],
       },
@@ -188,7 +188,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '5. AI-generated content',
         body: [
-          'Some of Ziggy’s replies, quests, stories, voices and images are produced by artificial intelligence services: currently Google (Gemini), DeepSeek, NVIDIA and Agnes AI, Mistral as a fallback for the Magic Pack’s live call, and Groq or Anthropic as chat fallbacks if switched on. The Privacy Policy says what each one receives. In Ziggy World, every AI-made item is labelled as such, the chat states that its answers are made by an AI, and the live-call Santa tells the child himself that his answers are made by an AI.',
+          'Some of Ziggy’s replies, quests, stories, voices and images are produced by artificial intelligence services: currently Mistral (France), first for the chat and the Magic Pack’s live call when it is available, Google (Gemini), DeepSeek, NVIDIA and Agnes AI, and Groq or Anthropic as chat fallbacks if switched on. The Privacy Policy says what each one receives. In Ziggy World, every AI-made item is labelled as such, the chat states that its answers are made by an AI, and the live-call Santa tells the child himself that his answers are made by an AI.',
           'AI can make mistakes: its answers may be inaccurate or incomplete. They do not replace a teacher, a health professional or an adult’s advice. If any content seems inappropriate, write to us and we will fix it.',
         ],
       },

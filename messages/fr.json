@@ -40,7 +40,7 @@
     "bubble": "Salut, moi c’est Ziggy ! 👋",
     "bubble_happy": "Hihi, ça chatouille ! 💚",
     "trust_1": "Sans publicité",
-    "trust_2": "Données hébergées en Europe",
+    "trust_2": "Comptes hébergés à Paris",
     "trust_3": "Jouable sans compte",
     "facts_worlds": "Mondes à explorer",
     "facts_stories": "Histoires du soir",
@@ -49,24 +49,24 @@
   },
   "features": {
     "title": "Pourquoi les parents adorent Ziggy",
-    "subtitle": "Conçu par des pédagogues et des experts en IA, pensé pour les jeunes esprits curieux",
+    "subtitle": "Sans publicité ni pression, avec un filtre de sécurité sur chaque texte de l’IA : pensé pour les jeunes esprits curieux",
     "ai_companion": "Compagnon IA",
     "ai_companion_desc": "Ziggy s'adapte au rythme et au style d'apprentissage de chaque enfant avec des conversations IA personnalisées.",
     "safe_space": "Un espace sûr",
-    "safe_space_desc": "Sans publicité, données stockées en Europe, compte géré par un parent. Nous ne gardons que le prénom de l’enfant.",
+    "safe_space_desc": "Sans publicité, compte géré par un parent et hébergé à Paris. Un prénom suffit : jamais de nom de famille.",
     "cognitive_tracking": "Profil cognitif",
     "cognitive_tracking_desc": "Suivez le développement de votre enfant à travers 6 dimensions cognitives avec des tableaux de bord interactifs.",
     "multilingual": "12 langues",
     "multilingual_desc": "Disponible en 12 langues avec détection automatique. Apprendre sans frontières.",
     "gamified": "Apprentissage ludique",
     "gamified_desc": "Étoiles, badges et récompenses transforment l'apprentissage en jeu. Zéro pression, que du plaisir.",
-    "curriculum": "Programme expert",
+    "curriculum": "Un programme varié",
     "curriculum_desc": "5 modules spécialisés couvrant l'IA, les maths, la logique, la créativité et les activités saisonnières.",
     "eyebrow": "Pourquoi Ziggy"
   },
   "modules": {
     "title": "Modules d'apprentissage",
-    "subtitle": "Cinq modules conçus par des experts pour éveiller la curiosité",
+    "subtitle": "Cinq modules pour éveiller la curiosité",
     "ai_basics": "Les bases de l'IA",
     "ai_basics_desc": "Comment l'IA pense, apprend et nous aide au quotidien",
     "ai_basics_ages": "4-12 ans",
@@ -107,7 +107,7 @@
     "family_f3": "Tableau de bord et rapports complets",
     "family_f4": "Les 5 modules",
     "family_f5": "Support prioritaire",
-    "popular": "Le plus populaire",
+    "popular": "Recommandé",
     "school": "École",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
@@ -166,7 +166,7 @@
   "faq": {
     "title": "Questions fréquentes",
     "q1": "Ziggy est-il sûr pour mon enfant ?",
-    "a1": "Ziggy est pensé pour les enfants : aucune publicité, aucun échange avec des inconnus, et le compte est créé et géré par un parent. Nous ne conservons que le prénom de l’enfant, sa tranche d’âge et ses résultats de jeu, stockés en Europe. Le compte peut être supprimé à tout moment depuis l’espace parent.",
+    "a1": "Ziggy est pensé pour les enfants : aucune publicité, aucun échange avec des inconnus, et le compte est créé et géré par un parent. Pour l’enfant, nous demandons seulement un prénom et une tranche d’âge, jamais de nom de famille ni d’adresse. Les comptes et la progression sont hébergés à Paris (Supabase) ; certaines fonctions d’IA passent par des prestataires hors de l’UE, détaillés dans la politique de confidentialité. Le compte peut être supprimé à tout moment depuis l’espace parent.",
     "q2": "Pour quel âge Ziggy est-il conçu ?",
     "a2": "Ziggy est conçu pour les enfants de 4 à 12 ans. L'IA adapte le langage, la difficulté et le contenu en fonction de l'âge et du rythme d'apprentissage de l'enfant.",
     "q3": "Puis-je annuler mon abonnement à tout moment ?",
@@ -268,16 +268,16 @@
     },
     "advertising": {
       "name": "Spark",
-      "description": "Libère ta créativité et apprends comment on crée des pubs qui marquent !",
-      "longDescription": "Spark enflamme ta créativité ! Apprends comment les publicités sont conçues, ce qui rend une affiche accrocheuse et la magie du processus créatif.",
-      "chatPlaceholder": "Demande à Spark tout sur la créativité...",
-      "learn1": "Comment créer des affiches et des visuels accrocheurs",
-      "learn2": "Le secret des slogans et jingles mémorables",
-      "learn3": "Transformer les idées créatives en vraies campagnes",
+      "description": "Libère ta créativité : invente des affiches et apprends à repérer les astuces des publicités !",
+      "longDescription": "Spark enflamme ta créativité ! Dessine tes propres affiches pour de bonnes idées (ranger ta chambre, protéger la planète…) et deviens détective des pubs : reconnaître une publicité, comprendre qu’elle veut te donner envie d’acheter et repérer ses astuces.",
+      "chatPlaceholder": "Demande à Spark tout sur les affiches et les pubs...",
+      "learn1": "Créer des affiches colorées pour de bonnes idées",
+      "learn2": "Reconnaître une publicité et savoir à quoi elle sert",
+      "learn3": "Repérer les astuces des pubs : couleurs, musiques, jouets qui ont l’air plus grands",
       "suggestions": [
-        "Comment fait-on une pub ?",
-        "Crée un jingle !",
-        "Qu'est-ce qui rend une pub mémorable ?",
+        "Comment reconnaître une pub ?",
+        "Quelles astuces utilisent les pubs ?",
+        "Pourquoi une pub veut me donner envie ?",
         "Dessine-moi une affiche !"
       ]
     },
@@ -509,7 +509,7 @@
     "playGames": "Aller aux jeux",
     "bestScore": "Meilleur score",
     "plays": "parties",
-    "secureNotice": "Compte parent sécurisé, hébergé en Europe. Nous ne gardons que le prénom de votre enfant.",
+    "secureNotice": "Compte parent sécurisé, hébergé à Paris. Pour votre enfant, un prénom suffit.",
     "childSection": "Pour l’enfant",
     "parentSection": "Pour le parent",
     "passwordLabel": "Mot de passe",
@@ -602,7 +602,7 @@
     "chat_eyebrow": "Et maintenant, discute"
   },
   "trust": {
-    "eu_storage": "Données stockées en Europe",
+    "eu_storage": "Comptes hébergés à Paris",
     "encrypted": "Connexion chiffrée",
     "no_ads": "Zéro publicité",
     "parent_account": "Compte géré par le parent"
@@ -711,8 +711,8 @@
         "desc": "Des mouvements courts et précis, qui suivent le réglage « réduire les animations » de l’appareil et se mettent en pause hors de l’écran."
       },
       "privacy": {
-        "title": "Données en Europe, zéro pub",
-        "desc": "Les comptes sont hébergés en Europe, rien n’est revendu, aucune publicité et aucun traçage."
+        "title": "Comptes à Paris, zéro pub",
+        "desc": "Les comptes sont hébergés à Paris, rien n’est revendu, aucune publicité et aucun traçage. Les prestataires d’IA utilisés sont listés dans la politique de confidentialité."
       }
     },
     "ziggy_title": "Tout ça, au service d’un seul copain",

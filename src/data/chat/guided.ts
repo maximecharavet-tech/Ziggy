@@ -66,15 +66,16 @@ export const GUIDED: Record<GuidedSetId, GuidedQuestion[]> = {
     q('maths-life', '🧮', 'À quoi servent les maths dans la vie ?', 'What is maths for in real life?'),
     q('riddle', '🧩', 'Pose-moi un petit calcul', 'Give me a little sum'),
   ],
+  // Spark: creativity (posters for good ideas) and media literacy (spotting an ad and its tricks), never ad-making.
   advertising: [
-    q('what-ad', '🎨', 'Comment on fabrique une pub ?', 'How is an ad made?'),
-    q('poster', '🖼️', 'Qu’est-ce qui rend une affiche belle ?', 'What makes a poster eye-catching?'),
-    q('jingle', '🎵', 'C’est quoi un jingle ?', 'What is a jingle?'),
-    q('slogan', '💬', 'Invente un slogan pour les légumes', 'Make up a slogan for vegetables'),
     q('spot-ad', '🔍', 'Comment reconnaître une pub ?', 'How can I spot an ad?'),
+    q('what-ad', '🎯', 'À quoi sert une publicité ?', 'What is an ad for?'),
+    q('tricks', '🎩', 'Quelles astuces utilisent les pubs ?', 'What tricks do ads use?'),
+    q('toy-look', '🧸', 'Pourquoi les jouets ont l’air plus beaux dans les pubs ?', 'Why do toys look better in ads?'),
+    q('jingle', '🎵', 'Pourquoi une chanson de pub reste dans la tête ?', 'Why does an ad song stick in your head?'),
+    q('poster', '🖼️', 'Qu’est-ce qui rend une affiche belle ?', 'What makes a poster eye-catching?'),
+    q('my-poster', '🖍️', 'Aide-moi à faire une affiche pour ranger ma chambre', 'Help me make a poster for tidying my room'),
     q('idea', '💡', 'Comment avoir une idée créative ?', 'How do you get a creative idea?'),
-    q('my-ad', '🧸', 'Aide-moi à faire une affiche pour ranger ma chambre', 'Help me make a poster for tidying my room'),
-    q('kind', '🌟', 'Une pub peut-elle être gentille ?', 'Can an ad be kind?'),
   ],
 };
 

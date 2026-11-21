@@ -8,6 +8,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { SoundToggle } from '@/components/ui/SoundToggle';
+import { SoftSoundsSwitch } from '@/components/ui/SoftSoundsSwitch';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { ZiggyAvatar } from '@/components/ziggy/Mascot';
 import { AccountButton } from '@/components/account/AccountButton';
@@ -23,6 +24,9 @@ export function Navbar() {
   // Pages on a dark stage keep the glass pill on, so the links stay readable.
   const pathname = usePathname();
   const pill = scrolled || pathname.startsWith('/hyper');
+  // Santa's and the elves' pages sit on a night sky in both themes: the bar takes
+  // light-on-dark colours there (globals.css, .site-nav[data-stage='dark']).
+  const darkStage = pathname.startsWith('/pere-noel') || pathname.startsWith('/lutins');
   const locale = useLocale();
   // In the Ziggy app: a slim top bar (Ziggy, sound, parents); the tab bar does the rest.
   const shell = useAppShell();
@@ -69,6 +73,7 @@ export function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
+      data-stage={darkStage ? 'dark' : undefined}
       className={`site-nav no-tv fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${scrolled ? 'pt-2 sm:pt-3' : 'pt-0'}`}
     >
       <nav
@@ -157,10 +162,13 @@ export function Navbar() {
                 </motion.div>
               ))}
               <div className="flex items-center gap-3 pt-4 px-3">
-                <SoundToggle />
+                <SoundToggle softSwitch={false} />
                 <ThemeToggle />
                 <LanguageSwitcher />
                 <AccountButton className="flex-1 justify-center" />
+              </div>
+              <div className="pt-2">
+                <SoftSoundsSwitch />
               </div>
             </div>
           </motion.div>

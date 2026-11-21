@@ -105,18 +105,18 @@ function toMessages(history: SantaTurn[], text: string): Msg[] {
 type Provider = { id: 'deepseek' | 'nvidia' | 'mistral'; url: string; key: string; model: string };
 
 /**
- * Providers for the live call, in the owner's order: DeepSeek, then NVIDIA, then
- * Mistral. Anthropic is not used. Only keys already set on the server count;
- * nothing new is configured here.
+ * Providers for the live call. EU first: Mistral (France) answers first whenever
+ * its key is set; then DeepSeek, then NVIDIA, as before. Anthropic is not used.
+ * Only keys already set on the server count; nothing new is configured here.
  */
 export function santaProviders(env: NodeJS.ProcessEnv = process.env): Provider[] {
   const list: Provider[] = [];
+  if (env.MISTRAL_API_KEY)
+    list.push({ id: 'mistral', url: 'https://api.mistral.ai/v1/chat/completions', key: env.MISTRAL_API_KEY, model: env.MISTRAL_MODEL || 'mistral-small-latest' });
   if (env.DEEPSEEK_API_KEY)
     list.push({ id: 'deepseek', url: 'https://api.deepseek.com/chat/completions', key: env.DEEPSEEK_API_KEY, model: env.SANTA_DEEPSEEK_MODEL || env.DEEPSEEK_MODEL || 'deepseek-v4-flash' });
   if (env.NVIDIA_API_KEY)
     list.push({ id: 'nvidia', url: 'https://integrate.api.nvidia.com/v1/chat/completions', key: env.NVIDIA_API_KEY, model: env.NVIDIA_TEXT_MODEL || 'meta/llama-3.3-70b-instruct' });
-  if (env.MISTRAL_API_KEY)
-    list.push({ id: 'mistral', url: 'https://api.mistral.ai/v1/chat/completions', key: env.MISTRAL_API_KEY, model: env.MISTRAL_MODEL || 'mistral-small-latest' });
   return list;
 }
 

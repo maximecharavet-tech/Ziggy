@@ -69,10 +69,33 @@ describe('Santa live call', () => {
     });
   });
 
-  it('uses DeepSeek, then NVIDIA, then Mistral — never Anthropic', () => {
-    const ids = santaProviders({ ANTHROPIC_API_KEY: 'a', MISTRAL_API_KEY: 'm', NVIDIA_API_KEY: 'n', DEEPSEEK_API_KEY: 'd' } as unknown as NodeJS.ProcessEnv).map((p) => p.id);
-    expect(ids).toEqual(['deepseek', 'nvidia', 'mistral']);
-    expect(santaProviders({ ANTHROPIC_API_KEY: 'a' } as unknown as NodeJS.ProcessEnv)).toEqual([]);
+  it('EU first: Mistral (France) when its key is set, then DeepSeek, then NVIDIA — never Anthropic', () => {
+    const ids = (env: Record<string, string>) => santaProviders(env as unknown as NodeJS.ProcessEnv).map((p) => p.id);
+    expect(ids({ ANTHROPIC_API_KEY: 'a', MISTRAL_API_KEY: 'm', NVIDIA_API_KEY: 'n', DEEPSEEK_API_KEY: 'd' })).toEqual(['mistral', 'deepseek', 'nvidia']);
+    // Without a Mistral key the order is the one before: no new key is needed.
+    expect(ids({ NVIDIA_API_KEY: 'n', DEEPSEEK_API_KEY: 'd' })).toEqual(['deepseek', 'nvidia']);
+    expect(ids({ MISTRAL_API_KEY: 'm' })).toEqual(['mistral']);
+    expect(ids({ ANTHROPIC_API_KEY: 'a' })).toEqual([]);
+    expect(santaProviders({ MISTRAL_API_KEY: 'm' } as unknown as NodeJS.ProcessEnv)[0].url).toBe('https://api.mistral.ai/v1/chat/completions');
+  });
+
+  it('asks Mistral first and falls back to DeepSeek when Mistral fails', async () => {
+    const env = { ...process.env };
+    process.env.MISTRAL_API_KEY = 'm';
+    process.env.DEEPSEEK_API_KEY = 'd';
+    delete process.env.NVIDIA_API_KEY;
+    const fetchMock = vi.fn(async (url: string | URL | Request) =>
+      String(url).includes('mistral') ? new Response('down', { status: 503 }) : new Response(JSON.stringify({ choices: [{ message: { content: 'Ho ho ho ! Bonjour mon petit lutin.' } }] }))
+    );
+    vi.stubGlobal('fetch', fetchMock);
+    try {
+      const r = await santaReply({ locale: 'fr', name: 'Léa', age: 6, wishes: [], history: [], text: 'Bonjour Père Noël' });
+      expect(r).toEqual({ ok: true, text: 'Ho ho ho ! Bonjour mon petit lutin.' });
+      expect(fetchMock.mock.calls.map((c) => new URL(String(c[0])).hostname)).toEqual(['api.mistral.ai', 'api.deepseek.com']);
+    } finally {
+      process.env = env;
+      vi.unstubAllGlobals();
+    }
   });
 
   it('cuts sentences as they come', () => {

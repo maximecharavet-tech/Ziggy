@@ -14,7 +14,7 @@ const sentBody = (call = 0) => JSON.parse(String((vi.mocked(fetch).mock.calls[ca
 describe('/api/chat guided mode', () => {
   const env = { ...process.env };
   beforeEach(() => {
-    for (const k of ['GEMINI_API_KEY', 'NVIDIA_API_KEY', 'GROQ_API_KEY', 'ANTHROPIC_API_KEY']) delete process.env[k];
+    for (const k of ['MISTRAL_API_KEY', 'GEMINI_API_KEY', 'NVIDIA_API_KEY', 'GROQ_API_KEY', 'ANTHROPIC_API_KEY']) delete process.env[k];
     process.env.DEEPSEEK_API_KEY = 'test';
     vi.stubGlobal('fetch', vi.fn(async () => answer('L’IA, c’est un programme qui apprend avec des exemples ⭐')));
   });

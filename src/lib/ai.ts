@@ -1,8 +1,10 @@
 /**
  * Ziggy's chat brain.
  *
- * Works with whichever provider has a key configured, checked in order of how
- * easy the key is to get for free:
+ * Works with whichever provider has a key configured. Children's text prefers
+ * the EU: Mistral (France) answers first whenever its key is set; the others
+ * follow in their usual order:
+ *   0. MISTRAL_API_KEY  - Mistral AI (France), optional, first when set
  *   1. GEMINI_API_KEY   - Google AI Studio, free tier, no card required
  *   2. DEEPSEEK_API_KEY - DeepSeek (also Hyper Engine's text brain for Ziggy World)
  *   3. NVIDIA_API_KEY   - NVIDIA NIM (build.nvidia.com)
@@ -121,6 +123,8 @@ async function callOpenAICompatible(
       temperature: 0.8,
       messages: [{ role: 'system', content: system }, ...messages],
     }),
+    // A slow provider must not hold up the next one in the list.
+    signal: AbortSignal.timeout(20_000),
   });
 
   if (!res.ok) throw new Error(`${new URL(url).hostname} ${res.status}`);
@@ -150,16 +154,21 @@ async function callAnthropic(key: string, system: string, messages: ChatMessage[
   return block?.type === 'text' ? block.text : '';
 }
 
-type Provider = 'gemini' | 'deepseek' | 'nvidia' | 'groq' | 'anthropic';
+export type Provider = 'mistral' | 'gemini' | 'deepseek' | 'nvidia' | 'groq' | 'anthropic';
 
-/** Every configured provider, in order of preference. */
-export function configuredProviders(): Provider[] {
+/**
+ * Every configured provider, in order of preference. EU first: Mistral (France)
+ * leads whenever MISTRAL_API_KEY is set; without it the order is unchanged.
+ * No key is required: only the keys already on the server count.
+ */
+export function configuredProviders(env: NodeJS.ProcessEnv = process.env): Provider[] {
   const out: Provider[] = [];
-  if (process.env.GEMINI_API_KEY) out.push('gemini');
-  if (process.env.DEEPSEEK_API_KEY) out.push('deepseek');
-  if (process.env.NVIDIA_API_KEY) out.push('nvidia');
-  if (process.env.GROQ_API_KEY) out.push('groq');
-  if (process.env.ANTHROPIC_API_KEY) out.push('anthropic');
+  if (env.MISTRAL_API_KEY) out.push('mistral');
+  if (env.GEMINI_API_KEY) out.push('gemini');
+  if (env.DEEPSEEK_API_KEY) out.push('deepseek');
+  if (env.NVIDIA_API_KEY) out.push('nvidia');
+  if (env.GROQ_API_KEY) out.push('groq');
+  if (env.ANTHROPIC_API_KEY) out.push('anthropic');
   return out;
 }
 
@@ -170,6 +179,8 @@ export function activeProvider(): Provider | null {
 
 function callProvider(provider: Provider, system: string, history: ChatMessage[]) {
   switch (provider) {
+    case 'mistral':
+      return callOpenAICompatible('https://api.mistral.ai/v1/chat/completions', process.env.MISTRAL_API_KEY!, process.env.MISTRAL_MODEL || 'mistral-small-latest', system, history);
     case 'gemini':
       return callGemini(process.env.GEMINI_API_KEY!, system, history);
     case 'deepseek':

@@ -386,6 +386,23 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
 }
 .liquid-nav[data-scrolled='true']::before { opacity: 1; }
 
+/* Night-sky pages (Santa, elves: Navbar.tsx `darkStage`): the sky is dark in both
+   themes, so the bar, its glass pill, the mobile menu and the language list take
+   light-on-dark tokens. Muted links: #E4E0FF on the sky ≥ 11:1 (AA). */
+.site-nav[data-stage='dark'] {
+  --color-bg-card: #17123F;
+  --color-border: #3A3270;
+  --color-text-body: #FFFFFF;
+  --color-text-muted: #E4E0FF;
+  color-scheme: dark;
+}
+.site-nav[data-stage='dark'] .liquid-nav::before {
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.08),
+    0 0 0 1px rgb(255 255 255 / 0.12),
+    0 18px 50px -18px rgb(0 0 0 / 0.85);
+}
+
 /* Theme switch: the new theme is revealed by a circle (ThemeToggle.tsx) */
 ::view-transition-old(root),
 ::view-transition-new(root) {

@@ -40,7 +40,7 @@
     "bubble": "Hallo, ich bin Ziggy! 👋",
     "bubble_happy": "Hihi, das kitzelt! 💚",
     "trust_1": "Keine Werbung",
-    "trust_2": "Daten in Europa gehostet",
+    "trust_2": "Konten in Paris gehostet",
     "trust_3": "Spielbar ohne Konto",
     "facts_worlds": "Welten zum Entdecken",
     "facts_stories": "Gutenachtgeschichten",
@@ -49,24 +49,24 @@
   },
   "features": {
     "title": "Warum Eltern Ziggy lieben",
-    "subtitle": "Entwickelt von Pädagogen und KI-Experten, gestaltet für neugierige junge Köpfe",
+    "subtitle": "Keine Werbung, kein Druck und ein Sicherheitsfilter für jeden KI-Text: gemacht für neugierige junge Köpfe",
     "ai_companion": "KI-Begleiter",
     "ai_companion_desc": "Ziggy passt sich dem Tempo und Lernstil jedes Kindes mit personalisierten KI-Gesprächen an.",
     "safe_space": "Ein sicherer Ort",
-    "safe_space_desc": "Keine Werbung, Daten in Europa, ein Konto in Elternhand. Wir speichern nur den Vornamen Ihres Kindes.",
+    "safe_space_desc": "Keine Werbung, ein Konto in Elternhand, gehostet in Paris. Ein Vorname genügt – nie ein Nachname.",
     "cognitive_tracking": "Kognitives Profil",
     "cognitive_tracking_desc": "Verfolge die Entwicklung deines Kindes über 6 kognitive Dimensionen mit interaktiven Dashboards.",
     "multilingual": "12 Sprachen",
     "multilingual_desc": "Verfügbar in 12 Sprachen mit automatischer Erkennung. Lernen ohne Grenzen.",
     "gamified": "Spielerisches Lernen",
     "gamified_desc": "Sterne, Abzeichen und Belohnungen machen das Lernen zum Spiel. Kein Druck, nur Spaß.",
-    "curriculum": "Experten-Lehrplan",
+    "curriculum": "Vielseitiger Lehrplan",
     "curriculum_desc": "5 spezialisierte Module zu KI, Mathematik, Logik, Kreativität und saisonalen Aktivitäten.",
     "eyebrow": "Warum Ziggy"
   },
   "modules": {
     "title": "Lernmodule",
-    "subtitle": "Fünf von Experten entwickelte Module, um Neugier zu wecken",
+    "subtitle": "Fünf Module, um Neugier zu wecken",
     "ai_basics": "KI-Grundlagen",
     "ai_basics_desc": "Wie KI denkt, lernt und uns jeden Tag hilft",
     "ai_basics_ages": "4–12 Jahre",
@@ -107,7 +107,7 @@
     "family_f3": "Vollständiges Dashboard & Berichte",
     "family_f4": "Alle 5 Module",
     "family_f5": "Prioritäts-Support",
-    "popular": "Am beliebtesten",
+    "popular": "Empfohlen",
     "school": "Schule",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
@@ -166,7 +166,7 @@
   "faq": {
     "title": "Häufig gestellte Fragen",
     "q1": "Ist Ziggy sicher für mein Kind?",
-    "a1": "Ziggy ist für Kinder gemacht: keine Werbung, kein Kontakt zu Fremden, und das Konto wird von einem Elternteil angelegt und verwaltet. Wir speichern nur den Vornamen, die Altersgruppe und die Spielergebnisse – in Europa. Das Konto lässt sich jederzeit im Elternbereich löschen.",
+    "a1": "Ziggy ist für Kinder gemacht: keine Werbung, kein Kontakt zu Fremden, und das Konto wird von einem Elternteil angelegt und verwaltet. Für das Kind fragen wir nur nach Vorname und Altersgruppe, nie nach Nachname oder Adresse. Konten und Fortschritt liegen in Paris (Supabase); einige KI-Funktionen nutzen Anbieter außerhalb der EU, die in der Datenschutzerklärung aufgeführt sind. Das Konto lässt sich jederzeit im Elternbereich löschen.",
     "q2": "Für welche Altersgruppe ist Ziggy gedacht?",
     "a2": "Ziggy ist für Kinder von 4 bis 12 Jahren konzipiert. Die KI passt Sprache, Schwierigkeitsgrad und Inhalte an das Alter und Lerntempo des Kindes an.",
     "q3": "Kann ich mein Abonnement jederzeit kündigen?",
@@ -268,17 +268,17 @@
     },
     "advertising": {
       "name": "Spark",
-      "description": "Entfessle deine Kreativität und lerne Werbung!",
-      "longDescription": "Entfessle deine Kreativität und lerne Werbung!",
-      "chatPlaceholder": "Das Team...",
-      "learn1": "Learn the fundamentals",
-      "learn2": "Practice with fun examples",
-      "learn3": "Build skills for the future",
+      "description": "Entfessle deine Kreativität: Erfinde Plakate und lerne, die Tricks der Werbung zu erkennen!",
+      "longDescription": "Spark entfacht deine Kreativität! Male eigene Plakate für gute Ideen (Zimmer aufräumen, die Erde schützen …) und werde Werbe-Detektiv: Werbung erkennen, verstehen, dass sie dich zum Kaufen bringen will, und ihre Tricks durchschauen.",
+      "chatPlaceholder": "Frag Spark nach Plakaten und Werbetricks...",
+      "learn1": "Bunte Plakate für gute Ideen gestalten",
+      "learn2": "Werbung erkennen und wissen, wozu sie da ist",
+      "learn3": "Werbetricks durchschauen: Farben, Ohrwürmer, Spielzeug, das größer wirkt",
       "suggestions": [
-        "How are ads made?",
-        "Create a jingle!",
-        "What makes ads catchy?",
-        "Design a poster!"
+        "Wie erkenne ich Werbung?",
+        "Welche Tricks nutzt Werbung?",
+        "Warum will Werbung, dass ich kaufe?",
+        "Entwirf ein Plakat!"
       ]
     },
     "try_now": "Jetzt ausprobieren"
@@ -509,7 +509,7 @@
     "playGames": "Zu den Spielen",
     "bestScore": "Bestleistung",
     "plays": "Runden",
-    "secureNotice": "Sicheres Elternkonto, gehostet in Europa. Wir speichern nur den Vornamen Ihres Kindes.",
+    "secureNotice": "Sicheres Elternkonto, gehostet in Paris. Für Ihr Kind genügt ein Vorname.",
     "childSection": "Für das Kind",
     "parentSection": "Für die Eltern",
     "passwordLabel": "Passwort",
@@ -602,7 +602,7 @@
     "chat_eyebrow": "Und jetzt: plaudern"
   },
   "trust": {
-    "eu_storage": "Daten in Europa gespeichert",
+    "eu_storage": "Konten in Paris gehostet",
     "encrypted": "Verschlüsselte Verbindung",
     "no_ads": "Keine Werbung",
     "parent_account": "Von Eltern verwaltetes Konto"
@@ -711,8 +711,8 @@
         "desc": "Kurze, präzise Bewegungen, die die Einstellung „Bewegung reduzieren“ beachten und außerhalb des Bildschirms pausieren."
       },
       "privacy": {
-        "title": "Daten in Europa, null Werbung",
-        "desc": "Konten liegen in Europa, nichts wird verkauft, keine Werbung, kein Tracking."
+        "title": "Konten in Paris, null Werbung",
+        "desc": "Konten liegen in Paris, nichts wird verkauft, keine Werbung, kein Tracking. Die genutzten KI-Anbieter stehen in der Datenschutzerklärung."
       }
     },
     "ziggy_title": "All das für einen einzigen Freund",
