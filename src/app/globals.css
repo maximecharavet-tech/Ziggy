@@ -388,7 +388,8 @@ html:not(.js) .reveal { opacity: 1; transform: none; }
 
 /* Night-sky pages (Santa, elves: Navbar.tsx `darkStage`): the sky is dark in both
    themes, so the bar, its glass pill, the mobile menu and the language list take
-   light-on-dark tokens. Muted links: #E4E0FF on the sky ≥ 11:1 (AA). */
+   light-on-dark tokens, and the pill stays on (Navbar.tsx). Muted links #E4E0FF:
+   ≥ 11:1 on the sky, ≥ 7:1 on the glass pill over the photos (AA). */
 .site-nav[data-stage='dark'] {
   --color-bg-card: #17123F;
   --color-border: #3A3270;

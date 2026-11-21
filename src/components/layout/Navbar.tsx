@@ -23,10 +23,11 @@ export function Navbar() {
   const [hovered, setHovered] = useState<string | null>(null);
   // Pages on a dark stage keep the glass pill on, so the links stay readable.
   const pathname = usePathname();
-  const pill = scrolled || pathname.startsWith('/hyper');
-  // Santa's and the elves' pages sit on a night sky in both themes: the bar takes
-  // light-on-dark colours there (globals.css, .site-nav[data-stage='dark']).
+  // Santa's and the elves' pages sit on a night sky (and bright hero photos) in both
+  // themes: the bar takes light-on-dark colours there (globals.css,
+  // .site-nav[data-stage='dark']) and keeps its dark glass pill, so links stay AA.
   const darkStage = pathname.startsWith('/pere-noel') || pathname.startsWith('/lutins');
+  const pill = scrolled || darkStage || pathname.startsWith('/hyper');
   const locale = useLocale();
   // In the Ziggy app: a slim top bar (Ziggy, sound, parents); the tab bar does the rest.
   const shell = useAppShell();
