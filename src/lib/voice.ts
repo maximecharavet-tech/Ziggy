@@ -2,11 +2,15 @@
 
 import { isMuted, MUTE_EVENT } from '@/lib/sound';
 import { isPersonalText } from '@/lib/privacy/personal';
+import { bankClipUrl } from '@/lib/voice-bank';
 
 /**
  * Ziggy's voice in the browser.
  *
- * - First choice: /api/tts (Gemini voice, the Hyper™ AI Engine voice stack).
+ * - First choice: Ziggy's voice bank, every fixed sentence of the site
+ *   recorded offline in his own voice (public/voice, src/lib/voice-bank.ts).
+ *   Those sentences never go to a server voice.
+ * - Other sentences: /api/tts (Gemini voice, the Hyper™ AI Engine voice stack).
  * - Fallback: the browser's own speech synthesis, pitched up a little.
  * - A sentence with personal data (the child's first name, a name the child
  *   typed, a line flagged with `markPersonal`, an email or phone number…) is
@@ -66,7 +70,7 @@ export function setAutoRead(on: boolean) {
 let audio: HTMLAudioElement | null = null;
 let serverDown = false;
 let token = 0;
-const clips = new Map<string, string>(); // text → object URL, so replays are instant
+const clips = new Map<string, string>(); // text or bank URL → object URL, so replays are instant
 
 /**
  * iOS only lets audio start inside a tap. Call this from the tap that will
@@ -145,6 +149,28 @@ async function playClip(url: string): Promise<boolean> {
   return true;
 }
 
+/** The clip for one sentence: the recorded bank first, then the server voice (never for personal lines). */
+async function clipFor(text: string, locale: string, style: VoiceStyle): Promise<string | null> {
+  return (await bankClip(text, locale, style)) ?? (await serverClip(text, style));
+}
+
+/** A recorded clip from this site (fetched whole, so the service worker can keep it), as an object URL. */
+async function bankClip(text: string, locale: string, style: VoiceStyle): Promise<string | null> {
+  try {
+    const url = await bankClipUrl(text, locale, style);
+    if (!url) return null;
+    const hit = clips.get(url);
+    if (hit) return hit;
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const obj = URL.createObjectURL(await res.blob());
+    clips.set(url, obj);
+    return obj;
+  } catch {
+    return null;
+  }
+}
+
 /**
  * Speak several sentences as Ziggy, one after the other. The next clip is
  * fetched while the current one plays, so the first words come quickly even
@@ -163,11 +189,11 @@ export async function speakSequence(
   const mine = ++token;
   emit({ loadingId: id });
 
-  let next: Promise<string | null> | null = serverClip(sentences[0], style);
+  let next: Promise<string | null> | null = clipFor(sentences[0], locale, style);
   for (let i = 0; i < sentences.length; i++) {
     const url = await next;
     if (mine !== token) return false;
-    next = i + 1 < sentences.length ? serverClip(sentences[i + 1], style) : null;
+    next = i + 1 < sentences.length ? clipFor(sentences[i + 1], locale, style) : null;
     onSentence?.(i);
     emit({ speakingId: id, loadingId: null });
     const played = url ? await playClip(url) : false;

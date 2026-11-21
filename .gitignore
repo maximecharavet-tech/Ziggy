@@ -18,3 +18,4 @@ next-env.d.ts
 __pycache__/
 .pytest_cache/
 .claude/worktrees/
+/.voice-bake-work/

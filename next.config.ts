@@ -79,6 +79,8 @@ const nextConfig: NextConfig = {
       },
       // Santa's recorded voice: the site asks for each file with ?h=<hash of its words>.
       { source: '/santa/voice/:path*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
+      // Ziggy's recorded voice bank: each clip URL carries ?v=<voice version>; the clip list (manifest.json) stays fresh.
+      { source: '/voice/:lang(fr|en)/:file*', headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }] },
       {
         source: '/(mascot|media|covers)/:path*',
         headers: [{ key: 'Cache-Control', value: 'public, max-age=604800, stale-while-revalidate=86400' }],
