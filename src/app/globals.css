@@ -51,7 +51,10 @@
     -moz-osx-font-smoothing: grayscale;
     -webkit-tap-highlight-color: transparent;
     text-size-adjust: 100%;
+    /* clip, not hidden: hidden turns html/body into scroll containers and
+       silently breaks every position: sticky on the site. */
     overflow-x: hidden;
+    overflow-x: clip;
   }
 
   html[dir="rtl"] {
@@ -64,6 +67,7 @@
     font-family: var(--font-sans);
     min-height: 100dvh;
     overflow-x: hidden;
+    overflow-x: clip;
   }
 
   h1, h2, h3 {
@@ -773,4 +777,48 @@ html[data-tv] canvas[data-sandbox-canvas]:focus-visible { scale: none; outline-o
 html[data-tv] :is(a, button, input, select, textarea, [tabindex]) { scroll-margin: 16vh 6vw; }
 @media (prefers-reduced-motion: reduce) {
   html[data-tv] :focus-visible { scale: 1.03; }
+}
+
+/* ═══════════════════════════════════════
+   ZIGGY STAGE (ZiggyStage.tsx): float, breath and orbit, compositor only.
+   The global reduced-motion rule above freezes all three.
+   ═══════════════════════════════════════ */
+@keyframes stage-float {
+  0%, 100% { transform: translate3d(0, 0, 0) rotate(-1.2deg); }
+  50% { transform: translate3d(0, -4.5%, 0) rotate(1.2deg); }
+}
+@keyframes stage-shadow {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 1; }
+  50% { transform: translateX(-50%) scale(0.82); opacity: 0.65; }
+}
+@keyframes stage-breathe {
+  0%, 100% { transform: scale(1, 1); }
+  50% { transform: scale(1.012, 0.988); }
+}
+@keyframes stage-orbit {
+  from { transform: rotateX(72deg) rotateZ(0deg); }
+  to { transform: rotateX(72deg) rotateZ(360deg); }
+}
+.stage-float { animation: stage-float 4.2s ease-in-out infinite; will-change: transform; }
+.stage-shadow { animation: stage-shadow 4.2s ease-in-out infinite; }
+.stage-breathe { animation: stage-breathe 2.8s ease-in-out infinite; transform-origin: 50% 100%; }
+.stage-orbit { transform: rotateX(72deg); animation: stage-orbit 18s linear infinite; }
+
+/* Feature carousel: native scroll-snap on touch, a quiet list on large screens. */
+.snap-rail { scrollbar-width: none; }
+.snap-rail::-webkit-scrollbar { display: none; }
+
+/* Module cards stand up in 3D as they arrive, driven by the scroll itself (no JS). */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .depth-in {
+      animation: depth-in linear both;
+      animation-timeline: view();
+      animation-range: entry 0% cover 28%;
+    }
+    @keyframes depth-in {
+      from { opacity: 0; transform: perspective(900px) translateY(36px) rotateX(18deg) scale(0.96); }
+      to { opacity: 1; transform: perspective(900px) translateY(0) rotateX(0) scale(1); }
+    }
+  }
 }

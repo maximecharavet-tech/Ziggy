@@ -1,0 +1,10 @@
+SUJET : Ziggy, the green plush robot-alien mascot, exactly as in the attached reference images: soft felt-like green plush body, round head, two thin antennas ending in small green balls, big green eyes with long eyelashes, small smile, a glowing yellow-orange heart on the chest, silver segmented arms and legs, green mitten hands and boots. Pose: hugging a soft rounded shield shape to his chest, eyes gently closed in a content smile, his glowing heart visible above the shield. One single subject.
+
+STYLE : premium 3D character render, soft plush/felt material with visible micro fibers, gentle subsurface glow from the heart, soft studio lighting with a warm key light and a subtle rim light, shallow depth of field, Pixar-quality but minimal, 2026 premium app illustration.
+
+PALETTE : plain soft background in a very light tint; accent colours only #5FB6EA, #E8F4FC, #FFD166. Everything else neutral and calm.
+
+COMPOSITION / CONTRAINTES : full body, centered, character fills about 60 % of the frame height, large empty negative space around him, plain uniform background (or transparent PNG if possible), soft contact shadow under the feet, square 1:1, 2048 x 2048. No text, no letters, no logo, no emblem, no extra characters, no humans, no children, no props other than the one described. Stay strictly on-model with the references (same proportions, same face, same colours).
+
+Références à joindre (obligatoire) : public/mascot/ziggy-wave.webp, public/mascot/ziggy-heart.webp, public/mascot/ziggy-face.webp (fidélité au personnage).
+Intégration : détourer en WebP RGBA ~800 px de haut dans public/mascot/feature-ziggy-espace-sur.webp, puis ajouter la pose dans CUTOUTS (src/lib/mascot.ts) avec la position du cœur, et la mapper dans FeaturesSection.
