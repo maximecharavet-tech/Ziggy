@@ -295,6 +295,14 @@ impl World {
             let x = lx + k;
             let edge = k.min(lw - 1 - k);
             let bottom = valley + 4.min(1 + edge).max(0);
+            // Open to the sky (in portrait the mountain's foot would otherwise roof it over).
+            if (0..lw).contains(&k) {
+                for y in 0..valley - 1 {
+                    if self.get(x, y) != EMPTY {
+                        self.fill(x, y, EMPTY);
+                    }
+                }
+            }
             for y in valley - 1..=(bottom + 2).min(h - 1) {
                 self.fill(x, y, if k < 0 || k >= lw || y > bottom { STONE } else { ICE });
             }

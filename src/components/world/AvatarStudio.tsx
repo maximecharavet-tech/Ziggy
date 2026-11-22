@@ -15,6 +15,9 @@ import { DepthProvider, Layer, usePointerDepth, useTilt } from '@/components/cre
 import { StudioFrame } from '@/components/create/fx/StudioFrame';
 import { fx, loop, shade, toy } from '@/components/create/fx/toy';
 import { AvatarPreview, EYE_HEX, HAIR_HEX, OUTFIT_COLOR, SKIN_HEX } from './AvatarPreview';
+import { AiLabel } from '@/components/ui/AiLabel';
+import { analyzePhotoOnDevice, warmPhotoAnalysis } from '@/lib/avatar/photo-analyze';
+import { SantaGate, gateGraceValid } from '@/components/santa/parents/SantaGate';
 
 const T = {
   eyebrow: { fr: 'Le studio d’avatar', en: 'The avatar studio' },
@@ -52,17 +55,21 @@ const T = {
   del: { fr: 'Supprimer', en: 'Delete' },
   photoTitle: { fr: 'Avatar depuis une photo — réservé au parent', en: 'Avatar from a photo — parents only' },
   photoInfo: {
-    fr: 'La photo est lue en mémoire par le modèle de vision NVIDIA uniquement pour repérer des couleurs (cheveux, peau, yeux, lunettes). Elle n’est jamais enregistrée, ni sur nos serveurs, ni dans la base, ni dans les journaux, et elle n’est jamais envoyée au générateur d’images : seuls ces choix en texte le sont. Vous pouvez ajuster chaque choix avant de créer l’avatar.',
-    en: 'The photo is read in memory by the NVIDIA vision model only to pick colours (hair, skin, eyes, glasses). It is never stored — not on our servers, in the database or in logs — and never sent to the image generator: only these text choices are. You can adjust every choice before creating the avatar.',
+    fr: 'La photo est lue sur cet appareil, dans le navigateur, uniquement pour repérer des choix de dessin (couleur des cheveux et longueur, peau, yeux, lunettes). Elle n’est jamais envoyée : ni à nos serveurs, ni à un service d’IA. Elle est effacée de la page dès la lecture terminée. Vous pouvez ajuster chaque choix avant de créer l’avatar ; seuls ces choix en texte servent ensuite à dessiner l’avatar.',
+    en: 'The photo is read on this device, in the browser, only to pick drawing choices (hair colour and length, skin, eyes, glasses). It is never sent anywhere: not to our servers, not to any AI service. It is wiped from the page as soon as it has been read. You can adjust every choice before creating the avatar; only these text choices are then used to draw it.',
   },
-  consent: { fr: 'Je suis le parent ou le responsable légal et j’accepte ce traitement de la photo.', en: 'I am the parent or legal guardian and I agree to this processing of the photo.' },
+  consent: { fr: 'Je suis le parent ou le responsable légal et je choisis d’utiliser une photo de mon enfant, lue sur cet appareil.', en: 'I am the parent or legal guardian and I choose to use a photo of my child, read on this device.' },
   pick: { fr: 'Choisir une photo', en: 'Choose a photo' },
-  analyzing: { fr: 'Lecture des couleurs…', en: 'Reading the colours…' },
-  analyzed: { fr: 'Choix pré-remplis depuis la photo. La photo a été effacée.', en: 'Choices pre-filled from the photo. The photo has been discarded.' },
-  noFace: { fr: 'Aucun visage d’enfant trouvé. Essayez une photo de face, bien éclairée.', en: 'No child’s face found. Try a well-lit, front-facing photo.' },
+  analyzing: { fr: 'Lecture des couleurs, sur cet appareil…', en: 'Reading the colours, on this device…' },
+  analyzed: { fr: 'Choix pré-remplis depuis la photo, qui n’a pas quitté l’appareil et a été effacée.', en: 'Choices pre-filled from the photo, which never left this device and has been wiped.' },
+  toPick: { fr: 'À choisir vous-même : {list}.', en: 'For you to pick: {list}.' },
+  deviceFailed: { fr: 'Cet appareil n’arrive pas à lire la photo. Choisissez les couleurs à la main : c’est tout aussi bien !', en: 'This device can’t read the photo. Pick the colours by hand: it works just as well!' },
+  noFace: { fr: 'Aucun visage trouvé. Essayez une photo de face, bien éclairée.', en: 'No face found. Try a well-lit, front-facing photo.' },
   needConsent: { fr: 'Cochez le consentement pour continuer.', en: 'Tick the consent box to continue.' },
+  gateFor: { fr: 'L’avatar depuis une photo, c’est pour les parents.', en: 'The avatar from a photo is for parents.' },
+  gateKids: { fr: 'Tu veux choisir tes couleurs toi-même ? Touche Retour.', en: 'Want to pick your colours yourself? Tap Back.' },
   deletePhoto: { fr: 'Supprimer les données photo', en: 'Delete photo data' },
-  deleted: { fr: 'Aucune photo n’est conservée. Avatars issus d’une photo supprimés : {n}. Consentement retiré.', en: 'No photo is ever kept. Avatars made from a photo deleted: {n}. Consent withdrawn.' },
+  deleted: { fr: 'Aucune photo n’est jamais envoyée ni conservée. Avatars issus d’une photo supprimés : {n}. Consentement retiré.', en: 'No photo is ever sent or kept. Avatars made from a photo deleted: {n}. Consent withdrawn.' },
 } satisfies Record<string, L>;
 
 const NAMES: Record<string, L> = {
@@ -80,6 +87,16 @@ const NAMES: Record<string, L> = {
 };
 const STYLE_EMOJI: Record<AvatarRequest['style'], string> = { plush: '🧸', cartoon: '🎬', watercolor: '🖌️', clay: '🟠', pixel: '👾' };
 const name = (id: string, locale: string) => (NAMES[id] ? tr(NAMES[id], locale) : id);
+/** The blueprint fields, as the parent reads them in "for you to pick". */
+const FIELD: Record<keyof VisualBlueprint, L> = {
+  hairColor: T.hairColor,
+  hairLength: { fr: 'longueur des cheveux', en: 'hair length' },
+  hairStyle: T.hairStyle,
+  skinTone: T.skin,
+  eyeColor: { fr: 'couleur des yeux', en: 'eye colour' },
+  glasses: T.glasses,
+  freckles: T.freckles,
+};
 
 type Avatar = { id: string; url: string | null; style: string; outfit: string; world: string; fromPhoto: boolean; createdAt: string };
 const SELECTED_KEY = 'ziggy:avatar';
@@ -173,6 +190,7 @@ export function AvatarStudio() {
   const [avatars, setAvatars] = useState<Avatar[]>([]);
   const [selected, setSelected] = useState<string | null>(null);
   const [spark, setSpark] = useState(0);
+  const [photoNote, setPhotoNote] = useState<string | null>(null);
   const p = usePointerDepth<HTMLDivElement>();
   const tilt = useTilt(p, 9);
   const first = useRef(true);
@@ -275,13 +293,21 @@ export function AvatarStudio() {
         <PhotoPanel
           locale={locale}
           signedIn={signedIn}
-          onBlueprint={(bp) => {
-            setB(bp);
+          onBlueprint={(bp, note) => {
+            setB((x) => ({ ...x, ...bp }));
+            setPhotoNote(note);
             setFromPhoto(true);
             setMode('choices');
           }}
           onDeleted={() => void load()}
+          onBack={() => setMode('choices')}
         />
+      ) : null}
+
+      {mode === 'choices' && photoNote ? (
+        <p role="status" className="mx-auto mb-6 max-w-2xl rounded-2xl bg-[#A35BD6]/10 px-4 py-3 text-center text-sm font-semibold text-text-body">
+          📷 {photoNote}
+        </p>
       ) : null}
 
       <div className={`grid gap-8 lg:grid-cols-[1fr_24rem] lg:items-start ${mode === 'photo' ? 'mt-8' : ''}`}>
@@ -495,9 +521,12 @@ export function AvatarStudio() {
             {avatars.map((a) => (
               <li key={a.id} className={`overflow-hidden rounded-[1.6rem] bg-bg-card shadow-[0_6px_0_rgba(140,90,200,0.16),0_18px_30px_-20px_rgba(90,40,140,0.6)] ${selected === a.id ? 'ring-4 ring-[#A35BD6]' : 'ring-1 ring-black/5'}`}>
                 {a.url ? (
-                  // Signed, short-lived URL from private storage: a plain img is right here.
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={a.url} alt={tr(T.preview, locale)} className="aspect-square w-full object-cover" />
+                  <div className="relative">
+                    {/* Signed, short-lived URL from private storage: a plain img is right here. */}
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={a.url} alt={tr(T.preview, locale)} className="aspect-square w-full object-cover" />
+                    <AiLabel className="absolute bottom-2 start-2 !px-2 !text-[11px]" />
+                  </div>
                 ) : (
                   <div className="grid aspect-square place-items-center text-5xl">🧑‍🎨</div>
                 )}
@@ -545,19 +574,14 @@ function CreateBox({ locale, signedIn, busy, msg, onCreate }: { locale: string; 
   );
 }
 
-/** Downscale to ≤1024px JPEG in the browser, so only a small image travels. */
-async function downscale(file: File): Promise<string> {
-  const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, 1024 / Math.max(bitmap.width, bitmap.height));
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.round(bitmap.width * scale);
-  canvas.height = Math.round(bitmap.height * scale);
-  canvas.getContext('2d')!.drawImage(bitmap, 0, 0, canvas.width, canvas.height);
-  bitmap.close();
-  return canvas.toDataURL('image/jpeg', 0.85);
-}
-
-function PhotoPanel({ locale, signedIn, onBlueprint, onDeleted }: { locale: string; signedIn: boolean | null; onBlueprint: (b: VisualBlueprint) => void; onDeleted: () => void }) {
+/**
+ * Avatar from a photo, for parents: behind the grown-up gate, with the parent's
+ * explicit choice (recorded on the account when signed in, otherwise only for
+ * this visit). The photo is read on the device and never uploaded, so no account
+ * is needed to read it; creating the magic image still needs one.
+ */
+function PhotoPanel({ locale, signedIn, onBlueprint, onDeleted, onBack }: { locale: string; signedIn: boolean | null; onBlueprint: (b: Partial<VisualBlueprint>, note: string) => void; onDeleted: () => void; onBack: () => void }) {
+  const [grownUp, setGrownUp] = useState(false);
   const [consent, setConsent] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
@@ -568,29 +592,37 @@ function PhotoPanel({ locale, signedIn, onBlueprint, onDeleted }: { locale: stri
     void api<{ photo_avatar: string | null }>('parent/consent').then((r) => r.ok && setConsent(Boolean(r.data.photo_avatar)));
   }, [signedIn]);
 
+  useEffect(() => setGrownUp(gateGraceValid()), []);
+
   async function toggleConsent(granted: boolean) {
+    if (!signedIn) return setConsent(granted);
     const r = await api('parent/consent', { body: { kind: 'photo_avatar', granted } });
     if (r.ok) setConsent(granted);
   }
 
+  useEffect(() => {
+    if (consent) warmPhotoAnalysis();
+  }, [consent]);
+
+  /** The photo is read here, on the device: nothing of it is uploaded (no network call in this function). */
   async function onFile(file: File | undefined) {
     if (!file) return;
     if (!consent) return setMsg(tr(T.needConsent, locale));
     setBusy(true);
     setMsg(tr(T.analyzing, locale));
-    let photo: string | null = await downscale(file).catch(() => null);
     if (input.current) input.current.value = '';
-    if (!photo) {
+    try {
+      const traits = await analyzePhotoOnDevice(file);
+      if (!traits.face) return setMsg(tr(T.noFace, locale));
+      const left = traits.toPick.map((k) => tr(FIELD[k], locale).toLowerCase());
+      const note = `${tr(T.analyzed, locale)}${left.length ? ` ${tr(T.toPick, locale).replace('{list}', left.join(', '))}` : ''}`;
+      setMsg(note);
+      onBlueprint(traits.blueprint, note);
+    } catch {
+      setMsg(tr(T.deviceFailed, locale));
+    } finally {
       setBusy(false);
-      return setMsg(tr(T.error, locale));
     }
-    const res = await api<{ blueprint: VisualBlueprint }>('avatar/analyze', { body: { photo, locale } });
-    photo = null; // nothing of the photo is kept in the page either
-    setBusy(false);
-    if (res.ok) {
-      setMsg(tr(T.analyzed, locale));
-      onBlueprint(res.data.blueprint);
-    } else setMsg(tr(res.status === 422 ? T.noFace : res.status === 503 ? T.notConfigured : res.status === 429 ? T.overBudget : T.error, locale));
   }
 
   async function deletePhotoData() {
@@ -602,16 +634,7 @@ function PhotoPanel({ locale, signedIn, onBlueprint, onDeleted }: { locale: stri
     }
   }
 
-  if (signedIn === false) {
-    return (
-      <div className="mx-auto max-w-xl rounded-[2rem] bg-bg-card p-6 text-center shadow-[0_8px_0_rgba(140,90,200,0.14)] ring-1 ring-black/5 dark:ring-white/10">
-        <p className="text-text-muted">{tr(T.signIn, locale)}</p>
-        <Link href="/login" className={`${fx.toy} mt-4 inline-flex min-h-12 items-center rounded-full px-5 font-display font-bold`} style={toy(ACCENT, { depth: 5 })}>
-          🔒 {tr(T.signInBtn, locale)}
-        </Link>
-      </div>
-    );
-  }
+  if (!grownUp) return <SantaGate forParents={T.gateFor} forKids={T.gateKids} onBack={onBack} onPass={() => setGrownUp(true)} />;
   return (
     <section className="mx-auto max-w-2xl rounded-[2rem] bg-bg-card p-6 shadow-[0_8px_0_rgba(140,90,200,0.14)] ring-2 ring-[#A35BD6]/30" aria-labelledby="photo-title">
       <h2 id="photo-title" className="font-display text-xl font-bold text-text-body">
@@ -627,9 +650,11 @@ function PhotoPanel({ locale, signedIn, onBlueprint, onDeleted }: { locale: stri
         <label htmlFor="avatar-photo" className={`${fx.toy} inline-flex min-h-12 cursor-pointer items-center rounded-full px-5 font-display font-bold ${!consent || busy ? 'pointer-events-none opacity-50' : ''}`} style={toy(ACCENT, { depth: 5 })}>
           📷 {tr(T.pick, locale)}
         </label>
+        {signedIn ? (
         <button type="button" onClick={() => void deletePhotoData()} className={`${fx.toy} ${fx.light} inline-flex min-h-12 items-center rounded-full px-5 font-display font-bold`} style={{ '--depth': '5px' } as CSSProperties}>
           🗑️ {tr(T.deletePhoto, locale)}
         </button>
+        ) : null}
       </div>
       {msg ? (
         <p role="status" className="mt-4 rounded-2xl bg-[#A35BD6]/10 px-4 py-3 text-sm font-semibold text-text-body">

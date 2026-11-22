@@ -3,6 +3,7 @@
 import { useSyncExternalStore } from 'react';
 import type { SantaChild, SantaFamily } from './types';
 import { cleanName } from './name';
+import { registerPersonal } from '@/lib/privacy/personal';
 
 export { NAME_RE, cleanName } from './name';
 
@@ -31,6 +32,8 @@ function read(): SantaFamily {
 
 function write(next: SantaFamily) {
   cache = next;
+  // First names are personal: read-aloud and AI requests keep them on the device (also in private mode, without storage).
+  registerPersonal(...next.children.map((c) => c.name));
   try {
     localStorage.setItem(KEY, JSON.stringify(next));
   } catch {

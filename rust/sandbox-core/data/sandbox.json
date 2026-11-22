@@ -151,7 +151,8 @@
     { "id": "gift_undersea" },
     { "id": "gift_space" },
     { "id": "gift_moon" },
-    { "id": "gift_mars" }
+    { "id": "gift_mars" },
+    { "id": "gift_treasure" }
   ],
   "quietRules": [
     { "a": "lava", "b": "ice", "chance": 300, "outB": "water", "event": "melt_ice" },

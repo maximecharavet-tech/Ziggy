@@ -13,7 +13,7 @@ import { alternatesFor } from '@/lib/seo';
  */
 
 const CONTACT = 'contact@ziggy-ai.fr';
-const UPDATED = { fr: '8 novembre 2026', en: '8 November 2026' };
+const UPDATED = { fr: '20 novembre 2026', en: '20 November 2026' };
 
 type Section = { title: string; body: (string | string[])[]; /** Anchor (e.g. #pere-noel, linked from the Stripe payment page). */ id?: string };
 
@@ -66,7 +66,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
           [
             'Aucune messagerie entre utilisateurs : un enfant ne peut jamais échanger avec un autre enfant ou un inconnu sur Ziggy.',
             'Dans Ziggy World, l’enfant n’écrit jamais de texte libre pour l’IA : il choisit parmi des options prédéfinies. Chaque contenu créé par IA est vérifié par notre filtre ChildShield ; en cas de doute, un contenu écrit par l’équipe Ziggy est affiché à la place.',
-            'Dans le chat avec Ziggy, un filtre de sécurité vérifie chaque message : les adresses, numéros de téléphone, e-mails et mots de passe ne sont jamais transmis à l’IA, les liens et coordonnées sont retirés des réponses, et certains sujets invitent l’enfant à en parler à un adulte de confiance.',
+            'Dans le chat avec Ziggy et ses amis, l’enfant n’écrit pas : il choisit parmi des questions préparées par l’équipe Ziggy. Écrire librement est réservé au parent, derrière une question pour les grands ; un filtre de sécurité vérifie alors chaque message (les adresses, numéros de téléphone, e-mails et mots de passe ne sont jamais transmis à l’IA, et certains sujets invitent à en parler à un adulte de confiance). Dans tous les cas, les liens et coordonnées sont retirés des réponses, et chaque réponse est vérifiée par notre filtre ChildShield.',
             'Aucune publicité, aucun achat par l’enfant (les packs de l’appli du Père Noël s’achètent par un parent, derrière une question réservée aux grands, et jamais dans l’application mobile), et un rappel invite l’enfant à faire une pause après un moment d’écran.',
           ],
           'Ces protections réduisent fortement les risques sans pouvoir les supprimer totalement. Nous recommandons qu’un adulte reste disponible quand l’enfant utilise Ziggy, surtout pour les plus jeunes.',
@@ -75,7 +75,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '5. Les contenus créés par intelligence artificielle',
         body: [
-          'Une partie des réponses, quêtes, histoires, voix et images de Ziggy est produite par des services d’intelligence artificielle (actuellement Google Gemini, DeepSeek, NVIDIA et Agnes AI ; Anthropic pour l’appel en direct du Pack magique). Dans Ziggy World, chaque contenu créé par IA est signalé comme tel, et le Père Noël de l’appel en direct est présenté au parent comme une IA.',
+          'Une partie des réponses, quêtes, histoires, voix et images de Ziggy est produite par des services d’intelligence artificielle : actuellement Mistral (France), en premier pour le chat et l’appel en direct du Pack magique quand il est disponible, Google (Gemini), DeepSeek, NVIDIA et Agnes AI, et Groq ou Anthropic en secours du chat s’ils sont activés. La Politique de confidentialité dit ce que chacun reçoit. Dans Ziggy World, chaque contenu créé par IA est signalé comme tel, le chat indique que ses réponses sont créées par une IA, et le Père Noël de l’appel en direct dit lui-même à l’enfant que ses réponses sont créées par une IA.',
           'Une IA peut se tromper : ses réponses peuvent être inexactes ou incomplètes. Elles ne remplacent ni un enseignant, ni un professionnel de santé, ni l’avis d’un adulte. Si un contenu vous semble inapproprié, écrivez-nous : nous le corrigerons.',
         ],
       },
@@ -110,7 +110,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '9. Données personnelles et cookies',
         body: [
-          'La façon dont nous traitons les données est décrite dans la Politique de confidentialité, et ce que le site garde dans votre navigateur dans la Politique de cookies. Les comptes sont hébergés chez Supabase, sur des serveurs situés dans l’Union européenne, et le site chez Vercel.',
+          'La façon dont nous traitons les données est décrite dans la Politique de confidentialité, et ce que le site garde dans votre navigateur dans la Politique de cookies. Les comptes sont hébergés chez Supabase, et le site chez Vercel.',
         ],
       },
       {
@@ -179,7 +179,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
           [
             'No messaging between users: a child can never exchange messages with another child or a stranger on Ziggy.',
             'In Ziggy World, children never type free text for the AI: they pick from predefined options. Every AI-made item is checked by our ChildShield filter; if in doubt, content written by the Ziggy team is shown instead.',
-            'In the chat with Ziggy, a safety filter checks every message: addresses, phone numbers, emails and passwords are never passed to the AI, links and contact details are removed from replies, and some topics prompt the child to talk to a trusted adult.',
+            'In the chat with Ziggy and friends, children do not type: they pick from questions prepared by the Ziggy team. Typing freely is for parents, behind a question for grown-ups; a safety filter then checks every message (addresses, phone numbers, emails and passwords are never passed to the AI, and some topics prompt a talk with a trusted adult). In every case, links and contact details are removed from replies, and every reply is checked by our ChildShield filter.',
             'No advertising, no purchase by a child (Santa’s app packs are bought by a parent, behind a question for grown-ups, and never inside the mobile app), and a reminder suggests a break after a while on screen.',
           ],
           'These safeguards greatly reduce risks but cannot remove them entirely. We recommend that an adult stays available while a child uses Ziggy, especially the youngest.',
@@ -188,7 +188,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '5. AI-generated content',
         body: [
-          'Some of Ziggy’s replies, quests, stories, voices and images are produced by artificial intelligence services (currently Google Gemini, DeepSeek, NVIDIA and Agnes AI; Anthropic for the Magic Pack’s live call). In Ziggy World, every AI-made item is labelled as such, and the live-call Santa is presented to the parent as an AI.',
+          'Some of Ziggy’s replies, quests, stories, voices and images are produced by artificial intelligence services: currently Mistral (France), first for the chat and the Magic Pack’s live call when it is available, Google (Gemini), DeepSeek, NVIDIA and Agnes AI, and Groq or Anthropic as chat fallbacks if switched on. The Privacy Policy says what each one receives. In Ziggy World, every AI-made item is labelled as such, the chat states that its answers are made by an AI, and the live-call Santa tells the child himself that his answers are made by an AI.',
           'AI can make mistakes: its answers may be inaccurate or incomplete. They do not replace a teacher, a health professional or an adult’s advice. If any content seems inappropriate, write to us and we will fix it.',
         ],
       },
@@ -223,7 +223,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
       {
         title: '9. Personal data and cookies',
         body: [
-          'How we handle data is described in the Privacy Policy, and what the site keeps in your browser in the Cookie Policy. Accounts are hosted by Supabase, on servers located in the European Union, and the site by Vercel.',
+          'How we handle data is described in the Privacy Policy, and what the site keeps in your browser in the Cookie Policy. Accounts are hosted by Supabase, and the site by Vercel.',
         ],
       },
       {

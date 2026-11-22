@@ -1,130 +1,138 @@
 /**
  * Ziggy's sound effects.
  *
- * Synthesised with the Web Audio API rather than shipped as files: a handful of
- * oscillator blips cost nothing to download and stay crisp at any volume. The
- * AudioContext is created lazily on the first real gesture, because browsers
- * refuse to start one before the user has interacted with the page.
+ * Synthesised with the Web Audio API rather than shipped as files (see
+ * `src/lib/sfx/`): nothing to download, no licence, crisp at any volume. This
+ * module is the site's door to them:
+ *
+ * - `playSound(name, opts?)`: the original names (tap, correct, wrong, star,
+ *   win, reward, pop) plus the funny ones (boing, squeak, whoosh…).
+ * - The global mute (`MUTE_KEY`, `setMuted`) silences everything, at once.
+ * - "Sons doux" (`setSoftSounds`) makes every effect quieter and rounder.
+ * - The AudioContext is created only after a real user gesture, and nothing
+ *   plays before one: no sound on page load.
+ * - Effects dip while Ziggy reads aloud (src/lib/voice.ts), so his words stay clear.
  */
+import { isSoundName, SOUND_NAMES, type SoundName } from './sfx/catalog';
+import { SfxPlayer, type PlayOptions } from './sfx/player';
+
+export { SOUND_NAMES, type SoundName, type PlayOptions };
 
 export const MUTE_KEY = 'ziggy:muted';
 export const MUTE_EVENT = 'ziggy:muted';
-
-type Note = { freq: number; start: number; dur: number; gain?: number; type?: OscillatorType };
-
-const VOICES: Record<string, Note[]> = {
-  // Soft tick for taps and card flips
-  tap: [{ freq: 660, start: 0, dur: 0.07, gain: 0.16, type: 'sine' }],
-  // Rising two-note "yes"
-  correct: [
-    { freq: 660, start: 0, dur: 0.1 },
-    { freq: 990, start: 0.08, dur: 0.16 },
-  ],
-  // Gentle falling tone — never harsh, this is for children
-  wrong: [
-    { freq: 320, start: 0, dur: 0.12, type: 'triangle' },
-    { freq: 240, start: 0.1, dur: 0.16, type: 'triangle' },
-  ],
-  // Sparkle for a star
-  star: [
-    { freq: 880, start: 0, dur: 0.08 },
-    { freq: 1320, start: 0.06, dur: 0.08 },
-    { freq: 1760, start: 0.12, dur: 0.14 },
-  ],
-  // Little fanfare on a win
-  win: [
-    { freq: 523, start: 0, dur: 0.13 },
-    { freq: 659, start: 0.12, dur: 0.13 },
-    { freq: 784, start: 0.24, dur: 0.13 },
-    { freq: 1047, start: 0.36, dur: 0.3 },
-  ],
-  // Reward ceremony: a quick rising sweep, then a struck bell (inharmonic
-  // partials, as in AuthenticSeal's seal), then a bright sparkle on top.
-  reward: [
-    { freq: 392, start: 0, dur: 0.07, gain: 0.08, type: 'triangle' },
-    { freq: 523, start: 0.06, dur: 0.07, gain: 0.09, type: 'triangle' },
-    { freq: 659, start: 0.12, dur: 0.07, gain: 0.1, type: 'triangle' },
-    { freq: 784, start: 0.18, dur: 0.08, gain: 0.11, type: 'triangle' },
-    { freq: 523, start: 0.3, dur: 1.6, gain: 0.2 },
-    { freq: 1051, start: 0.3, dur: 1.2, gain: 0.08 },
-    { freq: 1454, start: 0.3, dur: 0.9, gain: 0.05 },
-    { freq: 2181, start: 0.3, dur: 0.6, gain: 0.035 },
-    { freq: 2845, start: 0.3, dur: 0.45, gain: 0.02 },
-    { freq: 1568, start: 0.62, dur: 0.12, gain: 0.07 },
-    { freq: 2093, start: 0.7, dur: 0.22, gain: 0.06 },
-  ],
-  // Ziggy's hello
-  pop: [
-    { freq: 440, start: 0, dur: 0.09, type: 'triangle' },
-    { freq: 880, start: 0.07, dur: 0.13, type: 'triangle' },
-  ],
-};
-
-export type SoundName = keyof typeof VOICES;
-
-let ctx: AudioContext | null = null;
+export const SOFT_KEY = 'ziggy:soft-sounds';
+export const SOFT_EVENT = 'ziggy:soft-sounds';
 
 function isBrowser() {
   return typeof window !== 'undefined';
 }
 
-export function isMuted(): boolean {
+function readFlag(key: string): boolean {
   if (!isBrowser()) return false;
   try {
-    return window.localStorage.getItem(MUTE_KEY) === '1';
+    return window.localStorage.getItem(key) === '1';
   } catch {
     return false;
   }
 }
 
-export function setMuted(muted: boolean): void {
+function writeFlag(key: string, on: boolean, event: string) {
   if (!isBrowser()) return;
   try {
-    window.localStorage.setItem(MUTE_KEY, muted ? '1' : '0');
+    window.localStorage.setItem(key, on ? '1' : '0');
   } catch {
     /* ignore */
   }
-  window.dispatchEvent(new CustomEvent(MUTE_EVENT, { detail: muted }));
+  window.dispatchEvent(new CustomEvent(event, { detail: on }));
 }
 
-function getContext(): AudioContext | null {
-  if (!isBrowser()) return null;
+export function isMuted(): boolean {
+  return readFlag(MUTE_KEY);
+}
+
+export function setMuted(muted: boolean): void {
+  if (muted) live?.player.stopAll();
+  writeFlag(MUTE_KEY, muted, MUTE_EVENT);
+}
+
+/** "Sons doux / soft sounds": every effect quieter and rounder. */
+export function isSoftSounds(): boolean {
+  return readFlag(SOFT_KEY);
+}
+
+export function setSoftSounds(soft: boolean): void {
+  live?.player.bus.setLevel(1, soft);
+  writeFlag(SOFT_KEY, soft, SOFT_EVENT);
+}
+
+/* ── user gesture: browsers refuse to start audio before one, and so do we ── */
+
+let gestured = false;
+if (isBrowser()) {
+  const mark = () => {
+    gestured = true;
+  };
+  for (const type of ['pointerdown', 'keydown', 'touchstart']) {
+    window.addEventListener(type, mark, { capture: true, passive: true, once: true });
+  }
+}
+
+function hasGesture(): boolean {
+  if (gestured) return true;
+  const activation = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation;
+  return activation?.hasBeenActive === true;
+}
+
+/* ── the live context, made on the first sound after a gesture ── */
+
+let live: { ctx: AudioContext; player: SfxPlayer } | null = null;
+
+function getLive(): typeof live {
+  if (live) {
+    // Safari and Chrome park the context until a gesture resumes it.
+    if (live.ctx.state !== 'running') void live.ctx.resume().catch(() => {});
+    return live;
+  }
   try {
     type WithWebkit = typeof window & { webkitAudioContext?: typeof AudioContext };
     const Ctor = window.AudioContext ?? (window as WithWebkit).webkitAudioContext;
     if (!Ctor) return null;
-    ctx ??= new Ctor();
-    // Safari and Chrome park the context until a gesture resumes it.
-    if (ctx.state === 'suspended') void ctx.resume();
-    return ctx;
+    const ctx = new Ctor();
+    if (ctx.state === 'suspended') void ctx.resume().catch(() => {});
+    const player = new SfxPlayer(ctx);
+    player.bus.setLevel(1, isSoftSounds());
+    live = { ctx, player };
+    duckUnderVoice(player);
+    return live;
   } catch {
     return null;
   }
 }
 
-export function playSound(name: SoundName): void {
-  if (isMuted()) return;
-  const audio = getContext();
-  const notes = VOICES[name];
-  if (!audio || !notes) return;
+/**
+ * Effects dip while Ziggy speaks. voice.ts imports this module, so it is
+ * loaded lazily here (a static import would be circular).
+ */
+function duckUnderVoice(player: SfxPlayer) {
+  void import('./voice')
+    .then(({ voiceStore }) => {
+      const sync = () => player.bus.setDucked(Boolean(voiceStore.get().speakingId));
+      voiceStore.subscribe(sync);
+      sync();
+    })
+    .catch(() => {});
+}
 
-  const now = audio.currentTime;
-  for (const note of notes) {
-    const osc = audio.createOscillator();
-    const gain = audio.createGain();
-    const peak = note.gain ?? 0.2;
-    const t0 = now + note.start;
-
-    osc.type = note.type ?? 'sine';
-    osc.frequency.setValueAtTime(note.freq, t0);
-
-    // Short fade in and out so nothing clicks.
-    gain.gain.setValueAtTime(0.0001, t0);
-    gain.gain.exponentialRampToValueAtTime(peak, t0 + 0.012);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + note.dur);
-
-    osc.connect(gain).connect(audio.destination);
-    osc.start(t0);
-    osc.stop(t0 + note.dur + 0.02);
-  }
+/**
+ * Play one of Ziggy's sounds. Options: `pitch` (semitones), `volume` (0–1),
+ * `pan` (−1…1), `variation` (default true: each play is a hair different).
+ * Silent when muted, before any user gesture, or when a mix limit skips it.
+ */
+export function playSound(name: SoundName, opts?: PlayOptions): void {
+  if (!isBrowser() || isMuted() || !isSoundName(name) || !hasGesture()) return;
+  // Hover ticks only where there is a real hovering pointer.
+  if (name === 'hover' && window.matchMedia?.('(hover: none)').matches) return;
+  const audio = getLive();
+  if (!audio) return;
+  audio.player.play(name, opts, audio.ctx.currentTime + 0.005);
 }

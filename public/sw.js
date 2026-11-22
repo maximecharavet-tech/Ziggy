@@ -2,6 +2,9 @@
  *
  * - Static files (/_next/static, mascot, media, icons, dodo art): cache first
  *   (they are versioned or never change).
+ * - Ziggy's voice bank (/voice/…): the clip list (manifest.json) network
+ *   first with the last copy kept for offline; the clips cache first in their
+ *   own small cache (VOICE_MAX newest kept), their URL carries the voice version.
  * - Pages: network first, with the last copy kept for offline visits, and a
  *   friendly fallback page when a page was never opened online.
  * - API calls and anything cross-origin: untouched (no data is cached), except
@@ -12,9 +15,12 @@
  *   audio requests included. Same-origin only, nothing leaves the device.
  * Bump VERSION to clear old caches.
  */
-const VERSION = 'ziggy-v7';
+const VERSION = 'ziggy-v8';
 const STATIC = `${VERSION}-static`;
 const PAGES = `${VERSION}-pages`;
+const VOICE = `${VERSION}-voice`;
+const VOICE_MAX = 600;
+const VOICE_MANIFEST = '/voice/manifest.json';
 const KEEP = 'ziggy-dodo-stories';
 const DODO_ASSETS = '/api/ziggy/dodo/assets';
 const OFFLINE_URL = '/offline.html';
@@ -46,6 +52,24 @@ self.addEventListener('fetch', (event) => {
     return;
   }
   if (url.pathname.startsWith('/api/')) return;
+  if (url.pathname === VOICE_MANIFEST) {
+    event.respondWith(
+      (async () => {
+        try {
+          const res = await fetch(req);
+          if (res.ok) (await caches.open(VOICE)).put(VOICE_MANIFEST, res.clone());
+          return res;
+        } catch {
+          return (await (await caches.open(VOICE)).match(VOICE_MANIFEST)) || Response.error();
+        }
+      })()
+    );
+    return;
+  }
+  if (url.pathname.startsWith('/voice/') && !req.headers.has('range')) {
+    event.respondWith(voiceClip(req));
+    return;
+  }
   // Audio streamed by <audio> (Range requests, e.g. the dodo "Version musicale"): the browser
   // handles it, except for a story kept for tonight, answered from the device.
   if (req.headers.has('range')) {
@@ -81,6 +105,21 @@ self.addEventListener('fetch', (event) => {
     );
   }
 });
+
+/** A voice-bank clip: from the cache, else the network (then kept, oldest dropped past VOICE_MAX). */
+async function voiceClip(req) {
+  const cache = await caches.open(VOICE);
+  const hit = await cache.match(req);
+  if (hit) return hit;
+  const res = await fetch(req);
+  if (res.ok && res.status === 200) {
+    await cache.put(req, res.clone());
+    const keys = await cache.keys();
+    const clips = keys.filter((k) => new URL(k.url).pathname !== VOICE_MANIFEST);
+    for (const k of clips.slice(0, Math.max(0, clips.length - VOICE_MAX))) await cache.delete(k);
+  }
+  return res;
+}
 
 /** 206 answer cut from the kept full file; the network when the story was not kept. */
 async function rangeFromKept(req, url) {

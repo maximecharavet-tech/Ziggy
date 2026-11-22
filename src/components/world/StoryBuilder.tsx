@@ -21,6 +21,7 @@ import { FlipBook } from '@/components/create/fx/FlipBook';
 import { StudioFrame } from '@/components/create/fx/StudioFrame';
 import { alpha, fx, loop, shade, toy } from '@/components/create/fx/toy';
 import { Glyph, ZIGGY_EMOJI, ZiggyMark } from '@/components/create/fx/ZiggyMark';
+import { AiLabel } from '@/components/ui/AiLabel';
 
 type Key = 'hero' | 'place' | 'companion' | 'object' | 'goal';
 type Choice = { id: string; emoji: string; label: L };
@@ -47,7 +48,7 @@ const T = {
   library: { fr: 'Ma bibliothèque', en: 'My library' },
   open: { fr: 'Lire', en: 'Read' },
   del: { fr: 'Supprimer', en: 'Delete' },
-  ai: { fr: '✨ Créée par Hyper Engine, vérifiée par ChildShield', en: '✨ Made by Hyper Engine, checked by ChildShield' },
+  ai: { fr: 'Histoire créée avec l’aide de l’IA (Hyper Engine), vérifiée par ChildShield', en: 'Story made with the help of AI (Hyper Engine), checked by ChildShield' },
   local: { fr: '📖 Histoire Ziggy', en: '📖 Ziggy story' },
   end: { fr: 'Fin', en: 'The end' },
   saved: { fr: 'Gardée dans ta bibliothèque', en: 'Saved in your library' },
@@ -469,9 +470,9 @@ function StoryBook({ story, source, saved, cast, locale, onClose }: { story: Sto
 
   return (
     <div className="mx-auto max-w-5xl">
-      <p className="text-center text-xs font-bold text-text-muted">
-        {tr(source === 'ai' ? T.ai : T.local, locale)}
-        {saved ? ` · ${tr(T.saved, locale)}` : ''}
+      <p className="flex flex-wrap items-center justify-center gap-2 text-center text-xs font-bold text-text-muted">
+        {source === 'ai' ? <AiLabel text={T.ai} /> : tr(T.local, locale)}
+        {saved ? <span>{tr(T.saved, locale)}</span> : null}
       </p>
       <motion.h2 initial={reduce ? false : { opacity: 0, y: 12, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="mt-2 text-center font-display text-3xl font-bold text-text-body text-balance sm:text-4xl">
         {story.title}

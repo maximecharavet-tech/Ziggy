@@ -1,5 +1,6 @@
 import type { RoomDef } from '../logic';
 import { FLOOR_PREFABS, WALL_PREFABS, prefabFor, type HideKind, type Pieces, type PrefabColors } from './furniture';
+import * as THREE from 'three';
 import { heartShape, starShape, type Hex, type V3, type WallTheme } from './kit';
 
 /**
@@ -253,6 +254,216 @@ const HIDE_SPOTS: { at: V3; rotY: number }[] = [
   { at: [1.5, 0, -1.3], rotY: 0 },
 ];
 
+// ---------------------------------------------------------------------------
+// Signature touches of the generic rooms (4–15): a few cheap pieces each, in
+// the free bands of the walls (upper side walls toward the front, the back
+// wall corners, the ceiling at the back), merged with the shell like every
+// decor piece, so they cost triangles, never a draw call.
+
+const SIDE = 4.93; // inner face of the side walls
+const BACK = -3.4; // just off the back wall
+
+/** A triangle pennant (bunting). */
+function pennant(w: number, h: number): THREE.Shape {
+  const s = new THREE.Shape();
+  s.moveTo(-w / 2, 0);
+  s.lineTo(w / 2, 0);
+  s.lineTo(0, -h);
+  s.closePath();
+  return s;
+}
+
+/** A crescent moon outline. */
+function crescent(r: number): THREE.Shape {
+  const s = new THREE.Shape();
+  const cx = r * 0.5;
+  const ri = Math.hypot(cx, r);
+  s.absarc(0, 0, r, Math.PI / 2, (3 * Math.PI) / 2, false);
+  s.absarc(cx, 0, ri, Math.atan2(-r, -cx) + Math.PI * 2, Math.atan2(r, -cx), true);
+  return s;
+}
+
+/** Bunting along a wall: `from` → `to`, sagging a little. */
+function bunting(p: Pieces, from: V3, to: V3, colors: Hex[], n = 9, rotY = 0) {
+  for (let i = 0; i < n; i++) {
+    const t = (i + 0.5) / n;
+    const sag = Math.sin(t * Math.PI) * 0.22;
+    const at: V3 = [from[0] + (to[0] - from[0]) * t, from[1] + (to[1] - from[1]) * t - sag, from[2] + (to[2] - from[2]) * t];
+    p.felt.extrude(pennant(0.3, 0.36), 0.015, colors[i % colors.length], { at, rot: [0, rotY, 0] });
+  }
+  const len = Math.hypot(to[0] - from[0], to[2] - from[2]);
+  p.wood.box(rotY ? 0.02 : len, 0.02, rotY ? len : 0.02, '#6b4226', { at: [(from[0] + to[0]) / 2, (from[1] + to[1]) / 2 - 0.08, (from[2] + to[2]) / 2] });
+}
+
+/** A felt wreath with a bow, flat on a wall facing `rotY`. */
+function wreath(p: Pieces, at: V3, rotY: number, r = 0.34) {
+  p.felt.torus(r, r * 0.3, '#2f7d4a', { at, rot: [0, rotY, 0], seg: 16 });
+  const dx = Math.sin(rotY) * 0.06;
+  const dz = Math.cos(rotY) * 0.06;
+  for (const k of [0, 1.3, 2.6, 3.9, 5.2]) p.felt.sphere(0.05, '#e2453c', { at: [at[0] + Math.cos(rotY) * Math.cos(k) * r + dx, at[1] + Math.sin(k) * r, at[2] - Math.sin(rotY) * Math.cos(k) * r + dz], seg: 6 });
+  p.felt.sphere(0.09, '#e2453c', { at: [at[0] + dx, at[1] - r, at[2] + dz], scale: [1.6, 0.8, 0.6], rot: [0, rotY, 0], seg: 8 });
+}
+
+/** A hanging lamp from the ceiling. */
+function pendant(p: Pieces, at: V3, shade: Hex, light: Hex) {
+  p.wood.cyl(0.015, 0.015, 4.2 - at[1], '#3b2a22', { at: [at[0], (4.2 + at[1]) / 2 + 0.15, at[2]], seg: 4 });
+  p.wood.cone(0.32, 0.28, shade, { at: [at[0], at[1] + 0.14, at[2]], seg: 12 });
+  p.glow.sphere(0.1, light, { at: [at[0], at[1], at[2]], seg: 8 });
+}
+
+const ROOM_TOUCHES: Record<string, (p: Pieces, t: RoomTheme) => void> = {
+  'chaos.bathroom': (p) => {
+    // soap bubbles drifting up the left wall, a towel rail with striped towels on the right
+    const bubbles: [number, number, number][] = [[1.2, 2.9, 0.16], [0.7, 3.3, 0.11], [1.6, 3.5, 0.13], [2.1, 3.0, 0.09], [1.0, 3.8, 0.08], [2.4, 3.6, 0.12]];
+    for (const [z, y, r] of bubbles) p.felt.sphere(r, '#e8f7ff', { at: [-SIDE + 0.25, y, z], seg: 10 });
+    p.wood.cyl(0.03, 0.03, 1.6, '#c9a227', { at: [SIDE - 0.12, 2.65, 1.5], rot: [Math.PI / 2, 0, 0], seg: 8 });
+    p.felt.box(0.05, 0.9, 0.6, '#ff8fb1', { at: [SIDE - 0.1, 2.25, 1.1], r: 0.02 });
+    p.felt.box(0.05, 0.7, 0.55, '#7fc8e8', { at: [SIDE - 0.12, 2.35, 1.85], r: 0.02 });
+    for (const [z, c] of [[1.1, '#ffffff'], [1.85, '#ffffff']] as const) p.felt.box(0.06, 0.08, 0.5, c, { at: [SIDE - 0.1, 2.0, z] });
+  },
+  'chaos.bedroom': (p) => {
+    // a sleepy moon and twinkling stars on the left wall, a felt cloud on the right
+    p.glow.extrude(crescent(0.36), 0.03, '#fff2b0', { at: [-SIDE + 0.04, 3.3, 1.4], rot: [0, Math.PI / 2, 0.3] });
+    for (const [z, y, r] of [[0.4, 3.7, 0.12], [2.3, 3.6, 0.1], [0.75, 3.15, 0.08], [2.6, 3.1, 0.13], [1.9, 3.9, 0.07]])
+      p.glow.extrude(starShape(r), 0.02, '#ffd25e', { at: [-SIDE + 0.04, y, z], rot: [0, Math.PI / 2, 0] });
+    for (const [dz, dy, r] of [[0, 0, 0.32], [0.35, -0.05, 0.26], [-0.35, -0.06, 0.24], [0.15, 0.18, 0.22]]) p.felt.sphere(r, '#ffffff', { at: [SIDE - 0.08, 3.3 + dy, 1.6 + dz], scale: [0.3, 1, 1], seg: 10 });
+  },
+  'chaos.playroom': (p, t) => {
+    // bunting across the back, a kite with a bow tail on the right wall, balloons on the left
+    bunting(p, [-4.6, 3.55, BACK + 0.06], [4.6, 3.55, BACK + 0.06], ['#e2453c', '#ffcc33', '#3f7fe0', '#3fbf6a', '#ff8a3d'], 13);
+    const kite = new THREE.Shape();
+    kite.moveTo(0, 0.45);
+    kite.lineTo(0.3, 0);
+    kite.lineTo(0, -0.6);
+    kite.lineTo(-0.3, 0);
+    kite.closePath();
+    p.felt.extrude(kite, 0.02, t.colors.accent, { at: [SIDE - 0.05, 3.25, 1.4], rot: [0, -Math.PI / 2, 0] });
+    for (let i = 0; i < 4; i++) p.felt.sphere(0.07, ['#e2453c', '#ffcc33', '#3fbf6a', '#ff8a3d'][i], { at: [SIDE - 0.06, 2.55 - i * 0.22, 1.4 + Math.sin(i * 1.4) * 0.15], scale: [0.5, 0.7, 1.4], seg: 6 });
+    for (const [z, y, c] of [[1.0, 3.3, '#e2453c'], [1.45, 3.55, '#3f7fe0'], [1.9, 3.25, '#ffcc33']] as const) {
+      p.felt.sphere(0.24, c, { at: [-SIDE + 0.35, y, z], scale: [1, 1.15, 1], seg: 12 });
+      p.wood.cyl(0.008, 0.008, 1.0, '#ffffff', { at: [-SIDE + 0.35, y - 0.75, z], seg: 3 });
+    }
+  },
+  'chaos.library': (p, t) => {
+    // a rolling ladder on the left wall, two warm wall sconces under a high shelf of books on the right
+    for (const dz of [-0.28, 0.28]) p.wood.box(0.06, 3.4, 0.06, t.colors.woodDark, { at: [-SIDE + 0.35, 1.7, 1.6 + dz], rot: [0, 0, -0.12] });
+    for (let i = 0; i < 8; i++) p.wood.box(0.05, 0.05, 0.56, t.colors.wood, { at: [-SIDE + 0.32 - i * 0.05 + 0.2, 0.3 + i * 0.42, 1.6] });
+    p.wood.cyl(0.025, 0.025, 2.4, '#c9a227', { at: [-SIDE + 0.12, 3.5, 1.4], rot: [Math.PI / 2, 0, 0], seg: 6 });
+    for (const z of [0.6, 2.2]) {
+      p.wood.box(0.12, 0.08, 0.16, '#c9a227', { at: [SIDE - 0.06, 2.6, z] });
+      p.glow.sphere(0.11, '#ffd28a', { at: [SIDE - 0.2, 2.78, z], seg: 8 });
+      p.wood.cyl(0.07, 0.15, 0.18, '#a83a3a', { at: [SIDE - 0.2, 2.92, z], seg: 10 });
+    }
+    const spines: Hex[] = ['#a83a3a', '#e9c46a', '#2f5d8a', '#3f7d5c', '#7950f2', '#e2453c'];
+    p.wood.box(0.34, 0.06, 2.4, t.colors.wood, { at: [SIDE - 0.17, 3.3, 1.4] });
+    for (let i = 0; i < 16; i++) {
+      const h = 0.36 + (i % 3) * 0.06;
+      p.felt.box(0.26, h, 0.12, spines[i % spines.length], { at: [SIDE - 0.18, 3.33 + h / 2, 0.35 + i * 0.14] });
+    }
+  },
+  'chaos.music-room': (p) => {
+    // music notes dancing on both side walls, a guitar hanging on the right
+    const notes: [number, number, number][] = [[0.5, 3.4, 1], [1.2, 3.0, -1], [1.9, 3.6, 1], [2.6, 3.1, -1]];
+    for (const [side, mirror] of [[-1, 1], [1, -1]] as const)
+      for (const [z, y] of notes) {
+        const x = side * (SIDE - 0.05);
+        const zz = mirror > 0 ? z : 3.1 - z;
+        p.felt.sphere(0.1, '#ffd25e', { at: [x, y, zz], scale: [0.3, 0.75, 1.1], seg: 8 });
+        p.felt.box(0.03, 0.42, 0.03, '#ffd25e', { at: [x, y + 0.22, zz + 0.09] });
+        p.felt.box(0.03, 0.06, 0.16, '#ffd25e', { at: [x, y + 0.41, zz + 0.16], rot: [-0.4, 0, 0] });
+      }
+    p.wood.sphere(0.36, '#e08a3c', { at: [SIDE - 0.12, 2.1, 1.5], scale: [0.25, 1, 0.9], seg: 12 });
+    p.wood.sphere(0.27, '#e08a3c', { at: [SIDE - 0.12, 2.55, 1.5], scale: [0.25, 1, 0.85], seg: 12 });
+    p.wood.cyl(0.08, 0.08, 0.03, '#3b2a22', { at: [SIDE - 0.18, 2.3, 1.5], rot: [0, 0, Math.PI / 2], seg: 12 });
+    p.wood.box(0.06, 0.95, 0.09, '#6b4226', { at: [SIDE - 0.12, 3.2, 1.5] });
+  },
+  'chaos.snowy-garden': (p) => {
+    // a big glowing moon, a few stars, snowy bushes at the back
+    p.glow.sphere(0.45, '#fff6d0', { at: [-3.6, 3.75, -3.3], seg: 16 });
+    for (const [x, y, r] of [[-2.4, 4.0, 0.1], [-1.1, 3.6, 0.08], [1.6, 3.95, 0.11], [3.0, 3.55, 0.08], [0.3, 4.1, 0.07]])
+      p.glow.extrude(starShape(r), 0.02, '#ffe9a0', { at: [x, y, -3.3] });
+    for (const x of [-1.45, 1.45]) {
+      p.felt.sphere(0.42, '#2f6b4a', { at: [x, 0.3, -3.1], scale: [1.3, 0.8, 0.8], seg: 10 });
+      p.felt.sphere(0.36, '#ffffff', { at: [x, 0.55, -3.1], scale: [1.25, 0.45, 0.75], seg: 10 });
+    }
+  },
+  'chaos.workshop': (p, t) => {
+    // a lamp over the bench, felt gears on the left wall, a saw and a hammer outline on the right
+    pendant(p, [0, 3.35, -2.4], t.colors.accent, '#ffe0a8');
+    for (const [z, y, r, c] of [[0.8, 3.2, 0.34, '#f08c00'], [1.45, 2.75, 0.24, '#3f7fe0'], [1.75, 3.45, 0.18, '#e2453c']] as const) {
+      p.felt.torus(r, r * 0.28, c, { at: [-SIDE + 0.05, y, z], rot: [0, Math.PI / 2, 0], seg: 10 });
+      for (let k = 0; k < 8; k++) p.felt.box(0.04, 0.12, 0.12, c, { at: [-SIDE + 0.05, y + Math.sin((k / 8) * Math.PI * 2) * r * 1.25, z + Math.cos((k / 8) * Math.PI * 2) * r * 1.25] });
+    }
+    p.wood.box(0.04, 0.3, 1.0, '#c9ced6', { at: [SIDE - 0.05, 2.9, 1.2] });
+    p.wood.box(0.06, 0.32, 0.22, t.colors.wood, { at: [SIDE - 0.06, 2.92, 0.62], r: 0.03 });
+    p.wood.box(0.05, 0.75, 0.07, t.colors.wood, { at: [SIDE - 0.06, 2.75, 2.2] });
+    p.wood.box(0.08, 0.16, 0.36, '#6b7280', { at: [SIDE - 0.07, 3.15, 2.2], r: 0.02 });
+  },
+  'chaos.dining-room': (p, t) => {
+    // a candle chandelier at the back, a plate rack on the left wall, a fruit-bowl painting on the right
+    p.wood.cyl(0.015, 0.015, 0.6, '#3b2a22', { at: [0, 3.9, -2.2], seg: 4 });
+    p.wood.torus(0.5, 0.035, '#c9a227', { at: [0, 3.6, -2.2], rot: [Math.PI / 2, 0, 0], seg: 20 });
+    for (let k = 0; k < 5; k++) {
+      const a = (k / 5) * Math.PI * 2;
+      p.felt.cyl(0.04, 0.04, 0.2, '#f6f1e7', { at: [Math.cos(a) * 0.5, 3.72, -2.2 + Math.sin(a) * 0.5], seg: 6 });
+      p.glow.sphere(0.045, '#ffd28a', { at: [Math.cos(a) * 0.5, 3.86, -2.2 + Math.sin(a) * 0.5], seg: 6 });
+    }
+    p.wood.box(0.12, 0.08, 2.0, t.colors.woodDark, { at: [-SIDE + 0.08, 2.75, 1.4] });
+    for (let i = 0; i < 4; i++) {
+      p.felt.cyl(0.24, 0.24, 0.03, '#ffffff', { at: [-SIDE + 0.08, 3.0, 0.65 + i * 0.5], rot: [0, 0, Math.PI / 2], seg: 16 });
+      p.felt.cyl(0.15, 0.15, 0.035, t.colors.accent, { at: [-SIDE + 0.09, 3.0, 0.65 + i * 0.5], rot: [0, 0, Math.PI / 2], seg: 12 });
+    }
+    p.wood.box(0.05, 0.8, 1.0, '#c9a227', { at: [SIDE - 0.05, 3.0, 1.5], r: 0.03 });
+    p.felt.box(0.03, 0.64, 0.84, '#fff4e0', { at: [SIDE - 0.07, 3.0, 1.5] });
+    for (const [dz, dy, c] of [[-0.15, -0.05, '#e2453c'], [0.12, -0.02, '#ffcc33'], [0, 0.12, '#3fbf6a']] as const) p.felt.sphere(0.1, c, { at: [SIDE - 0.09, 3.0 + dy, 1.5 + dz], scale: [0.3, 1, 1], seg: 8 });
+  },
+  'chaos.attic': (p, t) => {
+    // roof beams sloping at the back, a round window, a bare bulb, a trunk of old toys
+    for (const s of [-1, 1]) p.wood.box(2.3, 0.2, 0.2, t.colors.woodDark, { at: [s * 4.0, 3.95, -3.25], rot: [0, 0, s * 0.3] });
+    p.wood.box(10, 0.24, 0.24, t.colors.woodDark, { at: [0, 4.05, -3.2] });
+    p.wood.torus(0.42, 0.07, t.colors.woodDark, { at: [0, 3.35, BACK + 0.02], seg: 18 });
+    p.glow.cyl(0.4, 0.4, 0.02, '#cfe0ff', { at: [0, 3.35, BACK], rot: [Math.PI / 2, 0, 0], seg: 18 });
+    p.wood.box(0.04, 0.8, 0.04, t.colors.woodDark, { at: [0, 3.35, BACK + 0.04] });
+    p.wood.box(0.8, 0.04, 0.04, t.colors.woodDark, { at: [0, 3.35, BACK + 0.04] });
+    p.wood.cyl(0.012, 0.012, 0.7, '#3b2a22', { at: [-1.6, 3.85, -1.6], seg: 4 });
+    p.glow.sphere(0.09, '#ffe6a0', { at: [-1.6, 3.45, -1.6], seg: 8 });
+    for (const z of [0.6, 1.4, 2.2]) p.felt.box(0.04, 0.22, 0.04, '#d8c39a', { at: [SIDE - 0.05, 3.7, z] });
+    p.felt.box(0.03, 0.04, 1.8, '#d8c39a', { at: [SIDE - 0.05, 3.6, 1.4] });
+  },
+  'chaos.cellar': (p, t) => {
+    // ceiling beams, a lantern on the right wall, a treasure map pinned on the left wall (the secret map!)
+    for (const z of [-2.4, -0.8]) p.wood.box(10, 0.2, 0.24, t.colors.woodDark, { at: [0, 4.08, z] });
+    for (const z of [0.7, 2.2]) {
+      const x = SIDE - 0.2;
+      p.wood.box(0.25, 0.06, 0.06, '#3b2a22', { at: [x + 0.08, 2.95, z] });
+      p.wood.box(0.22, 0.3, 0.22, '#3b2a22', { at: [x, 2.72, z] });
+      p.glow.box(0.16, 0.22, 0.23, '#ffc878', { at: [x, 2.72, z] });
+      p.wood.cone(0.16, 0.12, '#3b2a22', { at: [x, 2.93, z], seg: 4, rot: [0, Math.PI / 4, 0] });
+    }
+    p.felt.box(0.03, 0.85, 1.15, '#ecd9a8', { at: [-SIDE + 0.04, 2.9, 1.5] });
+    for (let i = 0; i < 5; i++) p.felt.box(0.035, 0.05, 0.12, '#8a5a44', { at: [-SIDE + 0.06, 2.65 + i * 0.1, 1.1 + i * 0.16] });
+    p.felt.box(0.035, 0.05, 0.22, '#e2453c', { at: [-SIDE + 0.07, 3.15, 1.85], rot: [0.7, 0, 0] });
+    p.felt.box(0.035, 0.05, 0.22, '#e2453c', { at: [-SIDE + 0.07, 3.15, 1.85], rot: [-0.7, 0, 0] });
+    for (const [dy, dz] of [[0.36, -0.5], [0.36, 0.5], [-0.36, -0.5], [-0.36, 0.5]]) p.wood.sphere(0.035, '#c9a227', { at: [-SIDE + 0.07, 2.9 + dy, 1.5 + dz], seg: 6 });
+  },
+  'chaos.roof': (p) => {
+    // a crescent moon and stars over the chimneys
+    p.glow.extrude(crescent(0.42), 0.03, '#fff6d0', { at: [3.7, 3.8, -3.3], rot: [0, 0, -0.35] });
+    for (const [x, y, r] of [[-3.6, 3.9, 0.12], [-2.2, 3.5, 0.08], [-0.8, 4.05, 0.1], [1.0, 3.75, 0.07], [2.3, 4.1, 0.09]])
+      p.glow.extrude(starShape(r), 0.02, '#ffe9a0', { at: [x, y, -3.3] });
+  },
+  'chaos.christmas-eve': (p) => {
+    // wreaths on both side walls, candy canes, a gold star garland across the back
+    wreath(p, [-SIDE + 0.06, 3.05, 1.3], Math.PI / 2);
+    wreath(p, [SIDE - 0.06, 3.05, 1.3], -Math.PI / 2);
+    for (let i = 0; i < 9; i++) p.glow.extrude(starShape(0.09), 0.02, '#ffd25e', { at: [-3.6 + i * 0.9, 3.45 - Math.sin((i / 8) * Math.PI) * 0.2, BACK + 0.05] });
+    for (const [x, z] of [[-SIDE + 0.08, 2.4], [SIDE - 0.08, 2.4]] as const) {
+      for (let k = 0; k < 6; k++) p.felt.cyl(0.05, 0.05, 0.14, k % 2 ? '#ffffff' : '#e2453c', { at: [x, 2.0 + k * 0.14, z], seg: 8 });
+      p.felt.torus(0.12, 0.05, '#e2453c', { at: [x, 2.84, z - 0.12], rot: [0, Math.PI / 2, 0], arc: Math.PI, seg: 8 });
+    }
+  },
+};
+
 function genericLayout(room: RoomDef): Omit<RoomLayout, 'theme'> {
   const groups = groupSlots(room.slots.map((s) => s.id));
   const stations: StationPlan[] = [];
@@ -281,6 +492,11 @@ function genericLayout(room: RoomDef): Omit<RoomLayout, 'theme'> {
       stations.push({ prefab, slots: g.slots, at: [BACK_X[back++], 0, -2.75], rotY: 0 });
       continue;
     }
+    if (side >= SIDE_Z.length * 2 && floor < FLOOR_SPOTS.length) {
+      // both side walls are full: a free floor spot rather than on top of another piece
+      stations.push({ prefab, slots: g.slots, at: FLOOR_SPOTS[floor++], rotY: 0 });
+      continue;
+    }
     const s = side++;
     const left = s % 2 === 0;
     const z = SIDE_Z[Math.floor(s / 2) % SIDE_Z.length];
@@ -288,7 +504,9 @@ function genericLayout(room: RoomDef): Omit<RoomLayout, 'theme'> {
   }
   const hides: HidePlan[] = room.hidingSpots.map((h, i) => ({ id: h.id, at: HIDE_SPOTS[i % HIDE_SPOTS.length].at, rotY: HIDE_SPOTS[i % HIDE_SPOTS.length].rotY }));
   const theme = THEMES[room.id];
+  const touches = ROOM_TOUCHES[room.id];
   const decor = (p: Pieces) => {
+    if (touches && theme) touches(p, theme);
     if (theme?.outdoor) {
       // fairy lights along a rope at the back and a lantern
       for (let i = 0; i < 16; i++) p.glow.sphere(0.07, ['#ff5c5c', '#ffd25e', '#5cc8ff', '#7dff9a'][i % 4], { at: [-4.5 + i * 0.6, 2.6 - Math.sin((i / 15) * Math.PI) * 0.4, -3.1], seg: 6 });

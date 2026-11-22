@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { rateLimit } from '@/lib/rate-limit';
 import { speakable, synthesize, type TtsStyle } from '@/lib/tts-gemini';
+import { obviousPersonalData } from '@/lib/privacy/personal';
 
 /**
  * Ziggy's voice: Gemini text-to-speech (the same engine as Hyper™ AI Engine's
@@ -9,6 +10,11 @@ import { speakable, synthesize, type TtsStyle } from '@/lib/tts-gemini';
  *
  * A small in-memory cache answers repeated sentences (game prompts, greetings)
  * without a new API call.
+ *
+ * Personal data never goes to the voice provider: the page keeps sentences with
+ * the child's first name or typed names on the device (src/lib/privacy/personal.ts),
+ * and this route also refuses (422) what it can see cheaply — an email, a phone
+ * number, a street address, "je m'appelle …". The page then uses the device's voice.
  */
 
 export const runtime = 'nodejs';
@@ -41,6 +47,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'bad-request' }, { status: 400 });
   }
   if (!text) return NextResponse.json({ error: 'empty' }, { status: 400 });
+  if (obviousPersonalData(text).length) return NextResponse.json({ error: 'personal' }, { status: 422 });
 
   const cacheKey = `${style}:${text}`;
   let audio = cache.get(cacheKey);

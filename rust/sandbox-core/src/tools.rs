@@ -66,6 +66,9 @@ impl World {
         if sea {
             self.stir(cx as i32, cy as i32, r as i32 + 3);
         }
+        if t == EMPTY {
+            self.dig_at(cx, cy, r);
+        }
     }
 
     /// Paints along a segment, so a fast finger leaves no gaps.
@@ -175,6 +178,7 @@ impl World {
         }
         self.stir(cx as i32, cy as i32, r as i32 + 2);
         self.blow_parcel(cx, cy, r, dir);
+        self.blow_kite(cx, cy, r, dir);
     }
 
     /* ── Save and restore a creation ── */
@@ -183,7 +187,7 @@ impl World {
     pub fn save(&self, out: &mut Vec<u8>) {
         out.clear();
         out.extend_from_slice(b"ZSB2");
-        out.push(1);
+        out.push(2);
         out.push(self.world);
         out.extend_from_slice(&(self.w as u16).to_le_bytes());
         out.extend_from_slice(&(self.h as u16).to_le_bytes());
@@ -208,6 +212,7 @@ impl World {
         for e in p.exposure {
             out.extend_from_slice(&e.to_le_bytes());
         }
+        self.save_toys(out);
         for plane in 0..5 {
             let bytes: Vec<u8> = match plane {
                 4 => self.aux.clone(),
@@ -227,7 +232,8 @@ impl World {
     /// this very world (same world, same size) is refused and changes nothing.
     pub fn load(&mut self, data: &[u8]) -> bool {
         let n = self.w * self.h;
-        if data.len() < 30 || &data[0..4] != b"ZSB2" || data[4] != 1 {
+        // Version 1 (before the toys) is still read: a kept world is never lost.
+        if data.len() < 30 || &data[0..4] != b"ZSB2" || !(data[4] == 1 || data[4] == 2) {
             return false;
         }
         let (body, tail) = data.split_at(data.len() - 4);
@@ -271,6 +277,13 @@ impl World {
             let Some(e) = r.u16() else { return false };
             parcel.exposure[k] = e.min(crate::parcel::OPEN_AT - 1);
         }
+        let toys = if data[4] >= 2 {
+            let Some(flags) = r.u8() else { return false };
+            let Some(toys) = self.read_toys(|| r.u16(), flags) else { return false };
+            toys
+        } else {
+            crate::toys::Toys::new()
+        };
         let mut planes: Vec<Vec<u8>> = Vec::with_capacity(5);
         for _ in 0..5 {
             let Some(len) = r.u32() else { return false };
@@ -296,6 +309,7 @@ impl World {
         self.crng = crng | 1;
         self.critters = critters;
         self.parcel = parcel;
+        self.toys = toys;
         self.set_night(night != 0);
         self.set_gravity(grav as u32);
         self.set_temp_offset(toff as i8 as i32);

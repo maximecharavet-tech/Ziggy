@@ -1,6 +1,7 @@
 import { tr, type L } from '@/lib/i18n-text';
 import { nextFocus, type Box } from '@/lib/tv/spatial-nav';
 import type { Dir, InputSource } from './actions';
+import { ClickSwallow, DragGesture, type PanDelta } from './drag';
 import { layoutHotspots, multiplyMat4, projectBox, type LaidOut, type Rect, type Vec3Tuple, type Viewport } from './hotspot-rects';
 
 /**
@@ -17,6 +18,10 @@ import { layoutHotspots, multiplyMat4, projectBox, type LaidOut, type Rect, type
  *   same algorithm as the TV remote (`nextFocus`).
  * - Hotspots off screen or behind the camera are hidden (not focusable).
  * - Styles are only written when a rect moves by more than half a pixel.
+ * - Drag to pan: a press that starts on a button and moves past the tap slop
+ *   pans the camera (`onPan`, same gesture as the canvas) and the click that
+ *   ends it is swallowed; a tap still selects. Pointer presses do not move the
+ *   focus (no camera lean while dragging); keyboard / TV focus is untouched.
  */
 
 export type Vec3Like = Vec3Tuple | { x: number; y: number; z: number };
@@ -46,6 +51,10 @@ export interface HotspotLayerOptions {
   onSelect: (id: string, source: InputSource) => void;
   onFocus?: (id: string | null) => void;
   minSize?: number;
+  /** A drag that starts on a button (pixels since the last move). Only while `pan` is on. */
+  onPan?: (d: PanDelta) => void;
+  /** Drags on the buttons pan (default false). */
+  pan?: boolean;
   /** Accessible name of the whole layer. */
   label?: L;
 }
@@ -53,6 +62,7 @@ export interface HotspotLayerOptions {
 const STYLE_ID = 'zg-hotspot-style';
 const CSS = `.zg-hotspots{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .zg-hotspot{position:absolute;left:0;top:0;margin:0;padding:0;border:0;background:transparent;border-radius:18px;pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation;will-change:transform}
+.zg-hotspots[data-pan] .zg-hotspot{touch-action:none}
 .zg-hotspot[hidden]{display:none}
 .zg-hotspot:focus{outline:none}
 .zg-hotspot:focus-visible,.zg-hotspot[data-scan]{outline:4px solid #ffd54a;outline-offset:2px;box-shadow:0 0 0 8px rgba(255,213,74,.35)}
@@ -86,6 +96,9 @@ export class HotspotLayer {
   private m = new Float64Array(16);
   private scanTimer = 0;
   private laid: LaidOut[] = [];
+  private gesture = new DragGesture();
+  private swallow = new ClickSwallow();
+  private panOn = false;
 
   constructor(
     container: HTMLElement,
@@ -97,11 +110,29 @@ export class HotspotLayer {
     this.root.setAttribute('role', 'group');
     this.root.dataset.engineHotspots = '';
     if (opts.label) this.root.setAttribute('aria-label', tr(opts.label, opts.locale));
+    this.pan = Boolean(opts.pan);
     container.appendChild(this.root);
     this.root.addEventListener('click', this.onClick);
+    this.root.addEventListener('pointerdown', this.onPointerDown);
     this.root.addEventListener('keydown', this.onKey);
     this.root.addEventListener('focusin', this.onFocusIn);
     this.root.addEventListener('focusout', this.onFocusOut);
+  }
+
+  /** Drags that start on a button pan the camera (also lets touch drags reach us: `touch-action: none`). */
+  get pan(): boolean {
+    return this.panOn;
+  }
+
+  set pan(on: boolean) {
+    this.panOn = on;
+    this.root.toggleAttribute('data-pan', on);
+    if (!on) this.endPress();
+  }
+
+  /** Smallest button size (px). Default 64; a game may lower it on mouse-only screens, never for touch. */
+  setMinSize(px: number | undefined): void {
+    this.opts.minSize = px;
   }
 
   setLocale(locale: string): void {
@@ -219,7 +250,9 @@ export class HotspotLayer {
 
   dispose(): void {
     this.stopScan();
+    this.endPress();
     this.root.removeEventListener('click', this.onClick);
+    this.root.removeEventListener('pointerdown', this.onPointerDown);
     this.root.removeEventListener('keydown', this.onKey);
     this.root.removeEventListener('focusin', this.onFocusIn);
     this.root.removeEventListener('focusout', this.onFocusOut);
@@ -265,7 +298,51 @@ export class HotspotLayer {
     return el && this.root.contains(el) ? (el.dataset.hotspot ?? null) : null;
   }
 
+  /* ---------- drag to pan from a button ---------- */
+
+  private onPointerDown = (ev: PointerEvent) => {
+    if (!this.panOn || !this.opts.onPan || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+    if (!this.idOf(ev.target)) return;
+    this.swallow.reset();
+    if (!this.gesture.down(ev.pointerId, ev.clientX, ev.clientY)) return;
+    // No focus from a pointer press: the focus lean would fight the drag (the click still selects).
+    ev.preventDefault();
+    // The button can move or hide under the finger while the camera pans: follow the pointer on the window.
+    window.addEventListener('pointermove', this.onPointerMove);
+    window.addEventListener('pointerup', this.onPointerUp);
+    window.addEventListener('pointercancel', this.onPointerCancel);
+  };
+
+  private onPointerMove = (ev: PointerEvent) => {
+    const d = this.gesture.move(ev.pointerId, ev.clientX, ev.clientY, this.panOn);
+    if (d) this.opts.onPan?.(d);
+  };
+
+  private onPointerUp = (ev: PointerEvent) => {
+    const end = this.gesture.up(ev.pointerId);
+    if (!end) return;
+    if (end === 'drag') this.swallow.arm(performance.now());
+    this.endPress();
+  };
+
+  private onPointerCancel = (ev: PointerEvent) => {
+    if (this.gesture.up(ev.pointerId)) this.endPress();
+  };
+
+  private endPress() {
+    this.gesture.cancel();
+    window.removeEventListener('pointermove', this.onPointerMove);
+    window.removeEventListener('pointerup', this.onPointerUp);
+    window.removeEventListener('pointercancel', this.onPointerCancel);
+  }
+
   private onClick = (ev: MouseEvent) => {
+    // The click that ends a drag is not a tap.
+    if (this.swallow.take(performance.now(), ev.detail)) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      return;
+    }
     const id = this.idOf(ev.target);
     if (!id) return;
     const e = this.entries.get(id);

@@ -150,6 +150,20 @@ export class Sandbox {
     /**
      * @returns {number}
      */
+    globe_x() {
+        const ret = wasm.sandbox_globe_x(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @returns {number}
+     */
+    globe_y() {
+        const ret = wasm.sandbox_globe_y(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @returns {number}
+     */
     hash() {
         const ret = wasm.sandbox_hash(this.__wbg_ptr);
         return ret >>> 0;
@@ -185,6 +199,20 @@ export class Sandbox {
         return ret >>> 0;
     }
     /**
+     * @returns {number}
+     */
+    kite_x() {
+        const ret = wasm.sandbox_kite_x(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @returns {number}
+     */
+    kite_y() {
+        const ret = wasm.sandbox_kite_y(this.__wbg_ptr);
+        return ret;
+    }
+    /**
      * Restores the world from the bytes at `io_ptr`. False (and nothing changed) if they are not a save of this world.
      * @returns {boolean}
      */
@@ -207,6 +235,21 @@ export class Sandbox {
         this.__wbg_ptr = ret;
         SandboxFinalization.register(this, this.__wbg_ptr, this);
         return this;
+    }
+    /**
+     * @returns {number}
+     */
+    notes_len() {
+        const ret = wasm.sandbox_notes_len(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * Notes of the snow-globe since `take_notes`: one `u32` each, element | degree << 6 | x << 9 | y << 18.
+     * @returns {number}
+     */
+    notes_ptr() {
+        const ret = wasm.sandbox_notes_ptr(this.__wbg_ptr);
+        return ret >>> 0;
     }
     /**
      * @param {number} x0
@@ -249,6 +292,34 @@ export class Sandbox {
      */
     place_gift(kind, x, y) {
         wasm.sandbox_place_gift(this.__wbg_ptr, kind, x, y);
+    }
+    /**
+     * The music snow-globe of the parcel, on the ground under (x, y).
+     * @param {number} x
+     * @param {number} y
+     */
+    place_globe(x, y) {
+        wasm.sandbox_place_globe(this.__wbg_ptr, x, y);
+    }
+    /**
+     * The aurora kite of the parcel, its string tied at (x, y).
+     * @param {number} x
+     * @param {number} y
+     */
+    place_kite(x, y) {
+        wasm.sandbox_place_kite(this.__wbg_ptr, x, y);
+    }
+    /**
+     * What is in the sky in a box of cells (for the saucer): bit 0 a cloud, bit 1 a geyser's mist.
+     * @param {number} x0
+     * @param {number} y0
+     * @param {number} x1
+     * @param {number} y1
+     * @returns {number}
+     */
+    probe_sky(x0, y0, x1, y1) {
+        const ret = wasm.sandbox_probe_sky(this.__wbg_ptr, x0, y0, x1, y1);
+        return ret >>> 0;
     }
     /**
      * Draws the world. `flags` bit 0: reduced motion.
@@ -309,6 +380,14 @@ export class Sandbox {
         wasm.sandbox_set_temperature(this.__wbg_ptr, offset);
     }
     /**
+     * Hides the treasure of the map at (x, y) (a map kept from an earlier visit; negative y: under the ground of column x).
+     * @param {number} x
+     * @param {number} y
+     */
+    set_treasure(x, y) {
+        wasm.sandbox_set_treasure(this.__wbg_ptr, x, y);
+    }
+    /**
      * @param {number} x
      * @param {number} y
      * @returns {number}
@@ -316,6 +395,14 @@ export class Sandbox {
     stamp_critter(x, y) {
         const ret = wasm.sandbox_stamp_critter(this.__wbg_ptr, x, y);
         return ret >>> 0;
+    }
+    /**
+     * The finger steers the kite during the next tick.
+     * @param {number} x
+     * @param {number} y
+     */
+    steer_kite(x, y) {
+        wasm.sandbox_steer_kite(this.__wbg_ptr, x, y);
     }
     /**
      * Advances the world by `n` ticks (at most 8 per call).
@@ -327,12 +414,46 @@ export class Sandbox {
     take_events() {
         wasm.sandbox_take_events(this.__wbg_ptr);
     }
+    take_notes() {
+        wasm.sandbox_take_notes(this.__wbg_ptr);
+    }
     /**
      * @returns {number}
      */
     tick() {
         const ret = wasm.sandbox_tick(this.__wbg_ptr);
         return ret >>> 0;
+    }
+    /**
+     * Toys out in the world: bit 0 snow-globe, bit 1 kite, bit 2 treasure still buried, bit 3 treasure just found.
+     * @returns {number}
+     */
+    toys() {
+        const ret = wasm.sandbox_toys(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * 0 fossil, 1 shell, 2 meteorite.
+     * @returns {number}
+     */
+    treasure_kind() {
+        const ret = wasm.sandbox_treasure_kind(this.__wbg_ptr);
+        return ret >>> 0;
+    }
+    /**
+     * Where the treasure is (cells), or -1.
+     * @returns {number}
+     */
+    treasure_x() {
+        const ret = wasm.sandbox_treasure_x(this.__wbg_ptr);
+        return ret;
+    }
+    /**
+     * @returns {number}
+     */
+    treasure_y() {
+        const ret = wasm.sandbox_treasure_y(this.__wbg_ptr);
+        return ret;
     }
     /**
      * @returns {number}

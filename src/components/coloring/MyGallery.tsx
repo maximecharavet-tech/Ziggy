@@ -6,6 +6,8 @@ import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { Download, Printer, Trash2 } from 'lucide-react';
 import type { CSSProperties } from 'react';
 import { MascotCutout } from '@/components/ziggy/Mascot';
+import { SayButton } from '@/components/arcade/read-aloud';
+import { ZiggyWait } from '@/components/sections/magic/ZiggyWait';
 import { fx, toy } from '@/components/create/fx/toy';
 import { tr } from '@/lib/i18n-text';
 import { playSound } from '@/lib/sound';
@@ -60,13 +62,21 @@ export function MyGallery({ locale, onOpen, onCount }: { locale: string; onOpen:
     void load();
   };
 
-  if (items === null) return <div className="h-40" aria-busy="true" />;
+  if (items === null)
+    return (
+      <div className="grid h-40 place-items-center" aria-busy="true">
+        <ZiggyWait size="sm" label={null} late={400} />
+      </div>
+    );
 
   if (!items.length)
     return (
       <div className="mx-auto flex max-w-md flex-col items-center gap-3 rounded-[2rem] bg-white/80 p-8 text-center shadow-[0_7px_0_#e2d9f7,0_24px_40px_-24px_rgba(76,52,160,0.5)] ring-1 ring-black/5 dark:bg-white/5 dark:shadow-none">
         <MascotCutout pose="heart" width={120} className={`w-28 ${fx.float}`} />
-        <p className="font-display text-xl font-semibold text-text-body">{tr(T.galleryEmpty, locale)}</p>
+        <div className="flex items-center gap-3">
+          <p className="font-display text-xl font-semibold text-text-body">{tr(T.galleryEmpty, locale)}</p>
+          <SayButton texts={[tr(T.galleryEmpty, locale)]} locale={locale} size="md" />
+        </div>
       </div>
     );
 

@@ -40,7 +40,7 @@
     "bubble": "Merhaba, ben Ziggy! 👋",
     "bubble_happy": "Hihi, gıdıklanıyorum! 💚",
     "trust_1": "Reklamsız",
-    "trust_2": "Veriler Avrupa’da",
+    "trust_2": "Hesaplar Paris’te barındırılır",
     "trust_3": "Hesapsız oynanır",
     "facts_worlds": "Keşfedilecek dünya",
     "facts_stories": "Uyku öncesi masal",
@@ -49,24 +49,24 @@
   },
   "features": {
     "title": "Ebeveynler Ziggy'yi neden seviyor?",
-    "subtitle": "Eğitimciler ve yapay zeka uzmanları tarafından geliştirildi, meraklı genç zihinler için tasarlandı",
+    "subtitle": "Reklam yok, baskı yok ve her yapay zeka metninde bir güvenlik filtresi: meraklı genç zihinler için tasarlandı",
     "ai_companion": "Yapay zeka arkadaşı",
     "ai_companion_desc": "Ziggy, kişiselleştirilmiş yapay zeka sohbetleriyle her çocuğun hızına ve öğrenme tarzına uyum sağlar.",
     "safe_space": "Güvenli bir alan",
-    "safe_space_desc": "Reklam yok, veriler Avrupa’da, hesap bir veli tarafından yönetilir. Yalnızca çocuğunuzun adını saklarız.",
+    "safe_space_desc": "Reklam yok, hesap bir veli tarafından yönetilir ve Paris’te barındırılır. Bir ad yeter: soyadı asla istenmez.",
     "cognitive_tracking": "Bilişsel profil",
     "cognitive_tracking_desc": "Çocuğunuzun 6 bilişsel boyuttaki gelişimini interaktif panolarla takip edin.",
     "multilingual": "12 dil",
     "multilingual_desc": "Otomatik algılama ile 12 dilde kullanılabilir. Sınır tanımayan öğrenme.",
     "gamified": "Oyunlaştırılmış öğrenme",
     "gamified_desc": "Yıldızlar, rozetler ve ödüller öğrenmeyi oyuna dönüştürür. Sıfır baskı, saf eğlence.",
-    "curriculum": "Uzman müfredatı",
+    "curriculum": "Çeşitli müfredat",
     "curriculum_desc": "Yapay zeka, matematik, mantık, yaratıcılık ve mevsimsel etkinlikleri kapsayan 5 özel modül.",
     "eyebrow": "Neden Ziggy"
   },
   "modules": {
     "title": "Öğrenme modülleri",
-    "subtitle": "Merakı ateşlemek için uzmanlar tarafından hazırlanmış beş modül",
+    "subtitle": "Merakı ateşlemek için beş modül",
     "ai_basics": "Yapay zeka temelleri",
     "ai_basics_desc": "Yapay zeka nasıl düşünür, öğrenir ve bize her gün nasıl yardım eder",
     "ai_basics_ages": "4-12 yaş",
@@ -107,7 +107,7 @@
     "family_f3": "Tam pano ve raporlar",
     "family_f4": "Tüm 5 modül",
     "family_f5": "Öncelikli destek",
-    "popular": "En popüler",
+    "popular": "Önerilen",
     "school": "Okul",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
@@ -166,7 +166,7 @@
   "faq": {
     "title": "Sıkça sorulan sorular",
     "q1": "Ziggy çocuğum için güvenli mi?",
-    "a1": "Ziggy çocuklar için tasarlandı: reklam yok, yabancılarla iletişim yok ve hesabı bir veli oluşturur ve yönetir. Yalnızca çocuğun adını, yaş grubunu ve oyun sonuçlarını Avrupa’da saklarız. Hesap, veli alanından istenildiği zaman silinebilir.",
+    "a1": "Ziggy çocuklar için tasarlandı: reklam yok, yabancılarla iletişim yok ve hesabı bir veli oluşturur ve yönetir. Çocuktan yalnızca adını ve yaş grubunu isteriz, soyadını veya adresini asla. Hesaplar ve ilerleme Paris’te (Supabase) barındırılır; bazı yapay zeka özellikleri AB dışındaki sağlayıcıları kullanır, bunlar gizlilik politikasında listelenir. Hesap, veli alanından istenildiği zaman silinebilir.",
     "q2": "Ziggy hangi yaşlar için tasarlanmıştır?",
     "a2": "Ziggy 4-12 yaş arası çocuklar için tasarlanmıştır. Yapay zeka, dili, zorluğu ve içeriği çocuğun yaşına ve öğrenme hızına göre uyarlar.",
     "q3": "Aboneliğimi istediğim zaman iptal edebilir miyim?",
@@ -268,17 +268,17 @@
     },
     "advertising": {
       "name": "Spark",
-      "description": "Yaratıcılığını serbest bırak ve reklamcılığı öğren!",
-      "longDescription": "Yaratıcılığını serbest bırak ve reklamcılığı öğren!",
-      "chatPlaceholder": "Ekip...",
-      "learn1": "Learn the fundamentals",
-      "learn2": "Practice with fun examples",
-      "learn3": "Build skills for the future",
+      "description": "Yaratıcılığını serbest bırak: afişler tasarla ve reklamların hilelerini fark etmeyi öğren!",
+      "longDescription": "Spark yaratıcılığını ateşliyor! İyi fikirler için kendi afişlerini çiz (odanı toplamak, gezegeni korumak…) ve bir reklam dedektifi ol: reklamı tanı, sana bir şey satın aldırmak istediğini anla ve hilelerini fark et.",
+      "chatPlaceholder": "Spark’a afişleri ve reklamları sor...",
+      "learn1": "İyi fikirler için renkli afişler yapmak",
+      "learn2": "Reklamı tanımak ve ne işe yaradığını bilmek",
+      "learn3": "Reklam hilelerini fark etmek: renkler, akılda kalan şarkılar, daha büyük görünen oyuncaklar",
       "suggestions": [
-        "How are ads made?",
-        "Create a jingle!",
-        "What makes ads catchy?",
-        "Design a poster!"
+        "Reklamı nasıl tanırım?",
+        "Reklamlar hangi hileleri kullanır?",
+        "Reklam neden bir şey almamı ister?",
+        "Bir afiş tasarla!"
       ]
     },
     "try_now": "Hemen dene"
@@ -509,7 +509,7 @@
     "playGames": "Oyunlara git",
     "bestScore": "En iyi skor",
     "plays": "oyun",
-    "secureNotice": "Avrupa’da barındırılan güvenli veli hesabı. Yalnızca çocuğunuzun adını saklıyoruz.",
+    "secureNotice": "Paris’te barındırılan güvenli veli hesabı. Çocuğunuz için bir ad yeterli.",
     "childSection": "Çocuk için",
     "parentSection": "Veli için",
     "passwordLabel": "Şifre",
@@ -602,7 +602,7 @@
     "chat_eyebrow": "Şimdi sohbet zamanı"
   },
   "trust": {
-    "eu_storage": "Veriler Avrupa’da saklanır",
+    "eu_storage": "Hesaplar Paris’te barındırılır",
     "encrypted": "Şifreli bağlantı",
     "no_ads": "Sıfır reklam",
     "parent_account": "Veli tarafından yönetilen hesap"
@@ -711,8 +711,8 @@
         "desc": "Cihazın “hareketi azalt” ayarına uyan, ekran dışındayken duran kısa ve net hareketler."
       },
       "privacy": {
-        "title": "Veriler Avrupa’da, sıfır reklam",
-        "desc": "Hesaplar Avrupa’da barındırılır, hiçbir şey satılmaz, reklam ve takip yoktur."
+        "title": "Hesaplar Paris’te, sıfır reklam",
+        "desc": "Hesaplar Paris’te barındırılır, hiçbir şey satılmaz, reklam ve takip yoktur. Kullandığımız yapay zeka sağlayıcıları gizlilik politikasında listelenir."
       }
     },
     "ziggy_title": "Hepsi tek bir arkadaş için",

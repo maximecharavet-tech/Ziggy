@@ -2,19 +2,17 @@ import 'server-only';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { z } from 'zod';
 import {
-  VisualBlueprintSchema,
   QuestContentSchema,
   StoryJsonSchema,
   GameFactorySchema,
   parseModelJson,
-  type VisualBlueprint,
   type AvatarRequest,
   type QuestContent,
   type StoryJson,
   type GameFactoryOutput,
 } from './schemas';
 import { deepseekJson, deepseekReady } from './providers/deepseek';
-import { nvidiaJson, nvidiaReady, nvidiaVision } from './providers/nvidia';
+import { nvidiaJson, nvidiaReady } from './providers/nvidia';
 import { agnesImage, agnesReady } from './providers/agnes';
 import { ProviderError } from './providers/http';
 import { Capsule } from './capsule';
@@ -104,38 +102,7 @@ async function guarded(ctx: Ctx, op: Operation): Promise<Outcome<never> | null> 
   return budget.ok ? null : { ok: false, error: 'over_budget', reason: budget.reason };
 }
 
-/* ── Avatar: photo → visual blueprint (NVIDIA vision). The photo is never stored. ── */
-
-export async function analyzeImage(ctx: Ctx, photoDataUri: string): Promise<Outcome<VisualBlueprint>> {
-  if (!nvidiaReady()) return { ok: false, error: 'not_configured', reason: 'vision' };
-  const blocked = await guarded(ctx, 'analyze_image');
-  if (blocked) return blocked;
-  const requestId = newRequestId();
-  const capsule = await Capsule.open(ctx.sb, 'analyze_image', { provider: 'nvidia', requestId });
-  await capsule.status('PROCESSING');
-  const instructions =
-    'You help draw a friendly cartoon avatar of a child. Look ONLY at visible drawing features and fill this JSON, choosing exactly one allowed value per field: ' +
-    `{"hairColor": one of ${JSON.stringify(VisualBlueprintSchema.shape.hairColor.options)}, ` +
-    `"hairLength": one of ${JSON.stringify(VisualBlueprintSchema.shape.hairLength.options)}, ` +
-    `"hairStyle": one of ${JSON.stringify(VisualBlueprintSchema.shape.hairStyle.options)}, ` +
-    `"skinTone": one of ${JSON.stringify(VisualBlueprintSchema.shape.skinTone.options)} (tone1 lightest … tone6 deepest), ` +
-    `"eyeColor": one of ${JSON.stringify(VisualBlueprintSchema.shape.eyeColor.options)}, "glasses": boolean, "freckles": boolean}. ` +
-    'Do NOT describe or guess identity, name, age, gender, ethnicity, health, emotions or location. If no child face is visible, answer {"error":"no_face"}.';
-  try {
-    const { text } = await nvidiaVision(instructions, photoDataUri);
-    await capsule.status('VALIDATING');
-    const parsed = VisualBlueprintSchema.safeParse(parseModelJson(text));
-    if (!parsed.success) {
-      await capsule.status('FAILED', { error: 'invalid_blueprint' });
-      return { ok: false, error: 'invalid' };
-    }
-    await capsule.status('COMPLETED', { safety: 'not_applicable' });
-    return { ok: true, data: parsed.data, source: 'ai', generationId: capsule.id };
-  } catch (e) {
-    await capsule.status('FAILED', { error: e instanceof ProviderError ? e.code : 'error' });
-    return { ok: false, error: 'provider_failed' };
-  }
-}
+/* The avatar photo is read on the device (src/lib/avatar/photo-analyze.ts): no photo ever reaches this engine. */
 
 /* ── Avatar: blueprint + choices → image (Agnes). Only the text blueprint is sent, never the photo. ── */
 

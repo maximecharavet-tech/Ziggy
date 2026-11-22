@@ -40,7 +40,7 @@
     "bubble": "Hi, I’m Ziggy! 👋",
     "bubble_happy": "Hehe, that tickles! 💚",
     "trust_1": "No ads",
-    "trust_2": "Data hosted in Europe",
+    "trust_2": "Accounts hosted in Paris",
     "trust_3": "Play without an account",
     "facts_worlds": "Worlds to explore",
     "facts_stories": "Bedtime stories",
@@ -49,24 +49,24 @@
   },
   "features": {
     "title": "Why Parents Love Ziggy",
-    "subtitle": "Built by educators and AI experts, designed for curious young minds",
+    "subtitle": "No ads, no pressure, and a safety filter on every AI text: made for curious young minds",
     "ai_companion": "AI Companion",
     "ai_companion_desc": "Ziggy adapts to each child's pace and learning style with personalized AI conversations.",
     "safe_space": "A safe space",
-    "safe_space_desc": "No ads, data stored in Europe, an account run by a parent. We only keep your child’s first name.",
+    "safe_space_desc": "No ads, an account run by a parent and hosted in Paris. A first name is enough: never a surname.",
     "cognitive_tracking": "Cognitive Profiling",
     "cognitive_tracking_desc": "Track your child's growth across 6 cognitive dimensions with interactive dashboards.",
     "multilingual": "12 Languages",
     "multilingual_desc": "Available in 12 languages with automatic detection. Learning without borders.",
     "gamified": "Gamified Learning",
     "gamified_desc": "Stars, badges, and rewards make learning a game. Zero pressure, pure fun.",
-    "curriculum": "Expert Curriculum",
+    "curriculum": "A varied curriculum",
     "curriculum_desc": "5 specialized modules covering AI, math, logic, creativity, and seasonal activities.",
     "eyebrow": "Why Ziggy"
   },
   "modules": {
     "title": "Learning Modules",
-    "subtitle": "Five expert-crafted modules to spark curiosity",
+    "subtitle": "Five modules to spark curiosity",
     "ai_basics": "AI Basics",
     "ai_basics_desc": "How AI thinks, learns, and helps us every day",
     "ai_basics_ages": "Ages 4-12",
@@ -107,7 +107,7 @@
     "family_f3": "Full dashboard & reports",
     "family_f4": "All 5 modules",
     "family_f5": "Priority support",
-    "popular": "Most Popular",
+    "popular": "Recommended",
     "school": "School",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
@@ -166,7 +166,7 @@
   "faq": {
     "title": "Frequently Asked Questions",
     "q1": "Is Ziggy safe for my child?",
-    "a1": "Ziggy is built for children: no ads, no contact with strangers, and the account is created and managed by a parent. We only keep the child’s first name, age range and game results, stored in Europe. The account can be deleted at any time from the parent area.",
+    "a1": "Ziggy is built for children: no ads, no contact with strangers, and the account is created and managed by a parent. For the child we only ask for a first name and an age range, never a surname or address. Accounts and progress are hosted in Paris (Supabase); some AI features use providers outside the EU, listed in the privacy policy. The account can be deleted at any time from the parent area.",
     "q2": "What ages is Ziggy designed for?",
     "a2": "Ziggy is designed for children aged 4 to 12. The AI adapts language, difficulty, and content based on the child's age and learning pace.",
     "q3": "Can I cancel my subscription anytime?",
@@ -268,16 +268,16 @@
     },
     "advertising": {
       "name": "Spark",
-      "description": "Unleash your creativity and learn how eye-catching ads are made!",
-      "longDescription": "Spark ignites your creativity! Learn how advertisements are designed, what makes a poster eye-catching, how jingles and slogans stick in your head, and the magic of the creative process.",
-      "chatPlaceholder": "Ask Spark about creativity and ads...",
-      "learn1": "How to design posters and eye-catching visuals",
-      "learn2": "The secret behind catchy slogans and jingles",
-      "learn3": "Turning creative ideas into real campaigns",
+      "description": "Unleash your creativity: make up posters and learn to spot the tricks ads use!",
+      "longDescription": "Spark ignites your creativity! Draw your own posters for good ideas (tidying your room, caring for the planet…) and become an ad detective: spot an advertisement, understand that it wants you to buy something, and see through its tricks.",
+      "chatPlaceholder": "Ask Spark about posters and spotting ads...",
+      "learn1": "Making bright posters for good ideas",
+      "learn2": "Spotting an ad and knowing what it is for",
+      "learn3": "Seeing through ad tricks: bright colours, catchy songs, toys that look bigger",
       "suggestions": [
-        "How are ads made?",
-        "Create a jingle!",
-        "What makes ads catchy?",
+        "How can I spot an ad?",
+        "What tricks do ads use?",
+        "Why do ads want me to buy?",
         "Design a poster idea!"
       ]
     },
@@ -509,7 +509,7 @@
     "playGames": "Go to the games",
     "bestScore": "Best score",
     "plays": "plays",
-    "secureNotice": "Secure parent account, hosted in Europe. We only keep your child’s first name.",
+    "secureNotice": "Secure parent account, hosted in Paris. For your child, a first name is enough.",
     "childSection": "For the child",
     "parentSection": "For the parent",
     "passwordLabel": "Password",
@@ -602,7 +602,7 @@
     "chat_eyebrow": "Now, have a chat"
   },
   "trust": {
-    "eu_storage": "Data stored in Europe",
+    "eu_storage": "Accounts hosted in Paris",
     "encrypted": "Encrypted connection",
     "no_ads": "Zero ads",
     "parent_account": "Parent-managed account"
@@ -711,8 +711,8 @@
         "desc": "Short, precise animations that follow the device’s “reduce motion” setting and pause when off screen."
       },
       "privacy": {
-        "title": "Data in Europe, zero ads",
-        "desc": "Accounts are hosted in Europe, nothing is sold, no advertising and no tracking."
+        "title": "Accounts in Paris, zero ads",
+        "desc": "Accounts are hosted in Paris, nothing is sold, no advertising and no tracking. The AI providers we use are listed in the privacy policy."
       }
     },
     "ziggy_title": "All of it, for one single friend",

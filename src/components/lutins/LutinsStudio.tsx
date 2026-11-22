@@ -19,6 +19,8 @@ import { NightPlanner } from '@/components/lutins/NightPlanner';
 import { LutinsFamilySettings } from '@/components/lutins/LutinsFamilySettings';
 import { analyzePhoto, verifyResult, type Scene } from '@/lib/lutins/client-engine';
 import { shareOrSave } from '@/components/santa/booth/share';
+import { redactPersonal } from '@/lib/privacy/personal';
+import { AiLabel } from '@/components/ui/AiLabel';
 
 type ElfId = 'pepin' | 'grelotte' | 'noisette';
 type Step = 'elves' | 'photo' | 'prank' | 'magic' | 'result';
@@ -238,7 +240,8 @@ export function LutinsStudio() {
             device: deviceId(),
             elves,
             prankId: ownMode ? null : prankId,
-            text: ownMode ? own : '',
+            // The child's first name (or any name the device knows) is replaced before the idea goes to the image AI.
+            text: ownMode ? redactPersonal(own, L2 === 'fr' ? 'l’enfant' : 'the child') : '',
             scene,
             photo: photo.toDataURL('image/jpeg', 0.86),
             aspect: aspectOf(photo),
@@ -644,6 +647,10 @@ export function LutinsStudio() {
             </div>
             )}
             {!marking && !spots.length && <p className="mt-2 text-center text-xs text-white/60">↔ {tr(T.slide, locale)}</p>}
+            {/* EU AI Act art. 50: the elves are added to the photo by an image AI (parents' screen). */}
+            <p className="mt-2 text-center">
+              <AiLabel tone="dark" text={{ fr: 'Photo modifiée avec l’aide de l’IA', en: 'Photo edited with the help of AI' }} />
+            </p>
             {result.caption && <p className="mt-4 text-center font-display text-xl font-bold">« {result.caption} »</p>}
 
             <div className="mx-auto mt-5 max-w-2xl rounded-[1.5rem] bg-white/10 p-4 ring-1 ring-white/15">

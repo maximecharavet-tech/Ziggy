@@ -11,6 +11,7 @@ import { MascotCutout } from '@/components/ziggy/Mascot';
 import { useProfile } from '@/components/account/ProfileProvider';
 import { playSound } from '@/lib/sound';
 import { recordGameResult } from '@/lib/progress';
+import { useJuice } from '@/components/ui/fx/useJuice';
 
 interface Question {
   promptKey: string;
@@ -59,6 +60,7 @@ export function ExpressTrial({ compact = false }: { compact?: boolean }) {
   const t = useTranslations('trial');
   const locale = useLocale();
   const { user } = useProfile();
+  const juice = useJuice();
 
   const [phase, setPhase] = useState<Phase>('intro');
   const [index, setIndex] = useState(0);
@@ -79,14 +81,15 @@ export function ExpressTrial({ compact = false }: { compact?: boolean }) {
     setCorrect(0);
   };
 
-  const pick = (i: number) => {
+  const pick = (i: number, el: HTMLElement) => {
     if (answered) return;
     setPicked(i);
     if (i === q.answer) {
       setCorrect((c) => c + 1);
       playSound('correct');
     } else {
-      playSound('wrong');
+      // Never a "wrong" shake: a kind little nod and a soft bubble sound.
+      juice.encourage(el);
     }
   };
 
@@ -189,9 +192,9 @@ export function ExpressTrial({ compact = false }: { compact?: boolean }) {
                 return (
                   <motion.button
                     key={i}
-                    onClick={() => pick(i)}
+                    onClick={(e) => pick(i, e.currentTarget)}
                     disabled={answered}
-                    animate={bad ? { x: [0, -8, 8, -5, 5, 0] } : good && chosen ? { scale: [1, 1.08, 1] } : {}}
+                    animate={good && chosen ? { scale: [1, 1.08, 1] } : {}}
                     transition={{ duration: 0.4 }}
                     className={`min-h-[64px] rounded-2xl border-2 px-4 font-bold transition-colors ${
                       opt.translate ? 'text-lg text-start' : 'text-3xl'

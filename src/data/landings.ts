@@ -66,11 +66,11 @@ export const LANDING_COPY: Record<LandingPath, { title: string; description: str
   '/securite-parents': {
     title: 'Sécurité et confidentialité pour les parents | Ziggy',
     description:
-      'Ziggy est pensé pour les enfants : aucune publicité, aucun échange avec des inconnus, compte géré par un parent, données stockées en Europe.',
+      'Ziggy est pensé pour les enfants : aucune publicité, aucun échange avec des inconnus, compte géré par un parent et hébergé à Paris.',
     h1: 'Sécurité : ce que les parents doivent savoir',
     intro: [
       'Ziggy est pensé pour les enfants : aucune publicité, aucun échange avec des inconnus, et le compte est créé et géré par un parent.',
-      'Nous ne conservons que le prénom de l’enfant, sa tranche d’âge et ses résultats de jeu, stockés en Europe. Le compte peut être supprimé à tout moment depuis l’espace parent.',
+      'Pour l’enfant, nous demandons seulement un prénom et une tranche d’âge, jamais de nom de famille ni d’adresse. Les comptes et la progression sont hébergés à Paris (Supabase) ; certaines fonctions d’IA passent par des prestataires hors de l’UE, détaillés dans la politique de confidentialité. Le compte peut être supprimé à tout moment depuis l’espace parent.',
     ],
     crumb: 'Sécurité parents',
     footer: 'Sécurité parents',

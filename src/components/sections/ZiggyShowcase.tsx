@@ -71,7 +71,7 @@ export function ZiggyShowcase() {
             transition={{ duration: 0.6 }}
             className="text-center lg:text-start"
           >
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-border/50 text-xs font-bold text-green mb-5">
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full glass border border-border/50 text-xs font-bold text-leaf-ink dark:text-green mb-5">
               <Sparkles size={14} />
               {t('badge')}
             </div>

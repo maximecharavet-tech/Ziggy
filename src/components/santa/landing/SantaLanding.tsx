@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { AnimatePresence, animate, motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
+import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform } from 'motion/react';
 import { useLocale } from 'next-intl';
 import { Link } from '@/i18n/navigation';
 import { tr, type L } from '@/lib/i18n-text';
@@ -50,36 +50,44 @@ const T = {
   ],
 } satisfies { [key: string]: L | L[] | { title: L; href: string; mark: string }[] | { q: L; a: L }[] | { art: string; title: L; href: string; wide: boolean }[] };
 
-function PriceCounter({ amount, locale, reduced }: { amount: number; locale: string; reduced: boolean }) {
-  const value = useMotionValue(reduced ? amount / 100 : 0);
-  const formatted = useTransform(value, (current) => new Intl.NumberFormat(locale === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: 'EUR' }).format(current));
-  useEffect(() => {
-    if (reduced) { value.set(amount / 100); return; }
-    const controls = animate(value, amount / 100, { duration: 1.1, ease: 'easeOut' });
-    return () => controls.stop();
-  }, [amount, reduced, value]);
-  return <motion.span className="font-display text-4xl font-bold text-amber-200">{formatted}</motion.span>;
+/** Prices are shown plainly to parents: no counting-up animation, nothing that hurries. */
+function Price({ amount, locale }: { amount: number; locale: string }) {
+  const formatted = new Intl.NumberFormat(locale === 'fr' ? 'fr-FR' : 'en-US', { style: 'currency', currency: 'EUR' }).format(amount / 100);
+  return <span className="font-display text-4xl font-bold text-amber-200">{formatted}</span>;
 }
 
+/** How many sleeps until Christmas Eve, the way children count: calm, no ticking minutes. */
 function Countdown({ locale }: { locale: string }) {
-  const [remaining, setRemaining] = useState<number | null>(null);
+  const [sleeps, setSleeps] = useState<number | null>(null);
   useEffect(() => {
-    const tick = () => setRemaining(Math.max(0, Date.parse('2026-12-24T20:00:00+01:00') - Date.now()));
-    tick(); const id = window.setInterval(tick, 1000); return () => window.clearInterval(id);
+    const tick = () => {
+      const eve = new Date(2026, 11, 24);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      setSleeps(Math.round((eve.getTime() - today.getTime()) / 86_400_000));
+    };
+    tick(); const id = window.setInterval(tick, 60_000); return () => window.clearInterval(id);
   }, []);
-  if (remaining === null) return <span className="tabular-nums">—</span>;
-  const d = Math.floor(remaining / 86_400_000), h = Math.floor(remaining / 3_600_000) % 24, m = Math.floor(remaining / 60_000) % 60;
-  return <span className="tabular-nums">{locale === 'fr' ? `Encore ${d} j ${h} h ${m} min` : `${d} days ${h} hours ${m} min to go`}</span>;
+  if (sleeps === null) return <span className="tabular-nums">—</span>;
+  if (sleeps <= 0) return <span>{locale === 'fr' ? 'c’est le grand soir ✨' : 'it’s the big night ✨'}</span>;
+  if (sleeps === 1) return <span>{locale === 'fr' ? 'plus qu’un dodo 🌙' : 'just one more sleep 🌙'}</span>;
+  return <span className="tabular-nums">{locale === 'fr' ? `encore ${sleeps} dodos 🌙` : `${sleeps} sleeps to go 🌙`}</span>;
 }
+
+/** Warm night tints for the moments (gold, holly, aurora, berry…). */
+const MOMENT_TINTS = ['#f5b83d', '#e2475a', '#35d6b8', '#8b7cf6', '#5fb6ea', '#f08a4b', '#f472b6'];
 
 function MomentCard({ item, index, locale, reduced }: { item: (typeof T.momentsList)[number]; index: number; locale: string; reduced: boolean }) {
   const x = useMotionValue(0), y = useMotionValue(0);
   const rx = useSpring(useTransform(y, [-0.5, 0.5], [7, -7]), { stiffness: 180, damping: 18 });
   const ry = useSpring(useTransform(x, [-0.5, 0.5], [-8, 8]), { stiffness: 180, damping: 18 });
-  return <motion.li initial={reduced ? { opacity: 0 } : { opacity: 0, y: 14 }} whileInView={reduced ? { opacity: 1 } : { opacity: 1, y: 0 }} viewport={{ once: true, amount: .2 }} transition={{ delay: index * .06, duration: .4 }}>
+  const tint = MOMENT_TINTS[index % MOMENT_TINTS.length];
+  return <motion.li className={index === 0 ? 'sm:col-span-2' : undefined} initial={reduced ? { opacity: 0 } : { opacity: 0, y: 14 }} whileInView={reduced ? { opacity: 1 } : { opacity: 1, y: 0 }} viewport={{ once: true, amount: .2 }} transition={{ delay: Math.min(index, 5) * .05, duration: .3 }}>
     <motion.div style={reduced ? undefined : { rotateX: rx, rotateY: ry, transformPerspective: 800 }} onPointerMove={(e) => { if (!reduced) { const r = e.currentTarget.getBoundingClientRect(); x.set((e.clientX - r.left) / r.width - .5); y.set((e.clientY - r.top) / r.height - .5); } }} onPointerLeave={() => { x.set(0); y.set(0); }}>
-      <Link href={item.href} className="group flex min-h-44 flex-col justify-between rounded-3xl border border-white/15 bg-[#15143d] p-5 text-white shadow-lg transition-colors hover:bg-[#211e55] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300">
-        <span aria-hidden="true" className="grid h-12 w-12 place-items-center rounded-2xl bg-amber-300 text-2xl text-[#261439]">{item.mark}</span>
+      <Link href={item.href} className="press group relative isolate flex min-h-44 flex-col justify-between overflow-hidden rounded-3xl border border-white/15 bg-[#15143d] p-5 text-white shadow-[0_6px_0_rgba(5,6,30,0.6),0_24px_40px_-24px_rgba(0,0,0,0.8)] focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300" style={{ backgroundImage: `radial-gradient(90% 80% at 100% 0%, ${tint}33, transparent 60%)` }}>
+        {/* a soft glow that warms up under the mouse (opacity only) */}
+        <span aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 opacity-0 transition-opacity duration-300 group-hover:opacity-100" style={{ background: `radial-gradient(70% 70% at 80% 10%, ${tint}40, transparent 70%)` }} />
+        <span aria-hidden="true" className="grid h-14 w-14 place-items-center rounded-2xl text-2xl text-[#261439] transition-transform duration-500 ease-toy group-hover:-rotate-6 group-hover:scale-110" style={{ background: `linear-gradient(160deg, #fff6d6, ${tint})`, boxShadow: `inset 0 2px 0 rgba(255,255,255,0.7), 0 4px 0 rgba(0,0,0,0.25), 0 0 24px -4px ${tint}` }}>{item.mark}</span>
         <span className="font-display text-xl font-bold">{tr(item.title, locale)}</span>
       </Link>
     </motion.div>
@@ -127,7 +135,7 @@ export function SantaLanding() {
 
     <section className="relative isolate my-20 overflow-hidden border-y border-cyan-100/10 bg-[#15173c] px-5 py-16 sm:px-10"><motion.div aria-hidden style={{ y: auroraY }} className="absolute inset-x-0 -top-36 -z-10 mx-auto h-72 max-w-5xl rounded-[50%] bg-[radial-gradient(ellipse,rgba(53,229,198,.2),rgba(90,95,255,.12)_40%,transparent_70%)] blur-2xl" /><div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-[.8fr_1.2fr] md:items-center"><h2 className="font-display text-3xl font-bold sm:text-5xl">{tr(T.privacy, locale)}</h2><p className="max-w-2xl text-lg leading-relaxed text-white/80">{locale === 'fr' ? 'Les photos, vidéos, lettres et prénoms restent sur votre téléphone. Pas de publicité, pas de compte enfant, pas de traceur.' : 'Photos, videos, letters and first names stay on your phone. No ads, no child account, no tracker.'}</p></div></section>
 
-    <section className="mx-auto max-w-7xl px-5 py-10 sm:px-10" aria-labelledby="offer-title"><div className="relative isolate overflow-hidden rounded-[2rem] border border-white/10 px-6 py-14 sm:px-10 sm:py-20"><ArtSlot asset={santaArt('offres-3-cadeaux')} sizes="(min-width:1280px) 1200px, 100vw" /><div aria-hidden className="absolute inset-0 bg-[linear-gradient(90deg,rgba(14,16,50,.88),rgba(14,16,50,.35))]" /><h2 id="offer-title" className="relative max-w-xl font-display text-3xl font-bold sm:text-5xl">{tr(T.offers, locale)}</h2></div><div className="mt-8 grid gap-4 md:grid-cols-3"><article className="rounded-3xl border border-white/15 bg-white/[.06] p-6"><h3 className="font-display text-2xl font-bold">{locale === 'fr' ? 'Gratuit' : 'Free'}</h3><p className="mt-2 text-4xl font-bold text-emerald-300">0 €</p><ul className="mt-5 space-y-2 text-sm text-white/75">{SANTA_FREE_FEATURES.map((f) => <li key={f.fr}>✓ {tr(f, locale)}</li>)}</ul></article>{(['essentiel', 'magique'] as const).map((tier) => { const offer = SANTA_OFFERS[tier]; const featured = tier === 'magique'; return <article key={tier} className={`relative overflow-hidden rounded-3xl border p-6 ${featured ? 'border-amber-200/60 bg-gradient-to-br from-[#473051] via-[#281f53] to-[#161d47]' : 'border-white/15 bg-white/[.06]'}`}><h3 className="font-display text-2xl font-bold">{tr(offer.name, locale)}</h3><div className="mt-2 flex items-baseline gap-2"><PriceCounter amount={offer.amount} locale={locale} reduced={reduced} /></div><ul className="mt-5 space-y-2 text-sm text-white/75">{offer.features.map((f) => <li key={f.fr}>✓ {tr(f, locale)}</li>)}</ul>{featured && <motion.div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-100 to-transparent" animate={reduced ? { opacity: 1 } : { opacity: [.3, .9, .3] }} transition={{ duration: 3, repeat: Infinity }} />}</article>; })}</div><p className="mt-4 text-sm text-white/50">{locale === 'fr' ? 'Paiement unique · valable jusqu’au ' : 'One-time payment · valid until '}{tr(SANTA_VALID_UNTIL_TEXT, locale)}.</p><Link href="/pere-noel/parents" className="group relative isolate mt-8 flex min-h-56 items-end overflow-hidden rounded-3xl border border-amber-200/30 p-6 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300 sm:min-h-64"><ArtSlot asset={santaArt('carte-cadeau')} sizes="(min-width:1280px) 1200px, 100vw" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" /><span aria-hidden className="absolute inset-0 bg-gradient-to-r from-[#2a0f1f]/90 via-[#2a0f1f]/40 to-transparent" /><span className="relative"><span className="block font-display text-2xl font-bold sm:text-3xl">{tr(SANTA_NEW_PRICING ? T.gift : T.packs, locale)}</span><span className="mt-1 block max-w-md text-white/80">{tr(SANTA_NEW_PRICING ? T.giftText : T.packsText, locale)}</span></span></Link><Link href="/pere-noel/parents" className="mt-5 inline-flex rounded-full bg-amber-300 px-6 py-3 font-bold text-[#221b42]">{pass.tier ? (locale === 'fr' ? 'Votre pack est actif' : 'Your pack is active') : (locale === 'fr' ? 'Voir les packs' : 'See the packs')}</Link></section>
+    <section className="mx-auto max-w-7xl px-5 py-10 sm:px-10" aria-labelledby="offer-title"><div className="relative isolate overflow-hidden rounded-[2rem] border border-white/10 px-6 py-14 sm:px-10 sm:py-20"><ArtSlot asset={santaArt('offres-3-cadeaux')} sizes="(min-width:1280px) 1200px, 100vw" /><div aria-hidden className="absolute inset-0 bg-[linear-gradient(90deg,rgba(14,16,50,.88),rgba(14,16,50,.35))]" /><h2 id="offer-title" className="relative max-w-xl font-display text-3xl font-bold sm:text-5xl">{tr(T.offers, locale)}</h2></div><div className="mt-8 grid gap-4 md:grid-cols-3"><article className="rounded-3xl border border-white/15 bg-white/[.06] p-6"><h3 className="font-display text-2xl font-bold">{locale === 'fr' ? 'Gratuit' : 'Free'}</h3><p className="mt-2 text-4xl font-bold text-emerald-300">0 €</p><ul className="mt-5 space-y-2 text-sm text-white/75">{SANTA_FREE_FEATURES.map((f) => <li key={f.fr}>✓ {tr(f, locale)}</li>)}</ul></article>{(['essentiel', 'magique'] as const).map((tier) => { const offer = SANTA_OFFERS[tier]; const featured = tier === 'magique'; return <article key={tier} className={`relative overflow-hidden rounded-3xl border p-6 ${featured ? 'border-amber-200/60 bg-gradient-to-br from-[#473051] via-[#281f53] to-[#161d47]' : 'border-white/15 bg-white/[.06]'}`}><h3 className="font-display text-2xl font-bold">{tr(offer.name, locale)}</h3><div className="mt-2 flex items-baseline gap-2"><Price amount={offer.amount} locale={locale} /></div><ul className="mt-5 space-y-2 text-sm text-white/75">{offer.features.map((f) => <li key={f.fr}>✓ {tr(f, locale)}</li>)}</ul>{featured && <motion.div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-100 to-transparent" animate={reduced ? { opacity: 1 } : { opacity: [.3, .9, .3] }} transition={{ duration: 3, repeat: Infinity }} />}</article>; })}</div><p className="mt-4 text-sm text-white/50">{locale === 'fr' ? 'Paiement unique · valable jusqu’au ' : 'One-time payment · valid until '}{tr(SANTA_VALID_UNTIL_TEXT, locale)}.</p><Link href="/pere-noel/parents" className="group relative isolate mt-8 flex min-h-56 items-end overflow-hidden rounded-3xl border border-amber-200/30 p-6 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-amber-300 sm:min-h-64"><ArtSlot asset={santaArt('carte-cadeau')} sizes="(min-width:1280px) 1200px, 100vw" className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-[1.02]" /><span aria-hidden className="absolute inset-0 bg-gradient-to-r from-[#2a0f1f]/90 via-[#2a0f1f]/40 to-transparent" /><span className="relative"><span className="block font-display text-2xl font-bold sm:text-3xl">{tr(SANTA_NEW_PRICING ? T.gift : T.packs, locale)}</span><span className="mt-1 block max-w-md text-white/80">{tr(SANTA_NEW_PRICING ? T.giftText : T.packsText, locale)}</span></span></Link><Link href="/pere-noel/parents" className="mt-5 inline-flex rounded-full bg-amber-300 px-6 py-3 font-bold text-[#221b42]">{pass.tier ? (locale === 'fr' ? 'Votre pack est actif' : 'Your pack is active') : (locale === 'fr' ? 'Voir les packs' : 'See the packs')}</Link></section>
 
     <section className="mx-auto max-w-5xl px-5 py-20 sm:px-10" aria-labelledby="faq-title"><h2 id="faq-title" className="font-display text-3xl font-bold sm:text-5xl">{tr(T.faq, locale)}</h2><div className="mt-7 divide-y divide-white/10 rounded-3xl border border-white/10 bg-white/[.04]">{T.q.map(({ q, a }, i) => <div key={i} className="p-5"><button type="button" aria-expanded={openFaq === i} onClick={() => setOpenFaq(openFaq === i ? null : i)} className="flex w-full items-center justify-between gap-6 text-left font-bold focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300">{tr(q, locale)}<span aria-hidden>{openFaq === i ? '−' : '+'}</span></button><AnimatePresence initial={false}>{openFaq === i && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: reduced ? .15 : .25 }}><span className="block pt-4 leading-relaxed text-white/70">{tr(a, locale)}</span></motion.p>}</AnimatePresence></div>)}</div></section>
 

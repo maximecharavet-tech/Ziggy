@@ -137,5 +137,6 @@ export const REACTIONS = [
   'gift_space',
   'gift_moon',
   'gift_mars',
+  'gift_treasure',
 ] as const;
 export type Reaction = (typeof REACTIONS)[number];

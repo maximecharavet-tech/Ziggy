@@ -8,7 +8,7 @@ import { ArrowRight, Play, Check, Star, Heart } from 'lucide-react';
 import { Button } from '@/components/ui/Button';
 import { Link } from '@/i18n/navigation';
 import { AnimatedCounter } from '@/components/ui/AnimatedCounter';
-import { StarBurst } from '@/components/ziggy/StarBurst';
+import { SparkleBurst } from '@/components/ui/fx/SparkleBurst';
 import { HyperBadge } from '@/components/ziggy/HyperBadge';
 import { ZiggyVideo } from '@/components/ziggy/ZiggyVideo';
 import { Sparkle, ZiggyAvatar } from '@/components/ziggy/Mascot';
@@ -51,6 +51,7 @@ export function HeroSection() {
   const { play } = useSound();
   const reduce = useReducedMotion();
   const [happy, setHappy] = useState(false);
+  const [cheers, setCheers] = useState(0);
 
   // Gentle 3D tilt that follows the pointer (mouse only).
   const px = useMotionValue(0);
@@ -78,15 +79,16 @@ export function HeroSection() {
   const cheer = () => {
     play('pop');
     setHappy(true);
+    setCheers((n) => n + 1);
     setTimeout(() => setHappy(false), 1800);
   };
 
   // Facts about the product itself, counted from the real content — never invented audience figures.
   const stats = [
-    { value: String(WORLDS.length), label: t('facts_worlds'), tint: 'text-leaf' },
-    { value: String(DODO_STORIES.length), label: t('facts_stories'), tint: 'text-sky' },
-    { value: String(Object.keys(ARCADE_GAMES).length + 2), label: t('facts_games'), tint: 'text-coral' },
-    { value: '0', label: t('facts_ads'), tint: 'text-apricot' },
+    { value: String(WORLDS.length), label: t('facts_worlds'), ink: 'text-leaf-ink dark:text-leaf', color: '#7FC85C', emoji: '🌍' },
+    { value: String(DODO_STORIES.length), label: t('facts_stories'), ink: 'text-sky-ink dark:text-sky', color: '#5FB6EA', emoji: '🌙' },
+    { value: String(Object.keys(ARCADE_GAMES).length + 2), label: t('facts_games'), ink: 'text-coral-ink dark:text-coral', color: '#F2647B', emoji: '🎮' },
+    { value: '0', label: t('facts_ads'), ink: 'text-sun-ink dark:text-apricot', color: '#F9BE7C', emoji: '🛡️' },
   ];
 
   return (
@@ -128,9 +130,9 @@ export function HeroSection() {
             initial="hidden"
             animate="visible"
             custom={3}
-            className="mt-9 flex flex-col sm:flex-row sm:flex-wrap gap-3 justify-center lg:justify-start"
+            className="mt-9 flex flex-col sm:flex-row sm:flex-wrap gap-3 justify-center lg:justify-start max-sm:mx-auto max-sm:max-w-sm"
           >
-            <Button href="/signup" size="lg" magnetic className="web-only group gap-2 whitespace-nowrap shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
+            <Button href="/signup" size="lg" magnetic className="web-only group w-full sm:w-auto gap-2 whitespace-nowrap shadow-[0_12px_30px_-8px_rgba(34,197,94,0.55)]">
               {t('cta_primary')}
               <ArrowRight size={20} className="transition-transform group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1" />
             </Button>
@@ -141,7 +143,7 @@ export function HeroSection() {
               <span aria-hidden="true">🎮</span>
               {locale === 'fr' ? 'Jouer' : 'Play'}
             </Link>
-            <Button href="/demo" variant="secondary" size="lg" magnetic className="gap-2 whitespace-nowrap">
+            <Button href="/demo" variant="secondary" size="lg" magnetic className="w-full sm:w-auto gap-2 whitespace-nowrap">
               <span className="w-7 h-7 rounded-full bg-green/10 text-green flex items-center justify-center">
                 <Play size={13} className="fill-current rtl:rotate-180" />
               </span>
@@ -223,7 +225,8 @@ export function HeroSection() {
                 />
                 <span className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 bg-gradient-to-r from-transparent via-white/35 to-transparent animate-sheen" aria-hidden="true" />
               </div>
-              <StarBurst trigger={happy} x={150} y={170} />
+              {/* Stars and hearts burst from Ziggy's heart (shared FX kit) */}
+              <SparkleBurst trigger={cheers} x="50%" y="62%" count={14} radius={120} size={20} />
             </motion.button>
 
             <Sparkle className="w-7 -top-4 end-[8%] z-20" color="#FFFFFF" delay={0} />
@@ -283,12 +286,24 @@ export function HeroSection() {
         initial="hidden"
         animate="visible"
         custom={5}
-        className="relative max-w-5xl mx-auto mt-16 grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
+        className="relative max-w-5xl mx-auto mt-16 grid grid-cols-2 lg:grid-cols-4 gap-x-3 gap-y-5 sm:gap-x-4"
       >
-        {stats.map((s) => (
-          <div key={s.label} className="glass-strong rounded-2xl border border-border/60 px-5 py-5 text-center transition-transform duration-300 hover:-translate-y-1">
-            <AnimatedCounter value={s.value} className={`font-display text-3xl sm:text-4xl font-bold ${s.tint}`} />
-            <div className="mt-1 text-xs sm:text-sm font-semibold text-text-dim">{s.label}</div>
+        {/* Facts as little toy tiles: a sticker, the number, what it counts. */}
+        {stats.map((s, i) => (
+          <div
+            key={s.label}
+            className="mg-card mg-static px-4 pb-5 pt-6 text-center"
+            style={{ '--tint': s.color } as React.CSSProperties}
+          >
+            <span
+              aria-hidden="true"
+              className="absolute -top-4 start-1/2 grid h-9 w-9 -translate-x-1/2 place-items-center rounded-full bg-bg-card text-lg shadow-soft ring-2 rtl:translate-x-1/2"
+              style={{ '--tw-ring-color': `${s.color}66`, rotate: `${i % 2 ? 8 : -8}deg` } as React.CSSProperties}
+            >
+              {s.emoji}
+            </span>
+            <AnimatedCounter value={s.value} className={`font-display text-3xl sm:text-4xl font-bold ${s.ink}`} />
+            <div className="mt-1 text-xs sm:text-sm font-semibold text-text-muted">{s.label}</div>
           </div>
         ))}
       </motion.div>

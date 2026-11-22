@@ -78,7 +78,11 @@ export function FeaturesSection() {
       <div className="mx-auto max-w-6xl px-5 sm:px-6 lg:px-8">
         <ScrollReveal>
           <SectionHeading
-            eyebrow={<><Heart size={14} className="fill-current" /> {t('eyebrow')}</>}
+            eyebrow={
+              <span className="inline-flex items-center gap-1.5 text-leaf-ink dark:text-green">
+                <Heart size={14} className="fill-current" /> {t('eyebrow')}
+              </span>
+            }
             title={t('title')}
             subtitle={t('subtitle')}
           />
@@ -114,7 +118,7 @@ export function FeaturesSection() {
                       className="flex h-10 w-10 items-center justify-center rounded-2xl transition-transform duration-500"
                       style={{ backgroundColor: `color-mix(in srgb, ${f.color} 18%, transparent)`, color: f.color, transform: on ? 'scale(1)' : 'scale(0.9)' }}
                     >
-                      <f.icon size={20} strokeWidth={2.2} />
+                      <f.icon size={20} strokeWidth={2.2} aria-hidden="true" />
                     </span>
                     <span className="font-display text-sm font-bold tabular-nums text-text-dim">{String(i + 1).padStart(2, '0')}</span>
                   </div>

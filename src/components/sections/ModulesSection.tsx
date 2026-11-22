@@ -4,6 +4,8 @@ import { useTranslations } from 'next-intl';
 import { Cpu, MessageSquare, Calculator, Palette, Sun } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { MagicBackdrop } from '@/components/sections/magic/MagicBackdrop';
+import { deepFor } from '@/components/sections/magic/color';
 
 const COLORS = ['#7FC85C', '#5FB6EA', '#F9BE7C', '#A78BFA', '#F2647B'];
 
@@ -25,7 +27,8 @@ export function ModulesSection() {
 
   return (
     <section id="modules" className="relative overflow-clip px-5 py-24 sm:px-6 sm:py-32 lg:px-8">
-      <div className="mx-auto max-w-6xl">
+      <MagicBackdrop variant="day" stars={7} clouds={2} seed={5} />
+      <div className="relative z-10 mx-auto max-w-6xl">
         <ScrollReveal>
           <SectionHeading title={t('title')} subtitle={t('subtitle')} />
         </ScrollReveal>
@@ -56,13 +59,13 @@ export function ModulesSection() {
                     className="flex h-11 w-11 items-center justify-center rounded-2xl transition-transform duration-300 [@media(hover:hover)]:group-hover:-rotate-6 [@media(hover:hover)]:group-hover:scale-110"
                     style={{ backgroundColor: `color-mix(in srgb, ${c} 18%, transparent)`, color: c }}
                   >
-                    <m.icon size={22} strokeWidth={2.2} />
+                    <m.icon size={22} strokeWidth={2.2} aria-hidden="true" />
                   </span>
                   <span
                     className="rounded-full px-3 py-1 text-xs font-bold"
-                    style={{ backgroundColor: `color-mix(in srgb, ${c} 14%, transparent)`, color: `color-mix(in srgb, ${c} 70%, var(--color-text-body))` }}
+                    style={{ backgroundColor: `color-mix(in srgb, ${c} 14%, transparent)`, color: deepFor(c) }}
                   >
-                    {m.ages}
+                    <span className="dark:text-text-body">{m.ages}</span>
                   </span>
                 </div>
                 <h3 className="relative mt-5 text-xl font-bold text-text-body">{m.title}</h3>

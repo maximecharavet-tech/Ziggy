@@ -33,8 +33,9 @@ import { CountUp, GameToken, SpeechBubble, StarTray, Sunburst, Title3D } from '@
 import { darken, lighten, rgba, strong } from '@/components/arcade/stage/color';
 import { CompanionBuddy } from './CompanionBuddy';
 import { MagicMoments, MomentChips } from './MagicMoments';
-import { wt } from './text';
+import { wt, WORLD_UI } from './text';
 import { useAppShell } from '@/lib/use-app-shell';
+import { AiLabel } from '@/components/ui/AiLabel';
 
 type Stage = 'intro' | 'loading' | 'playing' | 'saving' | 'result';
 
@@ -86,6 +87,7 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
 
   const [stage, setStage] = useState<Stage>('intro');
   const [narration, setNarration] = useState<QuestContent | null>(null);
+  const [narrationAi, setNarrationAi] = useState(false);
   const [session, setSession] = useState<Session | null>(null);
   const [buddy, setBuddy] = useState<CompanionState>(INITIAL_COMPANION);
   const [line, setLine] = useState<string | null>(null);
@@ -102,8 +104,11 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
   useEffect(() => {
     if (!world || !quest) return;
     let alive = true;
-    void api<{ quest: QuestContent }>('quest/generate', { body: { worldId: world.id, questId: quest.id, companion: getMemory().companion, ageGroup: aiAgeGroup(getMemory()), locale } }).then((res) => {
-      if (alive && res.ok) setNarration(res.data.quest);
+    void api<{ quest: QuestContent; source?: 'ai' | 'local' }>('quest/generate', { body: { worldId: world.id, questId: quest.id, companion: getMemory().companion, ageGroup: aiAgeGroup(getMemory()), locale } }).then((res) => {
+      if (alive && res.ok) {
+        setNarration(res.data.quest);
+        setNarrationAi(res.data.source === 'ai');
+      }
     });
     return () => {
       alive = false;
@@ -217,9 +222,10 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
           <div className="ms-auto flex flex-wrap items-center gap-2">
             {session && stage === 'playing' ? (
               <span className="hidden rounded-full bg-white/70 px-3 py-1.5 text-xs font-bold text-text-muted shadow-sm sm:inline-block dark:bg-bg-card/80">
-                {wt('difficulty', locale)} {session.difficulty}/5 · {session.source === 'ai' ? '✨ ' + wt('aiMade', locale) : wt('localMade', locale)}
+                {wt('difficulty', locale)} {session.difficulty}/5{session.source === 'ai' ? '' : ` · ${wt('localMade', locale)}`}
               </span>
             ) : null}
+            {session && stage === 'playing' && session.source === 'ai' ? <AiLabel text={WORLD_UI.aiMade} /> : null}
             <button type="button" onClick={toggleRead} aria-pressed={reads} className={`${PILL} ${reads ? '!bg-sky !text-white' : ''}`}>
               <span aria-hidden="true">{reads ? '🔊' : '🔈'}</span>
               {locale === 'fr' ? 'Ziggy lit pour moi' : 'Ziggy reads for me'}
@@ -280,6 +286,7 @@ export function PlayFlow({ worldId, questId, gameId: freeGameId }: { worldId?: s
                   <SpeechBubble color={color} tail="auto">
                     <IntroText intro={intro} steps={narration?.steps} line={companionLineNow} companion={companion.emoji} />
                   </SpeechBubble>
+                  {narrationAi && narration ? <AiLabel className="mt-2" text={WORLD_UI.aiMade} /> : null}
                 </motion.div>
                 <div className="order-3 flex flex-wrap justify-center gap-2 lg:order-2 lg:justify-start">
                   <Chip color={color}>

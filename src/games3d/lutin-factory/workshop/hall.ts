@@ -157,9 +157,9 @@ export function buildHall(hall: string, W: number, H: number, low: boolean): Hal
       for (let i = 0; i < 3; i++) parts.push(at(ball(0.3, FELT.cream, 9, 7), L + (i % 2) * 0.4, 0.28, -H / 2 + 0.5 + i * 0.55, 0, 0, 0, 1, 1.1, 1));
       for (let i = 0; i < 4; i++) parts.push(at(rbox(0.4, 0.34, 0.4, 0.04, [FELT.gold, FELT.mint, FELT.pink, FELT.sky][i]), R + 0.2 + (i % 2) * 0.45, 0.17 + Math.floor(i / 2) * 0.34, front - 1.0));
       if (hall === 'christmas-eve') {
-        // A felt Christmas tree with baubles and a star.
-        const tx = R + 0.3;
-        const tz = -H / 2 - 0.4;
+        // A felt Christmas tree with baubles and a star, in the back corner (clear of Ziggy at the sacks).
+        const tx = R + 1.7;
+        const tz = -H / 2 - 0.8;
         parts.push(at(cyl(0.12, 0.14, 0.4, FELT.woodDeep, 6), tx, 0.2, tz));
         [1.0, 0.8, 0.58].forEach((r, i) => parts.push(at(cone(r, 1.0, i % 2 ? FELT.green : FELT.greenDark, 9), tx, 0.85 + i * 0.6, tz)));
         for (let k = 0; k < 10; k++) {

@@ -1,9 +1,14 @@
 'use client';
 
+import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import { UserPlus, Bot, TrendingUp, Route } from 'lucide-react';
 import { SectionHeading } from '@/components/ui/SectionHeading';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { Stagger } from '@/components/sections/magic/Stagger';
+import { rise } from '@/components/sections/magic/rise';
+import { Sparkle4 } from '@/components/sections/magic/Sparkle4';
+import { deepFor } from '@/components/sections/magic/color';
 
 const STEPS = [
   { icon: UserPlus, color: '#7FC85C' },
@@ -15,46 +20,52 @@ export function HowItWorksSection() {
   const t = useTranslations('how_it_works');
 
   return (
-    <section className="py-24 sm:py-28 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-      <div className="max-w-6xl mx-auto">
+    <section className="relative overflow-hidden px-4 py-24 sm:px-6 sm:py-28 lg:px-8">
+      <div className="mx-auto max-w-6xl">
         <ScrollReveal>
           <SectionHeading
-            eyebrow={<><Route size={14} /> {t('eyebrow')}</>}
+            eyebrow={
+              <span className="inline-flex items-center gap-1.5 text-leaf-ink dark:text-green">
+                <Route size={14} /> {t('eyebrow')}
+              </span>
+            }
             title={t('title')}
             subtitle={t('subtitle')}
           />
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-3 gap-5 relative">
-          {/* Dotted path joining the steps */}
-          <div
-            className="hidden md:block absolute top-[4.25rem] inset-x-[18%] border-t-[3px] border-dashed border-border"
-            aria-hidden="true"
-          />
+        <div className="relative">
+          {/* A dotted, wavy path joining the steps, with a sparkle on each bend */}
+          <div aria-hidden="true" className="pointer-events-none absolute inset-x-[16%] top-[3.1rem] hidden h-10 md:block">
+            <svg viewBox="0 0 400 40" preserveAspectRatio="none" className="h-full w-full">
+              <path d="M0 22 C 60 2, 140 2, 200 20 S 340 38, 400 18" fill="none" stroke="var(--color-border)" strokeWidth="3" strokeDasharray="2 9" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+            </svg>
+            <Sparkle4 className="mg-star absolute start-[24%] top-0" style={{ '--size': '14px', '--c': '#FBBF24' } as CSSProperties} />
+            <Sparkle4 className="mg-star absolute end-[24%] top-6" style={{ '--size': '12px', '--c': '#F2647B', '--delay': '-1.4s' } as CSSProperties} />
+          </div>
 
+          <Stagger as="ol" className="relative grid gap-x-5 gap-y-8 md:grid-cols-3">
           {STEPS.map(({ icon: Icon, color }, i) => (
-            <ScrollReveal key={i} delay={i * 140} variant="fade-up">
-              <div className="relative h-full rounded-3xl border border-border/60 bg-bg-card p-8 text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_50px_-24px_rgba(26,26,46,0.25)]">
-                <div className="relative mx-auto mb-6 w-[5.5rem] h-[5.5rem]">
-                  <div className="absolute inset-0 rounded-[1.75rem] rotate-6" style={{ backgroundColor: `${color}33` }} />
-                  <div
-                    className="relative w-full h-full rounded-[1.75rem] flex items-center justify-center"
-                    style={{ backgroundColor: color, boxShadow: `0 14px 28px -10px ${color}` }}
-                  >
-                    <Icon size={34} className="text-white" strokeWidth={2.2} />
-                  </div>
+            <li key={i} className="mg-rise" style={rise(i)}>
+              <div className="mg-card mg-static h-full p-8 text-center" style={{ '--tint': color } as CSSProperties}>
+                <div className="relative mx-auto mb-6 h-[5.5rem] w-[5.5rem]">
+                  <div className="absolute inset-0 rotate-6 rounded-[1.75rem]" style={{ backgroundColor: `${color}33` }} />
+                  <span className="mg-icon relative h-full w-full rounded-[1.75rem]" style={{ '--tint': color } as CSSProperties}>
+                    <Icon size={34} strokeWidth={2.2} aria-hidden="true" />
+                  </span>
                   <span
-                    className="absolute -top-3 -end-3 w-9 h-9 rounded-full bg-bg-card border-2 flex items-center justify-center font-display text-lg font-bold"
-                    style={{ borderColor: color, color }}
+                    className="absolute -end-3 -top-3 flex h-10 w-10 items-center justify-center rounded-full border-[3px] bg-bg-card font-display text-lg font-bold shadow-soft"
+                    style={{ borderColor: color, color: deepFor(color) }}
                   >
                     {i + 1}
                   </span>
                 </div>
-                <h3 className="text-xl font-bold text-text-body mb-3">{t(`step${i + 1}_title`)}</h3>
-                <p className="text-text-muted leading-relaxed">{t(`step${i + 1}_desc`)}</p>
+                <h3 className="mb-3 text-xl font-bold text-text-body">{t(`step${i + 1}_title`)}</h3>
+                <p className="leading-relaxed text-text-muted">{t(`step${i + 1}_desc`)}</p>
               </div>
-            </ScrollReveal>
+            </li>
           ))}
+          </Stagger>
         </div>
       </div>
     </section>

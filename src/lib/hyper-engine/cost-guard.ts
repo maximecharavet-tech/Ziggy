@@ -7,7 +7,6 @@ import type { SupabaseClient } from '@supabase/supabase-js';
  * Limits come from the environment; the defaults are deliberately modest.
  */
 export type Operation =
-  | 'analyze_image'
   | 'generate_avatar'
   | 'generate_quest'
   | 'generate_story'
@@ -16,7 +15,6 @@ export type Operation =
 
 /** Rough cost per call in USD (configurable), for budgeting — not billing. */
 export const ESTIMATED_COST: Record<Operation, number> = {
-  analyze_image: 0.002,
   generate_avatar: 0.04,
   generate_quest: 0.0015,
   generate_story: 0.003,

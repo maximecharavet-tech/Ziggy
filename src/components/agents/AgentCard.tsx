@@ -1,10 +1,13 @@
 'use client';
 
-import { motion } from 'motion/react';
+import type { CSSProperties } from 'react';
 import { useTranslations } from 'next-intl';
 import { Link } from '@/i18n/navigation';
-import { ArrowRight, MessageCircle } from 'lucide-react';
+import { MessageCircle } from 'lucide-react';
 import { AgentAvatar } from './AgentAvatar';
+import { deepFor } from '@/components/sections/magic/color';
+import { rise } from '@/components/sections/magic/rise';
+import { useTapRipple } from '@/components/ui/fx/TapRipple';
 
 interface AgentCardProps {
   id: string;
@@ -15,64 +18,41 @@ interface AgentCardProps {
   index: number;
 }
 
+/** One of Ziggy's friends as a toy tile (lifts on hover, squishes when pressed). */
 export function AgentCard({ id, name, description, color, index }: AgentCardProps) {
   const t = useTranslations('agents');
+  const deep = deepFor(color);
+  // A soft ripple and a pinch of sparkles from the finger (shared FX kit).
+  const { onPointerDown, layer } = useTapRipple({ color });
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ delay: index * 0.08, duration: 0.45, ease: 'easeOut' }}
-      className="h-full"
-    >
-      <Link href={`/agents/${id}` as '/agents/sales'} className="block h-full group">
-        <div
-          className="relative h-full rounded-2xl p-[1.5px] transition-all duration-300 group-hover:-translate-y-1.5"
-          style={{
-            background: `linear-gradient(160deg, ${color}30, transparent 40%, transparent 60%, ${color}20)`,
-          }}
-        >
-          <div
-            className="relative h-full glass-strong rounded-2xl border border-border/50 p-6 overflow-hidden transition-shadow duration-300 group-hover:shadow-xl"
-            style={{ ['--agent-glow' as string]: `${color}18` }}
+    <div className="mg-rise h-full" style={rise(index)}>
+      <Link
+        href={`/agents/${id}` as '/agents/sales'}
+        onPointerDown={onPointerDown}
+        className="mg-card group flex h-full flex-col p-5 sm:p-6"
+        style={{ '--tint': color, '--mg-tilt': index % 2 ? '0.6deg' : '-0.6deg' } as CSSProperties}
+      >
+        <div className="flex items-start justify-between">
+          <span
+            className="grid h-[4.5rem] w-[4.5rem] place-items-center rounded-[1.4rem] transition-transform duration-500 ease-toy group-hover:-rotate-6 group-hover:scale-105"
+            style={{ background: `radial-gradient(circle at 35% 30%, #fff, ${color}22 70%)`, boxShadow: `inset 0 0 0 2px ${color}33, 0 4px 0 ${color}33` }}
           >
-            {/* Hover glow */}
-            <div
-              className="absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-              style={{ background: `radial-gradient(circle, ${color}25 0%, transparent 70%)` }}
-            />
-
-            <div className="flex items-start justify-between mb-4">
-              <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3"
-                style={{ backgroundColor: `${color}12` }}
-              >
-                <AgentAvatar agentId={id} color={color} size={52} />
-              </div>
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0"
-                style={{ backgroundColor: `${color}15` }}
-              >
-                <MessageCircle size={14} style={{ color }} />
-              </div>
-            </div>
-
-            <h3 className="text-lg font-extrabold mb-2 tracking-tight" style={{ color }}>
-              {name}
-            </h3>
-            <p className="text-sm text-text-muted leading-relaxed mb-5">
-              {description}
-            </p>
-            <div
-              className="inline-flex items-center gap-1.5 text-xs font-bold transition-all duration-300 group-hover:gap-2.5"
-              style={{ color }}
-            >
-              <span>{t('try_now')}</span>
-              <ArrowRight size={14} className="rtl:rotate-180" />
-            </div>
-          </div>
+            <AgentAvatar agentId={id} color={color} size={56} />
+          </span>
+          <span className="grid h-9 w-9 place-items-center rounded-full" style={{ backgroundColor: `${color}1f`, color: deep }} aria-hidden="true">
+            <MessageCircle size={16} />
+          </span>
         </div>
+        <h3 className="mt-4 font-display text-xl font-bold tracking-tight" style={{ color: deep }}>
+          <span className="dark:text-text-body">{name}</span>
+        </h3>
+        <p className="mt-2 flex-1 text-[0.95rem] leading-relaxed text-text-muted">{description}</p>
+        <span className="mg-pill mt-5 w-fit" style={{ '--tint': deep } as CSSProperties}>
+          {t('try_now')}
+          <span aria-hidden="true" className="rtl:rotate-180">→</span>
+        </span>
+        {layer}
       </Link>
-    </motion.div>
+    </div>
   );
 }

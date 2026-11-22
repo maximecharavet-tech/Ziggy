@@ -40,7 +40,7 @@
     "bubble": "¡Hola, soy Ziggy! 👋",
     "bubble_happy": "¡Jiji, me haces cosquillas! 💚",
     "trust_1": "Sin anuncios",
-    "trust_2": "Datos alojados en Europa",
+    "trust_2": "Cuentas alojadas en París",
     "trust_3": "Se juega sin cuenta",
     "facts_worlds": "Mundos por explorar",
     "facts_stories": "Cuentos para dormir",
@@ -49,24 +49,24 @@
   },
   "features": {
     "title": "Por qué los padres adoran Ziggy",
-    "subtitle": "Creado por educadores y expertos en IA, diseñado para mentes jóvenes curiosas",
+    "subtitle": "Sin anuncios ni presión, con un filtro de seguridad en cada texto de la IA: pensado para mentes jóvenes curiosas",
     "ai_companion": "Compañero IA",
     "ai_companion_desc": "Ziggy se adapta al ritmo y estilo de aprendizaje de cada niño con conversaciones de IA personalizadas.",
     "safe_space": "Un espacio seguro",
-    "safe_space_desc": "Sin anuncios, datos guardados en Europa y una cuenta gestionada por un adulto. Solo guardamos el nombre del niño.",
+    "safe_space_desc": "Sin anuncios, una cuenta gestionada por un adulto y alojada en París. Basta con el nombre: nunca pedimos apellidos.",
     "cognitive_tracking": "Perfil cognitivo",
     "cognitive_tracking_desc": "Sigue el desarrollo de tu hijo en 6 dimensiones cognitivas con paneles interactivos.",
     "multilingual": "12 idiomas",
     "multilingual_desc": "Disponible en 12 idiomas con detección automática. Aprender sin fronteras.",
     "gamified": "Aprendizaje gamificado",
     "gamified_desc": "Estrellas, insignias y recompensas convierten el aprendizaje en un juego. Sin presión, pura diversión.",
-    "curriculum": "Programa experto",
+    "curriculum": "Un programa variado",
     "curriculum_desc": "5 módulos especializados que cubren IA, matemáticas, lógica, creatividad y actividades estacionales.",
     "eyebrow": "Por qué Ziggy"
   },
   "modules": {
     "title": "Módulos de aprendizaje",
-    "subtitle": "Cinco módulos diseñados por expertos para despertar la curiosidad",
+    "subtitle": "Cinco módulos para despertar la curiosidad",
     "ai_basics": "Bases de la IA",
     "ai_basics_desc": "Cómo la IA piensa, aprende y nos ayuda cada día",
     "ai_basics_ages": "4-12 años",
@@ -107,7 +107,7 @@
     "family_f3": "Panel completo e informes",
     "family_f4": "Los 5 módulos",
     "family_f5": "Soporte prioritario",
-    "popular": "Más popular",
+    "popular": "Recomendado",
     "school": "Escuela",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
@@ -166,7 +166,7 @@
   "faq": {
     "title": "Preguntas frecuentes",
     "q1": "¿Es Ziggy seguro para mi hijo?",
-    "a1": "Ziggy está pensado para niños: sin anuncios, sin contacto con desconocidos, y la cuenta la crea y gestiona un adulto. Solo guardamos el nombre del niño, su franja de edad y sus resultados, almacenados en Europa. La cuenta se puede borrar en cualquier momento desde el espacio de la familia.",
+    "a1": "Ziggy está pensado para niños: sin anuncios, sin contacto con desconocidos, y la cuenta la crea y gestiona un adulto. Del niño solo pedimos el nombre y la franja de edad, nunca apellidos ni dirección. Las cuentas y el progreso se alojan en París (Supabase); algunas funciones de IA usan proveedores fuera de la UE, indicados en la política de privacidad. La cuenta se puede borrar en cualquier momento desde el espacio de la familia.",
     "q2": "¿Para qué edades está diseñado Ziggy?",
     "a2": "Ziggy está diseñado para niños de 4 a 12 años. La IA adapta el lenguaje, la dificultad y el contenido según la edad y el ritmo de aprendizaje del niño.",
     "q3": "¿Puedo cancelar mi suscripción en cualquier momento?",
@@ -268,17 +268,17 @@
     },
     "advertising": {
       "name": "Spark",
-      "description": "¡Libera tu creatividad y aprende publicidad!",
-      "longDescription": "¡Libera tu creatividad y aprende publicidad!",
-      "chatPlaceholder": "El equipo...",
-      "learn1": "Learn the fundamentals",
-      "learn2": "Practice with fun examples",
-      "learn3": "Build skills for the future",
+      "description": "¡Libera tu creatividad: inventa carteles y aprende a descubrir los trucos de la publicidad!",
+      "longDescription": "¡Spark enciende tu creatividad! Dibuja tus propios carteles para buenas ideas (ordenar tu cuarto, cuidar el planeta…) y conviértete en detective de anuncios: reconocer un anuncio, entender que quiere que compres algo y descubrir sus trucos.",
+      "chatPlaceholder": "Pregunta a Spark sobre carteles y anuncios...",
+      "learn1": "Crear carteles coloridos para buenas ideas",
+      "learn2": "Reconocer un anuncio y saber para qué sirve",
+      "learn3": "Descubrir los trucos de los anuncios: colores, canciones pegadizas, juguetes que parecen más grandes",
       "suggestions": [
-        "How are ads made?",
-        "Create a jingle!",
-        "What makes ads catchy?",
-        "Design a poster!"
+        "¿Cómo reconozco un anuncio?",
+        "¿Qué trucos usan los anuncios?",
+        "¿Por qué un anuncio quiere que compre?",
+        "¡Diseña un cartel!"
       ]
     },
     "try_now": "Probar ahora"
@@ -509,7 +509,7 @@
     "playGames": "Ir a los juegos",
     "bestScore": "Mejor puntuación",
     "plays": "partidas",
-    "secureNotice": "Cuenta de familia segura, alojada en Europa. Solo guardamos el nombre de tu hijo.",
+    "secureNotice": "Cuenta de familia segura, alojada en París. Para tu hijo, basta con su nombre.",
     "childSection": "Para el niño",
     "parentSection": "Para la familia",
     "passwordLabel": "Contraseña",
@@ -602,7 +602,7 @@
     "chat_eyebrow": "Y ahora, charla"
   },
   "trust": {
-    "eu_storage": "Datos guardados en Europa",
+    "eu_storage": "Cuentas alojadas en París",
     "encrypted": "Conexión cifrada",
     "no_ads": "Cero anuncios",
     "parent_account": "Cuenta gestionada por la familia"
@@ -711,8 +711,8 @@
         "desc": "Movimientos breves y precisos que respetan el ajuste «reducir movimiento» del dispositivo y se pausan fuera de pantalla."
       },
       "privacy": {
-        "title": "Datos en Europa, cero anuncios",
-        "desc": "Las cuentas se alojan en Europa, no se vende nada, sin publicidad ni rastreo."
+        "title": "Cuentas en París, cero anuncios",
+        "desc": "Las cuentas se alojan en París, no se vende nada, sin publicidad ni rastreo. Los proveedores de IA que usamos figuran en la política de privacidad."
       }
     },
     "ziggy_title": "Todo esto, para un solo amigo",

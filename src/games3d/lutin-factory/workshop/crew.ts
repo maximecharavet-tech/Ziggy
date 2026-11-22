@@ -102,6 +102,24 @@ export class Crew {
     }
   }
 
+  /**
+   * Points the workshop camera must keep on screen so nobody's head is cut:
+   * the top corners of each character (head + a hop of margin) at home.
+   */
+  framePoints(): [number, number, number][] {
+    const out: [number, number, number][] = [];
+    for (const m of this.members.values()) {
+      const g = m.card.mesh.geometry;
+      if (!g.boundingBox) g.computeBoundingBox();
+      const top = g.boundingBox!.max.y;
+      const half = (g.boundingBox!.max.x - g.boundingBox!.min.x) * 0.36;
+      // The card has air above the head (about a fifth of it); keep a hop of margin instead.
+      const head = top * 0.84 + 0.2;
+      out.push([m.home.x - half, head, m.home.z], [m.home.x + half, head, m.home.z]);
+    }
+    return out;
+  }
+
   get(id: CrewId): Member | undefined {
     return this.members.get(id);
   }

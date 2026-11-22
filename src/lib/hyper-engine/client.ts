@@ -2,7 +2,7 @@ import 'server-only';
 import { z } from 'zod';
 import * as embedded from './orchestrator';
 import type { Ctx, Outcome } from './orchestrator';
-import { AvatarRequestSchema, GameFactorySchema, QuestContentSchema, StoryJsonSchema, VisualBlueprintSchema, type AvatarRequest } from './schemas';
+import { AvatarRequestSchema, GameFactorySchema, QuestContentSchema, StoryJsonSchema, type AvatarRequest } from './schemas';
 import { checkBudget, type Operation } from './cost-guard';
 import { shield } from '@/lib/safety/child-shield';
 import { logEvent, newRequestId } from '@/lib/analytics/log';
@@ -65,10 +65,6 @@ async function callRemote<T>(ctx: Ctx, op: Operation, path: string, payload: unk
 const ImageResult = z.object({ imageUrl: z.string().url().max(4000) });
 
 export const HyperEngineClient = {
-  async analyzeImage(ctx: Ctx, photoDataUri: string) {
-    // The photo never leaves for a third service in remote mode either: it goes to the same vision step.
-    return (await callRemote(ctx, 'analyze_image', 'avatar/analyze', { photo: photoDataUri }, VisualBlueprintSchema, false)) ?? embedded.analyzeImage(ctx, photoDataUri);
-  },
   async generateAvatar(ctx: Ctx, req: AvatarRequest) {
     const safeReq = AvatarRequestSchema.parse(req);
     return (await callRemote(ctx, 'generate_avatar', 'avatar/generate', safeReq, ImageResult, false)) ?? embedded.generateAvatar(ctx, safeReq);

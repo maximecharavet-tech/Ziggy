@@ -12,7 +12,7 @@ HyperEngineClient (src/lib/hyper-engine/client.ts)
 ZIGGY ORCHESTRATOR (src/lib/hyper-engine/orchestrator.ts)
    │  CostGuard → GenerationCapsule → provider → JSON parse → Zod (1 correction) → ChildShield
    ▼
-AI PROVIDERS  DeepSeek (text JSON) · NVIDIA (vision, safety, text fallback) · Agnes (images)
+AI PROVIDERS  DeepSeek (text JSON) · NVIDIA (safety, text fallback) · Agnes (images) — avatar photo: on-device MediaPipe
    ▼
 VALIDATION   schemas.ts (strict JSON) + safety/child-shield.ts (+ NVIDIA NemoGuard)
    ▼
@@ -50,7 +50,7 @@ questions* that pass the Game Factory schema. Rewards always come from the engin
 
 | Route | Auth | Purpose |
 | --- | --- | --- |
-| `POST /api/ziggy/avatar/analyze` | parent + photo consent | photo → VisualBlueprint (zero retention) |
+| `POST /api/ziggy/avatar/analyze` | — | retired: always 410; the photo is read on the device (`src/lib/avatar/photo-analyze.ts`) |
 | `POST /api/ziggy/avatar/generate` | parent | blueprint → image → private storage |
 | `GET/DELETE /api/ziggy/avatar` | parent | list (signed URLs) / delete |
 | `POST /api/ziggy/quest/generate` | optional | quest narration |

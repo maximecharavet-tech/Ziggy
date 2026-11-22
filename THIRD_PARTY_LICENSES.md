@@ -49,6 +49,14 @@ Content:
   Xenova). English pronunciations come from the dictionaries of **misaki** 0.9.4 (https://github.com/hexgrad/misaki,
   Apache-2.0). Neither the model nor any of the tools below is shipped with the site: only the audio they produced.
 
+- Ziggy's read-aloud voice bank (`public/voice/**`, MP3, one clip per fixed sentence of the site; list in
+  `scripts/voice-bake/sentences.json`) is generated offline by `scripts/voice-bake.mjs` with the VOICES MAX GEN
+  engine (`hv-tts`, hyper-engine's Rust workspace, owner's code) on the same **Kokoro-82M** weights and voice styles
+  (© hexgrad, **Apache-2.0**, above), with the French base dictionary **ipa-dict `fr_FR`** (© 2016 dohliam,
+  https://github.com/open-dict-data/ipa-dict, **MIT**) and misaki's English dictionaries (Apache-2.0). MP3 encoding by
+  FFmpeg + libmp3lame on the build machine only (a tool, not shipped). Listening checks with Whisper small
+  (OpenAI, MIT weights) through faster-whisper (MIT), offline, build machine only. Only the audio is shipped.
+
 Build-time tools of `voice-engine/` (run locally, not distributed, not dependencies of the app):
 
 | Name | URL | License | Version |
@@ -156,6 +164,12 @@ the code; no code was copied.
 | Asset | Source | Licence | Notes |
 |---|---|---|---|
 | `public/lutins/mediapipe/efficientdet_lite0.tflite` (int8) | https://storage.googleapis.com/mediapipe-models/object_detector/efficientdet_lite0/int8/latest/efficientdet_lite0.tflite (MediaPipe Object Detector model card) | Apache-2.0 | Runs in the browser only (blocks room photos with a person before upload); loaded with `@mediapipe/tasks-vision` (Apache-2.0, listed above). |
+
+## Avatar studio — on-device photo reading
+
+| Asset | Source | Licence | Notes |
+|---|---|---|---|
+| `public/avatar/mediapipe/face_landmarker.task` (float16; face detector + 478-point face mesh with irises + blendshapes, sha256 `64184e22…0bc9ff`) | https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/latest/face_landmarker.task (MediaPipe Face Landmarker model card), downloaded 2026-11-18 | Apache-2.0 (per the model card; owner to confirm) | Runs in the browser only: `src/lib/avatar/photo-analyze.ts` reads the avatar photo on the device (with the selfie multiclass segmenter listed above), so no photo is sent anywhere. |
 
 ## Le Bac à sable magique engine (`rust/sandbox-core/`, Rust → WebAssembly)
 

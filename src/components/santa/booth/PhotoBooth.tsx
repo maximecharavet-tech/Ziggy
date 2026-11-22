@@ -19,6 +19,7 @@ import { canRecordVideo, recordCanvas, type Clip } from './record';
 import { prefetchQualityModel, segmentFrame, segmentStill, warmSegmenter } from './segmenter';
 import { shareOrSave } from './share';
 import { SCENES, T, photoTitle } from './text';
+import { registerPersonal } from '@/lib/privacy/personal';
 
 /**
  * "Photo avec le Père Noël": the child picks a scene, takes a selfie (or picks
@@ -862,6 +863,7 @@ export function PhotoBooth({ initialScene = 'cheminee', childName, parentsHref =
                       setNameTouched(true);
                       setName(e.target.value);
                     }}
+                    onBlur={() => registerPersonal(name)}
                     className="min-h-14 rounded-2xl bg-white px-4 text-xl font-bold text-[#3a1a12] outline-none ring-2 ring-transparent placeholder:font-normal placeholder:text-[#3a1a12]/40 focus:ring-[#ffd76a]"
                   />
                 </label>

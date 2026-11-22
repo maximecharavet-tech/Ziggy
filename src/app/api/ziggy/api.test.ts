@@ -40,8 +40,10 @@ describe('/api/ziggy', () => {
     expect(body.content.kind).toBeTruthy();
   });
 
-  it('requires a parent account for photo analysis', async () => {
-    expect((await analyze(post('/api/ziggy/avatar/analyze', { photo: 'data:image/png;base64,AAAA' }))).status).toBe(401);
+  it('never accepts a photo on the server: the avatar photo is read on the device', async () => {
+    const res = await analyze();
+    expect(res.status).toBe(410);
+    expect((await res.json()).error).toBe('on_device_only');
   });
 
   it('steps the companion state machine', async () => {

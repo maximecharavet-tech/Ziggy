@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { CHALLENGES, DISCOVERIES, WORLDS, WORLD_INFO, type Discovery, type WorldId } from '@/games2d/sandbox/content';
 import { tr, type L } from '@/lib/i18n-text';
+import { LAB_TEXT } from '@/games2d/sandbox/science';
 import type { SandboxSave } from './storage';
 
 export const NOTEBOOK_TEXT = {
@@ -16,7 +17,37 @@ export const NOTEBOOK_TEXT = {
   locked: { fr: 'À découvrir', en: 'To discover' },
   done: { fr: 'Réussi !', en: 'Done!' },
   close: { fr: 'Fermer le carnet', en: 'Close the notebook' },
+  map: { fr: 'Carte au trésor', en: 'Treasure map' },
+  mapLine: { fr: 'Un X brille dans ce monde. Creuse dessous avec la gomme !', en: 'An X shines in this world. Dig under it with the eraser!' },
 } satisfies Record<string, L>;
+
+/** A little parchment map with the X where the treasure waits (across the world, left to right). */
+export function TreasureMap({ across, emoji, className = '' }: { across: number; emoji: string; className?: string }) {
+  return (
+    <span aria-hidden="true" className={`relative inline-block h-12 w-20 shrink-0 overflow-hidden rounded-lg bg-[#f4e2b8] shadow-inner ring-2 ring-[#b8894a] ${className}`}>
+      <span className="absolute inset-x-0 bottom-0 h-[42%] bg-[#d9b878]" />
+      <span className="absolute left-1 top-0.5 text-sm">{emoji}</span>
+      <span className="absolute bottom-[30%] -translate-x-1/2 text-base font-black leading-none text-[#c0392b]" style={{ left: `${8 + across * 84}%` }}>
+        ✕
+      </span>
+    </span>
+  );
+}
+
+function MapCard({ world, across, locale }: { world: WorldId; across: number; locale: string }) {
+  return (
+    <li className="flex items-center gap-3 rounded-2xl bg-[#fff6dc] p-3 text-[#4a3410] shadow-md ring-2 ring-[#e0b860]" data-map={world}>
+      <TreasureMap across={across} emoji={WORLD_INFO[world].emoji} />
+      <div className="min-w-0 flex-1">
+        <h4 className="font-display text-base font-bold leading-tight">
+          {tr(NOTEBOOK_TEXT.map, locale)} · {tr(WORLD_INFO[world].name, locale)}
+        </h4>
+        <p className="text-sm leading-snug">{tr(NOTEBOOK_TEXT.mapLine, locale)}</p>
+      </div>
+      <SayButton size="sm" texts={[tr(NOTEBOOK_TEXT.map, locale), tr(NOTEBOOK_TEXT.mapLine, locale)]} locale={locale} />
+    </li>
+  );
+}
 
 /** The illustrated equation: 🌰 + 💧 → 🌱. */
 export function Equation({ d, size = 'md', hidden = false }: { d: Discovery; size?: 'md' | 'lg'; hidden?: boolean }) {
@@ -63,8 +94,8 @@ function DiscoveryCard({ d, found, locale }: { d: Discovery; found: boolean; loc
 }
 
 /** Challenges + discoveries grouped by world. Used as the side panel (large screens) and inside the drawer (phones). */
-export const Notebook = forwardRef<HTMLDivElement, { save: SandboxSave; locale: string; world: WorldId; onClose?: () => void; className?: string }>(function Notebook(
-  { save, locale, world, onClose, className = '' },
+export const Notebook = forwardRef<HTMLDivElement, { save: SandboxSave; locale: string; world: WorldId; labLines?: L[]; onClose?: () => void; className?: string }>(function Notebook(
+  { save, locale, world, labLines = [], onClose, className = '' },
   ref,
 ) {
   const [tab, setTab] = useState<WorldId | 'gifts'>(world);
@@ -104,6 +135,32 @@ export const Notebook = forwardRef<HTMLDivElement, { save: SandboxSave; locale: 
         })}
       </div>
       <div className="min-h-0 flex-1 overflow-y-auto px-4 pb-6 [scrollbar-width:thin]">
+        {labLines.length && tab === world ? (
+          <section className="mb-3 rounded-2xl bg-[#7c6cf0]/25 p-3 ring-1 ring-[#b4a8ff]/50" data-science-changed="">
+            <div className="mb-1 flex items-center gap-2">
+              <span aria-hidden="true" className="text-xl">
+                🔬
+              </span>
+              <h3 className="min-w-0 flex-1 text-sm font-black uppercase tracking-[0.1em]">{tr(LAB_TEXT.changed, locale)}</h3>
+              <SayButton size="sm" texts={[tr(LAB_TEXT.changed, locale), ...labLines.map((l) => tr(l, locale))]} locale={locale} className="!bg-white/10 !text-white !ring-white/20" />
+            </div>
+            {labLines.map((l) => (
+              <p key={l.en} className="mt-1 text-sm leading-snug text-white/90">
+                {tr(l, locale)}
+              </p>
+            ))}
+          </section>
+        ) : null}
+        {(() => {
+          const maps = (tab === 'gifts' ? WORLDS : [tab]).filter((w) => save.maps[w] !== undefined);
+          return maps.length ? (
+            <ul className="mb-3 space-y-2">
+              {maps.map((w) => (
+                <MapCard key={w} world={w} across={save.maps[w] ?? 0.5} locale={locale} />
+              ))}
+            </ul>
+          ) : null;
+        })()}
         {tab !== 'gifts' && tab === 'garden' ? (
           <>
             <h3 className="mb-2 mt-1 text-xs font-bold uppercase tracking-[0.14em] text-white/60">{tr(NOTEBOOK_TEXT.challenges, locale)}</h3>

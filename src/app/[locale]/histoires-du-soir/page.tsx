@@ -34,6 +34,7 @@ export default async function Page({ params }: { params: Promise<{ locale: strin
   };
   return (
     <LandingShell
+      theme="night"
       h1={c.h1}
       intro={c.intro}
       jsonLd={[landingBreadcrumb(PATH), itemList]}

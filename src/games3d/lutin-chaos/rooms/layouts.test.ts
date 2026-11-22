@@ -23,6 +23,20 @@ describe('lutin chaos room layouts', () => {
     }
   });
 
+  it('never stands two floor pieces on the same spot', () => {
+    for (const room of ROOMS) {
+      const floor = layoutFor(room).stations.filter((s) => s.at[1] === 0 && s.prefab !== 'treetop');
+      for (let i = 0; i < floor.length; i++)
+        for (let j = i + 1; j < floor.length; j++) {
+          const a = floor[i].at;
+          const b = floor[j].at;
+          // a piece and its top-slot twin (stove + counter, tree + tree-top) are hand-placed together in rooms 1–3
+          if (floor[i].slots.length === 0 || floor[j].slots.length === 0) continue;
+          expect(Math.hypot(a[0] - b[0], a[2] - b[2]), `${room.id}: ${floor[i].prefab} and ${floor[j].prefab}`).toBeGreaterThan(0.5);
+        }
+    }
+  });
+
   it('has a code-built model for every prop kind the rooms use', () => {
     const kinds = new Set(ROOMS.flatMap((r) => r.props.map((p) => p.kind)));
     for (const k of kinds) expect(PROP_KINDS, k).toContain(k);

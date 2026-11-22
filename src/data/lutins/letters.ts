@@ -9,6 +9,7 @@
  * them (the entry's elves), so a note never names an elf who wasn't there.
  */
 import type { L } from '@/lib/i18n-text';
+import { markPersonal, registerPersonal } from '@/lib/privacy/personal';
 
 export type LetterKind = 'arrival' | 'morning' | 'departure';
 
@@ -515,7 +516,10 @@ const t = (l: L, locale: string) => (locale === 'fr' ? frSpaces(l.fr) : l.en);
 
 export function greeting(name: string | null | undefined, locale: string): string {
   const n = name?.trim();
-  return n ? t(TEXT.hello, locale).replace('{name}', n) : t(TEXT.helloAnon, locale);
+  if (!n) return t(TEXT.helloAnon, locale);
+  // The child's first name: read aloud by the device's own voice only (src/lib/privacy/personal.ts).
+  registerPersonal(n);
+  return markPersonal(t(TEXT.hello, locale).replace('{name}', n));
 }
 
 /** A letter ready to show, print and read aloud. */

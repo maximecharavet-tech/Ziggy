@@ -12,7 +12,7 @@ import { alternatesFor } from '@/lib/seo';
  */
 
 const CONTACT = 'contact@ziggy-ai.fr';
-const UPDATED = { fr: '14 novembre 2026', en: '14 November 2026' };
+const UPDATED = { fr: '20 novembre 2026', en: '20 November 2026' };
 
 type Section = { title: string; body: (string | string[])[] };
 
@@ -88,7 +88,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
             'Aucun bouton de réseau social ni contenu tiers qui suivrait votre navigation.',
             'Aucun profilage des enfants.',
           ],
-          'Le site est hébergé par Vercel et les comptes sont gérés par Supabase, sur des serveurs situés dans l’Union européenne. Aucun de ces prestataires ne dépose de cookie publicitaire ou de pistage par l’intermédiaire de Ziggy.',
+          'Le site est hébergé par Vercel ; les comptes sont gérés par Supabase, dont la base de données est hébergée à Paris (région eu-west-3). Aucun de ces prestataires ne dépose de cookie publicitaire ou de pistage par l’intermédiaire de Ziggy.',
         ],
       },
       {
@@ -178,7 +178,7 @@ const CONTENT: Record<'fr' | 'en', { title: string; updated: string; intro: stri
             'No social media buttons or third-party content that follows your browsing.',
             'No profiling of children.',
           ],
-          'The site is hosted by Vercel and accounts are managed by Supabase, on servers located in the European Union. None of these providers sets advertising or tracking cookies through Ziggy.',
+          'The site is hosted by Vercel; accounts are managed by Supabase, whose database is hosted in Paris (region eu-west-3). None of these providers sets advertising or tracking cookies through Ziggy.',
         ],
       },
       {

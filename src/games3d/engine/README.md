@@ -17,7 +17,7 @@ and `demo/`.
 | `loop.ts` | ✓ | `FixedStepLoop`, `DiscreteTicker`, `RafDriver`, `STEP`, `MAX_SUBSTEPS`, `MAX_FRAME` |
 | `events.ts` | ✓ | `Emitter<Map>`, `GameBus<Evt, Cmd>`, `BaseGameEvents<Hud>`, `BaseGameCommands`, `SayRequest`, `RoundResult`, `Reaction` |
 | `ecs.ts` | ✓ | `World`, `defineComponent`, `defineTag`, `SoAStore`, `System` |
-| `input/` | ✓ maths / DOM classes | `Action` union, `keyToAction` + `createKeyMap`, `gamepadActions`, `isTap`/`toNdc`, `projectBox`/`layoutHotspots`/`checkLayout`, `HotspotLayer`, `InputRouter` |
+| `input/` | ✓ maths / DOM classes | `Action` union, `keyToAction` + `createKeyMap`, `gamepadActions`, `isTap`/`toNdc`, `DragGesture`/`ClickSwallow`, `projectBox`/`layoutHotspots`/`checkLayout`, `HotspotLayer`, `InputRouter` |
 | `camera.ts` | ✓ | `CameraRig`, `smoothDamp`, `frameForAspect`, `fitDistance`, `fitOrthoHalfHeight`, `viewPosition` |
 | `tween.ts` | ✓ | `Tweener` (tweens + game-time timers), `ease` |
 | `save.ts` | ✓ | `SaveStore<T>` (versioned, migrations, debounced), `MemoryStorage`, `deviceStorage` |
@@ -124,12 +124,16 @@ change; do not mutate the array), `first(…)`, `addSystem({ name, phase: 'fixed
 - Gamepad: A select, B back, X step, Y rotate, LB hint, RB replay, Start go, D-pad / left stick
   focus, right stick pan.
 - Pointer: tap = ≤ 14 px and ≤ 450 ms; drag = `pan` (px). Taps emit `select` with the hotspot id
-  from your raycast: `host.input.setPick((ndc) => id | null)`.
+  from your raycast: `host.input.setPick((ndc) => id | null)`. A drag that starts on a hotspot
+  button pans too (same `DragGesture`, `source: 'pointer'`) and the click that ends it is
+  swallowed (`ClickSwallow`: pointer clicks only, never Enter / Space / TV OK); pointer presses
+  do not move the focus. `host.input.setPan(on)` turns drag-to-pan on or off for the canvas
+  and the buttons (off: the buttons keep `touch-action: manipulation`, so the page can scroll).
 - **Hotspots**: `host.input.hotspots.set([{ id, label: {fr,en}, at, size?, order?, disabled?, attrs? }])`.
   `at` can be a live `THREE.Vector3` (read every frame). Each hotspot gets a real transparent
   `<button>` over the canvas: `aria-label` in the current locale, ≥ 64 px, never overlapping,
   hidden when off screen or behind the camera, DOM order = `order` = Tab / screen reader / switch
-  scan order. Also `upsert`, `remove`, `focus(id)`, `focusedId()`, `moveFocus(dir)`,
+  scan order. Also `upsert`, `remove`, `focus(id)`, `focusedId()`, `moveFocus(dir)`, `setMinSize(px)`,
   `startScan(ms = 1500)` / `stopScan()`, `rects()`. The host clears the hotspots before each scene
   `enter` / `resume`: register them there.
 - Pure maths for tests: `projectPoint`, `projectBox(m, centre, half, viewport)`,

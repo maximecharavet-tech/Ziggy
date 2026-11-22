@@ -1,10 +1,8 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { Tilt } from '@/components/ui/motion-primitives';
+import type { CSSProperties } from 'react';
 import { Link } from '@/i18n/navigation';
 import {
-  ArrowRight,
   Brain,
   Calculator,
   Puzzle,
@@ -16,6 +14,9 @@ import {
   Grid3x3,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
+import { deepFor } from '@/components/sections/magic/color';
+import { rise } from '@/components/sections/magic/rise';
+import { useTapRipple } from '@/components/ui/fx/TapRipple';
 
 const ICONS: Record<string, LucideIcon> = {
   Brain,
@@ -43,62 +44,38 @@ interface GameCardProps {
   cta: string;
 }
 
+/**
+ * A mini-game as a toy tile: moulded icon, readable title, a big "Play" pill.
+ * Lifts on hover (mouse), squishes when pressed (finger). Inside a `Stagger`
+ * it comes in after its neighbours; elsewhere it is simply there.
+ */
 export function GameCard({ id, name, description, icon, color, index, cta }: GameCardProps) {
   const Icon = getGameIcon(icon);
+  const deep = deepFor(color);
+  // A soft ripple and a pinch of sparkles from the finger (shared FX kit).
+  const { onPointerDown, layer } = useTapRipple({ color });
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 24 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-50px' }}
-      transition={{ delay: index * 0.08, duration: 0.45, ease: 'easeOut' }}
-      className="h-full"
-    >
-      <Link href={`/games/${id}` as '/games/memory'} className="block h-full group press">
-        <Tilt max={6} className="h-full">
-        <div
-          className="relative h-full rounded-2xl p-[1.5px] transition-all duration-300 group-hover:-translate-y-1.5"
-          style={{
-            background: `linear-gradient(160deg, ${color}30, transparent 40%, transparent 60%, ${color}20)`,
-          }}
-        >
-          <div className="relative h-full glass-strong rounded-2xl border border-border/50 p-6 overflow-hidden transition-shadow duration-300 group-hover:shadow-xl">
-            {/* Hover glow */}
-            <div
-              className="absolute -top-16 -right-16 w-40 h-40 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-              style={{ background: `radial-gradient(circle, ${color}25 0%, transparent 70%)` }}
-            />
-
-            <div className="flex items-start justify-between mb-4">
-              <div
-                className="w-16 h-16 rounded-2xl flex items-center justify-center transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3"
-                style={{ backgroundColor: `${color}12` }}
-              >
-                <Icon size={30} style={{ color }} strokeWidth={2} />
-              </div>
-              <div
-                className="w-8 h-8 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-x-2 group-hover:translate-x-0"
-                style={{ backgroundColor: `${color}15` }}
-              >
-                <Gamepad2 size={14} style={{ color }} />
-              </div>
-            </div>
-
-            <h3 className="text-lg font-extrabold mb-2 tracking-tight" style={{ color }}>
-              {name}
-            </h3>
-            <p className="text-sm text-text-muted leading-relaxed mb-5">{description}</p>
-            <div
-              className="inline-flex items-center gap-1.5 text-xs font-bold transition-all duration-300 group-hover:gap-2.5"
-              style={{ color }}
-            >
-              <span>{cta}</span>
-              <ArrowRight size={14} className="rtl:rotate-180" />
-            </div>
-          </div>
-        </div>
-        </Tilt>
+    <div className="mg-rise h-full" style={rise(index)}>
+      <Link
+        href={`/games/${id}` as '/games/memory'}
+        onPointerDown={onPointerDown}
+        className="mg-card group flex h-full flex-col p-5 sm:p-6"
+        style={{ '--tint': color, '--mg-tilt': index % 2 ? '0.6deg' : '-0.6deg' } as CSSProperties}
+      >
+        <span className="mg-icon h-16 w-16" style={{ '--tint': color } as CSSProperties}>
+          <Icon size={30} strokeWidth={2.4} aria-hidden="true" />
+        </span>
+        <h3 className="mt-5 font-display text-xl font-bold leading-tight tracking-tight" style={{ color: deep }}>
+          <span className="dark:text-text-body">{name}</span>
+        </h3>
+        <p className="mt-2 flex-1 text-[0.95rem] leading-relaxed text-text-muted">{description}</p>
+        <span className="mg-pill mt-5 w-fit" style={{ '--tint': deep } as CSSProperties}>
+          <span aria-hidden="true" className="text-[0.8em]">▶</span>
+          {cta}
+        </span>
+        {layer}
       </Link>
-    </motion.div>
+    </div>
   );
 }

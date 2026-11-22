@@ -7,6 +7,7 @@ import { tr, type L } from '@/lib/i18n-text';
 import { useReducedMotion } from '@/lib/use-reduced-motion';
 import { SayButton } from '@/components/arcade/read-aloud';
 import { speakSequence, unlockAudio } from '@/lib/voice';
+import { markPersonal } from '@/lib/privacy/personal';
 import bible from '@/data/lutins/bible.json';
 import { buildLetter, letterLines } from '@/data/lutins/letters';
 import type { JournalEntry } from '@/lib/lutins/journal';
@@ -554,7 +555,8 @@ const CONFETTI = Array.from({ length: 28 }, (_, i) => ({
 function Party({ elves, childName, onReplay, onDone }: { elves: string[]; childName: string | null; onReplay: () => void; onDone: () => void }) {
   const locale = useLocale();
   const reduced = useReducedMotion();
-  const title = childName ? fill(tr(T.partyName, locale), 'name', childName) : tr(T.party, locale);
+  // With the child's first name: the device's own voice reads it, never the server's.
+  const title = childName ? markPersonal(fill(tr(T.partyName, locale), 'name', childName)) : tr(T.party, locale);
   useEffect(() => {
     sfx.fanfare();
     void speakSequence('lutins-party', [title, tr(T.partySub, locale)], locale);

@@ -30,6 +30,7 @@ import {
 import {
   buildCall,
   callClips,
+  LIVE_DISCLOSURE,
   seedFromId,
   type CallKind,
   type CallStep,
@@ -42,6 +43,8 @@ import { ChildSetup } from "@/components/santa/ChildSetup";
 import { Snow } from "@/components/santa/Snow";
 import { santaArt } from "@/data/santa/art";
 import { ArtSlot } from "@/components/santa/landing/ArtSlot";
+import { AiLabel } from "@/components/ui/AiLabel";
+import { PLACEHOLDER, redactPersonal } from "@/lib/privacy/personal";
 
 const T = {
   title: { fr: "Appelle le Père Noël", en: "Call Santa" },
@@ -82,6 +85,15 @@ const T = {
   free: { fr: "Gratuit", en: "Free" },
   freePreview: { fr: "Début gratuit", en: "Free start" },
   aiBadge: { fr: "+ questions en direct", en: "+ live questions" },
+  aiVoice: {
+    fr: "Voix du Père Noël créée avec l’aide de l’IA",
+    en: "Santa’s voice made with the help of AI",
+  },
+  // EU AI Act art. 50: shown for the whole live part (Santa also says it at the start).
+  aiLive: {
+    fr: "Réponses du Père Noël créées par une IA",
+    en: "Santa’s answers made by AI",
+  },
   pipOff: { fr: "Caméra éteinte", en: "Camera off" },
   message: { fr: "Le message du Père Noël", en: "Santa’s message" },
   messageText: {
@@ -184,6 +196,8 @@ function SantaCallInner({
   const [elapsed, setElapsed] = useState(0);
   const [aiKind, setAiKind] = useState<string | null>(null);
   const [sttProgress, setSttProgress] = useState(0);
+  // The live AI part is on (from Santa's AI disclosure to the end of the live questions).
+  const [aiPart, setAiPart] = useState(false);
 
   const audio = useRef<SantaAudio | null>(null);
   const scene = useRef<SantaSceneHandle | null>(null);
@@ -396,6 +410,7 @@ function SantaCallInner({
         setMode("santa");
         if (step.expr) scene.current?.setExpression(step.expr);
         if (said > 0) zig(step.expr === "laugh" ? "laughing" : "idle");
+        if (step.clips.includes(LIVE_DISCLOSURE)) setAiPart(true);
         for (const clip of step.clips) {
           if (!alive()) return;
           await a.say(clip, setCaption);
@@ -423,6 +438,7 @@ function SantaCallInner({
         await wait(d);
       } else if (step.t === "ai") {
         await runAi(a, child, alive);
+        setAiPart(false);
       } else if (step.t === "end") {
         setEndReason(step.reason);
         zig("waving");
@@ -519,13 +535,15 @@ function SantaCallInner({
           method: "POST",
           headers: { "content-type": "application/json" },
           signal: ctrl.signal,
+          // First names and other personal words are replaced on the device before
+          // the text leaves it; the server also removes `name` and never forwards it.
           body: JSON.stringify({
             locale,
             name: c.name,
             age: c.age,
             wishes: c.wishes,
-            history: aiHistory.current,
-            text: heard,
+            history: aiHistory.current.map((h) => ({ ...h, text: redactPersonal(h.text, PLACEHOLDER[locale], { extra: [c.name] }) })),
+            text: redactPersonal(heard, PLACEHOLDER[locale], { extra: [c.name] }),
             stream: true,
           }),
         });
@@ -760,6 +778,9 @@ function SantaCallInner({
               </Link>
             </p>
           )}
+          <p className="mt-6 text-center">
+            <AiLabel tone="dark" text={T.aiVoice} />
+          </p>
         </section>
       )}
 
@@ -876,6 +897,9 @@ function SantaCallInner({
                   />{" "}
                   {tr(T.live, locale)} · {mm}:{ss}
                 </p>
+                {aiPart && (
+                  <AiLabel tone="dark" className="mt-2" text={T.aiLive} />
+                )}
               </div>
               <button
                 type="button"

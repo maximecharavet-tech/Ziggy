@@ -25,6 +25,7 @@ import { Title3D } from '@/components/arcade/stage/Showpieces';
 import { ZiggyHost } from '@/components/arcade/stage/ZiggyHost';
 import { darken, lighten, rgba, strong } from '@/components/arcade/stage/color';
 import css from '@/components/arcade/stage/stage.module.css';
+import { ZiggyWait } from '@/components/sections/magic/ZiggyWait';
 
 const HOME_COLOR = '#5FB6EA';
 const HELLO = { kind: 'wave' as const, id: 0 };
@@ -71,7 +72,7 @@ export function WorldMapHome() {
 
         <div className="mt-8 min-h-[4.5rem]">{hydrated ? <StatusBar memory={memory} locale={locale} /> : null}</div>
 
-        {hydrated && plan ? <ContinueCard plan={plan} memory={memory} locale={locale} /> : <div className="mt-6 h-48 animate-pulse rounded-[2rem] bg-bg-card/60" aria-hidden="true" />}
+        {hydrated && plan ? <ContinueCard plan={plan} memory={memory} locale={locale} /> : <div className="mt-6 grid h-48 place-items-center rounded-[2rem] bg-bg-card/60 shadow-[inset_0_0_0_3px_rgba(255,255,255,0.7)]"><ZiggyWait size="sm" late={300} /></div>}
 
         <QuickLinks locale={locale} />
 
@@ -81,7 +82,7 @@ export function WorldMapHome() {
           <h2 id="map-title" className="font-display text-3xl font-bold text-text-body">
             🗺️ {wt('map', locale)}
           </h2>
-          {hydrated ? <MapBoard memory={memory} locale={locale} current={plan?.worldId} /> : <div className="mt-6 aspect-[16/10] animate-pulse rounded-[2rem] bg-bg-card/60" aria-hidden="true" />}
+          {hydrated ? <MapBoard memory={memory} locale={locale} current={plan?.worldId} /> : <div className="mt-6 aspect-[16/10] rounded-[2rem] bg-[linear-gradient(180deg,rgba(255,255,255,0.55),rgba(191,232,168,0.45))] shadow-[inset_0_0_0_3px_rgba(255,255,255,0.7)]" aria-hidden="true" />}
         </section>
 
         {signedIn !== null ? <p className="mt-8 text-center text-sm text-text-muted">{signedIn ? wt('syncedNote', locale) : wt('guestNote', locale)}</p> : null}

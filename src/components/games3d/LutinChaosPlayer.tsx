@@ -822,6 +822,8 @@ export function LutinChaosPlayer() {
   const [result, setResult] = useState<{ xp: number; magic: MagicMoment[]; roomId: string; photo: string | null } | null>(null);
   const [notes, setNotes] = useState<Record<string, boolean>>({});
   const [flash, setFlash] = useState(0);
+  // Test builds (`?zgtest`): the engine host on `window.__engine` (state injection for Playwright).
+  const [testHook, setTestHook] = useState(false);
   const saveRef = useRef<ChaosSave | null>(null);
   const startedAt = useRef(0);
   const audio = useMemo(() => (typeof window === 'undefined' ? undefined : new ChaosAudio()), []);
@@ -831,6 +833,7 @@ export function LutinChaosPlayer() {
   useEffect(() => {
     setSupported(webglOk());
     setPortal(true);
+    setTestHook(new URLSearchParams(window.location.search).has('zgtest'));
     const fit = () => setNarrow(window.innerWidth < window.innerHeight);
     fit();
     window.addEventListener('resize', fit);
@@ -1589,7 +1592,7 @@ export function LutinChaosPlayer() {
         <GameHost<ChaosEvents, ChaosCommands>
           load={def}
           locale={locale}
-          options={{ audio, hotspotLabel: { fr: 'Les objets de la pièce', en: 'Things in the room' } }}
+          options={{ audio, hotspotLabel: { fr: 'Les objets de la pièce', en: 'Things in the room' }, ...(testHook ? { exposeAs: '__engine' } : {}) }}
           onReady={(h) => {
             hostRef.current = h;
             h.command({ type: 'music', on: music });

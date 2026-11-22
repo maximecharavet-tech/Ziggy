@@ -535,3 +535,48 @@ fn native_hash_of_the_scripted_run() {
     assert_eq!(h, scripted_hash());
     assert_eq!(h, 2_500_734_713, "the simulation changed: update the constant here and in engine.test.ts");
 }
+
+#[test]
+fn phone_portrait_mountain_and_mars_react_to_a_childs_strokes() {
+    // Portrait (a phone held upright): the frozen lake is open to the sky and melts under the sun lamp…
+    let (w, h) = (192, 320);
+    let mut s = World::new(w, h, 77, MOUNTAIN);
+    s.load_scene();
+    let lake: Vec<i32> = (0..w as i32).filter(|&x| (0..h as i32).any(|y| s.get(x, y) == ICE)).collect();
+    assert!(lake.len() > 10, "a lake in portrait");
+    let lx = lake[lake.len() / 2];
+    let mut top = 0;
+    while s.get(lx, top) == EMPTY {
+        top += 1;
+    }
+    assert_eq!(s.get(lx, top), ICE, "the lake is roofed over at x={lx} (cell {} at y={top})", s.get(lx, top));
+    for _ in 0..4 {
+        s.paint_line(lx as f32 - 3.0, top as f32 - 2.0, lx as f32 + 3.0, top as f32 - 2.0, 3.5, HEAT, 0);
+        s.step();
+    }
+    assert!(until(&mut s, R_MELT_ICE, 600).is_some() || s.counts[R_MELT_ICE as usize] > 0, "the lake never melted");
+    // …and the snow cap melts too.
+    let px = w as i32 * 32 / 100;
+    let mut top = 0;
+    while s.get(px, top) == EMPTY {
+        top += 1;
+    }
+    for _ in 0..4 {
+        s.paint_line(px as f32 - 3.0, top as f32 - 2.0, px as f32 + 3.0, top as f32 - 2.0, 3.5, HEAT, 0);
+        s.step();
+    }
+    assert!(until(&mut s, R_MELT_SNOW, 600).is_some() || s.counts[R_MELT_SNOW as usize] > 0);
+    // Mars: the wind along the red ground makes a dust devil.
+    let mut s = World::new(w, h, 77, MARS);
+    s.load_scene();
+    for t in 0..60 {
+        let x = w as f32 * (0.3 + 0.2 * t as f32 / 60.0);
+        let mut y = 0;
+        while s.get(x as i32, y) == EMPTY {
+            y += 1;
+        }
+        s.wind(x, y as f32, 5.5, 1);
+        s.step();
+    }
+    assert!(s.counts[R_DUST_DEVIL as usize] > 0);
+}

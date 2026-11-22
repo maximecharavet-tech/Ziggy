@@ -3,7 +3,8 @@ import { postJson, chatText, chatUsage, ProviderError } from './http';
 
 /**
  * NVIDIA API catalog (OpenAI-compatible, integrate.api.nvidia.com):
- * vision for the photo blueprint, a content-safety model for ChildShield,
+ * a content-safety model for ChildShield (no image is ever sent: the avatar
+ * photo is read on the device),
  * and a text model as fallback when DeepSeek is unavailable.
  * Model ids are configurable because NVIDIA's catalog evolves.
  */
@@ -11,7 +12,6 @@ export const NVIDIA_URL = 'https://integrate.api.nvidia.com/v1/chat/completions'
 export const nvidiaReady = () => Boolean(process.env.NVIDIA_API_KEY);
 export const nvidiaModels = () => ({
   text: process.env.NVIDIA_TEXT_MODEL?.trim() || 'meta/llama-3.3-70b-instruct',
-  vision: process.env.NVIDIA_VISION_MODEL?.trim() || 'meta/llama-3.2-90b-vision-instruct',
   safety: process.env.NVIDIA_SAFETY_MODEL?.trim() || 'nvidia/llama-3.1-nemoguard-8b-content-safety',
 });
 
@@ -36,33 +36,6 @@ export async function nvidiaJson(system: string, user: string, maxTokens = 1600)
       ],
       temperature: 0.7,
       max_tokens: maxTokens,
-    },
-  });
-  return { text: chatText(body), usage: chatUsage(body), model };
-}
-
-/** Look at one image (data: URI) and answer as JSON. The image is not stored anywhere. */
-export async function nvidiaVision(instructions: string, imageDataUri: string) {
-  const model = nvidiaModels().vision;
-  const body = await postJson({
-    provider: 'nvidia',
-    url: NVIDIA_URL,
-    key: key(),
-    timeoutMs: 60_000,
-    retries: 1,
-    body: {
-      model,
-      messages: [
-        {
-          role: 'user',
-          content: [
-            { type: 'text', text: `${instructions}\nAnswer with ONE JSON object and nothing else.` },
-            { type: 'image_url', image_url: { url: imageDataUri } },
-          ],
-        },
-      ],
-      temperature: 0.2,
-      max_tokens: 700,
     },
   });
   return { text: chatText(body), usage: chatUsage(body), model };

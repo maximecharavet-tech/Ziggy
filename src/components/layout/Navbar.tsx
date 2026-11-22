@@ -8,6 +8,7 @@ import { Link, usePathname } from '@/i18n/navigation';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { SoundToggle } from '@/components/ui/SoundToggle';
+import { SoftSoundsSwitch } from '@/components/ui/SoftSoundsSwitch';
 import { ZiggyLogo } from '@/components/ziggy/ZiggyLogo';
 import { ZiggyAvatar } from '@/components/ziggy/Mascot';
 import { AccountButton } from '@/components/account/AccountButton';
@@ -22,10 +23,15 @@ export function Navbar() {
   const [hovered, setHovered] = useState<string | null>(null);
   // Pages on a dark stage keep the glass pill on, so the links stay readable.
   const pathname = usePathname();
-  const pill = scrolled || pathname.startsWith('/hyper');
+  // Santa's and the elves' pages sit on a night sky (and bright hero photos) in both
+  // themes: the bar takes light-on-dark colours there (globals.css,
+  // .site-nav[data-stage='dark']) and keeps its dark glass pill, so links stay AA.
+  const darkStage = pathname.startsWith('/pere-noel') || pathname.startsWith('/lutins');
+  const pill = scrolled || darkStage || pathname.startsWith('/hyper');
   const locale = useLocale();
   // In the Ziggy app: a slim top bar (Ziggy, sound, parents); the tab bar does the rest.
   const shell = useAppShell();
+  const carnet = locale === 'fr' ? 'Mon carnet de découvertes' : 'My discovery book';
   const menuLabel = locale === 'fr' ? { open: 'Ouvrir le menu', close: 'Fermer le menu' } : { open: 'Open menu', close: 'Close menu' };
 
   // Mobile menu: Escape closes it, the page does not scroll behind it, and it closes on navigation.
@@ -69,6 +75,7 @@ export function Navbar() {
       initial={{ y: -20, opacity: 0 }}
       animate={{ y: 0, opacity: 1 }}
       transition={{ duration: 0.5 }}
+      data-stage={darkStage ? 'dark' : undefined}
       className={`site-nav no-tv fixed top-0 left-0 right-0 z-50 transition-[padding] duration-300 ${scrolled ? 'pt-2 sm:pt-3' : 'pt-0'}`}
     >
       <nav
@@ -111,6 +118,9 @@ export function Navbar() {
         </div>
 
         <div className="web-only relative z-10 hidden xl:flex items-center gap-2">
+          <Link href="/mon-carnet" aria-label={carnet} title={carnet} className="grid h-10 w-10 place-items-center rounded-xl text-xl hover:bg-border/30 transition-colors">
+            <span aria-hidden="true">📒</span>
+          </Link>
           <SoundToggle />
           <ThemeToggle />
           <LanguageSwitcher />
@@ -156,11 +166,21 @@ export function Navbar() {
                   </Link>
                 </motion.div>
               ))}
+              <Link
+                href="/mon-carnet"
+                onClick={() => setIsOpen(false)}
+                className="block text-base font-semibold text-text-muted hover:text-green transition-colors py-3 px-3 rounded-xl hover:bg-green/5"
+              >
+                📒 {carnet}
+              </Link>
               <div className="flex items-center gap-3 pt-4 px-3">
-                <SoundToggle />
+                <SoundToggle softSwitch={false} />
                 <ThemeToggle />
                 <LanguageSwitcher />
                 <AccountButton className="flex-1 justify-center" />
+              </div>
+              <div className="pt-2">
+                <SoftSoundsSwitch />
               </div>
             </div>
           </motion.div>

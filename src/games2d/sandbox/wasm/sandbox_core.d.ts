@@ -34,6 +34,8 @@ export class Sandbox {
     frame_ptr(): number;
     frame_width(): number;
     get(x: number, y: number): number;
+    globe_x(): number;
+    globe_y(): number;
     hash(): number;
     hatch_baby(x: number, y: number): void;
     height(): number;
@@ -42,6 +44,8 @@ export class Sandbox {
      * Makes room for `len` bytes at `io_ptr` (write a save there, then call `load`).
      */
     io_reserve(len: number): number;
+    kite_x(): number;
+    kite_y(): number;
     /**
      * Restores the world from the bytes at `io_ptr`. False (and nothing changed) if they are not a save of this world.
      */
@@ -51,6 +55,11 @@ export class Sandbox {
      * A world of `w` × `h` cells (at most 320 each way). `world_id`: 0 garden, 1 mountain, 2 islands, 3 volcano, 4 undersea, 5 space, 6 moon, 7 mars.
      */
     constructor(w: number, h: number, seed: number, world_id: number);
+    notes_len(): number;
+    /**
+     * Notes of the snow-globe since `take_notes`: one `u32` each, element | degree << 6 | x << 9 | y << 18.
+     */
+    notes_ptr(): number;
     paint_line(x0: number, y0: number, x1: number, y1: number, r: number, element: number, variant: number): void;
     /**
      * 0 no parcel, 1 falling, 2 landed, 3 opening.
@@ -59,6 +68,18 @@ export class Sandbox {
     parcel_x(): number;
     parcel_y(): number;
     place_gift(kind: number, x: number, y: number): void;
+    /**
+     * The music snow-globe of the parcel, on the ground under (x, y).
+     */
+    place_globe(x: number, y: number): void;
+    /**
+     * The aurora kite of the parcel, its string tied at (x, y).
+     */
+    place_kite(x: number, y: number): void;
+    /**
+     * What is in the sky in a box of cells (for the saucer): bit 0 a cloud, bit 1 a geyser's mist.
+     */
+    probe_sky(x0: number, y0: number, x1: number, y1: number): number;
     /**
      * Draws the world. `flags` bit 0: reduced motion.
      */
@@ -79,13 +100,35 @@ export class Sandbox {
      */
     set_quality(scale: number, high: boolean): void;
     set_temperature(offset: number): void;
+    /**
+     * Hides the treasure of the map at (x, y) (a map kept from an earlier visit; negative y: under the ground of column x).
+     */
+    set_treasure(x: number, y: number): void;
     stamp_critter(x: number, y: number): number;
+    /**
+     * The finger steers the kite during the next tick.
+     */
+    steer_kite(x: number, y: number): void;
     /**
      * Advances the world by `n` ticks (at most 8 per call).
      */
     step(n: number): void;
     take_events(): void;
+    take_notes(): void;
     tick(): number;
+    /**
+     * Toys out in the world: bit 0 snow-globe, bit 1 kite, bit 2 treasure still buried, bit 3 treasure just found.
+     */
+    toys(): number;
+    /**
+     * 0 fossil, 1 shell, 2 meteorite.
+     */
+    treasure_kind(): number;
+    /**
+     * Where the treasure is (cells), or -1.
+     */
+    treasure_x(): number;
+    treasure_y(): number;
     width(): number;
     wind(x: number, y: number, r: number, dir: number): void;
     world_id(): number;
@@ -114,19 +157,28 @@ export interface InitOutput {
     readonly sandbox_frame_ptr: (a: number) => number;
     readonly sandbox_frame_width: (a: number) => number;
     readonly sandbox_get: (a: number, b: number, c: number) => number;
+    readonly sandbox_globe_x: (a: number) => number;
+    readonly sandbox_globe_y: (a: number) => number;
     readonly sandbox_hash: (a: number) => number;
     readonly sandbox_hatch_baby: (a: number, b: number, c: number) => void;
     readonly sandbox_height: (a: number) => number;
     readonly sandbox_io_ptr: (a: number) => number;
     readonly sandbox_io_reserve: (a: number, b: number) => number;
+    readonly sandbox_kite_x: (a: number) => number;
+    readonly sandbox_kite_y: (a: number) => number;
     readonly sandbox_load: (a: number) => number;
     readonly sandbox_load_scene: (a: number) => void;
     readonly sandbox_new: (a: number, b: number, c: number, d: number) => number;
+    readonly sandbox_notes_len: (a: number) => number;
+    readonly sandbox_notes_ptr: (a: number) => number;
     readonly sandbox_paint_line: (a: number, b: number, c: number, d: number, e: number, f: number, g: number, h: number) => void;
     readonly sandbox_parcel_state: (a: number) => number;
     readonly sandbox_parcel_x: (a: number) => number;
     readonly sandbox_parcel_y: (a: number) => number;
     readonly sandbox_place_gift: (a: number, b: number, c: number, d: number) => void;
+    readonly sandbox_place_globe: (a: number, b: number, c: number) => void;
+    readonly sandbox_place_kite: (a: number, b: number, c: number) => void;
+    readonly sandbox_probe_sky: (a: number, b: number, c: number, d: number, e: number) => number;
     readonly sandbox_render: (a: number, b: number, c: number) => void;
     readonly sandbox_save: (a: number) => number;
     readonly sandbox_set: (a: number, b: number, c: number, d: number) => void;
@@ -135,10 +187,17 @@ export interface InitOutput {
     readonly sandbox_set_pointer: (a: number, b: number, c: number) => void;
     readonly sandbox_set_quality: (a: number, b: number, c: number) => void;
     readonly sandbox_set_temperature: (a: number, b: number) => void;
+    readonly sandbox_set_treasure: (a: number, b: number, c: number) => void;
     readonly sandbox_stamp_critter: (a: number, b: number, c: number) => number;
+    readonly sandbox_steer_kite: (a: number, b: number, c: number) => void;
     readonly sandbox_step: (a: number, b: number) => void;
     readonly sandbox_take_events: (a: number) => void;
+    readonly sandbox_take_notes: (a: number) => void;
     readonly sandbox_tick: (a: number) => number;
+    readonly sandbox_toys: (a: number) => number;
+    readonly sandbox_treasure_kind: (a: number) => number;
+    readonly sandbox_treasure_x: (a: number) => number;
+    readonly sandbox_treasure_y: (a: number) => number;
     readonly sandbox_width: (a: number) => number;
     readonly sandbox_wind: (a: number, b: number, c: number, d: number, e: number) => void;
     readonly sandbox_world_id: (a: number) => number;

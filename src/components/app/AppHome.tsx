@@ -2,6 +2,7 @@
 
 import type { CSSProperties, ReactNode } from 'react';
 import { AppChristmas } from './AppChristmas';
+import { JournalShortcuts } from '@/components/journal/JournalShortcuts';
 import { useEffect, useState } from 'react';
 import { useLocale } from 'next-intl';
 import { AnimatePresence, motion } from 'motion/react';
@@ -19,6 +20,9 @@ import { Twinkle } from '@/components/create/fx/Burst';
 import { fx, loop, shade } from '@/components/create/fx/toy';
 import { ColorScene } from '@/components/create/HubScenes';
 import { Moon } from '@/components/dodo/Scenery';
+import { MagicBackdrop, type SkyVariant } from '@/components/sections/magic/MagicBackdrop';
+import { ZiggyWait } from '@/components/sections/magic/ZiggyWait';
+import { useJuice } from '@/components/ui/fx/useJuice';
 
 const T = {
   hello: { fr: 'Coucou !', en: 'Hello!' },
@@ -72,6 +76,8 @@ export function AppHome() {
   const hydrated = useHydrated();
   const memory = useWorldMemory();
   const [greeting, setGreeting] = useState<L>(T.hello);
+  // The sky follows the time of day (read after mounting: the server can't know it).
+  const [sky, setSky] = useState<SkyVariant>('day');
   const welcome = hydrated && !memory.age;
 
   useEffect(() => {
@@ -84,6 +90,7 @@ export function AppHome() {
   useEffect(() => {
     const h = new Date().getHours();
     setGreeting(h >= 18 || h < 5 ? { fr: 'Bonsoir !', en: 'Good evening!' } : h < 12 ? { fr: 'Bonjour !', en: 'Good morning!' } : T.hello);
+    setSky(h >= 18 || h < 5 ? 'dusk' : 'day');
   }, []);
 
   return (
@@ -92,9 +99,13 @@ export function AppHome() {
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(70%_45%_at_15%_0%,rgba(255,217,160,0.55),transparent_70%),radial-gradient(60%_40%_at_95%_20%,rgba(95,182,234,0.22),transparent_70%),radial-gradient(70%_40%_at_50%_100%,rgba(127,200,92,0.18),transparent_70%)] dark:bg-[radial-gradient(70%_45%_at_15%_0%,rgba(255,217,160,0.1),transparent_70%),radial-gradient(60%_40%_at_95%_20%,rgba(95,182,234,0.12),transparent_70%)]"
       />
+      <MagicBackdrop variant={sky} stars={sky === 'dusk' ? 12 : 8} clouds={sky === 'day' ? 3 : 1} blobs={false} parallax={false} seed={17} className="top-16 h-[40rem]" />
       <AnimatePresence mode="wait">
         {!hydrated ? (
-          <div key="wait" className="h-[70vh]" aria-hidden="true" />
+          // Before the page wakes up: Ziggy waits with the child (same height, nothing jumps).
+          <div key="wait" className="grid h-[70vh] place-items-center">
+            <ZiggyWait late={450} />
+          </div>
         ) : welcome ? (
           <Welcome key="welcome" locale={locale} />
         ) : (
@@ -105,15 +116,24 @@ export function AppHome() {
                 <Ziggy3D className="h-full w-full" idle="wave" mood="happy" framing="full" fallback="wave" label={locale === 'fr' ? 'Ziggy te fait coucou' : 'Ziggy waves at you'} />
               </div>
               <div className="min-w-0">
-                <div className="relative w-fit rounded-[1.6rem] rounded-es-md bg-bg-card px-5 py-3 shadow-[0_14px_30px_-16px_rgba(107,74,43,0.5)] ring-1 ring-border/70 md:rounded-[2.2rem] md:px-9 md:py-6">
-                  <h1 className="font-display text-[1.75rem] font-bold leading-tight text-text-body sm:text-4xl md:text-6xl">{tr(greeting, locale)}</h1>
-                  <p className="font-display text-lg font-semibold text-text-muted sm:text-2xl md:mt-1 md:text-[2rem]">{tr(T.ask, locale)}</p>
-                </div>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.85, rotate: -2 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  transition={{ type: 'spring', stiffness: 420, damping: 22, delay: 0.12 }}
+                  style={{ transformOrigin: '0% 100%' }}
+                  className="relative w-fit rounded-[1.6rem] rounded-es-md bg-bg-card px-5 py-3 shadow-[0_14px_30px_-16px_rgba(107,74,43,0.5)] ring-1 ring-border/70 md:rounded-[2.2rem] md:px-9 md:py-6"
+                >
+                  {/* the speech bubble's tail, pointing at Ziggy */}
+                  <span aria-hidden="true" className="absolute -start-2 bottom-3 h-5 w-5 rotate-45 rounded-[4px] bg-bg-card shadow-[-2px_2px_0_-1px_var(--color-border)] rtl:-rotate-45 md:bottom-6 md:-start-3 md:h-7 md:w-7" />
+                  <h1 className="relative font-display text-[1.75rem] font-bold leading-tight text-text-body sm:text-4xl md:text-6xl">{tr(greeting, locale)}</h1>
+                  <p className="relative font-display text-lg font-semibold text-text-muted sm:text-2xl md:mt-1 md:text-[2rem]">{tr(T.ask, locale)}</p>
+                </motion.div>
                 <SayButton texts={[tr(greeting, locale), tr(T.ask, locale)]} locale={locale} size="lg" className="mt-3 md:mt-5" />
               </div>
             </header>
 
             <AppChristmas />
+            <JournalShortcuts locale={locale} />
 
             {/* Phones: one column. Tablets: Ziggy World wide on top, the two others side by side. Wide tablets and computers: three. */}
             <ul className="mt-7 grid gap-x-6 gap-y-8 sm:grid-cols-2 md:mt-10 md:gap-x-8 md:gap-y-10 xl:grid-cols-3">
@@ -155,6 +175,7 @@ export function AppHome() {
 
 /** First launch: Ziggy says hello and asks who is playing. Calm, one choice, no marketing. */
 function Welcome({ locale }: { locale: string }) {
+  const juice = useJuice();
   return (
     <motion.section
       className="relative mx-auto flex max-w-3xl flex-col items-center text-center md:min-h-[calc(100dvh-10rem)] md:max-w-5xl md:justify-center"
@@ -186,9 +207,11 @@ function Welcome({ locale }: { locale: string }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 + 0.08 * i, type: 'spring', stiffness: 260, damping: 22 }}
             whileTap={{ scale: 0.96 }}
-            onClick={() => {
+            onClick={(e) => {
               unlockAudio();
               haptic('success');
+              // A little party for the first choice (confetti + sparkles; still for reduced motion).
+              juice.celebrate(e.currentTarget, { count: 40 });
               chooseAge(a.id);
               if (a.id !== 'big') void speakSequence('age-chosen', [tr(T.chosen, locale)], locale);
             }}

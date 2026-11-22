@@ -55,7 +55,7 @@ impl World {
         true
     }
 
-    fn parcel_firm(&self, x: i32, y: i32) -> bool {
+    pub(crate) fn parcel_firm(&self, x: i32, y: i32) -> bool {
         if !self.inside(x, y) {
             return true;
         }
@@ -153,6 +153,7 @@ impl World {
                 self.parcel = p;
                 self.emit(R_GIFT_WATER + k as u8, cx, cy - 2);
                 self.effect(FX_STAR, cx, cy - 2, 0xffd447);
+                self.open_toy(k, cx, cy);
                 return;
             }
         }

@@ -3,12 +3,33 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { useLocale, useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'motion/react';
-import { Send, ShieldCheck, Phone } from 'lucide-react';
+import { Send, ShieldCheck, Phone, Lock, LockOpen } from 'lucide-react';
 import { VoiceCall } from './VoiceCall';
 import { StarBurst } from '@/components/ziggy/StarBurst';
 import { SpeakButton, AutoReadToggle, MicButton, TalkingHalo } from '@/components/ziggy/VoiceControls';
 import { speak, unlockAudio, voiceStore } from '@/lib/voice';
 import { EASE_OUT } from '@/lib/motion';
+import { PLACEHOLDER, redactPersonal } from '@/lib/privacy/personal';
+import { GUIDED, MORE, type GuidedQuestion, type GuidedSetId } from '@/data/chat/guided';
+import { tr, type L } from '@/lib/i18n-text';
+import { SayButton } from '@/components/arcade/read-aloud';
+import { SantaGate, gateGraceValid } from '@/components/santa/parents/SantaGate';
+
+const G = {
+  pick: { fr: 'Choisis une question :', en: 'Pick a question:' },
+  parent: { fr: 'Parent : écrire librement', en: 'Parent: type freely' },
+  freeOn: { fr: 'Mode parent : écriture libre', en: 'Parent mode: free typing' },
+  backToKid: { fr: 'Revenir au mode enfant', en: 'Back to kid mode' },
+  gateFor: {
+    fr: 'Écrire librement à l’IA, c’est pour les parents. Les enfants choisissent parmi les questions.',
+    en: 'Typing freely to the AI is for parents. Children pick from the questions.',
+  },
+  gateKids: { fr: 'Tu veux continuer avec les questions ? Touche Retour.', en: 'Want to keep going with the questions? Tap Back.' },
+  aiAnswers: { fr: 'Réponses créées par une IA', en: 'Answers made by an AI' },
+} satisfies Record<string, L>;
+
+/** How many question buttons are shown at once. */
+const DECK = 4;
 
 interface Message {
   id: string;
@@ -37,6 +58,8 @@ interface ChatWindowProps {
   placeholder: string;
   /** Specialist agent id, if this is not Ziggy himself. */
   agentId?: string;
+  /** The fixed questions a child can tap (src/data/chat/guided.ts). */
+  guided: GuidedSetId;
 }
 
 let seq = 0;
@@ -44,11 +67,16 @@ const nextId = () => `m${Date.now().toString(36)}${(seq++).toString(36)}`;
 
 /**
  * The one chat used everywhere: Ziggy on the demo page, the specialist agents
- * on theirs. It talks (Gemini voice, browser voice as fallback), listens (the
- * microphone fills the box), and every message goes through the child-safety
- * screen on the server.
+ * on theirs.
+ *
+ * Children get the guided view: they tap fixed questions (read aloud), the
+ * server looks them up by id, and every reply goes through ChildShield. No
+ * typing, no microphone, no voice call (CLAUDE.md: no free LLM chat for
+ * children). Free typing, the microphone and the voice call are the parent's
+ * view, behind the grown-up gate, and end with "Back to kid mode" or when the
+ * page is left.
  */
-export function ChatWindow({ identity, intro, suggestions, placeholder, agentId }: ChatWindowProps) {
+export function ChatWindow({ identity, intro, suggestions, placeholder, agentId, guided }: ChatWindowProps) {
   const t = useTranslations('chat');
   const locale = useLocale();
   const [messages, setMessages] = useState<Message[]>([]);
@@ -56,6 +84,10 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
   const [busy, setBusy] = useState(false);
   const [burst, setBurst] = useState(false);
   const [calling, setCalling] = useState(false);
+  const [free, setFree] = useState(false);
+  const [gating, setGating] = useState(false);
+  const [asked, setAsked] = useState<string[]>([]);
+  const [last, setLast] = useState<{ id: string; reply: string } | null>(null);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { color } = identity;
@@ -84,7 +116,8 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          messages: history.slice(-12).map(({ role, content }) => ({ role, content })),
+          // Names the device knows (first names, names the child typed) are replaced before sending.
+          messages: history.slice(-12).map(({ role, content }) => ({ role, content: role === 'user' ? redactPersonal(content, PLACEHOLDER[locale === 'fr' ? 'fr' : 'en']) : content })),
           locale,
           agentId,
         }),
@@ -106,7 +139,67 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
     inputRef.current?.focus();
   };
 
+  /** The child's view: a fixed question (or "tell me more"), sent by id. */
+  const ask = async (q: GuidedQuestion | 'more') => {
+    if (busy) return;
+    unlockAudio();
+    const content = q === 'more' ? `${MORE.emoji} ${tr(MORE.text, locale)}` : `${q.emoji} ${tr(q.text, locale)}`;
+    const mine: Message = { id: nextId(), role: 'user', content, at: new Date() };
+    const history = [...messages, mine];
+    setMessages(history);
+    setBusy(true);
+    if (q !== 'more') setAsked((a) => [...a.filter((x) => x !== q.id), q.id]);
+    const before = last;
+    let reply: Message;
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ guided: q === 'more' ? { id: 'more', more: before } : { id: q.id }, locale, agentId }),
+      });
+      if (!res.ok) throw new Error(String(res.status));
+      const data = (await res.json()) as { message: string; safety?: string };
+      reply = { id: nextId(), role: 'assistant', content: data.message, at: new Date(), safety: data.safety };
+      const from = q === 'more' ? before?.id : q.id;
+      setLast(from && !data.safety ? { id: from, reply: data.message } : null);
+    } catch {
+      reply = { id: nextId(), role: 'assistant', content: t('nap', { name: identity.name }), at: new Date() };
+      setLast(null);
+    }
+    setMessages([...history, reply]);
+    setBusy(false);
+    if (reply.content.includes('⭐')) {
+      setBurst(true);
+      setTimeout(() => setBurst(false), 700);
+    }
+    if (voiceStore.get().autoRead) void speak(reply.id, reply.content, locale);
+  };
+
+  // The next questions: those not asked yet first, then the oldest asked.
+  const deck = [...GUIDED[guided]].sort((a, b) => asked.indexOf(a.id) - asked.indexOf(b.id)).slice(0, DECK);
+
+  const openFree = () => {
+    if (gateGraceValid()) setFree(true);
+    else setGating(true);
+  };
+
   const time = (d: Date) => d.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' });
+
+  if (gating) {
+    return (
+      <div className="relative w-full max-w-lg mx-auto">
+        <SantaGate
+          forParents={G.gateFor}
+          forKids={G.gateKids}
+          onBack={() => setGating(false)}
+          onPass={() => {
+            setGating(false);
+            setFree(true);
+          }}
+        />
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full max-w-lg mx-auto">
@@ -133,11 +226,12 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
                   </span>
                 </span>
               ) : (
-                'Hyper™ AI Engine'
+                <span data-ai-label="">✨ {tr(G.aiAnswers, locale)}</span>
               )}
             </div>
           </div>
           <AutoReadToggle color={color} />
+          {free ? (
           <button
             type="button"
             onClick={() => setCalling(true)}
@@ -148,7 +242,19 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
             <Phone size={13} className="fill-current" />
             <span className="hidden sm:inline">{t('call_short')}</span>
           </button>
+          ) : null}
         </div>
+
+        {free ? (
+          <div className="flex items-center justify-between gap-2 border-b border-border/50 bg-amber-100/70 px-4 py-2 text-xs font-bold text-amber-900 dark:bg-amber-300/10 dark:text-amber-100">
+            <span className="inline-flex items-center gap-1.5">
+              <LockOpen size={13} aria-hidden="true" /> {tr(G.freeOn, locale)}
+            </span>
+            <button type="button" onClick={() => setFree(false)} className="press min-h-9 rounded-full bg-white/80 px-3 text-amber-900 shadow-sm dark:bg-white/10 dark:text-amber-50">
+              {tr(G.backToKid, locale)}
+            </button>
+          </div>
+        ) : null}
 
         {/* Messages */}
         <div ref={listRef} className="h-[22rem] sm:h-[26rem] overflow-y-auto p-4 space-y-4 overscroll-contain" aria-live="polite">
@@ -156,6 +262,7 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
             <div className="flex flex-col items-center justify-center h-full text-center gap-4">
               {identity.welcome}
               <p className="text-sm text-text-muted max-w-xs">{intro}</p>
+              {free ? (
               <div className="flex flex-wrap gap-2 justify-center mt-1">
                 {suggestions.map((s, i) => (
                   <motion.button
@@ -173,6 +280,7 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
                   </motion.button>
                 ))}
               </div>
+              ) : null}
             </div>
           )}
 
@@ -226,7 +334,50 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
           )}
         </div>
 
-        {/* Input */}
+        {/* Input: question buttons for children, free typing for a parent */}
+        {!free ? (
+          <div className="border-t border-border/50 p-3 bg-bg/50">
+            <div className="mb-2 flex items-center justify-between gap-2">
+              <span className="text-xs font-bold text-text-muted">{tr(G.pick, locale)}</span>
+              <SayButton size="sm" locale={locale} texts={[tr(G.pick, locale), ...(last ? [tr(MORE.text, locale)] : []), ...deck.map((q) => tr(q.text, locale))]} />
+            </div>
+            <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {last ? (
+                <button
+                  type="button"
+                  onClick={() => void ask('more')}
+                  disabled={busy}
+                  className="press flex min-h-14 items-center gap-2 rounded-2xl px-3 py-2 text-start text-sm font-bold text-white shadow-sm disabled:opacity-50 sm:col-span-2"
+                  style={{ background: `linear-gradient(135deg, ${color}, color-mix(in srgb, ${color} 75%, #000))` }}
+                >
+                  <span aria-hidden="true" className="text-xl">
+                    {MORE.emoji}
+                  </span>
+                  {tr(MORE.text, locale)}
+                </button>
+              ) : null}
+              {deck.map((q) => (
+                <button
+                  key={q.id}
+                  type="button"
+                  onClick={() => void ask(q)}
+                  disabled={busy}
+                  className="press flex min-h-14 items-center gap-2 rounded-2xl glass border border-border/50 px-3 py-2 text-start text-sm font-bold leading-snug text-text-body disabled:opacity-50"
+                >
+                  <span aria-hidden="true" className="text-xl">
+                    {q.emoji}
+                  </span>
+                  <span className="min-w-0">{tr(q.text, locale)}</span>
+                </button>
+              ))}
+            </div>
+            <div className="mt-2 flex justify-end">
+              <button type="button" onClick={openFree} className="inline-flex min-h-9 items-center gap-1 rounded-full px-2 text-[11px] font-bold text-text-dim hover:text-text-body">
+                <Lock size={11} aria-hidden="true" /> {tr(G.parent, locale)}
+              </button>
+            </div>
+          </div>
+        ) : (
         <div className="border-t border-border/50 p-3 bg-bg/50">
           <form
             onSubmit={(e) => {
@@ -259,12 +410,13 @@ export function ChatWindow({ identity, intro, suggestions, placeholder, agentId 
             </button>
           </form>
         </div>
+        )}
       </div>
 
       <StarBurst trigger={burst} x={200} y={100} />
 
       <VoiceCall
-        open={calling}
+        open={calling && free}
         name={identity.name}
         color={color}
         portrait={identity.portrait}

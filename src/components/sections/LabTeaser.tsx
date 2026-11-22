@@ -16,7 +16,7 @@ export function LabTeaser() {
       </div>
       <div className="relative mx-auto max-w-3xl">
         <ScrollReveal className="text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-sky/30 bg-sky/10 px-4 py-1.5 text-sm font-bold text-sky">
+          <span className="inline-flex items-center gap-2 rounded-full border border-sky/30 bg-sky/10 px-4 py-1.5 text-sm font-bold text-sky-ink dark:text-sky">
             <FlaskConical size={15} /> {t('eyebrow')}
           </span>
           <h2 className="mt-5 font-display text-3xl font-bold text-text-body sm:text-5xl text-balance">{t('teaser_title')}</h2>

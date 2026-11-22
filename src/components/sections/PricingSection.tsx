@@ -94,16 +94,16 @@ export function PricingSection() {
           {plans.map((plan, i) => (
             <ScrollReveal key={plan.name} delay={i * 100} variant="fade-up">
               <div
-                className={`relative glass rounded-2xl border p-6 flex flex-col h-full transition-all duration-300 hover:-translate-y-1 ${
+                className={`relative glass rounded-2xl border p-6 flex flex-col h-full transition-[border-color] duration-300 ${
                   plan.popular
                     ? 'border-green shadow-[0_4px_30px_rgba(34,197,94,0.15)] scale-[1.02]'
-                    : 'border-border/50 hover:border-green/30 hover:shadow-lg'
+                    : 'border-border/50 hover:border-green/30'
                 }`}
               >
                 {plan.popular && (
                   <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                    <Badge className="shadow-lg shadow-green/20">
-                      <Sparkles size={12} className="mr-1" />
+                    <Badge className="whitespace-nowrap shadow-lg shadow-green/20">
+                      <Sparkles size={12} className="me-1" />
                       {t('popular')}
                     </Badge>
                   </div>

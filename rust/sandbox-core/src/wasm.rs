@@ -87,6 +87,68 @@ impl Sandbox {
     pub fn parcel_y(&self) -> f32 {
         self.world.parcel.y as f32 / 16.0
     }
+    /// The music snow-globe of the parcel, on the ground under (x, y).
+    pub fn place_globe(&mut self, x: i32, y: i32) {
+        self.world.place_globe(x, y);
+    }
+    /// The aurora kite of the parcel, its string tied at (x, y).
+    pub fn place_kite(&mut self, x: i32, y: i32) {
+        self.world.place_kite(x, y);
+    }
+    /// The finger steers the kite during the next tick.
+    pub fn steer_kite(&mut self, x: f32, y: f32) {
+        self.world.steer_kite(x, y);
+    }
+    /// Hides the treasure of the map at (x, y) (a map kept from an earlier visit; negative y: under the ground of column x).
+    pub fn set_treasure(&mut self, x: i32, y: i32) {
+        self.world.bury_treasure(x.max(0), y, -1);
+    }
+    /// Toys out in the world: bit 0 snow-globe, bit 1 kite, bit 2 treasure still buried, bit 3 treasure just found.
+    pub fn toys(&self) -> u32 {
+        let t = &self.world.toys;
+        t.globe.is_some() as u32
+            | (t.kite.is_some() as u32) << 1
+            | (t.treasure.is_some_and(|x| !x.found) as u32) << 2
+            | (t.treasure.is_some_and(|x| x.found) as u32) << 3
+    }
+    /// Where the treasure is (cells), or -1.
+    pub fn treasure_x(&self) -> i32 {
+        self.world.toys.treasure.map_or(-1, |t| t.x)
+    }
+    pub fn treasure_y(&self) -> i32 {
+        self.world.toys.treasure.map_or(-1, |t| t.y)
+    }
+    /// 0 fossil, 1 shell, 2 meteorite.
+    pub fn treasure_kind(&self) -> u32 {
+        crate::toys::treasure_kind(self.world.world) as u32
+    }
+    pub fn kite_x(&self) -> f32 {
+        self.world.toys.kite.map_or(-1.0, |k| k.x as f32 / 16.0)
+    }
+    pub fn kite_y(&self) -> f32 {
+        self.world.toys.kite.map_or(-1.0, |k| k.y as f32 / 16.0)
+    }
+    pub fn globe_x(&self) -> i32 {
+        self.world.toys.globe.map_or(-1, |g| g.x)
+    }
+    pub fn globe_y(&self) -> i32 {
+        self.world.toys.globe.map_or(-1, |g| g.y)
+    }
+    /// Notes of the snow-globe since `take_notes`: one `u32` each, element | degree << 6 | x << 9 | y << 18.
+    pub fn notes_ptr(&self) -> *const u32 {
+        self.world.toys.notes.as_ptr()
+    }
+    pub fn notes_len(&self) -> u32 {
+        self.world.toys.notes.len() as u32
+    }
+    pub fn take_notes(&mut self) {
+        self.world.take_notes();
+    }
+    /// What is in the sky in a box of cells (for the saucer): bit 0 a cloud, bit 1 a geyser's mist.
+    pub fn probe_sky(&self, x0: i32, y0: i32, x1: i32, y1: i32) -> u32 {
+        self.world.probe_sky(x0, y0, x1, y1)
+    }
+
     /// Where the finger is, in cells (negative: away). Faces look at it, babies follow it, the backdrop leans.
     pub fn set_pointer(&mut self, x: f32, y: f32) {
         let ok = x.is_finite() && y.is_finite() && x >= 0.0 && y >= 0.0;

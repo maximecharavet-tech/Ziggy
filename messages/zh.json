@@ -40,7 +40,7 @@
     "bubble": "你好，我是 Ziggy！👋",
     "bubble_happy": "嘻嘻，好痒！💚",
     "trust_1": "无广告",
-    "trust_2": "数据存放在欧洲",
+    "trust_2": "账户托管在巴黎",
     "trust_3": "无需账户即可玩",
     "facts_worlds": "可探索的世界",
     "facts_stories": "睡前故事",
@@ -49,24 +49,24 @@
   },
   "features": {
     "title": "家长为什么喜爱Ziggy",
-    "subtitle": "由教育专家和AI专家打造，专为好奇心旺盛的孩子设计",
+    "subtitle": "无广告、无压力，每段AI文字都经过安全过滤：专为好奇心旺盛的孩子设计",
     "ai_companion": "AI伙伴",
     "ai_companion_desc": "Ziggy通过个性化AI对话，适应每个孩子的节奏和学习方式。",
     "safe_space": "安全的空间",
-    "safe_space_desc": "无广告，数据存储在欧洲，账户由家长管理。我们只保存孩子的名字。",
+    "safe_space_desc": "无广告，账户由家长管理并托管在巴黎。只需孩子的名字，从不要求姓氏。",
     "cognitive_tracking": "认知档案",
     "cognitive_tracking_desc": "通过互动仪表盘，追踪孩子在6个认知维度的成长。",
     "multilingual": "12种语言",
     "multilingual_desc": "支持12种语言并自动检测。无国界学习。",
     "gamified": "游戏化学习",
     "gamified_desc": "星星、徽章和奖励让学习变成游戏。零压力，纯乐趣。",
-    "curriculum": "专家课程",
+    "curriculum": "丰富多样的课程",
     "curriculum_desc": "5个专业模块，涵盖AI、数学、逻辑、创造力和季节性活动。",
     "eyebrow": "为什么选 Ziggy"
   },
   "modules": {
     "title": "学习模块",
-    "subtitle": "五个由专家精心设计的模块，激发好奇心",
+    "subtitle": "五个激发好奇心的模块",
     "ai_basics": "AI基础",
     "ai_basics_desc": "AI如何思考、学习，以及如何每天帮助我们",
     "ai_basics_ages": "4-12岁",
@@ -107,7 +107,7 @@
     "family_f3": "完整仪表盘和报告",
     "family_f4": "全部5个模块",
     "family_f5": "优先支持",
-    "popular": "最受欢迎",
+    "popular": "推荐",
     "school": "学校版",
     "school_price_monthly": "€129",
     "school_price_yearly": "€99",
@@ -166,7 +166,7 @@
   "faq": {
     "title": "常见问题",
     "q1": "Ziggy对我的孩子安全吗？",
-    "a1": "Ziggy 专为孩子设计：没有广告，不与陌生人交流，账户由家长创建和管理。我们只保存孩子的名字、年龄段和游戏成绩，存储在欧洲。家长可以随时在家长专区删除账户。",
+    "a1": "Ziggy 专为孩子设计：没有广告，不与陌生人交流，账户由家长创建和管理。我们只询问孩子的名字和年龄段，从不要求姓氏或地址。账户和学习进度托管在巴黎（Supabase）；部分AI功能会使用欧盟以外的服务商，详见隐私政策。家长可以随时在家长专区删除账户。",
     "q2": "Ziggy适合几岁的孩子？",
     "a2": "Ziggy专为4至12岁儿童设计。AI会根据孩子的年龄和学习节奏调整语言、难度和内容。",
     "q3": "我可以随时取消订阅吗？",
@@ -268,17 +268,17 @@
     },
     "advertising": {
       "name": "Spark",
-      "description": "释放你的创造力，学习广告！",
-      "longDescription": "释放你的创造力，学习广告！",
-      "chatPlaceholder": "团队...",
-      "learn1": "Learn the fundamentals",
-      "learn2": "Practice with fun examples",
-      "learn3": "Build skills for the future",
+      "description": "释放你的创造力：设计海报，学会识破广告的小把戏！",
+      "longDescription": "Spark 点燃你的创造力！为好点子画出你自己的海报（整理房间、保护地球……），并成为广告小侦探：认出广告，明白它想让你买东西，识破它的小把戏。",
+      "chatPlaceholder": "问问 Spark 关于海报和广告的事……",
+      "learn1": "为好点子制作色彩缤纷的海报",
+      "learn2": "认出广告，知道它的目的",
+      "learn3": "识破广告的小把戏：鲜艳的颜色、洗脑的歌曲、看起来更大的玩具",
       "suggestions": [
-        "How are ads made?",
-        "Create a jingle!",
-        "What makes ads catchy?",
-        "Design a poster!"
+        "怎样认出广告？",
+        "广告会用哪些小把戏？",
+        "为什么广告想让我买东西？",
+        "设计一张海报！"
       ]
     },
     "try_now": "立即体验"
@@ -509,7 +509,7 @@
     "playGames": "去玩游戏",
     "bestScore": "最高分",
     "plays": "次",
-    "secureNotice": "安全的家长账户，托管于欧洲。我们只保存孩子的名字。",
+    "secureNotice": "安全的家长账户，托管于巴黎。孩子只需填写名字。",
     "childSection": "孩子信息",
     "parentSection": "家长信息",
     "passwordLabel": "密码",
@@ -602,7 +602,7 @@
     "chat_eyebrow": "现在，聊聊天吧"
   },
   "trust": {
-    "eu_storage": "数据存储在欧洲",
+    "eu_storage": "账户托管在巴黎",
     "encrypted": "加密连接",
     "no_ads": "零广告",
     "parent_account": "由家长管理的账户"
@@ -711,8 +711,8 @@
         "desc": "简短精准的动画，遵循设备的“减弱动态效果”设置，离开屏幕时自动暂停。"
       },
       "privacy": {
-        "title": "数据在欧洲，零广告",
-        "desc": "账户托管在欧洲，不出售任何数据，没有广告，也没有追踪。"
+        "title": "账户在巴黎，零广告",
+        "desc": "账户托管在巴黎，不出售任何数据，没有广告，也没有追踪。我们使用的AI服务商列在隐私政策中。"
       }
     },
     "ziggy_title": "这一切，只为一个好朋友",

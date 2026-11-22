@@ -17,6 +17,8 @@ const GAMES_3D = [
   { href: '/monde/3d/dino', label: 'Ziggy Paléontologue' },
   { href: '/monde/3d/detective', label: 'Ziggy Détective' },
   { href: '/monde/3d/noel', label: 'Le Noël de Ziggy' },
+  { href: '/lutins/jeux/atelier', label: 'L’Atelier des Lutins' },
+  { href: '/lutins/jeux/chahut', label: 'Le Grand Chahut des Lutins' },
 ];
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {

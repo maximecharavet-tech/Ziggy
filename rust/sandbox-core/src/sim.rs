@@ -103,7 +103,7 @@ pub struct World {
     /// Reactions since the last `take_events`: kind | x << 7 | y << 16, at most one per kind per tick.
     pub events: Vec<u32>,
     fired: [bool; REACTION_COUNT],
-    quiet: bool,
+    pub(crate) quiet: bool,
     // Dirty chunks.
     pub cw: usize,
     pub ch: usize,
@@ -140,6 +140,8 @@ pub struct World {
     pub rainbow: u16,
     pub(crate) raindrops: u16,
     pub parcel: crate::parcel::Parcel,
+    /// The snow-globe, the kite and the treasure from the parcel.
+    pub toys: crate::toys::Toys,
     /// Where the child's finger is, in cells (baby critters follow it); negative when away.
     pub pointer: (i32, i32),
 }
@@ -225,6 +227,7 @@ impl World {
             rainbow: 0,
             raindrops: 0,
             parcel: crate::parcel::Parcel::default(),
+            toys: crate::toys::Toys::new(),
             pointer: (-1, -1),
         };
         world.set_gravity(100);
@@ -387,6 +390,7 @@ impl World {
         mix(self.parcel.state as u32 | (self.parcel.opened as u32) << 8);
         mix(self.parcel.x as u32);
         mix(self.parcel.y as u32);
+        self.hash_toys(&mut mix);
         h
     }
 
@@ -600,6 +604,7 @@ impl World {
         }
         self.step_critters();
         self.step_parcel();
+        self.step_toys();
     }
 
     /// Runs the world for a while without reporting anything: a freshly built
