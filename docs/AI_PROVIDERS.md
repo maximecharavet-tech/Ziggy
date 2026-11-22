@@ -12,7 +12,7 @@ called only from the server.
 | Images (avatars, world scenes) | Agnes AI | `AGNES_API_KEY`, `AGNES_BASE_URL`, `AGNES_IMAGE_MODEL` | `agnes-image-2.5-flash` |
 | Chat (/demo, /agents: guided questions; free typing behind the grown-up gate) | Mistral (if `MISTRAL_API_KEY` is set) → Gemini → DeepSeek → NVIDIA → Groq → Anthropic (whichever keys are set) | existing keys | `mistral-small-latest` (`MISTRAL_MODEL`) |
 | Santa live call | Mistral (if `MISTRAL_API_KEY` is set) → DeepSeek → NVIDIA | existing keys | — |
-| Voices (Ziggy, Santa) | Google Gemini TTS | `GEMINI_API_KEY` | — |
+| Voices (Ziggy, Santa) | Fixed site sentences: Ziggy's offline voice bank (`public/voice`, no provider, `scripts/voice-bake.mjs`); other lines: Google Gemini TTS | `GEMINI_API_KEY` | — |
 
 Model ids are environment-configurable because provider catalogues change; check each provider's
 console for the current names.

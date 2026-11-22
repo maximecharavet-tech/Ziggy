@@ -63,3 +63,4 @@ device, ChildShield on every reply, minute cap, nothing stored (`docs/PERE_NOEL.
 - Start a test server with `node node_modules/next/dist/bin/next start` and record that PID: killing the PID of `npx next start` leaves an orphaned next-server holding the port.
 - A CSS mask on an `<img>` clips its drop-shadow to a box: put the shadow on a wrapper.
 - Playwright's `scrollIntoViewIfNeeded` times out on the always-moving mascot: use `el.scrollIntoView()` instead.
+- Read-aloud plays baked clips from `public/voice/` (hyper-engine `hv-tts`); a new or changed fixed text silently falls back to the server voice until you rerun `node scripts/voice-bake.mjs collect` then `render` (and bump `public/sw.js` `VERSION`).

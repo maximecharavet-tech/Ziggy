@@ -49,6 +49,14 @@ Content:
   Xenova). English pronunciations come from the dictionaries of **misaki** 0.9.4 (https://github.com/hexgrad/misaki,
   Apache-2.0). Neither the model nor any of the tools below is shipped with the site: only the audio they produced.
 
+- Ziggy's read-aloud voice bank (`public/voice/**`, MP3, one clip per fixed sentence of the site; list in
+  `scripts/voice-bake/sentences.json`) is generated offline by `scripts/voice-bake.mjs` with the VOICES MAX GEN
+  engine (`hv-tts`, hyper-engine's Rust workspace, owner's code) on the same **Kokoro-82M** weights and voice styles
+  (© hexgrad, **Apache-2.0**, above), with the French base dictionary **ipa-dict `fr_FR`** (© 2016 dohliam,
+  https://github.com/open-dict-data/ipa-dict, **MIT**) and misaki's English dictionaries (Apache-2.0). MP3 encoding by
+  FFmpeg + libmp3lame on the build machine only (a tool, not shipped). Listening checks with Whisper small
+  (OpenAI, MIT weights) through faster-whisper (MIT), offline, build machine only. Only the audio is shipped.
+
 Build-time tools of `voice-engine/` (run locally, not distributed, not dependencies of the app):
 
 | Name | URL | License | Version |

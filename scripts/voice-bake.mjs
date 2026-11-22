@@ -24,9 +24,12 @@
  *
  * render — incremental: a clip is recorded again only when its text or the
  * engine signature (hv-tts version + binary hash + voice options + encoder)
- * changes. WAVs are temporary (deleted after encoding). MP3 (ffmpeg +
- * libmp3lame, build machine only, never shipped): mono 24 kHz VBR, the format
- * of the bedtime stories, played by every browser including old Safari.
+ * changes. WAVs are temporary (deleted after encoding, or kept outside the
+ * repo with --wav-cache DIR). MP3 (ffmpeg + libmp3lame, build machine only,
+ * never shipped): mono 24 kHz VBR quality 6 (measured on 60 clips: 10 %
+ * smaller than q5 for 1.2 dB less SNR, ~11× smaller than 16-bit WAV), the
+ * codec of the bedtime stories, played by every browser including old Safari
+ * (Opus/WebM would be ~40 % smaller, but older iPads cannot play it).
  *
  * The bank (scripts/voice-bake/bank.json) records, per id: language, style,
  * text, duration, engine signature and QA verdict; `exclude.json` lists ids
@@ -36,6 +39,7 @@
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import os from 'node:os';
 import crypto from 'node:crypto';
 import { execFileSync, spawnSync } from 'node:child_process';
 import { createRequire } from 'node:module';
@@ -52,6 +56,7 @@ const DIR = path.join(ROOT, 'scripts/voice-bake');
 const SENTENCES = path.join(DIR, 'sentences.json');
 const BANK = path.join(DIR, 'bank.json');
 const EXCLUDE = path.join(DIR, 'exclude.json');
+const ENGINES = path.join(DIR, 'engines.json');
 const PUBLIC = path.join(ROOT, 'public/voice');
 const MANIFEST = path.join(PUBLIC, 'manifest.json');
 const EXT = 'mp3';
@@ -71,9 +76,13 @@ const readJson = (p, dflt) => {
     return dflt;
   }
 };
+/** JSON with one record per line (lists and maps of records): compact, and diffs stay readable. */
 const writeJson = (p, v, pretty = true) => {
   fs.mkdirSync(path.dirname(p), { recursive: true });
-  fs.writeFileSync(p, (pretty ? JSON.stringify(v, null, 1) : JSON.stringify(v)) + '\n');
+  let out = JSON.stringify(v);
+  if (pretty && Array.isArray(v)) out = `[\n${v.map((x) => JSON.stringify(x)).join(',\n')}\n]`;
+  else if (pretty && v && typeof v === 'object') out = `{\n${Object.entries(v).map(([k, x]) => `${JSON.stringify(k)}: ${JSON.stringify(x)}`).join(',\n')}\n}`;
+  fs.writeFileSync(p, out + '\n');
 };
 
 /* ───────────────────────────── collect ───────────────────────────── */
@@ -174,6 +183,15 @@ function collect() {
     if (!flowCache.has(ck)) flowCache.set(ck, flowsIntoUncached(sym));
     return flowCache.get(ck);
   };
+  /** An untyped object literal that has every property of the type that declares `sym` (at least 3). */
+  const shapeMatches = (obj, sym) => {
+    const owner = sym.parent;
+    const members = owner?.members ? [...owner.members.keys()].map(String) : [];
+    if (members.length < 3) return false;
+    const have = new Set(obj.properties.map((q) => q.name?.getText()).filter(Boolean));
+    const required = members.filter((m) => !(owner.members.get(m).flags & ts.SymbolFlags.Optional));
+    return required.length >= 3 && required.every((m) => have.has(m));
+  };
   const flowsIntoUncached = (sym) => {
     const name = sym.getName();
     const out = [];
@@ -191,6 +209,10 @@ function collect() {
             }
           }
         }
+        // e.g. built in a generic `.map(…)` callback: no usable contextual type, but the right shape.
+        // Only for copied fields (`title: q.title`), where a wrong match costs nothing.
+        const copied = ts.isPropertyAssignment(p) && ts.isPropertyAccessExpression(strip(p.initializer)) && strip(p.initializer).name.text === name;
+        if (!ps && copied && shapeMatches(p.parent, sym)) ps = sym;
       }
       if (!ps || !sameDecl(ps, sym)) continue;
       if (ts.isJsxAttribute(p)) {
@@ -207,7 +229,7 @@ function collect() {
    * string), 'deep' (every { fr, en } inside a value: records, arrays of
    * records). `hint`: 'fr' | 'en' when a branch is known to be one language.
    */
-  const MAX_DEPTH = 14;
+  const MAX_DEPTH = 40;
   const done = new Set();
   const NO_ENV = new Map();
   function harvest(e, ctx) {
@@ -384,6 +406,9 @@ function collect() {
   function harvestParam(d, next) {
     const fn = d.parent;
     const i = fn.parameters.indexOf(d);
+    // `list.map((item) => …)`: the item is any element of the list.
+    const call = fn.parent;
+    if (i === 0 && call && ts.isCallExpression(call) && call.arguments[0] === fn && ts.isPropertyAccessExpression(call.expression) && /^(map|flatMap|forEach|filter|find|some|every)$/.test(call.expression.name.text)) return next(call.expression.expression, { mode: 'deep' });
     const named = fnName(fn);
     if (!named) return;
     const target = symbolOf(named.node);
@@ -411,6 +436,9 @@ function collect() {
     if (recv && name === 'replace') {
       // Only emoji clean-ups keep the sentence the same once normalised.
       if (/Pictographic|\\u\{?1F|️/.test(e.arguments[0]?.getText() ?? '')) return next(recv);
+      // Typographic spaces (« Bravo ! » with no-break spaces): the bank key folds them away.
+      const rep = strip(e.arguments[1]);
+      if (rep && isStr(rep) && /^(?:[\s\u00a0\u202f«»]|\$\d|\$&)*$/.test(rep.text)) return next(recv);
       return void bump(dynamic, e);
     }
     if (recv && ['map', 'flatMap'].includes(name)) {
@@ -532,13 +560,15 @@ function collect() {
     if (seen.has(k)) {
       const prev = out.find((o) => o.id === id && o.lang === r.lang && o.style === r.style);
       for (const s of r.sources) if (!prev.sources.includes(s)) prev.sources.push(s);
+      for (const e of r.entries) if (!prev.from.includes(e.replace(/:\d+$/, ''))) prev.from.push(e.replace(/:\d+$/, ''));
       continue;
     }
     seen.add(k);
-    out.push({ id, lang: r.lang, style: r.style, text, sources: [...r.sources].sort() });
+    out.push({ id, lang: r.lang, style: r.style, text, sources: [...r.sources].sort(), from: [...new Set([...r.entries].map((e) => e.replace(/:\d+$/, '')))].sort() });
   }
   out.sort((a, b) => a.style.localeCompare(b.style) || a.lang.localeCompare(b.lang) || a.id.localeCompare(b.id));
-  writeJson(SENTENCES, out.map((o) => ({ ...o, sources: o.sources.slice(0, 6) })));
+  // `sources`: where the text is written; `from`: the read-aloud call sites (pages) that say it.
+  writeJson(SENTENCES, out.map((o) => ({ ...o, sources: o.sources.slice(0, 4), from: o.from.sort().slice(0, 6) })));
   const perEntry = new Map();
   for (const r of found.values()) for (const en of r.entries) perEntry.set(en, (perEntry.get(en) ?? 0) + r.text.length);
   const top = (m) => [...m.entries()].sort((a, b) => b[1] - a[1]).slice(0, 40);
@@ -575,56 +605,103 @@ const VOICE = {
   ziggy: { voice: 'ziggy', chain: 'ziggy', register: 'courant' },
   bedtime: { voice: 'ziggy-warm', chain: 'ziggy', register: 'courant' },
 };
-const MP3 = ['-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-q:a', '5'];
+const MP3 = ['-ac', '1', '-ar', '24000', '-c:a', 'libmp3lame', '-q:a', '6'];
 
-function engineSignature(bin) {
+/** The recording itself (engine binary + voice options), without the encoder. */
+function renderSignature(bin) {
   const version = execFileSync(bin, ['--version'], { encoding: 'utf8' }).trim();
   const hash = crypto.createHash('sha256').update(fs.readFileSync(bin)).digest('hex').slice(0, 12);
-  return `${version} bin:${hash} mp3:${MP3.join(' ')}`;
+  return `${version} bin:${hash}`;
 }
 
+/**
+ * Record what is missing. `--wav-cache DIR` keeps the mastered WAVs (outside
+ * the repo) so a change of encoder settings re-encodes without re-recording.
+ */
 function render() {
   const bin = hvTts();
-  const sig = engineSignature(bin);
+  const rsig = renderSignature(bin);
+  const sig = `${rsig} mp3:${MP3.join(' ')}`;
   const sentences = readJson(SENTENCES, null);
   if (!sentences) throw new Error('run collect first');
   const bank = readJson(BANK, {});
+  // Each bank entry keeps a short hash of its engine; the signatures themselves are listed in engines.json.
+  const engines = readJson(ENGINES, {});
+  for (const b of Object.values(bank)) {
+    // Older entries stored the whole signature: keep its hash only.
+    if (b.engine && b.engine.length > 10) {
+      const h = crypto.createHash('sha256').update(b.engine).digest('hex').slice(0, 10);
+      engines[h] = b.engine;
+      b.engine = h;
+    }
+  }
+  const engineOf = (s) => {
+    const full = `${sig} ${JSON.stringify(VOICE[s.style])}`;
+    const h = crypto.createHash('sha256').update(full).digest('hex').slice(0, 10);
+    engines[h] = full;
+    return h;
+  };
   const exclude = new Set(Object.keys(readJson(EXCLUDE, {})));
   const limit = Number(opt('limit', '0')) || Infinity;
   const only = opt('only', ''); // fr | en
-  const todo = sentences.filter((s) => {
-    if (only && s.lang !== only) return false;
-    if (exclude.has(s.id)) return false;
-    const b = bank[s.id];
-    const file = path.join(PUBLIC, s.lang, `${s.id}.${EXT}`);
-    return !(b && b.engine === `${sig} ${JSON.stringify(VOICE[s.style])}` && b.text === s.text && fs.existsSync(file));
-  }).slice(0, limit);
+  const todo = sentences
+    .filter((s) => {
+      if (only && s.lang !== only) return false;
+      if (exclude.has(s.id)) return false;
+      const b = bank[s.id];
+      const file = path.join(PUBLIC, s.lang, `${s.id}.${EXT}`);
+      return !(b && b.engine === engineOf(s) && b.text === s.text && fs.existsSync(file));
+    })
+    .slice(0, limit);
   console.log(`engine ${sig}\nto record: ${todo.length} of ${sentences.length}`);
   if (!todo.length) return manifest();
-  const work = opt('work', path.join(ROOT, '.voice-bake-work'));
+  const cacheRoot = opt('wav-cache', '');
+  const cacheDir = (s) => cacheRoot && path.join(cacheRoot, crypto.createHash('sha256').update(`${rsig} ${JSON.stringify(VOICE[s.style])}`).digest('hex').slice(0, 12));
+  const cached = (s) => cacheRoot && fs.existsSync(path.join(cacheDir(s), `${s.id}.wav`)) && fs.existsSync(path.join(cacheDir(s), `${s.id}.json`));
+  const work = opt('work', path.join(os.tmpdir(), `voice-bake-${process.pid}`));
   const batch = Number(opt('batch', '200'));
   const threads = opt('threads', '4');
-  for (let at = 0; at < todo.length; at += batch) {
-    const part = todo.slice(at, at + batch);
+  const encode = (s, wav, stats) => {
+    const dst = path.join(PUBLIC, s.lang, `${s.id}.${EXT}`);
+    fs.mkdirSync(path.dirname(dst), { recursive: true });
+    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', wav, ...MP3, '-map_metadata', '-1', '-id3v2_version', '0', '-write_xing', '1', dst]);
+    bank[s.id] = { lang: s.lang, style: s.style, text: s.text, dur: Math.round((stats.seconds ?? 0) * 100) / 100, lufs: Math.round((stats.lufs ?? 0) * 10) / 10, tp: Math.round((stats.true_peak_db ?? 0) * 10) / 10, engine: engineOf(s) };
+  };
+  // Already recorded with this engine: encode only.
+  const fresh = [];
+  for (const s of todo) {
+    if (cached(s) && readJson(path.join(cacheDir(s), `${s.id}.json`), {}).text === s.text) encode(s, path.join(cacheDir(s), `${s.id}.wav`), readJson(path.join(cacheDir(s), `${s.id}.json`), {}));
+    else fresh.push(s);
+  }
+  if (fresh.length < todo.length) {
+    writeJson(BANK, sortKeys(bank));
+    writeJson(ENGINES, sortKeys(engines));
+    console.log(`  re-encoded ${todo.length - fresh.length} from the WAV cache`);
+  }
+  for (let at = 0; at < fresh.length; at += batch) {
+    const part = fresh.slice(at, at + batch);
     fs.rmSync(work, { recursive: true, force: true });
     fs.mkdirSync(work, { recursive: true });
     const items = part.map((s) => ({ id: s.id, text: s.text, lang: s.lang, ...VOICE[s.style] }));
-    writeJson(path.join(work, 'manifest.json'), { items, pcm16: true });
+    writeJson(path.join(work, 'manifest.json'), { items, pcm16: true }, false);
     const t0 = Date.now();
     const r = spawnSync(bin, ['bake', '--manifest', path.join(work, 'manifest.json'), '--out', work, '--threads', threads], { stdio: ['ignore', 'ignore', 'pipe'], encoding: 'utf8' });
     if (r.status !== 0) throw new Error(`hv-tts bake failed:\n${r.stderr?.slice(-2000)}`);
     const baked = readJson(path.join(work, 'bake.json'), {});
     for (const s of part) {
       const wav = path.join(work, `${s.id}.wav`);
-      const dst = path.join(PUBLIC, s.lang, `${s.id}.${EXT}`);
-      fs.mkdirSync(path.dirname(dst), { recursive: true });
-      execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', wav, ...MP3, '-map_metadata', '-1', '-id3v2_version', '0', '-write_xing', '1', dst]);
-      const b = baked[s.id] ?? {};
-      bank[s.id] = { lang: s.lang, style: s.style, text: s.text, dur: Math.round((b.seconds ?? 0) * 100) / 100, lufs: Math.round((b.lufs ?? 0) * 10) / 10, tp: Math.round((b.true_peak_db ?? 0) * 10) / 10, engine: `${sig} ${JSON.stringify(VOICE[s.style])}` };
+      const stats = baked[s.id] ?? {};
+      encode(s, wav, stats);
+      if (cacheRoot) {
+        fs.mkdirSync(cacheDir(s), { recursive: true });
+        fs.copyFileSync(wav, path.join(cacheDir(s), `${s.id}.wav`));
+        writeJson(path.join(cacheDir(s), `${s.id}.json`), { ...stats, text: s.text }, false);
+      }
     }
     writeJson(BANK, sortKeys(bank));
-    fs.rmSync(work, { recursive: true, force: true });
-    console.log(`  ${Math.min(at + batch, todo.length)}/${todo.length} (${((Date.now() - t0) / 1000).toFixed(0)} s for ${part.length})`);
+    writeJson(ENGINES, sortKeys(engines));
+    fs.rmSync(work, { recursive: true, force: true }); // the temporary WAVs
+    console.log(`  ${Math.min(at + batch, fresh.length)}/${fresh.length} (${((Date.now() - t0) / 1000).toFixed(0)} s for ${part.length})`);
   }
   manifest();
 }

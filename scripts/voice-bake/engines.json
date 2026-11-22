@@ -1,0 +1,4 @@
+{
+"02223495e1": "hv-tts 0.1.0 bin:66c2e0e5c0e7 mp3:-ac 1 -ar 24000 -c:a libmp3lame -q:a 6 {\"voice\":\"ziggy-warm\",\"chain\":\"ziggy\",\"register\":\"courant\"}",
+"d4d5ba3e44": "hv-tts 0.1.0 bin:66c2e0e5c0e7 mp3:-ac 1 -ar 24000 -c:a libmp3lame -q:a 6 {\"voice\":\"ziggy\",\"chain\":\"ziggy\",\"register\":\"courant\"}"
+}
